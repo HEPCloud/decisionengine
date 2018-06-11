@@ -1,0 +1,13 @@
+[Unit]
+Description = Decision EngineService
+Requires = condor.service
+After = condor.service
+
+[Service]
+Type = forking
+ExecStart = /usr/sbin/decision-engine start
+ExecStop = /usr/sbin/decision-engine stop
+ExecReload = /bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy = multi-user.target

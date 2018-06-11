@@ -1,0 +1,139 @@
+
+conditions :
+{
+  c1 :
+  {
+    description : "This is condition c1"
+
+    severity : INFO
+    source : ["app\\d"]
+    category : ["*"]
+
+    regex : "(bn\\d)"
+
+    rate : { occurence : 1 }
+
+    granularity :
+    {
+      per_source : true 
+      per_target : true 
+      target_group : 1
+    }
+  }
+
+  c2 :
+  {
+    description : "This is condition c2"
+
+    severity : INFO
+    source : ["bn\\d"]
+    category : ["*"]
+
+    regex : "problem"
+
+    rate : { occurence : 1 }
+
+    granularity :
+    {
+      per_source : true 
+      per_target : false 
+      target_group : 1
+    }
+  }
+
+  c3 :
+  {
+    description : "sync time"
+
+    severity : INFO
+    source : ["app\\d"]
+    category : ["*"]
+
+    regex : "sync to (\\d\\d)"
+
+    rate : { occurence : 1 }
+
+    granularity : 
+    {
+      per_source : true
+      per_target : false
+    }
+  }
+
+
+}
+
+rules :
+{
+  r1 :
+  {
+    description : "r1"
+    expression : "c1 && c2 WHERE c1.$t=c2.$s='bn2' AND c1.$s='app2'"
+    message : "${c1.$s} reports that ${c2.$s} is having a problem.\n( most recent message: ${c2.$m})"
+  }
+
+  r2 :
+  {
+    description : "r2"
+    expression : "c1 && c2 WHERE c1.$t=c2.$s"
+    message : "${c1.$s} -> ${c1.$t}"
+    #repeat_alarm : true
+    #holdoff : 10
+  }
+
+  r3_1 :
+  {
+    description : "test of count(cond, 'SOURCE')"
+    expression : "count(c1, 'SOURCE')>2 WHERE c1.$t=ANY"
+    message : "more than 2 apps say ${c1.$t} gone bad"
+  }
+
+  r3_2 :
+  {
+    description : "test of count(cond, 'TARGET')"
+    expression : "count(c1, 'TARGET')>2 WHERE c1.$s=ANY"
+    message : "${c1.$s} reports more than 2 bns gone bad"
+  }
+
+  r3_3 :
+  {
+    description : "test of count(cond, 'MESSAGE'), grouped by c1.$s"
+    expression : "count(c1, 'MESSAGE')>2 WHERE c1.$s=ANY"
+    message : "more than 2 messages from ${c1.$s} saying bns gone bad"
+  }
+
+  r3_4 :
+  {
+    description : "test of count(cond, 'MESSAGE'), grouped by c1.$t"
+    expression : "count(c1, 'MESSAGE')>2 WHERE c1.$t=ANY"
+    message : "more than 2 messages saying ${c1.$t} gone bad"
+  }
+
+  r4 :
+  {
+    description : "all dcms been synchronized?"
+    expression : "is_syncd(c3)"
+    message : "synchronization failed"
+  }
+
+  r5_1 :
+  {
+    description : "test of count_percent(cond, 'source', 'group')"
+    expression : "count_percent(c2, 'SOURCE', 'bn')>0.25 WHERE c2.$t=ANY"
+    message : "over 25% of all buffernodes reporting 'problem'"
+  }
+
+  r5_2 :
+  {
+    description : "test of cout_percent(cond, 'target', 'group')"
+    expression : "count_percent(c1, 'TARGET', 'bn')>0.25 WHERE c1.$s=ANY"
+    message : "${c1.$s} reports over 25% of all buffernodes gone bad"
+  }
+
+}
+
+
+
+
+
+

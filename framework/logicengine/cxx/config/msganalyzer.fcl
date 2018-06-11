@@ -1,0 +1,224 @@
+EHS : true
+
+node_status :
+{
+  # e.g.: alarm_on_first_warning : [ "RunControl", "RCWindow" ]
+  # note: use '*' for all nodes
+  #       regex supported in the node name, e.g. "dcm-3-01.*"
+
+  alarm_on_first_warning : [ ]
+  alarm_on_first_error : [ ]
+}
+
+
+conditions :
+{
+  dcm_timing_ping:
+  {
+    description : "Capture DCM timing ping messages"
+
+    severity : INFO
+    source   : ["dcm-.*"]
+    category : ["DcmMonitorTimingHistory"]
+
+    regex : "Timing Commands in History Buffer.*at (\\d*)"
+
+    # the true condition is *not* persistent
+    persistent : false
+
+    granularity:
+    {
+      per_source : true
+      per_target : false
+    }
+  }
+
+  c1 :
+  {
+    description : "DCM data corrupt (empty millislcs)"
+
+    severity : WARNING
+    source   : ["dcm-.*"]
+    category : ["DcmReaderDataCorrupt"]
+
+    regex : "too many empty millislcs"
+
+    rate : { occurence : 1 }
+
+    granularity :
+    {
+      per_source : true 
+      #per_target : true 
+      #target_group : 1
+    }
+  }
+
+  c2 :
+  {
+    description : "negative time jump in dcm"
+
+    severity : WARNING
+    source   : ["dcm-.*"]
+    category : ["DcmReaderDataCorrupt"]
+
+    regex : "new TM not the expected DT.*dT ([+-]?\\d*)"
+    #regex : "TM before Prev..*dT ([+-]?\\d*)"
+
+    test  : "grp_to_number(1)<0 || grp_to_number(1)>6400"
+
+    rate  : { occurence : 1 }
+
+    granularity :
+    {
+      per_source : true
+    }
+
+  }
+
+  c3 :
+  {
+    description : "dcm lost connection with farm nodes"
+
+    severity : ERROR
+    source   : ["dcm-.*"]
+    category : ["EvbcConnection"]
+
+    regex : "error sending data to server at host (novadaq-farm-\\d\\d)"
+
+    rage  : { occurence : 1 }
+
+    granularity :
+    {
+      per_source : true
+      per_target : true
+      target_group : 1
+    }
+  }
+
+  c4 :
+  {
+      description : "dcmReader stopped"
+
+      severity : ERROR
+      source   : ["dcm-.*"]
+      category : ["DcmReader"]
+
+      regex : "Failed to"
+
+      rate  : { occurence : 1 }
+
+      granularity :
+      {
+	        per_source : true
+     }
+  }
+
+  c5 :
+  {
+
+      description: "Tried to configure DCM with no enabled FEBs"
+    
+      severity : ERROR
+      source   : ["dcm-.*"]
+      category : ["DcmControl"]
+
+      regex : "cannot run in DCM FPGA Mode FEBDCSMode with no enabled FEBs"
+
+      rate  : { occurence : 1 }
+
+      granularity :
+      {
+	        per_source : true
+     }
+  }
+
+  cf:
+  {
+    description: "from log file"
+
+    severity : WARNING
+    source : ["novadaq-ctrl-farm-12.*"]
+    category : ["*"]
+    regex : "XXX"
+  }
+
+  c_at_most:
+  {
+    description: "occur_at_most testing condition"
+    severity : INFO
+    source : ["app"]
+    category : ["*"]
+    persistent : false
+    regex : "test"
+
+    rate : { occur_at_most: 0  timespan : 30 }
+  }
+
+
+}
+
+rules :
+{
+  r_at_most:
+  {
+    description : "occur_at_most testing rule"
+    expression : "c_at_most"
+    message : "not seen any message in past 30 seconds"
+  }
+
+  dcm_sync :
+  {
+    description : "Check DCM sync"
+    expression : "is_syncd(dcm_timing_ping)"
+    message : "${dcm_timing_ping.$s} is out of synchronization"
+    repeat_alarm : true
+    action :
+    {
+      #script : { name:"FHICL_FILE_PATH=. MsgAnalyzer" param:"" }
+      #script : { name:"script.sh" param:"${dcm_timing_ping.$s} nova@fnal.gov" }
+      #runcontrol : { }
+    }
+  }
+
+  r1 :
+  {
+    description : "DCM data corrupt (empty millislices)"
+    expression : "c1 && c2 WHERE c1.$s=c2.$s"
+    message : "${c1.$s} reports that it has empty millislices"
+  }
+
+  r2 :
+  {
+    description : "negative time jump in dcm"
+    expression : "c2"
+    message : "${c2.$s} has a very large or a negative time jump dT = ${c2.$g1}"
+  }
+
+  r3 :
+  {
+    description : "farm node connection failure"
+    expression : "count(c3, 'SOURCE') > 2 WHERE c3.$t=ANY"
+    message : "3 or more DCMs reports the connection failure with ${c3.$t}"
+  }
+
+  r4 :
+  {
+    description : "DCM Reader Has Stopped"
+    expression : "c4"
+    message : "DcmReader for ${c4.$s} has stopped due to failure to read data."
+  }
+
+  r6 :
+  {
+    description : "Attempt to take DCS data with no enabled FEBs"
+    expression : "c5"
+    message : "Bonehead!  You attempted to configure hardware for ${c5.$s} with no enabled FEBs!"
+  }
+
+}
+
+
+
+
+
+
