@@ -11,7 +11,7 @@ HEPCloud Decision Engine framework
 yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install yum-plugin-priorities
 yum clean all
-yum install https://repo.grid.iu.edu/osg/3.4/osg-3.4-el7-release-latest.rpm
+yum install https://repo.opensciencegrid.org/osg/3.4/osg-3.4-el7-release-latest.rpm
 yum clean all
 yum install condor-python
 yum install python-pandas
