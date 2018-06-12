@@ -1,5 +1,5 @@
 import pytest
-from util import tsort
+from decisionengine.framework.util import tsort
 
 
 class TestTsort:
