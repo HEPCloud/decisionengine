@@ -112,6 +112,7 @@ install -m 0644 build/packaging/rpm/decisionengine_initd_template $RPM_BUILD_ROO
 #install -m 0644 framework/tests/etc/decisionengine/config.d/channelA.conf $RPM_BUILD_ROOT%{de_channel_confdir}
 
 # Remove unwanted files
+rm $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/README.md
 rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/tests
 rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/build
 rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/tests
