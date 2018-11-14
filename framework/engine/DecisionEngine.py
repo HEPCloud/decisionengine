@@ -95,6 +95,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         return "OK"
 
     def rpc_start_channel(self, channel):
+        self.reload_config()
         if channel in self.task_managers:
             return "ERROR, channel {} is running".format(channel)
         self.start_channel(channel)
@@ -114,6 +115,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         worker.start()
 
     def rpc_start_channels(self):
+        self.reload_config()
         self.start_channels()
         return "OK"
 
