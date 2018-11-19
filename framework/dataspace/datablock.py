@@ -52,6 +52,7 @@ class InvalidHeaderError(Exception):
     """
     pass
 
+
 class Metadata(UserDict):
 
     # Minimum information required for the Metadata dict to be valid
@@ -86,7 +87,6 @@ class Metadata(UserDict):
             'generation_time': generation_time,
             'missed_update_count': missed_update_count
         }
-
 
     def set_state(self, state):
         """
@@ -141,7 +141,6 @@ class Header(UserDict):
             'schema_id': schema_id
         }
 
-
     def is_valid(self):
         """
         Check if the Header has minimum required information
@@ -180,7 +179,6 @@ class DataBlock(object):
         self._keys = []
         self.lock = threading.Lock()
 
-
     def __str__(self):
         value = {
             'taskamanger_id': self.taskmanager_id,
@@ -194,10 +192,8 @@ class DataBlock(object):
         value['dataproducts'] = dp
         return '%s' % value
 
-
     def __contains__(self, key):
         return key in self._keys
-
 
     def keys(self):
         return self._keys
@@ -240,7 +236,6 @@ class DataBlock(object):
         """
         self._setitem(key, value, header, metadata=metadata)
 
-
     def get(self, key):
         """
         Return the value associated with the key in the database
@@ -249,7 +244,6 @@ class DataBlock(object):
         :rtype: :obj:`dict`
         """
         return self.__getitem__(key)
-
 
     def _insert(self, key, value, header, metadata):
         """
@@ -264,7 +258,6 @@ class DataBlock(object):
                               key, value, header, metadata)
         self._keys.append(key)
 
-
     def _update(self, key, value, header, metadata):
         """
         Update an existing product in the database with header and metadata
@@ -276,7 +269,6 @@ class DataBlock(object):
         """
         self.dataspace.update(self.sequence_id, self.generation_id,
                               key, value, header, metadata)
-
 
     def _setitem(self, key, value, header, metadata=None):
         """
@@ -306,7 +298,6 @@ class DataBlock(object):
         else:
             self._insert(key, store_value, header, metadata)
 
-
     def __getitem__(self, key, default=None):
         """
         Return the value associated with the key in the database
@@ -320,7 +311,7 @@ class DataBlock(object):
             value_row = self.dataspace.get_dataproduct(self.sequence_id,
                                                        self.generation_id, key)
             value = ast.literal_eval(str(value_row['value']))
-        except KeyNotFoundError, e:
+        except KeyNotFoundError:
             value = default
         except:
             # TODO: FINSIH with more exceptions, content
@@ -331,7 +322,6 @@ class DataBlock(object):
         else:
             return_value = value.get('value')
         return return_value
-
 
     def get_header(self, key):
         """
@@ -348,13 +338,10 @@ class DataBlock(object):
                             scheduled_create_time=header_row[5],
                             creator=header_row[6],
                             schema_id=header_row[7])
-        #except KeyNotFoundError, e:
-        #    value = default
         except:
             # TODO: FINSIH with more exceptions, content
             raise
         return header
-
 
     def get_metadata(self, key):
         """
@@ -370,13 +357,10 @@ class DataBlock(object):
                                 generation_id=metadata_row[1],
                                 generation_time=metadata_row[4],
                                 missed_update_count=metadata_row[5])
-        #except KeyNotFoundError, e:
-        #    value = default
         except:
             # TODO: FINSIH with more exceptions, content
             raise
         return metadata
-
 
     def duplicate(self):
         """
@@ -399,19 +383,15 @@ class DataBlock(object):
                                            self.generation_id)
         return dup_datablock
 
-
     def is_expired(self, key=None):
         """
         Check if the dataproduct for a given key or any key is expired
         """
         pass
 
-
     def mark_expired(self, expiration_time):
         """
         Set the expiration_time for the current generation of the dataproduct
         and mark it as expired if expiration_time <= current time
-
         """
-
         pass
