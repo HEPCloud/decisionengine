@@ -6,9 +6,10 @@ import os
 import logging
 import logging.handlers
 
-LOG_FILE='/tmp/decision_engine_logs/decision_engine_log'
-MB=1000000
+LOG_FILE = '/tmp/decision_engine_logs/decision_engine_log'
+MB = 1000000
 ROTATE_AFTER = 6
+
 
 def set_logging(log_file_name=LOG_FILE, max_file_size= 200*MB, max_backup_count = ROTATE_AFTER):
     """
@@ -51,6 +52,7 @@ def set_logging(log_file_name=LOG_FILE, max_file_size= 200*MB, max_backup_count 
 
     return logger
 
+
 def get_logger():
     """
     get default logger - "decision_engine"
@@ -68,24 +70,17 @@ def set_stream_logging(logger_name=''):
     :arg logger_name: logger name
     :rtype: :class:`logging.Logger`
     """
-
     logger = logging.getLogger("decision_engine")
-    #logger =  logging.getLogger()
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s")
-
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-
     logger.setLevel(logging.INFO)
-    #logger.setLevel(logging.DEBUG)
-    #logger =  logging.getLogger(__name__)
-
     return logger
 
 if __name__ == '__main__':
     my_logger = logging.getLogger("decision_engine")
-    set_logging(log_file_name = '%s/de_log/decision_engine_log0'%(os.environ.get('HOME')),
+    set_logging(log_file_name = '%s/de_log/decision_engine_log0' % (os.environ.get('HOME')),
                 max_file_size = 100000,
                 max_backup_count = 5)
     my_logger.info("THIS IS INFO")

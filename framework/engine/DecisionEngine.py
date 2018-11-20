@@ -16,7 +16,6 @@ import time
 import SocketServer
 import SimpleXMLRPCServer
 
-import decisionengine.framework.modules.de_logger as de_logger
 import decisionengine.framework.configmanager.ConfigManager as Conf_Manager
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
 
@@ -86,7 +85,11 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         width = max(map(lambda x: len(x), self.task_managers.keys())) + 1
         txt=""
         for ch, worker in self.task_managers.items():
-            txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch, worker.task_manager.id, TaskManager._state_names[worker.task_manager.get_state()], width=width)
+            sname = TaskManager._state_names[worker.task_manager.get_state()]
+            txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
+                                                                                      worker.task_manager.id,
+                                                                                      sname,
+                                                                                      width=width)
         return txt[:-1]
 
     def rpc_stop(self):
@@ -188,6 +191,6 @@ if __name__ == '__main__':
         server.start_channels()
         server.serve_forever()
 
-    except Exception, msg:
+    except Exception as msg:
         sys.stderr.write("Fatal Error: {}\n".format(msg))
         sys.exit(1)

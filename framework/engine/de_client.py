@@ -69,7 +69,6 @@ if __name__ == "__main__":
     if args.stop_channel:
         print s.stop_channel(args.stop_channel)
 
-
     if args.start_channel:
         print s.start_channel(args.start_channel)
 
