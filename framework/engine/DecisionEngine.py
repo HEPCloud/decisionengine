@@ -93,21 +93,28 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
             channel_config = self.config_manager.get_channels()[ch]
             produces = self.config_manager.get_produces(channel_config) 
             r = filter(lambda x: product in x[1], produces.items())
-            if not r : continue
+            if not r:
+                continue
             found = True
-            tm = self.dataspace.get_taskmanager(ch)
-            data_block = datablock.DataBlock(self.dataspace,
-                                             ch,
-                                             taskmanager_id = tm['taskmanager_id'],
-                                             sequence_id = tm['sequence_id'])
-            data_block.generation_id -= 1
-            df = data_block[product]
             txt += " Found in channel {}\n".format(ch)
-            txt += "{}\n".format(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
-        if not found: 
-            txt += "Not Found\n"
+            tm = self.dataspace.get_taskmanager(ch)
+            try:
+                data_block = datablock.DataBlock(self.dataspace,
+                                                 ch,
+                                                 taskmanager_id=tm['taskmanager_id'],
+                                                 sequence_id=tm['sequence_id'])
+                data_block.generation_id -= 1
+                df = data_block[product]
+                txt += "{}\n".format(tabulate.tabulate(df,
+                                                       headers='keys',
+                                                       tablefmt='psql'))
+            except Exception as e:
+                txt += "\t\t{}\n".format(str(e))
+                pass
+            if not found:
+                txt += "Not Found\n"
         return txt[:-1]
-        
+
     def rpc_print_products(self):
         width = max(map(lambda x: len(x), self.task_managers.keys())) + 1
         txt = ""
@@ -120,8 +127,8 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
             tm = self.dataspace.get_taskmanager(ch)
             data_block = datablock.DataBlock(self.dataspace,
                                              ch,
-                                             taskmanager_id = tm['taskmanager_id'],
-                                             sequence_id = tm['sequence_id'])
+                                             taskmanager_id=tm['taskmanager_id'],
+                                             sequence_id=tm['sequence_id'])
             data_block.generation_id -= 1
             channel_config = self.config_manager.get_channels()[ch]
             produces = self.config_manager.get_produces(channel_config)
@@ -140,8 +147,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                             txt += "{}\n".format(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
                         except Exception as e:
                             txt += "\t\t\t{}\n".format(str(e))
-                            print "EXCEPTION", mod_name, products
-                            pass 
+                            pass
         return txt[:-1]
             
 
