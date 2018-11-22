@@ -67,7 +67,7 @@ class ConfigManager(object):
             try:
                 produces = getattr(my_module, 'PRODUCES')
                 all_produces |= set(produces)
-            except AttributeError, msg:
+            except AttributeError as msg:
                 raise RuntimeError("source module {} does not have required PRODUCES list".
                                    format(sname))
 
@@ -88,7 +88,7 @@ class ConfigManager(object):
                 all_produces |= produces
                 transform_map[tname] = {'consumes': consumes,
                                         'produces': produces}
-            except AttributeError, msg:
+            except AttributeError as msg:
                 raise RuntimeError("transform module {} does not have required lists {}".
                                    format(tname, str(msg)))
 
@@ -131,6 +131,18 @@ class ConfigManager(object):
         if cyclic_modules:
             raise RuntimeError("cyclic dependency detected for modules {}".
                                format(list(cyclic_modules)))
+
+    def get_produces(self, channel_config):
+        produces = {}
+        for i in ('sources', 'transforms'):
+            modules = channel_config.get(i, {})
+            for name, conf in modules.iteritems(): 
+                my_module = importlib.import_module(conf.get('module'))
+                try:
+                    produces.setdefault(name, []).extend(getattr(my_module, 'PRODUCES'))
+                except:
+                    pass
+        return produces
 
     def reload(self):
         old_global_config = copy.deepcopy(self.global_config)
