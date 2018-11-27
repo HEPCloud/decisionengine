@@ -6,17 +6,21 @@ The following environment variable points to decision engine configuration file:
 if this environment variable is not defined the ``DE-Config.py`` file from the ``../tests/etc/` directory will be used.
 """
 
+import importlib
 import logging
 import signal
 import sys
 import multiprocessing
 import uuid
+import tabulate
 import time
 
 import SocketServer
 import SimpleXMLRPCServer
 
 import decisionengine.framework.configmanager.ConfigManager as Conf_Manager
+import decisionengine.framework.dataspace.datablock as datablock
+import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
 
 CONFIG_UPDATE_PERIOD = 10  # seconds
@@ -55,6 +59,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         signal.signal(signal.SIGHUP, self.handle_sighup)
         self.task_managers = {}
         self.config_manager = cfg
+        self.dataspace = dataspace.DataSpace(self.config_manager.get_global_config())
 
     def get_logger(self):
         return self.logger
@@ -81,6 +86,72 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         else:
             return self.config_manager.get_channels()[channel]
 
+    def rpc_print_product(self, product): 
+        found = False
+        txt = "Product {}: ".format(product)
+        for ch, worker in self.task_managers.items():
+            channel_config = self.config_manager.get_channels()[ch]
+            produces = self.config_manager.get_produces(channel_config) 
+            r = filter(lambda x: product in x[1], produces.items())
+            if not r:
+                continue
+            found = True
+            txt += " Found in channel {}\n".format(ch)
+            tm = self.dataspace.get_taskmanager(ch)
+            try:
+                data_block = datablock.DataBlock(self.dataspace,
+                                                 ch,
+                                                 taskmanager_id=tm['taskmanager_id'],
+                                                 sequence_id=tm['sequence_id'])
+                data_block.generation_id -= 1
+                df = data_block[product]
+                txt += "{}\n".format(tabulate.tabulate(df,
+                                                       headers='keys',
+                                                       tablefmt='psql'))
+            except Exception as e:
+                txt += "\t\t{}\n".format(str(e))
+                pass
+            if not found:
+                txt += "Not Found\n"
+        return txt[:-1]
+
+    def rpc_print_products(self):
+        width = max(map(lambda x: len(x), self.task_managers.keys())) + 1
+        txt = ""
+        for ch, worker in self.task_managers.items():
+            sname = TaskManager._state_names[worker.task_manager.get_state()]
+            txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
+                                                                                      worker.task_manager.id,
+                                                                                      sname,
+                                                                                      width=width)
+            tm = self.dataspace.get_taskmanager(ch)
+            data_block = datablock.DataBlock(self.dataspace,
+                                             ch,
+                                             taskmanager_id=tm['taskmanager_id'],
+                                             sequence_id=tm['sequence_id'])
+            data_block.generation_id -= 1
+            channel_config = self.config_manager.get_channels()[ch]
+            produces = self.config_manager.get_produces(channel_config)
+            for i in ("sources",
+                      "transforms",
+                      "logicengines",
+                      "publishers"):
+                txt += "\t{}:\n".format(i)
+                modules = channel_config.get(i, {}) 
+                for mod_name, mod_config in modules.iteritems():
+                    txt += "\t\t{}\n".format(mod_name)
+                    products = produces.get(mod_name,[])
+                    for product in products:
+                        try:
+                            df = data_block[product]
+                            txt += "{}\n".format(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
+                        except Exception as e:
+                            txt += "\t\t\t{}\n".format(str(e))
+                            pass
+        return txt[:-1]
+            
+
+
     def rpc_status(self):
         width = max(map(lambda x: len(x), self.task_managers.keys())) + 1
         txt=""
@@ -90,6 +161,28 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                                                                                       worker.task_manager.id,
                                                                                       sname,
                                                                                       width=width)
+            channel_config = self.config_manager.get_channels()[ch]
+            for i in ("sources",
+                      "transforms",
+                      "logicengines",
+                      "publishers"):
+                txt += "\t{}:\n".format(i)
+                modules = channel_config.get(i, {}) 
+                for mod_name, mod_config in modules.iteritems():
+                    txt += "\t\t{}\n".format(mod_name)
+                    my_module = importlib.import_module(mod_config.get('module'))
+                    produces = None 
+                    consumes = None 
+                    try:
+                        produces = getattr(my_module, 'PRODUCES')
+                    except:
+                        pass
+                    try:
+                        consumes = getattr(my_module, 'CONSUMES')
+                    except:
+                        pass
+                    txt += "\t\t\tconsumes : {}\n".format(consumes)
+                    txt += "\t\t\tproduces : {}\n".format(produces)
         return txt[:-1]
 
     def rpc_stop(self):

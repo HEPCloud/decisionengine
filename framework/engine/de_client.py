@@ -42,7 +42,6 @@ if __name__ == "__main__":
         action='store_true',
         help="stop server")
 
-
     parser.add_argument(
         "--show-config",
         action='store_true',
@@ -57,6 +56,15 @@ if __name__ == "__main__":
         "--status",
         action='store_true',
         help="print status server")
+
+    parser.add_argument(
+        "--print-product",
+        help="product name")
+
+    parser.add_argument(
+        "--print-products",
+        action='store_true',
+        help="print products")
 
     args = parser.parse_args()
 
@@ -84,6 +92,12 @@ if __name__ == "__main__":
 
     if args.reload_config:
         print s.reload_config()
+
+    if args.print_products:
+        print s.print_products()
+
+    if args.print_product:
+        print s.print_product(args.print_product)
 
     if args.stop:
         s.stop()
