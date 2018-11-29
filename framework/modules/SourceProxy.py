@@ -16,7 +16,7 @@ import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.modules.de_logger as de_logger
 import decisionengine.framework.configmanager.ConfigManager as configmanager
 
-RETRIES = 5
+RETRIES = 10
 RETRY_TO = 60
 PRODUCES=['Job_Limits']
 must_have = ('channel_name', 'Dataproducts')
@@ -106,11 +106,11 @@ class SourceProxy(Source.Source):
             try:
                 data = data_block.get(key)
                 break
-            except KeyError, detail:
+            except KeyError as ke:
                 if data_block.generation_id > 1:
                     data_block.generation_id -= 1
                 else:
-                    raise KeyError(detail)
+                    raise KeyError(ke)
         return data
 
     def acquire(self):
@@ -129,7 +129,14 @@ class SourceProxy(Source.Source):
                                                      self.source_channel,
                                                      taskmanager_id = tm['taskmanager_id'],
                                                      sequence_id = tm['sequence_id'])
-                    break
+                    self.logger.debug('data block %s'%(data_block,))
+                    if data_block and data_block.generation_id:
+                        self.logger.debug("DATABLOCK %s"%(data_block,))
+                        # This is a valid datablock
+                        break
+                    else:
+                        retry_cnt += 1
+                        time.sleep(self.retry_to/3) # retry in 1/3 of configured TO
                 else:
                     retry_cnt += 1
                     time.sleep(self.retry_to)
@@ -141,10 +148,8 @@ class SourceProxy(Source.Source):
         rc = {}
         retry_cnt = 0
         filled_keys = []
-        retry = True
-        while retry and retry_cnt < self.retries:
+        while retry_cnt < self.retries:
             if len(filled_keys) != len(self.data_keys):
-                retry = True
                 for k in self.data_keys:
                     if isinstance(k, tuple):
                         k_in = k[0]
@@ -156,16 +161,14 @@ class SourceProxy(Source.Source):
                         try:
                             rc[k_out] = pd.DataFrame(self._get_data(data_block, k_in))
                             filled_keys.append(k)
-                        except KeyError, detail:
-                            print "KEYERROR", detail
-                            retry = True
+                        except KeyError as ke:
+                            self.logger.debug("KEYERROR %s"%(ke,))
             if len(filled_keys) == len(self.data_keys):
                 break
-            if retry:
+            else:
                 # expected data is not ready yet
                 retry_cnt += 1
                 time.sleep(self.retry_to)
-                retry = False
 
         if retry_cnt == self.retries and len(filled_keys) != len(self.data_keys):
             raise RuntimeError('Could not get all data. Expected %s Filled %s'%(self.data_keys, filled_keys))

@@ -42,16 +42,29 @@ if __name__ == "__main__":
         action='store_true',
         help="stop server")
 
-
     parser.add_argument(
         "--show-config",
         action='store_true',
         help="print configuration")
 
     parser.add_argument(
+        "--reload-config",
+        action="store_true",
+        help="reload configuration")
+
+    parser.add_argument(
         "--status",
         action='store_true',
         help="print status server")
+
+    parser.add_argument(
+        "--print-product",
+        help="product name")
+
+    parser.add_argument(
+        "--print-products",
+        action='store_true',
+        help="print products")
 
     args = parser.parse_args()
 
@@ -63,7 +76,6 @@ if __name__ == "__main__":
 
     if args.stop_channel:
         print s.stop_channel(args.stop_channel)
-
 
     if args.start_channel:
         print s.start_channel(args.start_channel)
@@ -77,6 +89,15 @@ if __name__ == "__main__":
     if args.show_config:
         conf = s.show_config()
         pprint.pprint(conf)
+
+    if args.reload_config:
+        print s.reload_config()
+
+    if args.print_products:
+        print s.print_products()
+
+    if args.print_product:
+        print s.print_product(args.print_product)
 
     if args.stop:
         s.stop()
