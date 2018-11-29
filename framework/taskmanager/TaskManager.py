@@ -18,19 +18,19 @@ import decisionengine.framework.modules.de_logger as de_logger
 TRANSFORMS_TO = 300
 
 def log_exception(logger, header_message):
-    exc, detail, tb = sys.exc_info()
+    exc, detail, t_b = sys.exc_info()
     logger.error('%s %s'%(header_message, detail))
-    logger.debug('Traceback')
-    for l in traceback.format_exception(exc, detail, tb):
-        logger.debug('%s'%(l,))
+    for line in traceback.format_exception(exc, detail, t_b):
+        logger.debug('%s'%(line[:-1],))
     logger.debug('=======================')
-    del tb
+    del t_b
 
 class Worker(object):
     """
     Provides interface to loadable modules an events to sycronise
     execution
     """
+    DEFAULT_SCHEDULE = 300 # 5 min
 
     def __init__(self, conf_dict):
         """
@@ -42,7 +42,7 @@ class Worker(object):
                                                          conf_dict['parameters'])
         self.module = conf_dict['module']
         self.name = self.worker.__class__.__name__
-        self.schedule = conf_dict.get('schedule')
+        self.schedule = conf_dict.get('schedule', self.DEFAULT_SCHEDULE)
         self.run_counter = 0
         self.data_updated = threading.Event()
         self.stop_running = threading.Event()
@@ -79,7 +79,7 @@ class Channel(object):
 # states
 
 BOOT, STEADY, OFFLINE, SHUTTINGDOWN, SHUTDOWN = range(5)
-_state_names = ['BOOT', 'STEADY', 'OFFLINE', 'SHUTTINGDOWN', 'SHUTDOWN']
+_STATE_NAMES = ['BOOT', 'STEADY', 'OFFLINE', 'SHUTTINGDOWN', 'SHUTDOWN']
 
 class TaskManager(object):
     """
@@ -185,7 +185,7 @@ class TaskManager(object):
                 break
 
             time.sleep(1)
-        self.logger.error('Error occured. Task Manager %s exits with state %s'%(self.id, _state_names[self.get_state()]))
+        self.logger.error('Error occured. Task Manager %s exits with state %s'%(self.id, _STATE_NAMES[self.get_state()]))
 
 
     def set_state(self, state):
@@ -300,9 +300,13 @@ class TaskManager(object):
             except:
                 log_exception(self.logger, 'Exception running source %s'%(src.name))
                 self.offline_task_manager(self.data_block_t0)
-            s = src.stop_running.wait(src.schedule)
-            if s:
-                self.logger.info('received stop_running signal for %s'%(src.name,))
+            if src.schedule > 0:
+                s = src.stop_running.wait(src.schedule)
+                if s:
+                    self.logger.info('received stop_running signal for %s'%(src.name,))
+                    break
+            else:
+                self.logger.info('source %s runs only once'%(src.name,))
                 break
         self.logger.info('stopped %s' % (src.name,))
 
@@ -354,7 +358,7 @@ class TaskManager(object):
             try:
                 thread.start()
             except:
-                log_exception(self.logger, 'exception starting thread %s'%(self.channel.transform.name,))
+                log_exception(self.logger, 'exception starting thread %s'%(transform.name,))
                 self.offline_task_manager(data_block)
                 break
 
@@ -492,7 +496,7 @@ if __name__ == '__main__':
             if len(multiprocessing.active_children()) < 1:
                 break
             for tm_name, tm in task_managers.iteritems():
-                print 'TM %s state %s'%(tm_name, _state_names[tm.get_state()])
+                print 'TM %s state %s'%(tm_name, _STATE_NAMES[tm.get_state()])
             time.sleep(10)
     except (SystemExit, KeyboardInterrupt):
         pass
