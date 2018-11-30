@@ -11,6 +11,7 @@ import logging
 import signal
 import sys
 import multiprocessing
+import pandas as pd
 import uuid
 import tabulate
 import time
@@ -105,6 +106,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                                                  sequence_id=tm['sequence_id'])
                 data_block.generation_id -= 1
                 df = data_block[product]
+                df = pd.read_json(df.to_json())
                 txt += "{}\n".format(tabulate.tabulate(df,
                                                        headers='keys',
                                                        tablefmt='psql'))
@@ -144,6 +146,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                     for product in products:
                         try:
                             df = data_block[product]
+                            df = pd.read_json(df.to_json())
                             txt += "{}\n".format(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
                         except Exception as e:
                             txt += "\t\t\t{}\n".format(str(e))
