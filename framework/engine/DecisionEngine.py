@@ -86,12 +86,12 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         else:
             return self.config_manager.get_channels()[channel]
 
-    def rpc_print_product(self, product): 
+    def rpc_print_product(self, product):
         found = False
         txt = "Product {}: ".format(product)
         for ch, worker in self.task_managers.items():
             channel_config = self.config_manager.get_channels()[ch]
-            produces = self.config_manager.get_produces(channel_config) 
+            produces = self.config_manager.get_produces(channel_config)
             r = filter(lambda x: product in x[1], produces.items())
             if not r:
                 continue
@@ -137,7 +137,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                       "logicengines",
                       "publishers"):
                 txt += "\t{}:\n".format(i)
-                modules = channel_config.get(i, {}) 
+                modules = channel_config.get(i, {})
                 for mod_name, mod_config in modules.iteritems():
                     txt += "\t\t{}\n".format(mod_name)
                     products = produces.get(mod_name,[])
@@ -149,7 +149,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                             txt += "\t\t\t{}\n".format(str(e))
                             pass
         return txt[:-1]
-            
+
 
 
     def rpc_status(self):
@@ -167,12 +167,12 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                       "logicengines",
                       "publishers"):
                 txt += "\t{}:\n".format(i)
-                modules = channel_config.get(i, {}) 
+                modules = channel_config.get(i, {})
                 for mod_name, mod_config in modules.iteritems():
                     txt += "\t\t{}\n".format(mod_name)
                     my_module = importlib.import_module(mod_config.get('module'))
-                    produces = None 
-                    consumes = None 
+                    produces = None
+                    consumes = None
                     try:
                         produces = getattr(my_module, 'PRODUCES')
                     except:
