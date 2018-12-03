@@ -1,7 +1,6 @@
 #!/bin/bash
-# condor   This is the glideinWMS frontend startup script
 # chkconfig: 35 90 30
-# description: Starts and stops a glideinWMS frontend
+# description: Starts and stops the decision engine service
 
 # Emulate function library.
 success() {
@@ -49,24 +48,20 @@ RET_NOT_INSTALLED=5
 RET_NOT_CONFIGURED=6
 RET_NOT_RUNNING=7
 
-
-#[ -f /etc/sysconfig/gwms-frontend ] && . /etc/sysconfig/gwms-frontend
-
 SCRIPT_NAME="`basename $0`"
-
 . /etc/rc.d/init.d/functions
+
 # RPM installation (defaults and binaries)
 LOG_FILE_STARTUP=/var/log/decisionengine/startup.log
-DEFAULT_WRITEBACK=no
 BIN_DIR=/usr/sbin
 DECISIONENGINE_START=${BIN_DIR}/decision-engine
 DECISIONENGINE_USER=decisionengine
 # Overriding variables values for RPM installation
-def_frontend_config=/etc/decisionengine/decisionengine.conf
+def_decisionengine_config=/etc/decisionengine/decisionengine.conf
 
 check_installed () {
     # check to see if the program is installed
-    # look for FRONTEND_START
+    # look for DECISIONENGINE_START
     if [ -x "$DECISIONENGINE_START" ]; then
         return 0
     fi
@@ -78,17 +73,17 @@ check_installed () {
 
 check_configured () {
     # check if some files created during the configuration (upgrade/reconfig) exist
-    if [ -r "$def_frontend_config" ]; then
+    if [ -r "$def_decisionengine_config" ]; then
         return 0
     else
-        echo -n "The decision engine configuration file $def_frontend_config not found"
+        echo -n "The decision engine configuration file $def_decisionengine_config not found"
     fi
     failure
     echo
     exit $RET_NOT_CONFIGURED
 }
 
-invoke_as_frontend() {
+invoke_as_decisionengine() {
     # parameters are a string with the command to invoke
     # e.g. "ls -al \"$directory\""
     local user_to_use=$FRONTEND_USER
@@ -105,14 +100,14 @@ invoke_as_frontend() {
         return $?
 	else
         # someone else, raise error
-        echo "ERROR: you must be the owner of ${def_frontend_config}."
+        echo "ERROR: you must be the owner of ${def_decisionengine_config}."
         #return 4
         exit $RET_NO_PRIVILEGE
     fi
 }
 
 help_usage() {
-    echo "Show help here"
+    echo "Usage: $SCRIPT_NAME {start|stop|restart}"
 }
 
 start() {
@@ -121,7 +116,7 @@ start() {
         echo -n "Starting decision engine $id_str: "
 
         # TODO: Check if the decision engine is already running
-        # forcing daemon to continue, the frontend will check the pidfile
+        # forcing daemon to continue, the decisionengine will check the pidfile
         daemon --user $DECISIONENGINE_USER --pidfile="/var/lock/decisionengine/decisionengine.lock" -2 "${DECISIONENGINE_START} 2>$LOG_FILE_STARTUP 1>&2 </dev/null &"
 }
 
