@@ -1,6 +1,5 @@
 import string
 import time
-import types
 
 import DBUtils.PooledDB
 import psycopg2
@@ -61,7 +60,11 @@ SELECT tm.name, tm.sequence_id, tm.taskmanager_id, tm.datestamp
 FROM taskmanager tm where tm.name = %s and tm.taskmanager_id = %s
 """
 
+
 class Postgresql(ds.DataSource):
+    """
+    Implementation of postgresql data source
+    """
 
     tables = {
         'header': [
@@ -75,8 +78,8 @@ class Postgresql(ds.DataSource):
             'schema_id INT',
         ],
         'schema': [
-            'schema_id INT', # Auto generated
-            'schema BLOB',   # keys in the value dict of the dataproduct table
+            'schema_id INT',  # Auto generated
+            'schema BLOB',    # keys in the value dict of the dataproduct table
         ],
         'metadata': [
             'taskmanager_id TEXT',
@@ -94,19 +97,19 @@ class Postgresql(ds.DataSource):
         ]
     }
 
-
     def __init__(self, config_dict):
-        ds.DataSource.__init__(self, config_dict)
-        self.connection_pool = DBUtils.PooledDB.PooledDB(psycopg2, **(config_dict))
+        super(Postgresql, self).__init__(config_dict)
+        self.connection_pool = DBUtils.PooledDB.PooledDB(psycopg2,
+                                                         **config_dict)
         self.retries = MAX_NUMBER_OF_RETRIES
         self.timeout = TIME_TO_SLEEP
 
     def create_tables(self):
         return True
 
-    def store_taskmanager(self, name, id):
-        return self._update_returning_result("INSERT INTO taskmanager \
-        (name, taskmanager_id) values (%s, %s)", (name, id)).get('sequence_id')
+    def store_taskmanager(self, name, taskmanager_id):
+        return self._update_returning_result("INSERT INTO taskmanager (name, taskmanager_id) values (%s, %s)",
+                                             (name, taskmanager_id)).get('sequence_id')
 
     def get_taskmanager(self, taskmanager_name, taskmanager_id=None):
         if taskmanager_id:
@@ -296,7 +299,7 @@ class Postgresql(ds.DataSource):
         while i:
             try:
                 return self.connection_pool.connection()
-            except Exception, msg:
+            except:
                 i -= 1
                 if not i:
                     raise
