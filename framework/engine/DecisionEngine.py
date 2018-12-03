@@ -152,8 +152,6 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                             txt += "\t\t\t{}\n".format(str(e))
                             pass
         return txt[:-1]
-            
-
 
     def rpc_status(self):
         width = max(map(lambda x: len(x), self.task_managers.keys())) + 1
@@ -226,7 +224,10 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         start channels
         """
         for ch in channels:
-            self.start_channel(ch)
+            try:
+                self.start_channel(ch)
+            except Exception as e:
+                self.logger.error("Channel {} failed to start : {}".format(ch, str(e)))
 
     def rpc_stop_channel(self,channel):
         self.stop_channel(channel)
@@ -238,7 +239,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                                                    TaskManager.SHUTDOWN):
             worker.task_manager.set_state(TaskManager.SHUTTINGDOWN)
         for i in range(int(self.config_manager.config.get("shutdown_timeout", 10))):
-            if worker.task_manager.get_state()==TaskManager.SHUTDOWN:
+            if worker.task_manager.get_state() == TaskManager.SHUTDOWN:
                 break
             else:
                 time.sleep(1)
