@@ -43,7 +43,7 @@ class ConfigManager(object):
             for module_name, module_conf in conf.items():
                 try:
                     module_keys = set(module_conf.keys())
-                except Exception, msg:
+                except Exception as msg:
                     raise RuntimeError("{} module {} is not a dictionary, {}".
                                        format(name, module_name, str(msg)))
                 diff = MANDATORY_MODULE_KEYS - module_keys
@@ -67,7 +67,7 @@ class ConfigManager(object):
             try:
                 produces = getattr(my_module, 'PRODUCES')
                 all_produces |= set(produces)
-            except AttributeError, msg:
+            except AttributeError as msg:
                 raise RuntimeError("source module {} does not have required PRODUCES list".
                                    format(sname))
 
@@ -88,7 +88,7 @@ class ConfigManager(object):
                 all_produces |= produces
                 transform_map[tname] = {'consumes': consumes,
                                         'produces': produces}
-            except AttributeError, msg:
+            except AttributeError as msg:
                 raise RuntimeError("transform module {} does not have required lists {}".
                                    format(tname, str(msg)))
 
@@ -132,12 +132,24 @@ class ConfigManager(object):
             raise RuntimeError("cyclic dependency detected for modules {}".
                                format(list(cyclic_modules)))
 
+    def get_produces(self, channel_config):
+        produces = {}
+        for i in ('sources', 'transforms'):
+            modules = channel_config.get(i, {})
+            for name, conf in modules.iteritems(): 
+                my_module = importlib.import_module(conf.get('module'))
+                try:
+                    produces.setdefault(name, []).extend(getattr(my_module, 'PRODUCES'))
+                except:
+                    pass
+        return produces
+
     def reload(self):
         old_global_config = copy.deepcopy(self.global_config)
         old_config = copy.deepcopy(self.config)
         try:
             self.load()
-        except Exception, msg:
+        except:
             self.global_config = copy.deepcopy(old_global_config)
             self.config = copy.deepcopy(old_config)
             raise RuntimeError
@@ -151,12 +163,12 @@ class ConfigManager(object):
             if code:
                 try:
                     exec(code)
-                except Exception, msg:
+                except Exception as msg:
                     raise RuntimeError("Configuration file {} contains errors: {}".
                                        format(self.config_file, str(msg)))
             else:
                 raise RuntimeError("Empty configuration file {}".format(self.config_file))
-        except Exception, msg:
+        except Exception as msg:
             raise RuntimeError("Failed to read configuration file {} {}".
                                format(self.config_file, str(msg)))
 
@@ -166,7 +178,7 @@ class ConfigManager(object):
                                       max_file_size=self.global_config['logger']['max_file_size'],
                                       max_backup_count=self.global_config['logger']['max_backup_count'])
                 self.logger = de_logger.get_logger()
-            except Exception, msg:
+            except Exception as msg:
                 raise RuntimeError("Failed to create log: {}".format(str(msg)))
 
 
@@ -184,12 +196,12 @@ class ConfigManager(object):
                     code = "self.channels[name]=" + string.join(f.readlines(), "")
                     try:
                         exec(code)
-                    except Exception, msg:
+                    except Exception as msg:
                         self.logger.error("Channel configuration file {} \
                                            contains error {}, SKIPPING".
                                           format(channel_conf, str(msg)))
                         continue
-            except Exception, msg:
+            except Exception as msg:
                 self.logger.error("Failed to open channel configuration file {} \
                                   contains error {}, SKIPPING".
                                   format(channel_conf, str(msg)))
@@ -200,7 +212,7 @@ class ConfigManager(object):
             """
             try:
                 self.validate_channel(self.channels[name])
-            except Exception, msg:
+            except Exception as msg:
                 self.logger.error("{} {}, REMOVING the channel".format(name, str(msg)))
                 del self.channels[name]
                 continue
