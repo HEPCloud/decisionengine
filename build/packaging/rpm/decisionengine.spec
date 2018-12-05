@@ -1,6 +1,6 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
-%define version 0.3.2
+%define version 0.3.4
 %define release 0.1
 
 %define de_user decisionengine
@@ -197,6 +197,12 @@ fi
 
 
 %changelog
+* Mon Dec 3 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.4-0.1
+- Several Bug fixes
+
+* Wed Oct 24 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.3-0.1
+- Bug fixes related to SourceProxy
+
 * Tue Jun 12 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.2-0.1
 - Test release that includes source proxy and other new features
 - Also, first release since the framework code split from main codebase

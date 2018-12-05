@@ -87,12 +87,12 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         else:
             return self.config_manager.get_channels()[channel]
 
-    def rpc_print_product(self, product): 
+    def rpc_print_product(self, product):
         found = False
         txt = "Product {}: ".format(product)
         for ch, worker in self.task_managers.items():
             channel_config = self.config_manager.get_channels()[ch]
-            produces = self.config_manager.get_produces(channel_config) 
+            produces = self.config_manager.get_produces(channel_config)
             r = filter(lambda x: product in x[1], produces.items())
             if not r:
                 continue
@@ -121,7 +121,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         width = max(map(lambda x: len(x), self.task_managers.keys())) + 1
         txt = ""
         for ch, worker in self.task_managers.items():
-            sname = TaskManager._state_names[worker.task_manager.get_state()]
+            sname = TaskManager.STATE_NAMES[worker.task_manager.get_state()]
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
                                                                                       worker.task_manager.id,
                                                                                       sname,
@@ -139,7 +139,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                       "logicengines",
                       "publishers"):
                 txt += "\t{}:\n".format(i)
-                modules = channel_config.get(i, {}) 
+                modules = channel_config.get(i, {})
                 for mod_name, mod_config in modules.iteritems():
                     txt += "\t\t{}\n".format(mod_name)
                     products = produces.get(mod_name,[])
@@ -157,7 +157,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         width = max(map(lambda x: len(x), self.task_managers.keys())) + 1
         txt=""
         for ch, worker in self.task_managers.items():
-            sname = TaskManager._state_names[worker.task_manager.get_state()]
+            sname = TaskManager.STATE_NAMES[worker.task_manager.get_state()]
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
                                                                                       worker.task_manager.id,
                                                                                       sname,
@@ -168,12 +168,12 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                       "logicengines",
                       "publishers"):
                 txt += "\t{}:\n".format(i)
-                modules = channel_config.get(i, {}) 
+                modules = channel_config.get(i, {})
                 for mod_name, mod_config in modules.iteritems():
                     txt += "\t\t{}\n".format(mod_name)
                     my_module = importlib.import_module(mod_config.get('module'))
-                    produces = None 
-                    consumes = None 
+                    produces = None
+                    consumes = None
                     try:
                         produces = getattr(my_module, 'PRODUCES')
                     except:

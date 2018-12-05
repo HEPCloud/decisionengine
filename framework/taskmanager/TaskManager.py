@@ -79,7 +79,7 @@ class Channel(object):
 # states
 
 BOOT, STEADY, OFFLINE, SHUTTINGDOWN, SHUTDOWN = range(5)
-_STATE_NAMES = ['BOOT', 'STEADY', 'OFFLINE', 'SHUTTINGDOWN', 'SHUTDOWN']
+STATE_NAMES = ['BOOT', 'STEADY', 'OFFLINE', 'SHUTTINGDOWN', 'SHUTDOWN']
 
 class TaskManager(object):
     """
@@ -185,7 +185,7 @@ class TaskManager(object):
                 break
 
             time.sleep(1)
-        self.logger.error('Error occured. Task Manager %s exits with state %s'%(self.id, _STATE_NAMES[self.get_state()]))
+        self.logger.error('Error occured. Task Manager %s exits with state %s'%(self.id, STATE_NAMES[self.get_state()]))
 
 
     def set_state(self, state):
@@ -496,7 +496,7 @@ if __name__ == '__main__':
             if len(multiprocessing.active_children()) < 1:
                 break
             for tm_name, tm in task_managers.iteritems():
-                print 'TM %s state %s'%(tm_name, _STATE_NAMES[tm.get_state()])
+                print 'TM %s state %s'%(tm_name, STATE_NAMES[tm.get_state()])
             time.sleep(10)
     except (SystemExit, KeyboardInterrupt):
         pass

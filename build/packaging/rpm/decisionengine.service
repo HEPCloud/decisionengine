@@ -1,10 +1,10 @@
 [Unit]
 Description = Decision EngineService
-Requires = condor.service
-After = condor.service
+Requires = httpd.service
+After = httpd.service
 
 [Service]
-Type = forking
+Type = simple
 ExecStart = /usr/sbin/decision-engine start
 ExecStop = /usr/sbin/decision-engine stop
 ExecReload = /bin/kill -HUP $MAINPID
