@@ -1,6 +1,6 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
-%define version 0.3.4
+%define version 0.3.5
 %define release 0.1
 
 %define de_user decisionengine
@@ -142,6 +142,7 @@ rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/testcases
 
 %{systemddir}/decision-engine.service
 %{_initrddir}/decision-engine
+%{_sbindir}/decision-engine
 %attr(-, %{de_user}, %{de_group}) %{de_logdir}
 %attr(-, %{de_user}, %{de_group}) %{de_lockdir}
 %config(noreplace) %{de_confdir}/decision_engine.conf
@@ -176,7 +177,7 @@ usermod --append --groups  %{de_group}  %{de_user} >/dev/null
 if [ ! -e /usr/bin/de-client ]; then
    ln -s %{python_sitelib}/decisionengine/framework/engine/de_client.py /usr/bin/de-client
 fi
-if [ ! -e /usr/sbin/decision-engine ]; then
+if [ ! -e /usr/sbin/decisionengine ]; then
    ln -s %{python_sitelib}/decisionengine/framework/engine/DecisionEngine.py /usr/sbin/decisionengine
 fi
 
@@ -199,8 +200,11 @@ fi
 
 
 %changelog
+* Wed Dec 5 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.5-0.1
+- Several bug fixes
+
 * Mon Dec 3 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.4-0.1
-- Several Bug fixes
+- Several bug fixes
 
 * Wed Oct 24 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.3-0.1
 - Bug fixes related to SourceProxy
