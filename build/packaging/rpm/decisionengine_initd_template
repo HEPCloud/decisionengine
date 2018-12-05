@@ -53,16 +53,18 @@ SCRIPT_NAME="`basename $0`"
 
 # RPM installation (defaults and binaries)
 LOG_FILE_STARTUP=/var/log/decisionengine/startup.log
-BIN_DIR=/usr/sbin
-DECISIONENGINE_START=${BIN_DIR}/decision-engine
+SBIN_DIR=/usr/sbin
+BIN_DIR=/usr/bin
+DE_START_CMD=${SBIN_DIR}/decisionengine
+DE_STOP_CMD=${BIN_DIR}/de-client
 DECISIONENGINE_USER=decisionengine
 # Overriding variables values for RPM installation
-def_decisionengine_config=/etc/decisionengine/decisionengine.conf
+def_decisionengine_config=/etc/decisionengine/decision_engine.conf
 
 check_installed () {
     # check to see if the program is installed
-    # look for DECISIONENGINE_START
-    if [ -x "$DECISIONENGINE_START" ]; then
+    # look for DE_START_CMD
+    if [ -x "$DE_START_CMD" ]; then
         return 0
     fi
     echo -n "The decision engine is not installed correctly"
@@ -117,14 +119,14 @@ start() {
 
         # TODO: Check if the decision engine is already running
         # forcing daemon to continue, the decisionengine will check the pidfile
-        daemon --user $DECISIONENGINE_USER --pidfile="/var/lock/decisionengine/decisionengine.lock" -2 "${DECISIONENGINE_START} 2>$LOG_FILE_STARTUP 1>&2 </dev/null &"
+        daemon --user $DECISIONENGINE_USER --pidfile="/var/lock/decisionengine/decisionengine.lock" -2 "${DE_START_CMD} 2>$LOG_FILE_STARTUP 1>&2 </dev/null"
 }
 
 stop() {
         check_installed
         echo -n "Shutting down decision engine"
 
-	/usr/bin/de-client --stop
+        ${DE_STOP_CMD} --stop
         MYRETVAL=$?
 
         if [ $MYRETVAL -ne 0 ]; then
