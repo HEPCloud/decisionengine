@@ -1,7 +1,7 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
 %define version 0.3.5
-%define release 0.1
+%define release 0.2
 
 %define de_user decisionengine
 %define de_group decisionengine
@@ -108,7 +108,7 @@ mkdir -p $RPM_BUILD_ROOT%{de_confdir}/config.d
 install -m 0644 build/packaging/rpm/decision_engine_template.conf $RPM_BUILD_ROOT%{de_confdir}/decision_engine.conf
 install -m 0644 build/packaging/rpm/decisionengine.service $RPM_BUILD_ROOT%{systemddir}/decision-engine.service
 install -m 0644 build/packaging/rpm/decisionengine_initd_template $RPM_BUILD_ROOT%{_initrddir}/decision-engine
-install -m 0644 build/packaging/rpm/decisionengine_initd_template $RPM_BUILD_ROOT%{_sbindir}/decision-engine
+install -m 0755 build/packaging/rpm/decisionengine_initd_template $RPM_BUILD_ROOT%{_sbindir}/decision-engine
 
 # BUILDING testcase RPM: Uncomment following 1 line
 #install -m 0644 framework/tests/etc/decisionengine/config.d/channelA.conf $RPM_BUILD_ROOT%{de_channel_confdir}
@@ -200,6 +200,9 @@ fi
 
 
 %changelog
+* Wed Dec 5 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.5-0.2
+- Several bug fixes
+
 * Wed Dec 5 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.5-0.1
 - Several bug fixes
 
