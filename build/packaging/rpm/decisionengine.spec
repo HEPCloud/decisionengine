@@ -1,7 +1,7 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
-%define version 0.3.4
-%define release 0.1
+%define version 0.3.5
+%define release 0.2
 
 %define de_user decisionengine
 %define de_group decisionengine
@@ -108,6 +108,8 @@ mkdir -p $RPM_BUILD_ROOT%{de_confdir}/config.d
 install -m 0644 build/packaging/rpm/decision_engine_template.conf $RPM_BUILD_ROOT%{de_confdir}/decision_engine.conf
 install -m 0644 build/packaging/rpm/decisionengine.service $RPM_BUILD_ROOT%{systemddir}/decision-engine.service
 install -m 0644 build/packaging/rpm/decisionengine_initd_template $RPM_BUILD_ROOT%{_initrddir}/decision-engine
+install -m 0755 build/packaging/rpm/decisionengine_initd_template $RPM_BUILD_ROOT%{_sbindir}/decision-engine
+
 # BUILDING testcase RPM: Uncomment following 1 line
 #install -m 0644 framework/tests/etc/decisionengine/config.d/channelA.conf $RPM_BUILD_ROOT%{de_channel_confdir}
 
@@ -140,6 +142,7 @@ rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/testcases
 
 %{systemddir}/decision-engine.service
 %{_initrddir}/decision-engine
+%{_sbindir}/decision-engine
 %attr(-, %{de_user}, %{de_group}) %{de_logdir}
 %attr(-, %{de_user}, %{de_group}) %{de_lockdir}
 %config(noreplace) %{de_confdir}/decision_engine.conf
@@ -174,8 +177,8 @@ usermod --append --groups  %{de_group}  %{de_user} >/dev/null
 if [ ! -e /usr/bin/de-client ]; then
    ln -s %{python_sitelib}/decisionengine/framework/engine/de_client.py /usr/bin/de-client
 fi
-if [ ! -e /usr/sbin/decision-engine ]; then
-   ln -s %{python_sitelib}/decisionengine/framework/engine/DecisionEngine.py /usr/sbin/decision-engine
+if [ ! -e /usr/sbin/decisionengine ]; then
+   ln -s %{python_sitelib}/decisionengine/framework/engine/DecisionEngine.py /usr/sbin/decisionengine
 fi
 
 # Change the ownership of log and lock dir if they already exist
@@ -197,8 +200,14 @@ fi
 
 
 %changelog
+* Wed Dec 5 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.5-0.2
+- Several bug fixes
+
+* Wed Dec 5 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.5-0.1
+- Several bug fixes
+
 * Mon Dec 3 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.4-0.1
-- Several Bug fixes
+- Several bug fixes
 
 * Wed Oct 24 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.3-0.1
 - Bug fixes related to SourceProxy

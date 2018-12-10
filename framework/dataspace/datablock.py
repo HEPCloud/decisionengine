@@ -236,14 +236,14 @@ class DataBlock(object):
         """
         self._setitem(key, value, header, metadata=metadata)
 
-    def get(self, key):
+    def get(self, key, default=None):
         """
         Return the value associated with the key in the database
 
         :type key: :obj:`string`
         :rtype: :obj:`dict`
         """
-        return self.__getitem__(key)
+        return self.__getitem__(key, default=default)
 
     def _insert(self, key, value, header, metadata):
         """
