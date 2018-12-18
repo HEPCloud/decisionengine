@@ -66,6 +66,11 @@ if __name__ == "__main__":
         action='store_true',
         help="print products")
 
+    parser.add_argument(
+        "--query",
+        help="panda query, e.g. \" FigureOfMerit != inf \"")
+
+
     args = parser.parse_args()
 
     con_string = "http://{}:{}".format(args.host,args.port)
@@ -97,7 +102,11 @@ if __name__ == "__main__":
         print s.print_products()
 
     if args.print_product:
-        print s.print_product(args.print_product)
-
+        if args.query:
+            print s.print_product(args.print_product,
+                                  args.query)
+        else:
+            print s.print_product(args.print_product)
+            
     if args.stop:
         s.stop()
