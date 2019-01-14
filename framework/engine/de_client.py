@@ -70,11 +70,14 @@ if __name__ == "__main__":
         "--query",
         help="panda query, e.g. \" FigureOfMerit != inf \"")
 
+    parser.add_argument(
+        "--columns",
+        help="comma separated list of columns")
 
     args = parser.parse_args()
 
-    con_string = "http://{}:{}".format(args.host,args.port)
-    s = xmlrpclib.ServerProxy(con_string)
+    con_string = "http://{}:{}".format(args.host, args.port)
+    s = xmlrpclib.ServerProxy(con_string, allow_none=True)
 
     if args.status:
         print s.status()
@@ -102,11 +105,9 @@ if __name__ == "__main__":
         print s.print_products()
 
     if args.print_product:
-        if args.query:
-            print s.print_product(args.print_product,
-                                  args.query)
-        else:
-            print s.print_product(args.print_product)
-            
+        print s.print_product(args.print_product,
+                              args.columns,
+                              args.query)
+
     if args.stop:
         s.stop()
