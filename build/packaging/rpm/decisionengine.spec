@@ -1,7 +1,7 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
-%define version 0.3.5
-%define release 0.2
+%define version 0.3.6
+%define release 0.1
 
 %define de_user decisionengine
 %define de_group decisionengine
@@ -200,6 +200,9 @@ fi
 
 
 %changelog
+* Wed Dec 19 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.6-0.1
+- Several bug fixes and updates to de_client
+
 * Wed Dec 5 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.5-0.2
 - Several bug fixes
 

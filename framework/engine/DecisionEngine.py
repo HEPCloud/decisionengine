@@ -12,9 +12,9 @@ import signal
 import sys
 import multiprocessing
 import pandas as pd
-import uuid
 import tabulate
 import time
+import uuid
 
 import SocketServer
 import SimpleXMLRPCServer
@@ -87,7 +87,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         else:
             return self.config_manager.get_channels()[channel]
 
-    def rpc_print_product(self, product):
+    def rpc_print_product(self, product, query=None):
         found = False
         txt = "Product {}: ".format(product)
         for ch, worker in self.task_managers.items():
@@ -107,9 +107,14 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                 data_block.generation_id -= 1
                 df = data_block[product]
                 df = pd.read_json(df.to_json())
-                txt += "{}\n".format(tabulate.tabulate(df,
-                                                       headers='keys',
-                                                       tablefmt='psql'))
+                if query : 
+                    txt += "{}\n".format(tabulate.tabulate(df.query(query),
+                                                           headers='keys',
+                                                           tablefmt='psql'))
+                else: 
+                    txt += "{}\n".format(tabulate.tabulate(df,
+                                                           headers='keys',
+                                                           tablefmt='psql'))
             except Exception as e:
                 txt += "\t\t{}\n".format(str(e))
                 pass
