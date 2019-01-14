@@ -1,7 +1,7 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
-%define version 0.3.6
-%define release 0.1
+%define version 0.3.7
+%define release 1
 
 %define de_user decisionengine
 %define de_group decisionengine
@@ -200,6 +200,9 @@ fi
 
 
 %changelog
+* Mon Jan 14 2019 Parag Mhashilkar <parag@fnal.gov> - 0.3.7-1
+- Add ability to select columns in de-client query
+
 * Wed Dec 19 2018 Parag Mhashilkar <parag@fnal.gov> - 0.3.6-0.1
 - Several bug fixes and updates to de_client
 
