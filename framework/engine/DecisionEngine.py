@@ -87,7 +87,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         else:
             return self.config_manager.get_channels()[channel]
 
-    def rpc_print_product(self, product, query=None):
+    def rpc_print_product(self, product, columns=None, query=None):
         found = False
         txt = "Product {}: ".format(product)
         for ch, worker in self.task_managers.items():
@@ -107,14 +107,28 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                 data_block.generation_id -= 1
                 df = data_block[product]
                 df = pd.read_json(df.to_json())
-                if query : 
-                    txt += "{}\n".format(tabulate.tabulate(df.query(query),
-                                                           headers='keys',
-                                                           tablefmt='psql'))
-                else: 
-                    txt += "{}\n".format(tabulate.tabulate(df,
-                                                           headers='keys',
-                                                           tablefmt='psql'))
+                column_names = []
+                if columns:
+                    column_names = columns.split(",")
+                if query:
+                    if column_names:
+                        txt += "{}\n".format(tabulate.tabulate(df.loc[:, column_names].query(query),
+                                                               headers='keys',
+                                                               tablefmt='psql'))
+                    else:
+                        txt += "{}\n".format(tabulate.tabulate(df.query(query),
+                                                               headers='keys',
+                                                               tablefmt='psql'))
+
+                else:
+                    if column_names:
+                        txt += "{}\n".format(tabulate.tabulate(df.loc[:, column_names],
+                                                               headers='keys',
+                                                               tablefmt='psql'))
+                    else:
+                        txt += "{}\n".format(tabulate.tabulate(df,
+                                                               headers='keys',
+                                                               tablefmt='psql'))
             except Exception as e:
                 txt += "\t\t{}\n".format(str(e))
                 pass
