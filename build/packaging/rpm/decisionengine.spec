@@ -1,7 +1,7 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
 %define version 0.3.7
-%define release 1
+%define release 2
 
 %define de_user decisionengine
 %define de_group decisionengine
@@ -35,11 +35,12 @@ URL:            http://hepcloud.fnal.gov
 Source0:        decisionengine.tar.gz
 
 BuildArch:      x86_64
-BuildRequires:  cmake numpy numpy-f2py python-pandas
+BuildRequires:  cmake
+#BuildRequires:  cmake numpy numpy-f2py python-pandas
 BuildRequires:  boost-python boost-regex boost-system
-Requires:       numpy >= 1.7.1
-Requires:       numpy-f2py >= 1.7.1
-Requires:       python-pandas >= 0.17.1
+#Requires:       numpy >= 1.7.1
+#Requires:       numpy-f2py >= 1.7.1
+#Requires:       python-pandas >= 0.17.1
 Requires:       boost-python >= 1.53.0
 Requires:       boost-regex >= 1.53.0
 Requires:       boost-system >= 1.53.0
@@ -200,6 +201,9 @@ fi
 
 
 %changelog
+* Tue Jan 15 2019 Parag Mhashilkar <parag@fnal.gov> - 0.3.7-2
+- Remove dependency on python-pandas and numpy rpms as we get latest from pip
+
 * Mon Jan 14 2019 Parag Mhashilkar <parag@fnal.gov> - 0.3.7-1
 - Add ability to select columns in de-client query
 
