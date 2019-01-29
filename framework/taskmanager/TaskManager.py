@@ -9,6 +9,7 @@ import sys
 import uuid
 import traceback
 import multiprocessing
+import pandas
 
 import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.dataspace.datablock as datablock
@@ -260,7 +261,7 @@ class TaskManager(object):
             log_exception(self.logger, 'error in decision cycle(transforms)')
         try:
             actions_facts = self.run_logic_engine(data_block_t1)
-            self.logger.info('logic engine returned %s'%(actions_facts,))
+            self.logger.info('ran all logic engines')
             for a_f in actions_facts:
                 try:
                     self.run_publishers(a_f['actions'], a_f['newfacts'], data_block_t1)
@@ -425,6 +426,17 @@ class TaskManager(object):
             rc = self.channel.le_s[le].worker.evaluate(data_block)
             le_list.append(rc)
             self.logger.info('run logic engine %s done'%(self.channel.le_s[le].name,))
+            self.logger.info('logic engine %s generated newfacts: %s' % (self.channel.le_s[le].name, rc['newfacts'].to_dict(orient='records')))
+            self.logger.info('logic engine %s generated actions: %s' % (self.channel.le_s[le].name, rc['actions']))
+
+        # Add new facts to the datablock
+        all_facts = pandas.concat([i['newfacts'] for i in le_list], ignore_index=True)
+        data = {'de_logicengine_facts': all_facts}
+        t = time.time()
+        header = datablock.Header(data_block.taskmanager_id,
+                                  create_time=t, creator='logicengine')
+        self.data_block_put(data, header, data_block)
+
         return le_list
 
     def run_publishers(self, actions, facts, data_block=None):
@@ -442,6 +454,7 @@ class TaskManager(object):
                 self.logger.info('run publisher %s'%(self.channel.publishers[action].name))
                 self.logger.debug('run publisher %s %s'%(self.channel.publishers[action].name, data_block))
                 self.channel.publishers[action].worker.publish(data_block)
+
 
 if __name__ == '__main__':
     import os
