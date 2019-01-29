@@ -9,6 +9,7 @@ import sys
 import uuid
 import traceback
 import multiprocessing
+import pandas
 
 import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.dataspace.datablock as datablock
@@ -425,6 +426,14 @@ class TaskManager(object):
             rc = self.channel.le_s[le].worker.evaluate(data_block)
             le_list.append(rc)
             self.logger.info('run logic engine %s done'%(self.channel.le_s[le].name,))
+
+        # Add new facts to the datablock
+        data = {'de_logicengine_facts': self._create_facts_dataframe(le_list)}
+        t = time.time()
+        header = datablock.Header(data_block.taskmanager_id,
+                                  create_time=t, creator='logicengine')
+        self.data_block_put(data, header, data_block)
+
         return le_list
 
     def run_publishers(self, actions, facts, data_block=None):
@@ -442,6 +451,51 @@ class TaskManager(object):
                 self.logger.info('run publisher %s'%(self.channel.publishers[action].name))
                 self.logger.debug('run publisher %s %s'%(self.channel.publishers[action].name, data_block))
                 self.channel.publishers[action].worker.publish(data_block)
+
+
+    def _create_facts_dataframe(self, le_result):
+        """
+        Given the return value of running logic engine, extract new facts
+        generated and create facts dataframe to be added to the datablock
+
+        Return from running logic engine has following structure
+        Both actions and newfacts are dicts with rulename as key
+        [{
+             'actions': {
+                 'publish_glidein_requests': ['glideclientglobal_manifests', 'glideclient_manifests'],
+                 'dummy_rule': []
+             },
+             'newfacts': {
+                 'publish_glidein_requests': {
+                     'allow_hpc_new': True,
+                     'allow_foo': True
+                 },
+                 'dummy_rule': {
+                     'dummy_new_fact': True
+                 }
+             }
+        }]
+        """
+        # Extract new facts from le_result
+        new_facts = [rule['newfacts'] for rule in le_result]
+        # Dataframe column values for Facts
+        rule_name = []
+        fact_name = []
+        fact_value = []
+
+        for rule in new_facts:
+            for rname in rule:
+                for fact in rule[rname]:
+                    rule_name.append(rname)
+                    fact_name.append(fact)
+                    fact_value.append(rule[rname][fact])
+        facts = {
+            'rule_name': rule_name,
+            'fact_name': fact_name,
+            'fact_value': fact_value
+        }
+        return pandas.DataFrame(facts)
+
 
 if __name__ == '__main__':
     import os
