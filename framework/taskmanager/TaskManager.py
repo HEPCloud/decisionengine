@@ -261,7 +261,7 @@ class TaskManager(object):
             log_exception(self.logger, 'error in decision cycle(transforms)')
         try:
             actions_facts = self.run_logic_engine(data_block_t1)
-            self.logger.info('logic engine returned %s'%(actions_facts,))
+            self.logger.info('ran all logic engines')
             for a_f in actions_facts:
                 try:
                     self.run_publishers(a_f['actions'], a_f['newfacts'], data_block_t1)
@@ -426,9 +426,12 @@ class TaskManager(object):
             rc = self.channel.le_s[le].worker.evaluate(data_block)
             le_list.append(rc)
             self.logger.info('run logic engine %s done'%(self.channel.le_s[le].name,))
+            self.logger.info('logic engine %s generated newfacts: %s' % (self.channel.le_s[le].name, rc['newfacts'].to_dict(orient='records')))
+            self.logger.info('logic engine %s generated actions: %s' % (self.channel.le_s[le].name, rc['actions']))
 
         # Add new facts to the datablock
-        data = {'de_logicengine_facts': self._create_facts_dataframe(le_list)}
+        all_facts = pandas.concat([i['newfacts'] for i in le_list], ignore_index=True)
+        data = {'de_logicengine_facts': all_facts}
         t = time.time()
         header = datablock.Header(data_block.taskmanager_id,
                                   create_time=t, creator='logicengine')
@@ -451,50 +454,6 @@ class TaskManager(object):
                 self.logger.info('run publisher %s'%(self.channel.publishers[action].name))
                 self.logger.debug('run publisher %s %s'%(self.channel.publishers[action].name, data_block))
                 self.channel.publishers[action].worker.publish(data_block)
-
-
-    def _create_facts_dataframe(self, le_result):
-        """
-        Given the return value of running logic engine, extract new facts
-        generated and create facts dataframe to be added to the datablock
-
-        Return from running logic engine has following structure
-        Both actions and newfacts are dicts with rulename as key
-        [{
-             'actions': {
-                 'publish_glidein_requests': ['glideclientglobal_manifests', 'glideclient_manifests'],
-                 'dummy_rule': []
-             },
-             'newfacts': {
-                 'publish_glidein_requests': {
-                     'allow_hpc_new': True,
-                     'allow_foo': True
-                 },
-                 'dummy_rule': {
-                     'dummy_new_fact': True
-                 }
-             }
-        }]
-        """
-        # Extract new facts from le_result
-        new_facts = [rule['newfacts'] for rule in le_result]
-        # Dataframe column values for Facts
-        rule_name = []
-        fact_name = []
-        fact_value = []
-
-        for rule in new_facts:
-            for rname in rule:
-                for fact in rule[rname]:
-                    rule_name.append(rname)
-                    fact_name.append(fact)
-                    fact_value.append(rule[rname][fact])
-        facts = {
-            'rule_name': rule_name,
-            'fact_name': fact_name,
-            'fact_value': fact_value
-        }
-        return pandas.DataFrame(facts)
 
 
 if __name__ == '__main__':
