@@ -430,7 +430,12 @@ class TaskManager(object):
             self.logger.info('logic engine %s generated actions: %s' % (self.channel.le_s[le].name, rc['actions']))
 
         # Add new facts to the datablock
-        all_facts = pandas.concat([i['newfacts'] for i in le_list], ignore_index=True)
+        # Add empty dataframe if nothing is available
+        if le_list:
+            all_facts = pandas.concat([i['newfacts'] for i in le_list], ignore_index=True)
+        else:
+            self.logger.info('Logic engine(s) did not return any new facts')
+            all_facts = pandas.DataFrame()
         data = {'de_logicengine_facts': all_facts}
         t = time.time()
         header = datablock.Header(data_block.taskmanager_id,
