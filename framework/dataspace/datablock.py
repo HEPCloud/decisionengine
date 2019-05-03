@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-import time
+import ast
 import copy
 import cPickle as pickle
-import ast
-import uuid
 import threading
-
+import time
+import uuid
+import zlib
 
 from UserDict import UserDict
 
@@ -24,6 +24,13 @@ STATE_STEADY = 'STEADY'
 STATE_ERROR = 'ERROR'
 STATE_EXPIRED = 'EXPIRED'
 
+
+def zdumps(obj):
+    return zlib.compress(pickle.dumps(obj,
+                                      pickle.HIGHEST_PROTOCOL),
+                         9)
+def zloads(zstring):
+    return pickle.loads(zlib.decompress(zstring))
 
 class KeyNotFoundError(Exception):
     """
@@ -289,10 +296,10 @@ class DataBlock(object):
         if isinstance(value, dict):
             store_value = {'pickled': False, 'value': value}
         else:
-            store_value = {'pickled': True, 'value': pickle.dumps(value)}
+            store_value = {'pickled': True, 'value': zdumps(value)}
         if key in self._keys:
             # This has been already inserted, so you are working on a copy
-            # that was backedup. You need to update and adjust the update
+            # that was backed up. You need to update and adjust the update
             # counter
             self._update(key, store_value, header, metadata=metadata)
         else:
@@ -318,7 +325,7 @@ class DataBlock(object):
             raise
 
         if value.get('pickled'):
-            return_value = pickle.loads(value.get('value'))
+            return_value = zloads(value.get('value'))
         else:
             return_value = value.get('value')
         return return_value
