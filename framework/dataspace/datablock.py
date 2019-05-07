@@ -25,12 +25,53 @@ STATE_ERROR = 'ERROR'
 STATE_EXPIRED = 'EXPIRED'
 
 
+
 def zdumps(obj):
+    """
+    Pickle and compress     
+    :param obj: a python object
+    :return: compressed string
+    """
     return zlib.compress(pickle.dumps(obj,
                                       pickle.HIGHEST_PROTOCOL),
                          9)
+
+
 def zloads(zstring):
-    return pickle.loads(zlib.decompress(zstring))
+    """
+    Decompress and unpickle 
+    If input string is not a compressed string 
+    attempts to just unpickle the string.
+    
+    :param zstring: compressed string  
+    :return: returns python object  
+    """
+    try:
+        return pickle.loads(zlib.decompress(zstring))
+    except zlib.error:
+        return pickle.loads(zstring)
+
+
+def compress(obj):
+    """
+    Compress python object 
+    :param obj: python object 
+    :return: compressed string 
+    """
+    return zlib.compress(str(obj), 9)
+
+
+def decompress(zstring):
+    """
+    Decompress a compressed string. 
+    Returns the same string if it is not compressed.
+    :param zstring: 
+    :return: uncompressed string 
+    """
+    try:
+        return zlib.decompress(zstring)
+    except zlib.error:
+        return zstring
 
 class KeyNotFoundError(Exception):
     """
@@ -294,9 +335,10 @@ class DataBlock(object):
                                 missed_update_count=0)
 
         if isinstance(value, dict):
-            store_value = {'pickled': False, 'value': value}
+            store_value = compress({'pickled': False, 'value': value})
         else:
-            store_value = {'pickled': True, 'value': zdumps(value)}
+            store_value = compress({'pickled': True, 'value': pickle.dumps(value,
+                                                                           protocol=pickle.HIGHEST_PROTOCOL)})
         if key in self._keys:
             # This has been already inserted, so you are working on a copy
             # that was backed up. You need to update and adjust the update
@@ -317,7 +359,8 @@ class DataBlock(object):
         try:
             value_row = self.dataspace.get_dataproduct(self.sequence_id,
                                                        self.generation_id, key)
-            value = ast.literal_eval(str(value_row['value']))
+
+            value = ast.literal_eval(str(decompress(value_row['value'])))
         except KeyNotFoundError:
             value = default
         except:
