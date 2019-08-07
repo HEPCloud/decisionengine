@@ -42,9 +42,9 @@ class Worker(multiprocessing.Process):
         file_handler = logging.handlers.RotatingFileHandler(os.path.join(
                                                             os.path.dirname(self.config["logger"]["log_file"]),
                                                                             self.task_manager.name+".log"),
-                                                            maxBytes=self.config("logger").get("max_file_size",
+                                                            maxBytes=self.config["logger"].get("max_file_size",
                                                                                                200*1000000),
-                                                            backupCount=self.config("logger").get("max_backup_count",
+                                                            backupCount=self.config["logger"].get("max_backup_count",
                                                                                                   6))
         file_handler.setFormatter(FORMATTER)
         self.logger.setLevel(logging.INFO)
