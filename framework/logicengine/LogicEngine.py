@@ -1,9 +1,9 @@
 import json
+import logging
 import pandas
 from itertools import chain
 
 #pylint: disable=no-name-in-module
-from decisionengine.framework.modules import de_logger
 from decisionengine.framework.logicengine.RE import RuleEngine
 #pylint: enable=no-name-in-module
 from decisionengine.framework.logicengine.NamedFact import NamedFact
@@ -14,7 +14,7 @@ class LogicEngine(Module, object):
     # inherit from object.
     def __init__(self, cfg):
         super(LogicEngine, self).__init__(cfg)
-        self.logger = de_logger.get_logger()
+        self.logger = logging.getLogger()
         self.facts = [NamedFact(name, expr) for name, expr in cfg["facts"].iteritems()]
 
         # Only the names of facts are really needed. We pass in the

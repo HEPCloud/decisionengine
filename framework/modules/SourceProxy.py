@@ -2,24 +2,22 @@
 """
 Fill in data from another channel data block
 """
+import logging
 import pprint
-import sys
-import os
 import time
-import csv
-import numpy as np
+
 import pandas as pd
 
-from decisionengine.framework.modules import Source
-import decisionengine.framework.dataspace.dataspace as dataspace
-import decisionengine.framework.dataspace.datablock as datablock
-import decisionengine.framework.modules.de_logger as de_logger
 import decisionengine.framework.configmanager.ConfigManager as configmanager
+import decisionengine.framework.dataspace.datablock as datablock
+import decisionengine.framework.dataspace.dataspace as dataspace
+from decisionengine.framework.modules import Source
 
 RETRIES = 10
 RETRY_TO = 60
-PRODUCES=['Job_Limits']
+PRODUCES = ['Job_Limits']
 must_have = ('channel_name', 'Dataproducts')
+
 
 class SourceProxy(Source.Source):
     """
@@ -51,7 +49,7 @@ class SourceProxy(Source.Source):
         self.data_keys = args[0]['Dataproducts']
         self.retries = args[0].get('retries', RETRIES)
         self.retry_to = args[0].get('retry_timeout', RETRY_TO)
-        self.logger = de_logger.get_logger()
+        self.logger = logging.getLogger()
         config_manager = configmanager.ConfigManager()
         config_manager.load()
         global_config = config_manager.get_global_config()
