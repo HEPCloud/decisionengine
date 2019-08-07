@@ -48,7 +48,7 @@ class Worker(multiprocessing.Process):
                                                                                                   6))
         file_handler.setFormatter(FORMATTER)
         self.logger.setLevel(logging.INFO)
-        self.addHandler(file_handler)
+        self.logger.addHandler(file_handler)
         self.task_manager.run()
 
 
