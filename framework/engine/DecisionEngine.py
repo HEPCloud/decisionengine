@@ -12,6 +12,7 @@ import signal
 import sys
 import multiprocessing
 import pandas as pd
+import os
 import tabulate
 import time
 import uuid
@@ -25,15 +26,29 @@ import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
 
 CONFIG_UPDATE_PERIOD = 10  # seconds
+FORMATTER = logging.Formatter("%(asctime)s - %(name)s - %(module)s - %(process)d - %(threadName)s - %(levelname)s - %(message)s")
 
 
 class Worker(multiprocessing.Process):
 
-    def __init__(self, task_manager):
+    def __init__(self, task_manager, config):
         super(Worker, self).__init__()
         self.task_manager = task_manager
+        self.logger = None
+        self.config = config
 
     def run(self):
+        self.logger = logging.getLogger()
+        file_handler = logging.handlers.RotatingFileHandler(os.path.join(
+                                                            os.path.dirname(self.config["logger"]["log_file"]),
+                                                                            self.task_manager.name+".log"),
+                                                            maxBytes=self.config["logger"].get("max_file_size",
+                                                                                               200*1000000),
+                                                            backupCount=self.config["logger"].get("max_backup_count",
+                                                                                                  6))
+        file_handler.setFormatter(FORMATTER)
+        self.logger.setLevel(logging.INFO)
+        self.logger.addHandler(file_handler)
         self.task_manager.run()
 
 
@@ -226,7 +241,8 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                                                generation_id,
                                                channel_config,
                                                self.config_manager.get_global_config())
-        worker = Worker(task_manager)
+        worker = Worker(task_manager,
+                        self.config_manager.get_global_config())
         self.task_managers[channel] = worker
         worker.start()
 
