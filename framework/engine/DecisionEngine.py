@@ -17,8 +17,18 @@ import tabulate
 import time
 import uuid
 
-import SocketServer
-import SimpleXMLRPCServer
+try:
+    import SocketServer
+except ImportError:
+    import socketserver as SocketServer
+    pass
+
+try:
+    import SimpleXMLRPCServer
+except ImportError:
+    import xmlrpc.server as SimpleXMLRPCServer
+    pass
+
 
 import decisionengine.framework.configmanager.ConfigManager as Conf_Manager
 import decisionengine.framework.dataspace.datablock as datablock
