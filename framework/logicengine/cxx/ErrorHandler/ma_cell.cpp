@@ -72,7 +72,7 @@ bool ma_cell::hit( msg_t const & msg
   // determin the new state (on or off)
   bool new_state = false;
 
-  if( msgs.size() == (size_t)cond.trigger_count() ) 
+  if( msgs.size() == (size_t)cond.trigger_count() )
   {
     new_state = cond.at_least() ? true : false;
 
@@ -115,7 +115,7 @@ bool ma_cell::hit( msg_t const & msg
 bool ma_cell::event(time_t t, ma_condition & cond)
 {
   // not reached the event time, no flip
-  if ( t != t_event ) 
+  if ( t != t_event )
     return false;
 
   bool new_status = cond.at_most() ? true : ( cond.persistent() ? true : false );

@@ -14,14 +14,14 @@ namespace {
   {
     int iForkId, iStatus;
     iForkId = vfork();
-    if (iForkId == 0) // This is the child 
+    if (iForkId == 0) // This is the child
     {
       std::string command = strCmd + " " + strParam;
 
       iStatus = execl("/bin/sh","sh","-c", command.c_str(), (char*) NULL);
-      exit(iStatus);  // We must exit here, 
+      exit(iStatus);  // We must exit here,
                       // or we will have multiple
-                      // mainlines running...  
+                      // mainlines running...
     }
     else if (iForkId > 0) // Parent, no error
     {
@@ -32,7 +32,7 @@ namespace {
       iStatus = -1;
     }
     return(iStatus);
-  } 
+  }
 
 }
 

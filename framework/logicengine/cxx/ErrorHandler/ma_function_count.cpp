@@ -14,7 +14,7 @@ bool
   ma_func_count::parse_arguments( anys_t const & args )
 {
   // override 1: int count(cond)
-  if( args.empty() ) 
+  if( args.empty() )
   {
     count_type = NONE;
     return true;

@@ -9,7 +9,7 @@ def myengine():
 
 
 def test_rule_that_fires():
-    db = {"val": 20} 
+    db = {"val": 20}
     ef = myengine().evaluate_facts(db)
     assert ef["f1"] is True
 
@@ -42,7 +42,7 @@ def test_rule_that_does_not_fire():
     """Rules that do not fire do not create entries in the returned
     actions and newfacts.
     """
-    db = {"val": 3} 
+    db = {"val": 3}
     ef = myengine().evaluate_facts(db)
     assert ef["f1"] is False
 

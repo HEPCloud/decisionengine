@@ -9,7 +9,7 @@ using fhicl::ParameterSet;
 using namespace novadaq::errorhandler;
 
 ma_rule_engine::ma_rule_engine( fhicl::ParameterSet const & pset
-                              , alarm_fn_t alarm 
+                              , alarm_fn_t alarm
                               , cond_match_fn_t cond_match )
 : pset   ( pset )
 , cmap   ( )
@@ -18,7 +18,7 @@ ma_rule_engine::ma_rule_engine( fhicl::ParameterSet const & pset
 , rnames ( )
 , alarm_fn      ( alarm )
 , cond_match_fn ( cond_match )
-, events ( )                              
+, events ( )
 //, event_worker_t ( )
 , EHS    ( false )
 {
@@ -27,7 +27,7 @@ ma_rule_engine::ma_rule_engine( fhicl::ParameterSet const & pset
 
 ma_rule_engine::ma_rule_engine( Json::Value const & conf_facts
                               , Json::Value const & conf_rules
-                              , alarm_fn_t alarm 
+                              , alarm_fn_t alarm
                               , cond_match_fn_t cond_match )
 : pset   ( )
 , cmap   ( )
@@ -36,7 +36,7 @@ ma_rule_engine::ma_rule_engine( Json::Value const & conf_facts
 , rnames ( )
 , alarm_fn      ( alarm )
 , cond_match_fn ( cond_match )
-, events ( )                              
+, events ( )
 //, event_worker_t ( )
 , EHS    ( false )
 {
@@ -127,7 +127,7 @@ void ma_rule_engine::init_engine( fhicl::ParameterSet const & pset )
 
     // push the rule to the container
     rule_map_t::iterator it = rmap.insert(std::make_pair(rnames[i], r)).first;
-    
+
     // parse the condition expression and alarm message
     // this is done in a two-step method (init the object, push into container
     // then parse) because the parse process involves updating the conditions
@@ -164,7 +164,7 @@ void ma_rule_engine::init_minimal_engine( Json::Value const & facts, Json::Value
 
     if (rule.isMember("facts"))
     {
-      for (auto const & f : rule["facts"]) 
+      for (auto const & f : rule["facts"])
       {
         cnames.emplace_back(f.asString());
       }
@@ -198,7 +198,7 @@ void ma_rule_engine::init_minimal_engine( Json::Value const & facts, Json::Value
 
     // push the rule to the container
     rule_map_t::iterator it = rmap.insert(std::make_pair(rnames[i], r)).first;
-    
+
     // parse the condition expression and alarm message
     // this is done in a two-step method (init the object, push into container
     // then parse) because the parse process involves updating the conditions
@@ -210,13 +210,13 @@ void ma_rule_engine::init_minimal_engine( Json::Value const & facts, Json::Value
     std::vector<std::string> false_actions;
     std::vector<std::string> facts;
 
-    for (auto const & action : rule["actions"])  
+    for (auto const & action : rule["actions"])
       actions.emplace_back(action.asString());
 
-    for (auto const & action : rule["false_actions"])  
+    for (auto const & action : rule["false_actions"])
       false_actions.emplace_back(action.asString());
 
-    for (auto const & fact   : rule["facts"  ])  
+    for (auto const & fact   : rule["facts"  ])
       facts.emplace_back(fact.asString());
 
     it->second.parse( rule["expression"].asString()
@@ -279,7 +279,7 @@ void ma_rule_engine::feed( msg_t const & msg )
   // loop through conditions
   {
     cond_map_t::iterator it = cmap.begin();
-    for( ; it!=cmap.end(); ++it ) 
+    for( ; it!=cmap.end(); ++it )
       if( it->second.match( msg, status, source, target ) )
         cond_match_fn( it->first ); // callback fn for condition match
   }
@@ -431,7 +431,7 @@ void ma_rule_engine::merge_notify_list( notify_list_t & n_list
                                       , notify_t type )
 {
   conds_t::const_iterator it = c_list.begin();
-  for( ; it!=c_list.end(); ++it ) 
+  for( ; it!=c_list.end(); ++it )
   {
     notify_list_t notify((*it)->get_notify_list(type));
     n_list.merge(notify);

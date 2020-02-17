@@ -32,7 +32,7 @@ private:
 
   // all conditions in the parent rule
   //cond_vec_t const &  conditions;
- 
+
   // list of domain conditions
   domain_conds_t conds;
 

@@ -10,7 +10,7 @@ qt_rule_engine::qt_rule_engine( fhicl::ParameterSet const & pset
                               , QObject * parent )
 : QObject( parent )
 , engine ( pset
-         , boost::bind(&qt_rule_engine::new_alarm, this, _1, _2) 
+         , boost::bind(&qt_rule_engine::new_alarm, this, _1, _2)
          , boost::bind(&qt_rule_engine::cond_match, this, _1) )
 {
 
@@ -23,16 +23,16 @@ qt_rule_engine::~qt_rule_engine()
 
 void qt_rule_engine::new_alarm( string_t const & rule_name
                               , string_t const & msg )
-{ 
-  emit alarm( QString(rule_name.c_str()), QString(msg.c_str()) ); 
+{
+  emit alarm( QString(rule_name.c_str()), QString(msg.c_str()) );
 }
 
 void qt_rule_engine::cond_match( string_t const & cond_name )
-{ 
-  emit match( QString(cond_name.c_str()) ); 
+{
+  emit match( QString(cond_name.c_str()) );
 }
 
-QVector<QString> 
+QVector<QString>
   qt_rule_engine::cond_names() const
 {
   QVector<QString> names;
@@ -42,7 +42,7 @@ QVector<QString>
   return names;
 }
 
-QVector<QString> 
+QVector<QString>
   qt_rule_engine::rule_names() const
 {
   QVector<QString> names;

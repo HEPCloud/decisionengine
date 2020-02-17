@@ -22,7 +22,7 @@ boost::any ma_tf_grp_to_number::evaluate( ma_condition const & cond )
   }
   else
   {
-    double v = boost::lexical_cast<double>( s ); 
+    double v = boost::lexical_cast<double>( s );
     return boost::any(v);
   }
 }

@@ -8,9 +8,9 @@ ma_condition::ma_condition( string_t  const & desc
                           , strings_t const & sources
                           , strings_t const & categories
                           , string_t  const & regex
-                          , string_t  const & test 
+                          , string_t  const & test
                           , bool              persistent_cond
-                          , int               occur 
+                          , int               occur
                           , bool              at_least
                           , int               timespan
                           , bool              per_source
@@ -95,9 +95,9 @@ ma_condition::ma_condition( string_t  const & desc
   cats_str.resize(cats_str.size()-2);
 
   // regex or contains?
-  if (regex.empty() || (regex.compare("*")==0)) 
+  if (regex.empty() || (regex.compare("*")==0))
     match_type = MATCH_ANY;
-  else               
+  else
     match_type = MATCH_REGEX;
 
   // test functions
@@ -159,10 +159,10 @@ void ma_condition::init( )
   hitmap.set_parent(this);
 }
 
-bool 
+bool
   ma_condition::match( msg_t const & msg
                      , conds_t & status
-                     , conds_t & source 
+                     , conds_t & source
                      , conds_t & target )
 {
   extract_fields(msg);
@@ -198,10 +198,10 @@ bool
   return true;
 }
 
-bool 
+bool
   ma_condition::force( bool val
                      , conds_t & status
-                     , conds_t & source 
+                     , conds_t & source
                      , conds_t & target )
 {
   if (per_source() || per_target())
@@ -281,10 +281,10 @@ bool ma_condition::match_cats ( )
 
 bool ma_condition::match_body ( )
 {
-  if (match_type == MATCH_ANY)  
+  if (match_type == MATCH_ANY)
     return true;
 
-  if (boost::regex_search(bdy_, what_, e)) 
+  if (boost::regex_search(bdy_, what_, e))
   {
     if( pt ) // per_target, now extract the target string
     {
@@ -293,7 +293,7 @@ bool ma_condition::match_body ( )
 
       tgt_ = string_t(what_[t_group].first, what_[t_group].second);
     }
-    
+
     return true;
   }
 

@@ -34,7 +34,7 @@ private:
   int  idx;
 
   mf::LogReader reader;
-  
+
 };
 
 

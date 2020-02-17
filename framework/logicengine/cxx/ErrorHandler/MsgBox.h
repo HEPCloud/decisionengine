@@ -13,7 +13,7 @@ namespace errorhandler {
 class MsgBox: public QDialog, private Ui::MsgBox
 {
   Q_OBJECT
-	
+
 public:
   MsgBox( QString const & title, NodeInfo const & info, QDialog *parent = 0 );
 
@@ -24,7 +24,7 @@ private:
   NodeInfo const & node;
 
 };
-    
+
 } // end of namespace errorhandler
 } // end of namespace novadaq
 

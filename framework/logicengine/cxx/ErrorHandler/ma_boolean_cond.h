@@ -30,7 +30,7 @@ class ma_boolean_cond
 public:
 
   // c'tor
-  ma_boolean_cond( ) 
+  ma_boolean_cond( )
     : cond_type ( COND )
     , neg_cond  ( false )
     , cond_arg  ( cond_arg_t(cond_idx_t(NULL, 0), NONE) )
@@ -39,7 +39,7 @@ public:
     , rhv_d     ( 0.0  )
     , rhv_s     (      )
     , ext_func  (      )
-    , expr      (      ) 
+    , expr      (      )
   { }
 
   // reset boolean cond
@@ -55,10 +55,10 @@ public:
   void insert_expr_neg( ma_boolean_expr const & expr );
 
   // insert a primitive condition
-  void insert_cond( cond_idx_t ci ) 
+  void insert_cond( cond_idx_t ci )
     { cond_arg.first = ci; cond_arg.second = NONE; neg_cond = false; }
 
-  void insert_cond_neg( cond_idx_t ci ) 
+  void insert_cond_neg( cond_idx_t ci )
     { cond_arg.first = ci; cond_arg.second = NONE; neg_cond = true; }
 
   void insert_ext_func( cond_idx_t ci
@@ -68,13 +68,13 @@ public:
 
   void insert_compare_op_bool  ( compare_op_t cop, bool v )
     { op = cop; rhv_b = v; cond_type = FUNCTION_BOOL; }
-    
+
   void insert_compare_op_double( compare_op_t cop, double v )
     { op = cop; rhv_d = v; cond_type = FUNCTION_DOUBLE; }
 
   void insert_compare_op_string( compare_op_t cop, string_t const & v )
     { op = cop; rhv_s = v; cond_type = FUNCTION_STRING; }
-    
+
 
 private:
 
@@ -92,7 +92,7 @@ private:
   // case EXT_FUNCTION:
   //   op:       compare operator, <, <=, ==, !=, >=, >
   //   rhv:      righ-hand value
-  //   ext_func: ptr to a customized evaluation function. use ext_func->evaluate() 
+  //   ext_func: ptr to a customized evaluation function. use ext_func->evaluate()
   //             to evaluate
   compare_op_t   op;
   bool           rhv_b;
@@ -102,7 +102,7 @@ private:
 
   // shared_ptr to an boolean expression
   //   a smart pointer to an boolean expression object
-  //   DOES own the expression object 
+  //   DOES own the expression object
   boost::shared_ptr<ma_boolean_expr> expr;
 
 };

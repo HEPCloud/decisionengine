@@ -16,7 +16,7 @@ public:
   virtual ~ma_func_count_percent() { }
 
   // evaluate function
-  virtual boost::any 
+  virtual boost::any
     evaluate( ma_condition const & cond
             , ma_cond_domain dom );
 

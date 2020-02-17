@@ -19,18 +19,18 @@ using namespace novadaq::timeutils;
 
 
 int main() {
-  
+
   // create the connection to RMS
-  boost::shared_ptr<provider::DDSConnection> 
+  boost::shared_ptr<provider::DDSConnection>
     rmsConnection(new provider::DDSConnection("EHTestApplication",0));
-  
-  
+
+
   // create the destination that represents where we will receive
   // messages from
   base::RmsDestination receiveDest("EHServerMailbox",
 				   base::RmsDestination::EH_CHANNEL);
 
-  
+
   // create a receiver with the connection object and destination
   RmsReceiver<provider::DDSConnection,
     errorhandlermessages::ErrorHandlerReply, EHListener>
@@ -45,11 +45,11 @@ int main() {
   // waiting for a message to arrive
   std::cout << "Listening for messages..." << std::endl;
 
-    
-    
+
+
   // cleanup and exit
   requestReceiver.close();
   rmsConnection->close();
-  
+
   return 0;
 }

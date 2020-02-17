@@ -1,4 +1,4 @@
-# SoftRelTools GNUmakefile for NovaRunControl C++ unittest directory 
+# SoftRelTools GNUmakefile for NovaRunControl C++ unittest directory
 
 # Build the unittest library
 LIB = lib$(PACKAGE)unittest

@@ -3,7 +3,7 @@
 
 /*
  *
- * ma_types.h has all typedefs and enums needed in the 
+ * ma_types.h has all typedefs and enums needed in the
  * message analyzer package
  *
  */
@@ -24,7 +24,7 @@
 
 #include "json/json.h"
 
-namespace fhicl 
+namespace fhicl
 {
     typedef Json::Value ParameterSet;
 }

@@ -28,7 +28,7 @@ public:
   // evaluate() function gets called when the boolean expression
   // of the rule is being evaluated.
   //
-  // param 'cond': 
+  // param 'cond':
   //        'cond' is the reference to the basic condition to which
   //        this user defined function is related. Though this object
   //        the function can have access to the most recent message
@@ -49,14 +49,14 @@ public:
   //        the return value could be a boolean, an integer, a double,
   //        or a string object. all of them need to be wrapped in a
   //        boost::any object before returning to the caller
-  virtual boost::any 
+  virtual boost::any
     evaluate( ma_condition const & cond
             , ma_cond_domain dom ) = 0;
 
   // a user function is internally implemented by a class, which allows
-  // the function to have states. not surprisingly would the funciton 
+  // the function to have states. not surprisingly would the funciton
   // writers also like to implement a reset method for the purpose of
-  // resetting the state of the user-defined function into its ground 
+  // resetting the state of the user-defined function into its ground
   // state
   virtual void
     reset( ) { }
@@ -67,16 +67,16 @@ public:
     parse_arguments( anys_t const & args ) { return true; }
 
   // whether the funciton triggers a grouped alarm or
-  // individual alarms with respect to the condition's 
+  // individual alarms with respect to the condition's
   // source / targets.
   //
   // e.g.: a user function COUNT() usually triggers a grouped
   //       alarm, as we dont necessary need to make distinguish
   //       between whether it was source 1,2,5, or source 3,7,8
   //       who trigger the alarm
-  //       
+  //
   //       an example of non-grouped alarm is the function of
-  //       OUT_OF_SYNC(). we are interested in who was out of 
+  //       OUT_OF_SYNC(). we are interested in who was out of
   //       sync, and raises alarms for each source
   virtual bool
     grouped_alarm( ) { return true; }
@@ -95,7 +95,7 @@ struct ma_function_factory
 
 public:
 
-  static void 
+  static void
     reg( std::string const & func_name, gen_func_t f );
 
   static ma_function *
@@ -105,7 +105,7 @@ private:
 
   ma_function_factory() {};
 
-  static gen_map_t & 
+  static gen_map_t &
     get_map() { static gen_map_t map; return map; }
 
 };

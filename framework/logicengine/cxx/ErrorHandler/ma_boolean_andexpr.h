@@ -11,7 +11,7 @@ namespace errorhandler {
 //-------------------------------------------------------------------
 //
 // boolean and-expression consists of a list of boolean elemental
-// conditions connected with 'AND' operator 
+// conditions connected with 'AND' operator
 //
 //-------------------------------------------------------------------
 

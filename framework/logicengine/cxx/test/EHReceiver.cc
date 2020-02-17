@@ -17,24 +17,24 @@ using namespace gov::fnal::cd::rms;
 using namespace novadaq::timeutils;
 
 int main() {
-  
+
   // create the connection to RMS
-  boost::shared_ptr<provider::DDSConnection> 
+  boost::shared_ptr<provider::DDSConnection>
     rmsConnection(new provider::DDSConnection("EHTestApplication",0));
-  
-  
+
+
   // create the destination that represents where we will receive
   // messages from
   base::RmsDestination receiveDest("EHServerMailbox",
 				   base::RmsDestination::EH_CHANNEL);
 
-  
+
   // create a receiver with the connection object and destination
   RmsReceiver<provider::DDSConnection,
     errorhandlermessages::ErrorHandlerMessage>
         requestReceiver(rmsConnection, receiveDest);
 
-  
+
 
     while(1) {
 
@@ -44,11 +44,11 @@ int main() {
     requestReceiver.receiveMessage(EHMessage);
 
     std::cout << std::endl << "Received message!" << std::endl;
-    std::cout << convertNovaTimeToString(EHMessage.time) << std::endl 
+    std::cout << convertNovaTimeToString(EHMessage.time) << std::endl
 	      << EHMessage.error << std::endl << std::endl;
-   
 
-    
+
+
     RmsSender<provider::DDSConnection,errorhandlermessages::ErrorHandlerReply>
       requestSender(rmsConnection,receiveDest);
 
@@ -58,8 +58,8 @@ int main() {
     requestSender.close();
 
     }
-    
-    
+
+
     // cleanup and exit
     requestReceiver.close();
     rmsConnection->close();

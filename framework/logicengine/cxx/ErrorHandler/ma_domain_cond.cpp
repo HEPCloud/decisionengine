@@ -32,7 +32,7 @@ void ma_domain_cond::evaluate(ma_domains & domains) const
 
   if (cond_type == EXPR)
   {
-    if (expr.get() == NULL) 
+    if (expr.get() == NULL)
       throw std::runtime_error("expr not exist");
 
     expr->evaluate(worksheet);
@@ -72,7 +72,7 @@ void ma_domain_cond::evaluate(ma_domains & domains) const
     if (keep) worksheet.push_back(domain);
   }
 
-  // 3. cond_1.$ = cond_2.$ = ... 
+  // 3. cond_1.$ = cond_2.$ = ...
 
   else
   {
@@ -94,7 +94,7 @@ void ma_domain_cond::evaluate(ma_domains & domains) const
     {
       // init everyone with (*,*)
       ma_domain domain = ma_domain_ctor_any(cond_size);
-  
+
       // whether to keep this domain or not
       bool keep = true;
 
@@ -109,7 +109,7 @@ void ma_domain_cond::evaluate(ma_domains & domains) const
       // iterate through the remaining conds
       cond_arg_list_t::const_iterator cond_it = conds.begin();
 
-      while( ++cond_it!=conds.end() ) 
+      while( ++cond_it!=conds.end() )
       {
         // idx of current cond and its arg type (source/target)
         ma_condition * c_ptr = cond_it->first.first;
@@ -120,7 +120,7 @@ void ma_domain_cond::evaluate(ma_domains & domains) const
         int c_arg_idx = c_ptr->find_arg(c1_arg_str, c_arg_type);
 
         // cannot find arg_str in the current cond. go for next arg_str
-        if (c_arg_idx == D_NIL) 
+        if (c_arg_idx == D_NIL)
         {
           keep = false;
           break;
@@ -136,9 +136,9 @@ void ma_domain_cond::evaluate(ma_domains & domains) const
           keep = false;
           break;
         }
-      } 
+      }
 
-      // push the domain to the worksheet 
+      // push the domain to the worksheet
       if (keep) worksheet.push_back(domain);
     }
   }
@@ -150,7 +150,7 @@ void ma_domain_cond::evaluate(ma_domains & domains) const
 
 }
 
-ma_domains & 
+ma_domains &
   ma_domain_cond::and_merge( ma_domains & domains
                            , ma_domains & worksheet ) const
 {
@@ -167,7 +167,7 @@ ma_domains &
     return domains;
   }
 
-  // first expand the domains to the size of 
+  // first expand the domains to the size of
   // N_domains * N_worksheet
   size_t nw = worksheet.size();
   ma_domains::iterator dit = domains.begin();

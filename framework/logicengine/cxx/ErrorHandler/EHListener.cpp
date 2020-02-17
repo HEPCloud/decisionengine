@@ -8,7 +8,7 @@ EHListener::EHListener(boost::shared_ptr<provider::DDSConnection> ddsConnection)
 
 void EHListener::processMessage(boost::shared_ptr<errorhandlermessages::ErrorHandlerReply> reply){
 
-  // parse the reply here....                                                                         
+  // parse the reply here....
   fSuccess = (bool)reply->action_complete;
   //std::cout << "Complete? " << fSuccess << std::endl;
 

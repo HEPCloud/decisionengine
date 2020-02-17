@@ -46,10 +46,10 @@ public:
   QString cond_description( QString const & name ) const
     { return QString(engine.cond_description(name.toUtf8().constData()).c_str()); }
 
-  QString cond_sources    ( QString const & name ) const 
+  QString cond_sources    ( QString const & name ) const
     { return QString(engine.cond_sources(name.toUtf8().constData()).c_str()); }
 
-  QString cond_regex      ( QString const & name ) const 
+  QString cond_regex      ( QString const & name ) const
     { return QString(engine.cond_regex(name.toUtf8().constData()).c_str()); }
 
   int     cond_msg_count  ( QString const & name ) const
@@ -59,7 +59,7 @@ public:
   QString rule_description( QString const & name ) const
     { return QString(engine.rule_description(name.toUtf8().constData()).c_str()); }
 
-  QString rule_expr       ( QString const & name ) const 
+  QString rule_expr       ( QString const & name ) const
     { return QString(engine.rule_expr(name.toUtf8().constData()).c_str()); }
 
   int     rule_alarm_count( QString const & name ) const

@@ -14,7 +14,7 @@ public:
   ma_func_is_syncd() : sync_time(), min(0), max(0) { }
   virtual ~ma_func_is_syncd() { }
 
-  virtual boost::any 
+  virtual boost::any
     evaluate ( ma_condition const & cond
              , ma_cond_domain );
 

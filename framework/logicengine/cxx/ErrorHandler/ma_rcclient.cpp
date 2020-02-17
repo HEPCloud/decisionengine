@@ -21,7 +21,7 @@ ma_rcclient::ma_rcclient( std::string appName, int partition )
 			     , ma_rcclient
 			     , runcontrolmessages::SetParticipantsResponse >
     ( partition, this );
-  
+
 }
 
 ma_rcclient::~ma_rcclient()

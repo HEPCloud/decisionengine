@@ -26,11 +26,11 @@ void ma_boolean_cond::insert_ext_func( cond_idx_t ci
                                      , arg_t      arg
                                      , anys_t   const & func_args
                                      , string_t const & function )
-{ 
-  cond_arg.first = ci; 
-  cond_arg.second = arg; 
-  cond_type = FUNCTION; 
-  ext_func.reset( ma_function_factory::create_instance(function) ); 
+{
+  cond_arg.first = ci;
+  cond_arg.second = arg;
+  cond_type = FUNCTION;
+  ext_func.reset( ma_function_factory::create_instance(function) );
 
   if( !ext_func->parse_arguments( func_args ) )
     throw std::runtime_error("arguments rejected by " + function );
@@ -46,7 +46,7 @@ void ma_boolean_cond::reset( )
     assert( expr.get() != NULL );
     return expr->reset();
   }
-  
+
   if( cond_type == COND )
   {
     return;
@@ -59,7 +59,7 @@ void ma_boolean_cond::reset( )
     // condition ptr must not be null
     assert( cond_idx.first != NULL );
 
-    // custom function must not be null 
+    // custom function must not be null
     assert( ext_func.get() != NULL );
 
     return ext_func->reset();
@@ -107,7 +107,7 @@ bool ma_boolean_cond::evaluate( ma_domain & value
     // condition ptr must not be null
     assert( cond_idx.first != NULL );
 
-    // custom function must not be null 
+    // custom function must not be null
     assert( ext_func.get() != NULL );
 
     // update alarm
@@ -117,7 +117,7 @@ bool ma_boolean_cond::evaluate( ma_domain & value
     }
     else
     {
-      alarm[cond_idx.second] = 
+      alarm[cond_idx.second] =
         ma_cond_domain( cond_idx.first->find_source( cond_idx.first->get_msg_source() )
                       , cond_idx.first->find_target( cond_idx.first->get_msg_target() ) );
     }
@@ -131,7 +131,7 @@ bool ma_boolean_cond::evaluate( ma_domain & value
 
     switch( cond_type )
     {
-    case FUNCTION: 
+    case FUNCTION:
       b = boost::any_cast<bool>(v);
       return b;
 

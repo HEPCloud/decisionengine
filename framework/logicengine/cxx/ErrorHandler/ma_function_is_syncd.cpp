@@ -32,7 +32,7 @@ boost::any
   {
     return boost::any(true);
   }
-  
+
   //std::map<std::string, uint64_t>::const_iterator it = sync_time.find(source);
 
   if( sync_time.empty() || sync_time.find(source)!=sync_time.end() )

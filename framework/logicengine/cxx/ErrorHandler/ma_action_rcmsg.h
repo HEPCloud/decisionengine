@@ -45,7 +45,7 @@ private:
 
   boost::shared_ptr<provider::DDSConnection> fRmsConnection;
   base::RmsDestination fSendDest;
-  RmsSender<provider::DDSConnection,errorhandlermessages::ErrorHandlerMessage> 
+  RmsSender<provider::DDSConnection,errorhandlermessages::ErrorHandlerMessage>
     fRequestSender;
 
 

@@ -22,7 +22,7 @@ ma_rule::ma_rule( string_t const & rule_name
 , cond_names_( )
 , alarm_msg( )
 , boolean_expr( )
-, domain_expr( ) 
+, domain_expr( )
 , domains( )
 , alarms( )
 , itor_last_alarm( alarms.end() )
@@ -100,9 +100,9 @@ void
 }
 
 
-cond_idx_t 
+cond_idx_t
   ma_rule::insert_condition_ptr( string_t const & name, bool primitive )
-{ 
+{
   // cond_map must not be empty
   assert (cond_map != NULL);
 
@@ -112,7 +112,7 @@ cond_idx_t
   // the condition has already been added
   {
     idx_t::const_iterator it = conditions_idx.find(name);
-    if( it != conditions_idx.end() )  
+    if( it != conditions_idx.end() )
     {
       // primitive cond overrides non-primitive cond
       primitive_cond[it->second] = primitive_cond[it->second] | primitive;
@@ -155,7 +155,7 @@ void ma_rule::evaluate_domain( )
   //              << ": domain evaluated, size = " << domains.size() << "\n";
 }
 
-bool ma_rule::recursive_evaluate ( ma_domain & value  
+bool ma_rule::recursive_evaluate ( ma_domain & value
                                  , ma_domain & alarm
                                  , ma_domain const & domain
                                  , size_t n )
@@ -166,7 +166,7 @@ bool ma_rule::recursive_evaluate ( ma_domain & value
   // get range
   ma_cond_range src(D_NIL, D_NIL);
   ma_cond_range target(D_NIL, D_NIL);
-    
+
   // a primitive condition (Cn) or non-primitive ( COUNT(Cn.$s|t) )
   // we only loop through possible values for primitive conditions
   if (primitive_cond[n])
@@ -192,9 +192,9 @@ bool ma_rule::recursive_evaluate ( ma_domain & value
           return true;
       }
       else
-      { 
+      {
         // evaluate and, if found new alarm, no need to continue
-        if( boolean_evaluate(value, alarm, domain) )  
+        if( boolean_evaluate(value, alarm, domain) )
           return true;
       }
     }
@@ -323,7 +323,7 @@ int ma_rule::act( )
 }
 
 void ma_rule::reset( )
-{ 
+{
   // clear user function state
   boolean_expr.reset();
 
@@ -331,10 +331,10 @@ void ma_rule::reset( )
   cond_vec_t::iterator it=conditions.begin();
   for( ; it!=conditions.end(); ++it) (*it)->reset();
 
-  //domains.clear(); 
-  alarms.clear(); 
+  //domains.clear();
+  alarms.clear();
   itor_last_alarm = alarms.end();
-  alarm_count=0; 
+  alarm_count=0;
 }
 
 ma_domain const & ma_rule::get_alarm() const
@@ -367,7 +367,7 @@ cond_idx_t
   return cond_idx_t(conditions[it->second], it->second);
 }
 
-// get pointer to the condition 
+// get pointer to the condition
 ma_condition *
   ma_rule::get_cond( string_t const & name ) const
 {
@@ -377,7 +377,7 @@ ma_condition *
   return conditions[it->second];
 }
 
-// get index to the condition 
+// get index to the condition
 size_t
   ma_rule::get_idx( string_t const & name ) const
 {

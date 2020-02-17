@@ -14,11 +14,11 @@ namespace errorhandler {
 
   // 1. (s_out, t_out) = (s1, t1) n (s2, t2), in-place and
   // intersection of two cond_domain objects
-  inline ma_cond_domain & 
+  inline ma_cond_domain &
     domain_intersect( ma_cond_domain & d1, ma_cond_domain const & d2 );
 
   // copy version
-  inline ma_cond_domain 
+  inline ma_cond_domain
     domain_intersect_copy( ma_cond_domain d1, ma_cond_domain const & d2 );
 
   // 2. (s_out, t_out) = (s1, t1) n (s2, t2) n ... n (s_n, t_n), in-place and
@@ -27,7 +27,7 @@ namespace errorhandler {
     domain_intersect( ma_cond_domains & d );
 
   // copy version
-  inline  ma_cond_domain 
+  inline  ma_cond_domain
     domain_intersect_copy( ma_cond_domains d );
 
   // 3. intersection of two domain objects, result stores in the first
@@ -38,17 +38,17 @@ namespace errorhandler {
   inline ma_domain
     domain_intersect_copy( ma_domain d1, ma_domain const & d2 );
 
-  // 4. (so1, to1), (so2, to2) ... 
+  // 4. (so1, to1), (so2, to2) ...
   //        = (s1_1, t1_1) n (s1_2, t1_2) n (s1_3, t1_3) ... ,
   //          (s2_1, t2_1) n (s2_2, t2_2) n (s2_3, t2_3) ... ,
-  //          ... 
+  //          ...
   // intersection of multiple ma_domain objects
   // in-place calculation, result will be placed in d[0]
-  inline ma_domain & 
+  inline ma_domain &
     domain_intersect( ma_domains & d );
 
   // copy version
-  inline ma_domain  
+  inline ma_domain
     domain_intersect_copy( ma_domains d );
 
   // ----------------------------------------------------------------
@@ -73,16 +73,16 @@ namespace errorhandler {
 
   // 2. (s1_1, t1_1) U (s1_2, t1_2) U (s1_3, t1_3) ... ,
   //    (s2_1, t2_1) U (s2_2, t2_2) U (s2_3, t2_3) ... ,
-  //     ... 
+  //     ...
   // * in-place union
   inline ma_domains &
     domain_union( ma_domains & ds );
 
   // utility functions
-  inline bool 
+  inline bool
     domain_is_null( ma_cond_domain const & d );
 
-  inline bool 
+  inline bool
     domain_is_null( ma_domain const & d );
 
   inline void
@@ -182,11 +182,11 @@ novadaq::errorhandler::ma_domain
 
 
 // ------------------------------------------------------------------
-// domain intersection 
+// domain intersection
 
-int 
+int
   novadaq::errorhandler::and_op( int i, int j )
-{ 
+{
   if (i==D_NIL || j==D_NIL) return D_NIL;
 
   if (i==j)      return i;
@@ -209,7 +209,7 @@ novadaq::errorhandler::ma_cond_domain &
   return d1;
 }
 
-novadaq::errorhandler::ma_cond_domain 
+novadaq::errorhandler::ma_cond_domain
   novadaq::errorhandler::domain_intersect_copy( ma_cond_domain d1
                                               , ma_cond_domain const & d2)
 {
@@ -219,27 +219,27 @@ novadaq::errorhandler::ma_cond_domain
 novadaq::errorhandler::ma_cond_domain &
   novadaq::errorhandler::domain_intersect( ma_cond_domains & ds )
 {
-  if (ds.empty()) 
+  if (ds.empty())
   {
     ds.push_back(ma_cond_domain_ctor_null());
     return ds.front();
   }
 
   ma_cond_domains::const_iterator it = ds.begin();
-  while(++it!=ds.end() && !domain_is_null(ds.front()))  
+  while(++it!=ds.end() && !domain_is_null(ds.front()))
     domain_intersect(ds.front(), *it);
 
   return ds.front();
 }
 
-novadaq::errorhandler::ma_cond_domain 
+novadaq::errorhandler::ma_cond_domain
   novadaq::errorhandler::domain_intersect_copy( ma_cond_domains d )
 {
   return domain_intersect(d);
 }
 
 novadaq::errorhandler::ma_domain &
-  novadaq::errorhandler::domain_intersect( ma_domain & d1 
+  novadaq::errorhandler::domain_intersect( ma_domain & d1
                                          , ma_domain const & d2 )
 {
   if (domain_is_null(d1) || domain_is_null(d2))
@@ -253,7 +253,7 @@ novadaq::errorhandler::ma_domain &
 
   for(size_t i=0; i<d1.size(); ++i)
   {
-    domain_intersect(d1[i], d2[i]); 
+    domain_intersect(d1[i], d2[i]);
 
     if (domain_is_null(d1[i]))
     {
@@ -265,14 +265,14 @@ novadaq::errorhandler::ma_domain &
   return d1;
 }
 
-novadaq::errorhandler::ma_domain 
-  novadaq::errorhandler::domain_intersect_copy( ma_domain d1 
+novadaq::errorhandler::ma_domain
+  novadaq::errorhandler::domain_intersect_copy( ma_domain d1
                                               , ma_domain const & d2 )
 {
   return domain_intersect(d1, d2);
 }
 
-novadaq::errorhandler::ma_domain & 
+novadaq::errorhandler::ma_domain &
     novadaq::errorhandler::domain_intersect( ma_domains & ds )
 {
   if (ds.empty())
@@ -301,7 +301,7 @@ exit:
   return ds.front();
 }
 
-novadaq::errorhandler::ma_domain 
+novadaq::errorhandler::ma_domain
     novadaq::errorhandler::domain_intersect_copy( ma_domains ds )
 {
   return domain_intersect(ds);
@@ -317,13 +317,13 @@ bool
   return (a==b) ? (true) : ( (a==D_ANY || b==D_NIL) ? true : false );
 }
 
-bool 
+bool
 novadaq::errorhandler::domain_is_null( ma_cond_domain const & d )
 {
   return (d.first==D_NIL || d.second==D_NIL) ? true : false;
 }
 
-bool 
+bool
 novadaq::errorhandler::domain_is_null( ma_domain const & d )
 {
   if (d.empty()) return true;
@@ -367,7 +367,7 @@ novadaq::errorhandler::ma_cond_domains &
   {
     domain_compare_result_t r = domain_compare(*it, new_d);
 
-    if (r == EQUAL || r == L_CONTAINS) 
+    if (r == EQUAL || r == L_CONTAINS)
       return ds;
 
     if (r == R_CONTAINS)
@@ -402,7 +402,7 @@ void
       domain_union_construct(ds, d, mid, depth+1, max);
     else
       ds.push_back(d);
-    
+
     ++it;
   }
 }

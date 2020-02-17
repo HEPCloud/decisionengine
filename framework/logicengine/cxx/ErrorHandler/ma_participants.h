@@ -27,7 +27,7 @@ class ma_participants
 private:
 
   ma_participants()
-    : ungrouped_apps(), all_apps(), groups() 
+    : ungrouped_apps(), all_apps(), groups()
     { }
 
 public:

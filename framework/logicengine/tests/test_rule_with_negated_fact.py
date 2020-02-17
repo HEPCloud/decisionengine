@@ -5,13 +5,13 @@ import pytest
 def myengine():
     facts = {"f1": "val > 10"}
     rules = {}
-    rules["r1"] = {"expression": "!f1", "actions": ["a1"]} 
+    rules["r1"] = {"expression": "!f1", "actions": ["a1"]}
     rules["r2"] = {"expression": "!(f1)", "actions": ["a2"]}
     return LogicEngine({"facts": facts, "rules": rules})
 
 
 def test_rule_that_fires():
-    db = {"val": 5} 
+    db = {"val": 5}
     ef = myengine().evaluate_facts(db)
     assert ef["f1"] is False
     result = myengine().evaluate(db)

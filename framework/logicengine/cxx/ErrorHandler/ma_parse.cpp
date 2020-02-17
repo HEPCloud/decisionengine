@@ -82,7 +82,7 @@ using novadaq::errorhandler::CO_G;
 
 namespace novadaq
 {
-  namespace errorhandler 
+  namespace errorhandler
   {
     template< class FwdIter, class Skip>
       struct domain_expr_parser;
@@ -100,14 +100,14 @@ namespace novadaq
 
 // ------------------------------------------------------------------
 
-static void 
+static void
   insert_domain_andexpr( ma_domain_expr & expr
                        , ma_domain_andexpr const & andexpr )
 {
   expr.insert_andexpr(andexpr);
 }
 
-static void 
+static void
   insert_domain_cond( ma_domain_andexpr & andexpr
                     , ma_domain_cond const & cond )
 {
@@ -133,7 +133,7 @@ static void
 
   // push the condition ptr into domain_cond
   cond.insert_cond_arg    ( rule->get_cond_idx(name)
-                          , (arg=='s') ? SOURCE : TARGET 
+                          , (arg=='s') ? SOURCE : TARGET
                           , rule->get_cond_size() );
 }
 
@@ -147,7 +147,7 @@ static void
 // ------------------------------------------------------------------
 
 template< class FwdIter, class Skip >
-  struct novadaq::errorhandler::domain_expr_parser 
+  struct novadaq::errorhandler::domain_expr_parser
 : qi::grammar<FwdIter, ma_domain_expr(), Skip>
 {
 
@@ -173,32 +173,32 @@ template< class FwdIter, class Skip >
                        ::domain_expr_parser(ma_rule * rule)
 : domain_expr_parser::base_type( domain_expr )
 {
-  domain_expr = 
-       domain_andexpr [phx::bind(&insert_domain_andexpr, ql::_val, ql::_1)] 
+  domain_expr =
+       domain_andexpr [phx::bind(&insert_domain_andexpr, ql::_val, ql::_1)]
      % "OR"
   ;
 
-  domain_andexpr = 
-       domain_cond    [phx::bind(&insert_domain_cond, ql::_val, ql::_1)]    
+  domain_andexpr =
+       domain_cond    [phx::bind(&insert_domain_cond, ql::_val, ql::_1)]
      % "AND"
   ;
 
-  domain_cond = 
+  domain_cond =
           (
-               lit('(') 
-            >> domain_expr [phx::bind(&insert_domain_expr, ql::_val, ql::_1)] 
-            >> lit(')') 
+               lit('(')
+            >> domain_expr [phx::bind(&insert_domain_expr, ql::_val, ql::_1)]
+            >> lit(')')
           ) // '(' >> expr >> ')'
         |
           (
             (
               (
                    key         [ql::_a = ql::_1]
-                >> ".$" 
-                >> char_("st") 
+                >> ".$"
+                >> char_("st")
                       [phx::bind(&insert_cond_arg, ql::_val, ql::_a, ql::_1, rule)]
               ) % '='
-            ) >> -( '=' >> (    str [phx::bind(&insert_str_cond, ql::_val, ql::_1)] 
+            ) >> -( '=' >> (    str [phx::bind(&insert_str_cond, ql::_val, ql::_1)]
                              | "ANY"
                            )
                   )
@@ -236,20 +236,20 @@ static void
 }
 
 static void
-  insert_boolean_expr( ma_boolean_cond & cond  
+  insert_boolean_expr( ma_boolean_cond & cond
                      , ma_boolean_expr const & expr )
 {
   cond.insert_expr(expr);
 }
 
 static void
-  insert_boolean_expr_neg( ma_boolean_cond & cond  
+  insert_boolean_expr_neg( ma_boolean_cond & cond
                      , ma_boolean_expr const & expr )
 {
   cond.insert_expr_neg(expr);
 }
 
-static void 
+static void
   insert_primitive_cond( ma_boolean_cond & cond
                        , string_t const & name
                        , ma_rule * rule )
@@ -262,7 +262,7 @@ static void
   cond.insert_cond( rule->insert_condition_ptr( name, true ) );
 }
 
-static void 
+static void
   insert_primitive_cond_neg( ma_boolean_cond & cond
                        , string_t const & name
                        , ma_rule * rule )
@@ -323,7 +323,7 @@ using boost::any;
 typedef std::vector<any> anys;
 
 template< class FwdIter, class Skip >
-  struct novadaq::errorhandler::boolean_expr_parser 
+  struct novadaq::errorhandler::boolean_expr_parser
 : qi::grammar<FwdIter, ma_boolean_expr(), Skip>
 {
 
@@ -355,27 +355,27 @@ template< class FwdIter, class Skip >
                        ::boolean_expr_parser( ma_rule * rule )
 : boolean_expr_parser::base_type( boolean_expr )
 {
-  boolean_expr = 
-        boolean_andexpr [phx::bind(&insert_boolean_andexpr, ql::_val, ql::_1)] 
+  boolean_expr =
+        boolean_andexpr [phx::bind(&insert_boolean_andexpr, ql::_val, ql::_1)]
       % "||"
   ;
 
-  boolean_andexpr = 
-        boolean_cond [phx::bind(&insert_boolean_cond, ql::_val, ql::_1)] 
+  boolean_andexpr =
+        boolean_cond [phx::bind(&insert_boolean_cond, ql::_val, ql::_1)]
       % "&&"
   ;
 
-  boolean_cond = 
-         (    lit('(') 
-           >> boolean_expr [phx::bind(&insert_boolean_expr,ql::_val,ql::_1)] 
-           >> ')' 
+  boolean_cond =
+         (    lit('(')
+           >> boolean_expr [phx::bind(&insert_boolean_expr,ql::_val,ql::_1)]
+           >> ')'
          )  // '(' >> expr >> ')'
        |
-         (    lit('!') >> lit('(') 
-           >> boolean_expr [phx::bind(&insert_boolean_expr_neg,ql::_val,ql::_1)] 
-           >> ')' 
+         (    lit('!') >> lit('(')
+           >> boolean_expr [phx::bind(&insert_boolean_expr_neg,ql::_val,ql::_1)]
+           >> ')'
          )  // '! (' >> expr >> ')'
-       | 
+       |
          (
               key                                [ ql::_a = ql::_1 ]
            >> lit('(') >> key                    [ ql::_d = ql::_1 ]
@@ -385,18 +385,18 @@ template< class FwdIter, class Skip >
                         , ql::_val, ql::_a, ql::_d, ql::_b, ql::_e, rule ) ]
 
            >> -(    compare_op                   [ ql::_c = ql::_1 ]
-                 >> (   
+                 >> (
                         double_ [ phx::bind( &insert_compare_op_double
                                            , ql::_val, ql::_c, ql::_1 ) ]
                       | bool_   [ phx::bind( &insert_compare_op_bool
                                            , ql::_val, ql::_c, ql::_1 ) ]
                       | str     [ phx::bind( &insert_compare_op_string
                                            , ql::_val, ql::_c, ql::_1 ) ]
-                    ) 
+                    )
                )
          )  // custom_function(cond.$st)
        |
-         key    [ phx::bind( &insert_primitive_cond, ql::_val, ql::_1, rule) ] 
+         key    [ phx::bind( &insert_primitive_cond, ql::_val, ql::_1, rule) ]
             // Cond
        | ( lit('!') >> key
                 [ phx::bind( &insert_primitive_cond_neg, ql::_val, ql::_1, rule) ]
@@ -422,7 +422,7 @@ template< class FwdIter, class Skip >
   str =   qi::lexeme['\'' >> +(char_ - '\'') >> '\'']
   ;
 
-  compare_op =   lit("==") [ ql::_val = CO_E  ] 
+  compare_op =   lit("==") [ ql::_val = CO_E  ]
                | lit("!=") [ ql::_val = CO_NE ]
                | lit("<=") [ ql::_val = CO_LE ]
                | lit(">=") [ ql::_val = CO_GE ]
@@ -435,13 +435,13 @@ template< class FwdIter, class Skip >
 // ------------------------------------------------------------------
 
 static void
-  set_boolean_expr( ma_boolean_expr & expr, ma_rule * rule ) 
+  set_boolean_expr( ma_boolean_expr & expr, ma_rule * rule )
 {
   rule->set_boolean_expr( expr );
 }
 
 static void
-  set_domain_expr( ma_domain_expr & expr, ma_rule * rule ) 
+  set_domain_expr( ma_domain_expr & expr, ma_rule * rule )
 {
   rule->set_domain_expr( expr );
 }
@@ -450,7 +450,7 @@ static void
 // ------------------------------------------------------------------
 
 bool
-  novadaq::errorhandler::parse_condition_expr ( string_t const & s 
+  novadaq::errorhandler::parse_condition_expr ( string_t const & s
                                               , ma_rule * rule )
 {
   typedef string_t::const_iterator iter_t;
@@ -463,19 +463,19 @@ bool
   iter_t const     end   = s.end();
 
   bool b = qi::phrase_parse
-                 ( 
+                 (
                    begin, end
                  ,    boolean_p [phx::bind(&set_boolean_expr, ql::_1, rule)]
-                   >> -( "WHERE" >> domain_p  
+                   >> -( "WHERE" >> domain_p
                                 [phx::bind(&set_domain_expr , ql::_1, rule)]
                        )
                  , space
                  )
          && begin == end;
-  
+
   return b;
 }
-  
+
 
 // ------------------------------------------------------------------
 //  Condition test expression parser
@@ -562,29 +562,29 @@ template< class FwdIter, class Skip >
                        ::cond_test_expr_parser( )
 : cond_test_expr_parser::base_type( test_expr )
 {
-  test_expr = 
-       test_andexpr [phx::bind(&insert_test_andexpr, ql::_val, ql::_1)] 
+  test_expr =
+       test_andexpr [phx::bind(&insert_test_andexpr, ql::_val, ql::_1)]
      % "||"
   ;
 
-  test_andexpr = 
+  test_andexpr =
        test_primary [phx::bind(&insert_test_primary, ql::_val, ql::_1)]
      % "&&"
   ;
 
-  test_primary = 
+  test_primary =
        (
-            lit('(') 
+            lit('(')
          >> test_expr [phx::bind(&insert_test_expr, ql::_val, ql::_1)]
-         >> lit(')') 
+         >> lit(')')
        )
-     | 
+     |
        (
             key       [ ql::_a = ql::_1 ]
-         >> lit('(') 
+         >> lit('(')
          >> - values  [ ql::_b = ql::_1 ]
          >> lit(')')  [ phx::bind(&insert_test_func, ql::_val, ql::_a, ql::_b) ]
-         >> -(    compare_op [ ql::_c = ql::_1 ] 
+         >> -(    compare_op [ ql::_c = ql::_1 ]
                >> value      [ phx::bind( &insert_test_compare_op
                                         , ql::_val, ql::_c, ql::_1 ) ]
              )
@@ -609,23 +609,23 @@ template< class FwdIter, class Skip >
 
   str      = qi::lexeme['\'' >> +(char_ - '\'') >> '\'']
   ;
- 
-  compare_op =   lit("==") [ ql::_val = CO_E  ] 
+
+  compare_op =   lit("==") [ ql::_val = CO_E  ]
                | lit("!=") [ ql::_val = CO_NE ]
                | lit("<=") [ ql::_val = CO_LE ]
                | lit(">=") [ ql::_val = CO_GE ]
                | lit("<" ) [ ql::_val = CO_L  ]
                | lit(">" ) [ ql::_val = CO_G  ]
   ;
-       
-  
-} 
+
+
+}
 
 
 // ------------------------------------------------------------------
 
 bool
-  novadaq::errorhandler::parse_condition_test ( string_t const & s 
+  novadaq::errorhandler::parse_condition_test ( string_t const & s
                                               , ma_cond_test_expr & expr )
 {
   typedef string_t::const_iterator iter_t;
@@ -640,7 +640,7 @@ bool
 
   bool b = qi::phrase_parse ( begin, end , test_p , space , expr )
          && begin == end;
-  
+
   return b;
 }
 

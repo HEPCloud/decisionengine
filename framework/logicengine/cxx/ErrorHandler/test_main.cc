@@ -55,7 +55,7 @@ int main(int argc, char ** argv)
 
         std::cout << "\n";
     }
- 
+
     std::cout << "intermediate facts\n";
     for(auto const & fact : facts)
     {
@@ -67,7 +67,7 @@ int main(int argc, char ** argv)
         }
 
         std::cout << "\n";
-    }   
+    }
 
     // execute another time
     actions.clear();
@@ -90,8 +90,8 @@ int main(int argc, char ** argv)
 
         std::cout << "\n";
     }
- 
- 
+
+
     std::cout << "intermediate facts\n";
     for(auto const & fact : facts)
     {
@@ -103,7 +103,7 @@ int main(int argc, char ** argv)
         }
 
         std::cout << "\n";
-    }   
+    }
 
     std::cout << "hello world\n";
     return 0;

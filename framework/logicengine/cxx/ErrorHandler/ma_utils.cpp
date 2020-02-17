@@ -5,7 +5,7 @@
 using namespace novadaq::errorhandler;
 
 int novadaq::errorhandler::and_op (int i, int j)
-{ 
+{
   if (i==j)           return i;
 
   if (i==-2 || j==-2) return -2;
@@ -65,7 +65,7 @@ ma_cond_domain novadaq::errorhandler::domain_and(ma_cond_domains const & d)
 
 void novadaq::errorhandler::domain_and(ma_cond_domains & d)
 {
-  if (d.empty()) 
+  if (d.empty())
   {
     d.push_back(ma_cond_domain(-2,-2));
     return;
