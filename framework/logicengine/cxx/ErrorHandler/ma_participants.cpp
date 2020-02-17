@@ -37,7 +37,7 @@ void ma_participants::add_group( string_t const & group, size_t size )
     apps.insert( ss.str() );
     all_apps.insert( ss.str() );
   }
-  
+
   groups.insert( std::make_pair(group, apps) );
 }
 

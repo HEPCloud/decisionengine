@@ -17,14 +17,14 @@ namespace {
   {
     int iForkId, iStatus;
     iForkId = vfork();
-    if (iForkId == 0) // This is the child 
+    if (iForkId == 0) // This is the child
     {
       std::string command = strCmd + " " + strParam;
 
       iStatus = execl("/bin/sh","sh","-c", command.c_str(), (char*) NULL);
-      exit(iStatus);  // We must exit here, 
+      exit(iStatus);  // We must exit here,
                       // or we will have multiple
-                      // mainlines running...  
+                      // mainlines running...
     }
     else if (iForkId > 0) // Parent, no error
     {
@@ -35,7 +35,7 @@ namespace {
       iStatus = -1;
     }
     return(iStatus);
-  } 
+  }
 
 }
 
@@ -52,7 +52,7 @@ ma_action_mail::ma_action_mail( ma_rule const * rule, pset_t const & pset )
 
   // search for mail bash file using FHICL_FILE_PATH
   while( std::getline(ss,token,':') ){
-    mail_file.str("");   
+    mail_file.str("");
     mail_file << token << "/ErrorHandler/cxx/config/send_mail.sh";
     std::stringstream sys_check;
     sys_check << "-f " << mail_file.str();
@@ -62,7 +62,7 @@ ma_action_mail::ma_action_mail( ma_rule const * rule, pset_t const & pset )
 
   script_name = mail_file.str(); //pset.get<std::string>("name");
   script_para = pset.get<std::string>("param", std::string());
-      
+
   param.init(rule, script_para);
 }
 

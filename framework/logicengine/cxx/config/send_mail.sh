@@ -27,5 +27,5 @@ printf "$MESSAGE" > $EMAILMESSAGE
 
 /bin/mail -s "$SUBJECT" "$EMAIL" < $EMAILMESSAGE
 rm ./email_body.txt
-sleep 1 
+sleep 1
 

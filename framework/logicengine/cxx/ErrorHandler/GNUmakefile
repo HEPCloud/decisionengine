@@ -1,4 +1,4 @@
-# SoftRelTools GNUmakefile for ErrorHandler C++ source directory 
+# SoftRelTools GNUmakefile for ErrorHandler C++ source directory
 
 # Generate C++ classes from XML Schema Definition files
 #CSTXSD_XSD_DIR := ../../config
@@ -26,7 +26,7 @@ QT_UI_OUTPUT_DIR := ../include
 QT_MOC_FILES     := MsgAnalyzerDlg MsgBox qt_rule_engine qt_log_reader ma_rcclient
 
 # Build the package library
-LIB = lib$(PACKAGE) 
+LIB = lib$(PACKAGE)
 
 # produce a shared library
 #LIB_TYPE := both
@@ -67,7 +67,7 @@ LIBCPPFILES = EHListener.cpp \
               qt_log_reader.cpp \
               MsgAnalyzerDlg.cpp \
               MsgBox.cpp \
-              NodeInfo.cpp 
+              NodeInfo.cpp
 
 # Build the package binaries
 BINS = $(basename $(wildcard *.cc))

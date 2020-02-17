@@ -18,23 +18,23 @@ using namespace gov::fnal::cd::rms;
 
 
 int main() {
-  
+
   // create the connection to RMS
-  boost::shared_ptr<provider::DDSConnection> 
+  boost::shared_ptr<provider::DDSConnection>
     rmsConnection(new provider::DDSConnection("EHTestApplication",0));
-  
-  
+
+
   // create the destination that represents where we will receive
   // messages from
   base::RmsDestination sendDest("EHServerMailbox",
 				   base::RmsDestination::EH_CHANNEL);
 
-  
-  RmsSender<provider::DDSConnection,errorhandlermessages::ErrorHandlerMessage>  
+
+  RmsSender<provider::DDSConnection,errorhandlermessages::ErrorHandlerMessage>
     requestSender(rmsConnection,sendDest);
 
   std::cout << "Sending Message on EH_CHANNEL...." << std::endl;
-  
+
   errorhandlermessages::ErrorHandlerMessage message;
 
 
@@ -60,9 +60,9 @@ int main() {
     errorhandlermessages::ErrorHandlerReply reply;
     requestReceiver.receiveMessage(reply);
 
-    std::cout << "Got reply: "  
+    std::cout << "Got reply: "
 	      << (int)reply.action_complete << std::endl;
-    std::cout << "Exiting..." << std::endl;    
+    std::cout << "Exiting..." << std::endl;
 
     break;
 
@@ -71,7 +71,7 @@ int main() {
 
 
   // clean up
-  requestReceiver.close();  
+  requestReceiver.close();
   requestSender.close();
   rmsConnection->close();
 

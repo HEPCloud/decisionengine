@@ -16,7 +16,7 @@ yum clean all
 yum install condor-python
 yum install python-pandas
 yum install gcc gcc-devel  (gcc-devel doesn't exist)
-yum install gcc* ( not done--what you really need is gcc, gcc-c++, libgcc) 
+yum install gcc* ( not done--what you really need is gcc, gcc-c++, libgcc)
 yum install python-pip
 yum install git*
 yum install python-unittest2

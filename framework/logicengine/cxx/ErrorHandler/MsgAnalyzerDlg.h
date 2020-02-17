@@ -33,7 +33,7 @@ enum display_field_t { DESCRIPTION, EXPRESSION };
 class MsgAnalyzerDlg : public QDialog, private Ui::MsgAnalyzerDlg
 {
   Q_OBJECT
-	
+
 public:
   MsgAnalyzerDlg( std::string const & cfgfile, int p
                 , QDialog *parent = 0 );
@@ -76,7 +76,7 @@ private slots:
   void reset_rule(QString);
 
 
-  void onRuleDesc( bool checked ) 
+  void onRuleDesc( bool checked )
     { rule_display = checked ? DESCRIPTION : EXPRESSION; updateRuleDisplay(); }
   void onCondDesc( bool checked )
     { cond_display = checked ? DESCRIPTION : EXPRESSION; updateCondDisplay(); }
@@ -110,7 +110,7 @@ private:
   qt_rule_engine         engine;
   qt_log_reader          reader;
 
-  novadaq::rcclient::ma_rcclient 
+  novadaq::rcclient::ma_rcclient
                          rcclient;
 
   map_t                  map;
@@ -158,7 +158,7 @@ private:
   boost::smatch          what_;
 
 };
-    
+
 } // end of namespace errorhandler
 } // end of namespace novadaq
 

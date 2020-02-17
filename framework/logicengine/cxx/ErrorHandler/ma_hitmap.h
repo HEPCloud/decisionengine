@@ -55,7 +55,7 @@ public:
 
   string_t get_message( ma_cond_domain v ) const;
   string_t get_message_group( ma_cond_domain v, size_t g ) const;
-   
+
 
   // if the cell has been triggered
   bool get_status( ma_cond_domain v ) const;

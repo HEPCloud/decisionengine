@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
         return 0;
       }
 
-      if((!strcmp(argv[i], "-c") || !strcmp(argv[i], "--configuration")) 
+      if((!strcmp(argv[i], "-c") || !strcmp(argv[i], "--configuration"))
           && i<argc-1 )
       {
         cfg = std::string(argv[i+1]);
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
         continue;
       }
 
-      if((!strcmp(argv[i], "-l") || !strcmp(argv[i], "--log")) 
+      if((!strcmp(argv[i], "-l") || !strcmp(argv[i], "--log"))
           && i<argc-1 )
       {
         mf_cfg = std::string(argv[i+1]);

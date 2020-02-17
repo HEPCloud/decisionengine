@@ -36,7 +36,7 @@ void ma_cond_test_primary::insert_func( string_t     const & name
   {
     if( !func->parse_arguments( args ) )
       throw std::runtime_error("arguments rejected by test function " + name);
-  } 
+  }
   catch (std::exception & e)
   {
     throw std::runtime_error( "arguments rejected by test function " + name
@@ -93,7 +93,7 @@ bool ma_cond_test_primary::evaluate( ma_condition const * cond ) const
 
     switch( cond_type )
     {
-    case FUNCTION:  
+    case FUNCTION:
       return boost::any_cast<bool>( v );
 
     case FUNCTION_BOOL:
@@ -106,7 +106,7 @@ bool ma_cond_test_primary::evaluate( ma_condition const * cond ) const
 
     case FUNCTION_DOUBLE:
       if     ( v.type()==typeid(int)   ) d = boost::any_cast<int         >( v );
-      else if( v.type()==typeid(unsigned int) ) 
+      else if( v.type()==typeid(unsigned int) )
                                          d = boost::any_cast<unsigned int>( v );
       else if( v.type()==typeid(long)  ) d = boost::any_cast<long        >( v );
       else if( v.type()==typeid(float) ) d = boost::any_cast<float       >( v );
@@ -114,10 +114,10 @@ bool ma_cond_test_primary::evaluate( ma_condition const * cond ) const
 
       return compare( op, d, rhv_d );
 
-    default: 
+    default:
       throw std::runtime_error("Unkonwn test primary type");
     }
-  } 
+  }
 
 }
 

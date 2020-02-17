@@ -12,7 +12,7 @@ REG_MA_FUNCTION( count_percent, ma_func_count_percent )
 bool
   ma_func_count_percent::parse_arguments( anys_t const & args )
 {
-  if( args.empty() || args.size()<2 ) 
+  if( args.empty() || args.size()<2 )
     return false;
 
   // double count_percent(cond, 'type', 'group')

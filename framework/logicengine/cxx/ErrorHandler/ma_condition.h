@@ -45,7 +45,7 @@ public:
               , ma_timing_events & events
               );
 
- 
+
   // c'tor minified
   ma_condition( string_t  const & name );
 
@@ -58,13 +58,13 @@ public:
   // public method that gets called when new message comes in
   bool match( msg_t const & msg
             , conds_t & status
-            , conds_t & source 
+            , conds_t & source
             , conds_t & target );
 
   // public method that forces the status to the passed value
   bool force( bool val
             , conds_t & status
-            , conds_t & source 
+            , conds_t & source
             , conds_t & target );
 
   // scheduled event
@@ -106,9 +106,9 @@ public:
       throw std::runtime_error("condition::get_args() unsupported arg type"); }
 
   // get src/tgt string. precond: size()>0, 0<=idx<size() or idx=ANY
-  const string_t & get_source( ma_cond_domain v ) const 
+  const string_t & get_source( ma_cond_domain v ) const
     { return hitmap.get_source(v); }
-  const string_t & get_target( ma_cond_domain v ) const 
+  const string_t & get_target( ma_cond_domain v ) const
     { return hitmap.get_target(v); }
   string_t get_arg( ma_cond_domain v, arg_t type ) const
     { if( type==SOURCE ) return hitmap.get_source(v);
@@ -142,21 +142,21 @@ public:
   int
     get_alarm_count( ma_cond_domain v, arg_t arg ) const
     { return hitmap.get_alarm_count(v, arg); }
-      
+
 
   // notification list
   void push_notify_source( ma_rule * rule ) { push_notify(notify_on_source, rule); }
   void push_notify_target( ma_rule * rule ) { push_notify(notify_on_target, rule); }
   void push_notify_status( ma_rule * rule ) { push_notify(notify_on_status, rule); }
 
-  void 
+  void
     push_notify( notify_list_t & list, ma_rule * rule )
-    { 
-      if( std::find(list.begin(), list.end(), rule) == list.end() )  
-        list.push_back(rule); 
-    } 
+    {
+      if( std::find(list.begin(), list.end(), rule) == list.end() )
+        list.push_back(rule);
+    }
 
-  void 
+  void
     sort_notify_lists( )
     { notify_on_source.sort(); notify_on_target.sort(); notify_on_status.sort(); }
 
@@ -179,7 +179,7 @@ public:
   ma_timing_events & timing_events() { return events; }
 
   // return a view to the hitmap given a ma_cond_domain
-  const hitmap_view_t 
+  const hitmap_view_t
     get_domain_view( ma_cond_domain const & domain )
     { return hitmap.get_domain_view(domain); }
 
@@ -252,7 +252,7 @@ private:
   notify_list_t notify_on_status;
 
   // total number of catched messages which has passed
-  // filtering, match condition, and test condition. Does not 
+  // filtering, match condition, and test condition. Does not
   // matter if it passed the frequency test
   int catched_messages;
 

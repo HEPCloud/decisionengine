@@ -29,11 +29,11 @@ public:
   virtual ~ma_test_function() { }
 
   // evaluation function
-  virtual boost::any 
+  virtual boost::any
     evaluate( ma_condition const & cond ) = 0;
 
   // parse aruments
-  virtual bool 
+  virtual bool
     parse_arguments( anys_t const & args ) { return true; }
 
 };

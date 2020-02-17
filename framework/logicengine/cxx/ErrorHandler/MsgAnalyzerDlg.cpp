@@ -19,7 +19,7 @@
 using fhicl::ParameterSet;
 using namespace novadaq::errorhandler;
 
-static ParameterSet 
+static ParameterSet
   read_conf( string_t const fname )
 {
   std::auto_ptr<cet::filepath_maker> policy;
@@ -27,7 +27,7 @@ static ParameterSet
   if( fname[0]=='/' ) policy.reset(new cet::filepath_maker());
   else                policy.reset(new cet::filepath_lookup("FHICL_FILE_PATH"));
 
-  LOG_DEBUG("") << "message analyzer configuration file: " 
+  LOG_DEBUG("") << "message analyzer configuration file: "
                 << fname;
 
   ParameterSet pset;
@@ -161,7 +161,7 @@ MsgAnalyzerDlg::MsgAnalyzerDlg( std::string const & cfgfile, int partition
   // Node Status configuration
   initNodeStatus( );
 
-  // init rule engine tables 
+  // init rule engine tables
   initRuleEngineTable();
   initParticipants();
 
@@ -186,7 +186,7 @@ MsgAnalyzerDlg::MsgAnalyzerDlg( std::string const & cfgfile, int partition
 
   // conclude
   publishMessage( MSG_SYSTEM, "Rule engine initialization completed.");
- 
+
   pbLog->setMaximum(100);
   pbLog->setMinimum(0);
   pbLog->setValue(0);
@@ -223,7 +223,7 @@ void MsgAnalyzerDlg::onLoad()
           ++active;
       }
 
-      if( unknown>1 ) 
+      if( unknown>1 )
       {
         // someone else is also querying for EHS
         ++retries;
@@ -288,7 +288,7 @@ void MsgAnalyzerDlg::onLoad()
       QMessageBox::critical( this
                            , tr("MessageAnalyzer")
                            , tr("Handshaking failed! Click OK to close the application.")
-                            , QMessageBox::Ok 
+                            , QMessageBox::Ok
                             , QMessageBox::Ok );
       close();
     }
@@ -395,20 +395,20 @@ void MsgAnalyzerDlg::onNewMsg(mf::MessageFacilityMsg const & mfmsg)
   {
     QString str = QString(key.c_str())
                   .append(" has issued a warning message:\n")
-                  .append(mfmsg.message().c_str());                    
-    publishMessage(MSG_WARNING, str); 
+                  .append(mfmsg.message().c_str());
+    publishMessage(MSG_WARNING, str);
   }
   else if( status==FIRST_ERROR )
   {
     QString str = QString(key.c_str())
                   .append(" has issued an error message:\n")
-                  .append(mfmsg.message().c_str());                    
-    publishMessage(MSG_ERROR, str); 
+                  .append(mfmsg.message().c_str());
+    publishMessage(MSG_ERROR, str);
   }
 
 }
 
-void 
+void
   MsgAnalyzerDlg::publishMessage( message_type_t type
                                 , QString const & msg ) const
 {
@@ -457,7 +457,7 @@ void MsgAnalyzerDlg::onNewAlarm( QString const & rule_name
 
   QPushButton * btn = new QPushButton("Rst");
   btn->setFixedSize(62,20);
-  
+
   twRules->setCellWidget(it->second, 3, btn);
 
   sig_mapper.setMapping(btn, it->second);
@@ -539,7 +539,7 @@ void MsgAnalyzerDlg::context_menu_warning()
 
   QVariant v = list_item->data(Qt::UserRole);
   NodeInfo * ni = (NodeInfo *)v.value<void*>();
-  
+
   ni->set_alarm_on_warning(flag);
 }
 
@@ -549,7 +549,7 @@ void MsgAnalyzerDlg::context_menu_error()
 
   QVariant v = list_item->data(Qt::UserRole);
   NodeInfo * ni = (NodeInfo *)v.value<void*>();
-  
+
   ni->set_alarm_on_error(flag);
 }
 
@@ -728,7 +728,7 @@ void MsgAnalyzerDlg::rule_reset_selection( )
 }
 
 
-// make one that works with a QString 
+// make one that works with a QString
 void MsgAnalyzerDlg::reset_rule(QString name)
 {
   std::map<QString, int>::const_iterator it = rule_idx_map.find(name);
@@ -773,7 +773,7 @@ void MsgAnalyzerDlg::reset_rule(int idx)
       twConds->item(it->second, 1)->setBackground(brush);
       twConds->item(it->second, 2)->setBackground(brush);
       twConds->item(it->second, 3)->setBackground(brush);
-      
+
       twConds->item(it->second, 3)->setText("0");
     }
   }
@@ -858,7 +858,7 @@ void MsgAnalyzerDlg::initRuleEngineTable()
     twConds->setItem(i, 0, iname);
     twConds->setItem(i, 1, ifrom);
     twConds->setItem(i, 2, iregex);
-    twConds->setItem(i, 3, icount); 
+    twConds->setItem(i, 3, icount);
 
     cond_idx_map.insert(std::make_pair(name, i));
   }
@@ -873,8 +873,8 @@ void MsgAnalyzerDlg::updateRuleDisplay()
 
   for( ; it!=rule_idx_map.end(); ++it)
   {
-    QString txt = (rule_display==DESCRIPTION) 
-                      ? engine.rule_description(it->first) 
+    QString txt = (rule_display==DESCRIPTION)
+                      ? engine.rule_description(it->first)
                       : engine.rule_expr(it->first);
 
     twRules -> item(it->second, 1) -> setText(txt);
@@ -887,8 +887,8 @@ void MsgAnalyzerDlg::updateCondDisplay()
 
   for( ; it!=cond_idx_map.end(); ++it)
   {
-    QString txt = (cond_display==DESCRIPTION) 
-                      ? engine.cond_description(it->first) 
+    QString txt = (cond_display==DESCRIPTION)
+                      ? engine.cond_description(it->first)
                       : engine.cond_regex(it->first);
 
     twConds -> item(it->second, 2) -> setText(txt);
@@ -901,7 +901,7 @@ void MsgAnalyzerDlg::initParticipants()
 
   // remove existing participants
   p.reset();
- 
+
   // hardcoded participants and groups :
   // p.add_group( group_name, # of participants )
   p.add_group( "dcm", 8 );
@@ -918,17 +918,17 @@ void MsgAnalyzerDlg::onSetParticipants( QVector<QString> const & dcm
   p.add_group( "dcm", dcm.size() );
   p.add_group( "bnevb", bnevb.size() );
 
-  publishMessage( MSG_SYSTEM, "Initialized participants with " 
-                   + QString(dcm.size())   + "dcm(s) and " 
+  publishMessage( MSG_SYSTEM, "Initialized participants with "
+                   + QString(dcm.size())   + "dcm(s) and "
                    + QString(bnevb.size()) + "bnevb(s)" );
 }
 
 void MsgAnalyzerDlg::open_log()
 {
 
-  QString filename = 
+  QString filename =
       QFileDialog::getOpenFileName( this
-                                  , tr("Open Archive") 
+                                  , tr("Open Archive")
                                   , "/home/qlu"
                                   , tr("Log Files (*.log);;All Files(*.*)") );
 

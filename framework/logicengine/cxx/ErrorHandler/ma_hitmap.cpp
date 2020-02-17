@@ -31,7 +31,7 @@ void
       hitmap[s][t].reset();
 }
 
-unsigned int 
+unsigned int
   ma_hitmap::capture( msg_t    const & msg
                     , string_t const & src
                     , string_t const & tgt
@@ -43,7 +43,7 @@ unsigned int
   unsigned int result = 0x00;
 
   // find source index
-  if (!cond->per_source()) 
+  if (!cond->per_source())
   {
     if( src_idx.empty() )
     {
@@ -67,9 +67,9 @@ unsigned int
       s_idx = it->second;
     }
   }
-   
+
   // find target index
-  if (!cond->per_target()) 
+  if (!cond->per_target())
   {
     if( tgt_idx.empty() )
     {
@@ -97,13 +97,13 @@ unsigned int
   // resize the array if needed
   bool resize = false;
 
-  if (s_idx >= src_cap) 
+  if (s_idx >= src_cap)
   {
     src_cap += cap_increment;
     resize = true;
   }
 
-  if (t_idx >= tgt_cap) 
+  if (t_idx >= tgt_cap)
   {
     tgt_cap += cap_increment;
     resize = true;
@@ -115,11 +115,11 @@ unsigned int
   }
 
   // knock the cell
-  return hitmap[s_idx][t_idx].hit(msg, what, *cond, s_idx, t_idx) 
+  return hitmap[s_idx][t_idx].hit(msg, what, *cond, s_idx, t_idx)
            ? (result | STATUS_CHANGE) : (result) ;
 }
 
-unsigned int 
+unsigned int
   ma_hitmap::force( bool val )
 {
   size_t s_idx = 0;
@@ -135,7 +135,7 @@ unsigned int
   }
 
   s_idx = 0;
-  
+
   // find target index
   if( tgt_idx.empty() )
   {
@@ -148,13 +148,13 @@ unsigned int
   // resize the array if needed
   bool resize = false;
 
-  if (s_idx >= src_cap) 
+  if (s_idx >= src_cap)
   {
     src_cap += cap_increment;
     resize = true;
   }
 
-  if (t_idx >= tgt_cap) 
+  if (t_idx >= tgt_cap)
   {
     tgt_cap += cap_increment;
     resize = true;
@@ -166,7 +166,7 @@ unsigned int
   }
 
   // knock the cell
-  return hitmap[s_idx][t_idx].hit( val ) 
+  return hitmap[s_idx][t_idx].hit( val )
            ? (result | STATUS_CHANGE) : (result) ;
 }
 
@@ -176,7 +176,7 @@ bool
   return hitmap[src][tgt].event(t, *cond);
 }
 
-int 
+int
   ma_hitmap::find_source(string_t const & src)
 {
   idx_t::const_iterator it = src_idx.find(src);
@@ -184,7 +184,7 @@ int
   else                    return it->second;
 }
 
-int 
+int
   ma_hitmap::find_target(string_t const & tgt)
 {
   idx_t::const_iterator it = tgt_idx.find(tgt);
@@ -193,9 +193,9 @@ int
 }
 
 // get src/tgt string from idx
-const string_t & 
+const string_t &
   ma_hitmap::get_source( ma_cond_domain v ) const
-{ 
+{
   int idx = v.first;
   assert( !src_idx.empty() );
 
@@ -210,9 +210,9 @@ const string_t &
   throw std::runtime_error("get_source: idx not found");
 }
 
-const string_t & 
+const string_t &
   ma_hitmap::get_target( ma_cond_domain v ) const
-{ 
+{
   int idx = v.second;
   assert( !tgt_idx.empty() );
 
@@ -227,10 +227,10 @@ const string_t &
   throw std::runtime_error("get_source: idx not found");
 }
 
-string_t 
+string_t
   ma_hitmap::get_message( ma_cond_domain v ) const
 {
-  assert( !src_idx.empty() ); 
+  assert( !src_idx.empty() );
   assert( !tgt_idx.empty() );
 
   if( v.first==D_NIL || v.second==D_NIL )
@@ -241,11 +241,11 @@ string_t
 
   return hitmap[v.first][v.second].get_latest_message();
 }
- 
-string_t 
+
+string_t
   ma_hitmap::get_message_group( ma_cond_domain v, size_t g ) const
 {
-  assert( !src_idx.empty() ); 
+  assert( !src_idx.empty() );
   assert( !tgt_idx.empty() );
 
   if( v.first==D_NIL || v.second==D_NIL )
@@ -256,17 +256,17 @@ string_t
 
   return hitmap[v.first][v.second].get_message_group(g);
 }
-    
+
 
 // if the cell has been triggered
-bool 
+bool
   ma_hitmap::get_status( ma_cond_domain v ) const
-{ 
+{
   bool r = hitmap[v.first][v.second].is_on();
 
-  //std::cout << "hitmap::get_status @ " 
+  //std::cout << "hitmap::get_status @ "
   //              << v.first << ", " << v.second << " = " << r << "\n";
-  return r; 
+  return r;
 }
 
 bool
@@ -274,9 +274,9 @@ bool
 {
   bool r = hitmap[v.first][v.second].is_defined();
   return r;
-}  
+}
 
-int 
+int
   ma_hitmap::get_alarm_count( ma_cond_domain v, arg_t arg ) const
 {
   ma_cond_range src, tgt;
@@ -306,13 +306,13 @@ int
 }
 
 // get a range of src/target
-void 
+void
   ma_hitmap::get_cond_range( ma_cond_domain d
                            , ma_cond_range & src
                            , ma_cond_range & tgt ) const
-{ 
+{
   if ( domain_is_null(d) )
-    throw std::runtime_error("get_cond_range: NIL domain"); 
+    throw std::runtime_error("get_cond_range: NIL domain");
 
   if (d.first ==D_ANY) src.first = 0, src.second = src_idx.size()-1;
   else                 src.first = d.first,  src.second = d.first;
@@ -325,7 +325,7 @@ void
 // get a view to the hitmap
 const hitmap_view_t
   ma_hitmap::get_domain_view( ma_cond_domain const & d )
-{ 
+{
   if (domain_is_null(d))
     throw std::runtime_error("get_domain_view: null domain");
 

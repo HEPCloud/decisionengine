@@ -6,7 +6,7 @@
 using namespace novadaq::errorhandler;
 
 NodeInfo::NodeInfo ( node_type_t type
-                   , std::string const & key 
+                   , std::string const & key
                    , QListWidget * parent
                    , bool aow
                    , bool aoe )
@@ -17,7 +17,7 @@ NodeInfo::NodeInfo ( node_type_t type
 , key_str (key)
 , alarm_warning(aow)
 , alarm_error(aoe)
-{ 
+{
   QString cap = get_caption(key);
 
   // icon
@@ -41,7 +41,7 @@ NodeInfo::NodeInfo ( node_type_t type
   item_ptr->setData(Qt::UserRole, v);
 
   //item_ptr->setData(Qt::UserRole, QVariant(key.c_str()));
-  //item_ptr->setData(Qt::UserRole, QVariant::fromValue<msgs_ptr_t>(msgs_ptr)); 
+  //item_ptr->setData(Qt::UserRole, QVariant::fromValue<msgs_ptr_t>(msgs_ptr));
 }
 
 node_status NodeInfo::push_msg ( msg_t const & msg )
@@ -50,18 +50,18 @@ node_status NodeInfo::push_msg ( msg_t const & msg )
 
   node_status status = NORMAL;
 
-  if (sev >= highest_sev) 
+  if (sev >= highest_sev)
   {
     // push the message into the queue
     if (msgs_ptr->size() > MAX_QUEUE)  msgs_ptr->pop_front();
     msgs_ptr->push_back(msg);
 
     // update icon
-    if (sev > highest_sev) 
+    if (sev > highest_sev)
     {
-      if( sev==mf::QtDDSReceiver::WARNING && alarm_warning)   
+      if( sev==mf::QtDDSReceiver::WARNING && alarm_warning)
         status = FIRST_WARNING;
-      else if( sev==mf::QtDDSReceiver::ERROR && alarm_error) 
+      else if( sev==mf::QtDDSReceiver::ERROR && alarm_error)
         status = FIRST_ERROR;
 
       update_icon(sev);
@@ -90,13 +90,13 @@ QString NodeInfo::msgs_to_string() const
     txt += get_html_str_from_msg(*it);
     ++it;
   }
-    
+
   return txt;
 }
 
 QString NodeInfo::get_html_str_from_msg(mf::MessageFacilityMsg const & msg) const
 {
-  mf::QtDDSReceiver::SeverityCode sevid = 
+  mf::QtDDSReceiver::SeverityCode sevid =
                  mf::QtDDSReceiver::getSeverityCode(msg.severity());
 
   std::ostringstream ss;
@@ -135,19 +135,19 @@ void NodeInfo::update_icon ( sev_code_t sev )
 
   switch(sev)
   {
-  case mf::QtDDSReceiver::ERROR:   
+  case mf::QtDDSReceiver::ERROR:
     background = QColor(255,  0,  0, 255); break;
 
-  case mf::QtDDSReceiver::WARNING: 
+  case mf::QtDDSReceiver::WARNING:
     background = QColor(224,128,  0, 255); break;
 
-  case mf::QtDDSReceiver::INFO:    
+  case mf::QtDDSReceiver::INFO:
     background = QColor(  0,128,  0, 255); break;
 
-  case mf::QtDDSReceiver::DEBUG:   
+  case mf::QtDDSReceiver::DEBUG:
     background = QColor( 80, 80, 80, 255); break;
 
-  default:                         
+  default:
     background = QColor(200,200,200);
   }
 
@@ -161,7 +161,7 @@ void NodeInfo::update_icon ( sev_code_t sev )
   painter.setPen(pen);
 
   QBrush brush(Qt::yellow);
-  
+
   if(alarm_warning)
   {
     int off = alarm_error ? 22 : 11;
@@ -170,7 +170,7 @@ void NodeInfo::update_icon ( sev_code_t sev )
     painter.drawEllipse(icon_w-off, icon_h-11, 10, 10);
   }
 
-  if(alarm_error) 
+  if(alarm_error)
   {
     QBrush brush(Qt::red);
     painter.setBrush(brush);
@@ -184,7 +184,7 @@ void NodeInfo::update_icon ( sev_code_t sev )
 
 void NodeInfo::get_icon_geometry ( int & icon_w
                                  , int & icon_h ) const
-{ 
+{
   switch(node_type)
   {
   case BufferNode:
@@ -204,7 +204,7 @@ void NodeInfo::get_icon_geometry ( int & icon_w
 
 void NodeInfo::get_node_geometry ( int & node_w
                                  , int & node_h ) const
-{ 
+{
   switch(node_type)
   {
   case BufferNode:

@@ -71,7 +71,7 @@ public:
   bool
     evaluable( ) const;
 
-  // public method, call to evaluate the boolean expression 
+  // public method, call to evaluate the boolean expression
   bool
     evaluate( );
 
@@ -80,7 +80,7 @@ public:
     act( );
 
   // public method, get the alarm
-  ma_domain const & 
+  ma_domain const &
     get_alarm( ) const;
 
   // public method, get the alarm message
@@ -105,8 +105,8 @@ public:
   void
     enable( bool flag ) { enabled = flag; }
 
-  // reset the rule to its ground state ( reset alarms and domains ) 
-  void 
+  // reset the rule to its ground state ( reset alarms and domains )
+  void
     reset( );
 
   // ----------------------------------------------------------------
@@ -121,21 +121,21 @@ public:
     { domain_expr = expr; }
 
   // called by the parser to push a cond_ptr to the container
-  cond_idx_t 
+  cond_idx_t
     insert_condition_ptr( string_t const & name, bool primitive );
 
   // ----------------------------------------------------------------
   //
   // get condition index and pointer given a name
-  cond_idx_t 
+  cond_idx_t
     get_cond_idx( string_t const & name ) const;
 
-  // get pointer to the condition 
+  // get pointer to the condition
   ma_condition *
     get_cond( string_t const & name ) const;
 
-  // get index to the condition 
-  size_t 
+  // get index to the condition
+  size_t
     get_idx( string_t const & name ) const;
 
   // get the size of condition container
@@ -160,20 +160,20 @@ private:
   //   domain: the input domain where values are allowed
   //   n:      depth of the recursion
   //   return: true if new alarm found
-  bool 
-    recursive_evaluate ( ma_domain & value  
+  bool
+    recursive_evaluate ( ma_domain & value
                        , ma_domain & alarm
-                       , ma_domain const & domain 
+                       , ma_domain const & domain
                        , size_t n );
 
   // evaluate the boolean expression with a given set of inputs
   //   value:  the input values for each condition
-  bool 
+  bool
     boolean_evaluate ( ma_domain & value
                      , ma_domain & alarm
                      , ma_domain const & domain );
 
-  bool 
+  bool
     parse_alarm_message ( string_t const & s );
 
   bool

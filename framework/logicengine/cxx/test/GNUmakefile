@@ -1,4 +1,4 @@
-# SoftRelTools GNUmakefile for ErrorHandler C++ test directory 
+# SoftRelTools GNUmakefile for ErrorHandler C++ test directory
 
 
 

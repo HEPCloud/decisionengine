@@ -10,6 +10,6 @@ msglogger -d server -a app7 -s error error
 msglogger -d server -a app8 hello
 msglogger -d server -a app9 hello
 msglogger -d server -a app10 hello
-msglogger -d server -a app11 -s error error 
+msglogger -d server -a app11 -s error error
 msglogger -d server -a app12 hello
 

@@ -6,7 +6,7 @@ using namespace novadaq::errorhandler;
 namespace {
 
   bool parse_msg_ref( string_t const & s
-                    , ma_rule  const * rule 
+                    , ma_rule  const * rule
                     , std::vector<cond_arg_t> & symbols )
   {
     size_t pos = s.find('.');
@@ -32,7 +32,7 @@ namespace {
         return true;
       }
       return false;
-                                        
+
       case 't': // $t, target
       if( pos==s.size()-1 )
       {
@@ -137,13 +137,13 @@ string_t ma_richmsg::message() const
 {
   string_t result = stripped_msg;
   ma_domain const & alarm = rule->get_alarm();
-          
+
   for(int i=symbols.size()-1; i>=0; --i)
   {
     ma_condition * cond_ptr = symbols[i].first.first;
     size_t         cond_idx = symbols[i].first.second;
     arg_t          cond_arg = symbols[i].second;
-                                
+
     result.insert( insert_pos[i]
                  , cond_ptr->get_arg(alarm[cond_idx], cond_arg));
   }

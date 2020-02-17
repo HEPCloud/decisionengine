@@ -20,17 +20,17 @@ public:
     reset( );
 
   // simplified hit
-  bool 
+  bool
     hit( bool val );
 
   // call hit method when a message passes filtering and match tests
-  // returns true if the status has changed (off->on or on->off), or 
+  // returns true if the status has changed (off->on or on->off), or
   // false if not
-  // 
+  //
   // if persistent (persistent=true), the status never turns off.
-  // otherwise, the status can change to off when it slides out of 
+  // otherwise, the status can change to off when it slides out of
   // the time window
-  bool 
+  bool
     hit( msg_t const & msg
        , boost::smatch const & w
        , ma_condition & cond
@@ -40,7 +40,7 @@ public:
   bool event(time_t t, ma_condition & cond);
 
   // get status
-  bool 
+  bool
     is_on() const { return on; }
 
   bool
@@ -51,11 +51,11 @@ public:
     get_message_count() const { return msgs.size(); }
 
   // get messages
-  const msgs_t & 
+  const msgs_t &
     get_messages() const { return msgs; }
 
   // get latest message
-  string_t 
+  string_t
     get_latest_message() const
     { assert( !msgs.empty() ); return msgs.back().message(); }
 

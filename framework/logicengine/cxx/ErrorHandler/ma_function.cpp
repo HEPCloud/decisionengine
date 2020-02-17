@@ -10,7 +10,7 @@ using namespace novadaq::errorhandler;
 
 // ma_function_factory
 
-void 
+void
   ma_function_factory::reg( std::string const & func_name, gen_func_t f )
 {
   get_map().insert( std::make_pair(func_name, f) );

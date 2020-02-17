@@ -21,10 +21,10 @@ using namespace gov::fnal::cd::rms;
 REG_MA_ACTION( rcmsg, ma_action_rcmsg )
 
 
-  
+
 int gGetPartition(){
   int partition = 0;
-  char* p = getenv("DAQ_LOG_ROOT");  
+  char* p = getenv("DAQ_LOG_ROOT");
   if( p != NULL ) partition = (int)p[(int)strlen(p)-1] - 48;
   return partition;
 }
@@ -35,12 +35,12 @@ ma_action_rcmsg::ma_action_rcmsg( ma_rule const * rule, pset_t const & pset )
   : ma_action( rule, pset ),
     fRmsConnection(new provider::DDSConnection("EHTestApplication",gGetPartition())),
     fSendDest("EHServerMailbox",base::RmsDestination::EH_CHANNEL),
-    fRequestSender(fRmsConnection,fSendDest) 
+    fRequestSender(fRmsConnection,fSendDest)
 {
 
   fActionName = pset.get<std::string>("name");
   fActionPara = pset.get<std::string>("param", std::string());
-        
+
   fParam.init(rule, fActionPara);
   fRuleName = (rule->name().c_str());
 }
@@ -53,7 +53,7 @@ ma_action_rcmsg::~ma_action_rcmsg(){
 
 
 int ma_action_rcmsg::Talk(){
-  
+
   //  std::cout << "Sending Message on EH_CHANNEL...." << std::endl;
 
   timeval now;
@@ -68,7 +68,7 @@ int ma_action_rcmsg::Talk(){
   stupid_c >> error_code;
   fMessage.error = error_code; // fActionName -> convert using enum...
   fRequestSender.sendMessage(fMessage);
-  //std::cout << "Sent Message on EH_CHANNEL...." << std::endl;  
+  //std::cout << "Sent Message on EH_CHANNEL...." << std::endl;
 
   return 0;
 }

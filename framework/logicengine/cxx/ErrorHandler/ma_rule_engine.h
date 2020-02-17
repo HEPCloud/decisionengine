@@ -15,15 +15,15 @@ namespace errorhandler {
 class ma_rule_engine
 {
 public:
-  
+
   // c'tor
   ma_rule_engine( fhicl::ParameterSet const & pset
-                , alarm_fn_t alarm 
+                , alarm_fn_t alarm
                 , cond_match_fn_t cond_match );
 
   ma_rule_engine( Json::Value const & facts
                 , Json::Value const & rules
-                , alarm_fn_t alarm 
+                , alarm_fn_t alarm
                 , cond_match_fn_t cond_match );
 
   // public method, call to run the rule engine
@@ -57,7 +57,7 @@ public:
     cond_sources    ( string_t const & name ) const
     { return find_cond_by_name(name).sources_str(); }
 
-  const string_t & 
+  const string_t &
     cond_regex      ( string_t const & name ) const
     { return find_cond_by_name(name).regex(); }
 
@@ -70,7 +70,7 @@ public:
     rule_description( string_t const & name ) const
     { return find_rule_by_name(name).description(); }
 
-  const string_t & 
+  const string_t &
     rule_expr ( string_t const & name ) const
     { return find_rule_by_name(name).cond_expr(); }
 
@@ -95,7 +95,7 @@ public:
     { find_rule_by_name(name).reset(); }
 
   void reset_rules( )
-    { for(rule_map_t::iterator it=rmap.begin(); it!=rmap.end(); ++it) 
+    { for(rule_map_t::iterator it=rmap.begin(); it!=rmap.end(); ++it)
         it->second.reset(); }
 
   // reset conditions
@@ -103,7 +103,7 @@ public:
     { find_cond_by_name(name).reset(); }
 
   void reset_conds( )
-    { for(cond_map_t::iterator it=cmap.begin(); it!=cmap.end(); ++it) 
+    { for(cond_map_t::iterator it=cmap.begin(); it!=cmap.end(); ++it)
         it->second.reset(); }
 
   // reset all
@@ -130,7 +130,7 @@ public:
     { return ma_participants::instance().get_participant_count(); }
 
 
-private: 
+private:
 
   // initialize the rule engine with configuration file
   void init_engine( Json::Value const & pset );
@@ -158,7 +158,7 @@ private:
   const ma_rule      & find_rule_by_name( string_t const & name ) const;
         ma_rule      & find_rule_by_name( string_t const & name );
 
-private: 
+private:
 
   // configuration
   fhicl::ParameterSet pset;

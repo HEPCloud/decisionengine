@@ -12,12 +12,12 @@ class ma_tf_grp_to_number : public ma_test_function
 
 public:
 
-  ma_tf_grp_to_number( ) : group(0) { } 
+  ma_tf_grp_to_number( ) : group(0) { }
 
   virtual boost::any
     evaluate( ma_condition const & cond );
 
-  virtual bool 
+  virtual bool
     parse_arguments( anys_t const & args );
 
 private:

@@ -36,20 +36,20 @@ public:
     { conds.push_back(std::make_pair(ci, arg)); cond_size = size; }
 
   // insert string condition ( cond.$s = 'str_cond' )
-  void insert_str_cond( string_t const & str ) 
+  void insert_str_cond( string_t const & str )
     { str_cond = str; }
 
   // insert domain_expr ( cond_type = EXPR )
   void insert_expr( ma_domain_expr const & expr );
 
   // and-merge domains from worksheet into domains
-  ma_domains & 
+  ma_domains &
     and_merge( ma_domains & domains, ma_domains & worksheet ) const;
 
 private:
 
   // type of this elemental condition
-  cond_type_t           cond_type;  
+  cond_type_t           cond_type;
 
   // case CONDS: rule_cond_args connected with '='
   cond_arg_list_t       conds;

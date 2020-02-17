@@ -26,7 +26,7 @@ class ma_action
 {
 public:
 
-  ma_action(ma_rule const * rule, pset_t const & pset = pset_t()) 
+  ma_action(ma_rule const * rule, pset_t const & pset = pset_t())
     : parent_rule(*rule), parameter(pset) {}
   virtual ~ma_action() {}
 
@@ -51,7 +51,7 @@ struct ma_action_factory
 
 public:
 
-  static void 
+  static void
     reg( std::string const & action_name, gen_act_t f );
 
   static ma_action *
@@ -61,7 +61,7 @@ private:
 
   ma_action_factory() {};
 
-  static gen_map_t & 
+  static gen_map_t &
     get_map() { static gen_map_t map; return map; }
 
 };

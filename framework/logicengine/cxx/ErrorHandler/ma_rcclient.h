@@ -35,7 +35,7 @@ public:
 
   SetParticipantsResponse_t
     handleMessage( SetParticipantsRequest_t message );
-  
+
 signals:
 
   void establishPartition(int partition);

@@ -48,7 +48,7 @@ struct RuleEngine
                     (string)extract<string>(fnames[i]),
                     extract<bool>(facts[fnames[i]]) );
 
-            //cout << (string)extract<string>(fnames[i]) << " : " 
+            //cout << (string)extract<string>(fnames[i]) << " : "
             //     << extract<bool>(facts[fnames[i]]) << "\n";
         }
 
@@ -61,19 +61,19 @@ struct RuleEngine
         dict py_actions;
         dict py_facts;
 
-        for(auto const & act : out_actions) 
+        for(auto const & act : out_actions)
         {
             boost::python::list act_names;
-            for (auto const & act_name : act.second) 
+            for (auto const & act_name : act.second)
                 act_names.append(act_name);
 
             py_actions[act.first] = act_names;
         }
 
-        for(auto const & rule_facts : out_facts) 
+        for(auto const & rule_facts : out_facts)
         {
             dict py_rule_facts;
-            for (auto const & fact_val : rule_facts.second) 
+            for (auto const & fact_val : rule_facts.second)
                 py_rule_facts[fact_val.first] = fact_val.second;
 
             py_facts[rule_facts.first] = py_rule_facts;
