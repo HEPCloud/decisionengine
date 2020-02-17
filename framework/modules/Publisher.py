@@ -6,7 +6,7 @@ class Publisher(Module.Module):
         super(Publisher, self).__init__(set_of_parameters)
 
     def consumes(self, name_list):
-        print "Called Publisher.consumes"
+        print("Called Publisher.consumes")
 
     def publish(self, data_block=None):
-        print "Called Publisher.publish"
+        print("Called Publisher.publish")

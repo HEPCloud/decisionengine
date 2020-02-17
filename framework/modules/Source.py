@@ -8,12 +8,12 @@ class Source(Module.Module):
     # name_schema_id_list: a list of dictionaries containing
     # the data product name and a pointer to a schema
     def produces(self, name_schema_id_list):
-        print "Called Source.produces"
+        print("Called Source.produces")
         return None
 
     # acquire: The action function for a source. Will
     # retrieve data from external sources and issue a
     # DataBlock "put" transaction.
     def acquire(self):
-        print "Called Source.acquires"
+        print("Called Source.acquires")
         return None

@@ -9,8 +9,8 @@ class Transform(Module.Module):
     name_list: A list of the data product names that
     the Transform will consume
     """
-    def consumes(self,name_list):
-        print "Called Transform.consumes"
+    def consumes(self, name_list):
+        print("Called Transform.consumes")
         self.name_list = name_list
 
     """
@@ -18,7 +18,7 @@ class Transform(Module.Module):
     the data product name and a pointer to a schema
     """
     def produces(self, name_schema_id_list):
-        print "Called Transform.produces"
+        print("Called Transform.produces")
         return None
 
     """
@@ -30,5 +30,5 @@ class Transform(Module.Module):
     products promised in the produces list
     """
     def transform(self):
-        print "Called Transform.transform"
+        print("Called Transform.transform")
         return True

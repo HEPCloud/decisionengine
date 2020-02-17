@@ -326,11 +326,11 @@ class Postgresql(ds.DataSource):
             colnames = [desc[0] for desc in cursor.description]
             res = cursor.fetchall()
             return colnames, res
-        except psycopg2.Error, msg:
+        except psycopg2.Error as msg:
             raise
         finally:
             try:
-                map(lambda x: x.close if x else None, (cursor, db))
+                list([x.close if x else None for x in (cursor, db)])
             except:
                 pass
 
@@ -344,7 +344,7 @@ class Postgresql(ds.DataSource):
             else:
                 cursor.execute(query_string)
             db.commit()
-        except psycopg2.Error, msg:
+        except psycopg2.Error as msg:
             try:
                 if db:
                     db.rollback()
@@ -356,7 +356,7 @@ class Postgresql(ds.DataSource):
                 db.rollback()
             raise
         finally:
-            map(lambda x: x.close if x else None, (cursor, db))
+            list([x.close if x else None for x in (cursor, db)])
 
     def _update_returning_result(self, query_string, values=None):
         db, cursor = None, None
@@ -371,7 +371,7 @@ class Postgresql(ds.DataSource):
             res = cursor.fetchone()
             db.commit()
             return res
-        except psycopg2.Error, msg:
+        except psycopg2.Error as msg:
             try:
                 if db:
                     db.rollback()
@@ -383,13 +383,13 @@ class Postgresql(ds.DataSource):
                 db.rollback()
             raise
         finally:
-            map(lambda x: x.close if x else None, (cursor, db))
+            list([x.close if x else None for x in (cursor, db)])
 
     def _insert(self, table_name_or_sql_query, record=None):
         if record:
             if isinstance(record, dict):
-                q = generate_insert_query(table_name_or_sql_query, record.keys())
-                return self._update(q, record.values())
+                q = generate_insert_query(table_name_or_sql_query, list(record.keys()))
+                return self._update(q, list(record.values()))
             else:
                 return self._update(table_name_or_sql_query, record)
         else:
@@ -398,8 +398,8 @@ class Postgresql(ds.DataSource):
     def _insert_returning_result(self, table_name_or_sql_query, record=None):
         if record:
             if isinstance(record, dict):
-                q = generate_insert_query(table_name_or_sql_query, record.keys())
-                return self._update_returning_result(q, record.values())
+                q = generate_insert_query(table_name_or_sql_query, list(record.keys()))
+                return self._update_returning_result(q, list(record.values()))
             else:
                 return self._update_returning_result(table_name_or_sql_query, record)
         else:

@@ -20,8 +20,6 @@ else
     return L (a topologically sorted order)
 """
 
-import types
-
 
 def tsort(graph):
     """
@@ -35,13 +33,13 @@ def tsort(graph):
 
     """
 
-    if isinstance(graph, types.ListType):
+    if isinstance(graph, list):
         graph = dict(graph)
     """
     count incoming edges for each vertex
     """
     incoming_edges = {}
-    for vertex, edges in graph.items():
+    for vertex, edges in list(graph.items()):
         incoming_edges.setdefault(vertex, 0)
         for edge in edges:
             incoming_edges[edge] = incoming_edges.get(edge, 0)+1
@@ -49,7 +47,7 @@ def tsort(graph):
     """
     create dict of vertices that have no incoming edges
     """
-    empty = {v for v, count in incoming_edges.items() if count == 0}
+    empty = {v for v, count in list(incoming_edges.items()) if count == 0}
 
     sorted_graph = []
 
@@ -71,7 +69,7 @@ def tsort(graph):
             if incoming_edges[edge] == 0:
                 empty.add(edge)
 
-    cyclic_graph = [v for v, count in incoming_edges.items() if count != 0]
+    cyclic_graph = [v for v, count in list(incoming_edges.items()) if count != 0]
 
     """
      if there are no cyclic dependencies the above list is None

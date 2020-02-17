@@ -138,7 +138,7 @@ class SourceProxy(Source.Source):
                 else:
                     retry_cnt += 1
                     time.sleep(self.retry_to)
-            except Exception, detail:
+            except Exception as detail:
                 self.logger.error('Error getting datablock for %s %s'%(self.source_channel, detail))
 
         if not data_block:
@@ -191,14 +191,14 @@ def module_config_template():
         }
     }
 
-    print "Entry in channel cofiguration"
+    print("Entry in channel cofiguration")
     pprint.pprint(d)
 
 def module_config_info():
     """
     print this module configuration information
     """
-    print "produces: available dynamically based on configuration"
+    print("produces: available dynamically based on configuration")
     module_config_template()
 
 

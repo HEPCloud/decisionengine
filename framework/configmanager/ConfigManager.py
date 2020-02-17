@@ -62,7 +62,7 @@ class ConfigManager(object):
         """
         sources = channel.get('sources')
         all_produces = set()
-        for sname, conf in sources.iteritems():
+        for sname, conf in sources.items():
             my_module = importlib.import_module(conf.get('module'))
             try:
                 produces = getattr(my_module, 'PRODUCES')
@@ -79,7 +79,7 @@ class ConfigManager(object):
         transforms = channel.get('transforms')
         transform_map = {}
 
-        for tname, conf in transforms.iteritems():
+        for tname, conf in transforms.items():
             my_module = importlib.import_module(conf.get('module'))
             try:
                 consumes = set(getattr(my_module, 'CONSUMES'))
@@ -105,12 +105,12 @@ class ConfigManager(object):
 
         graph = {}
         for i in range(len(transform_map)):
-            k1 = transform_map.keys()[i]
+            k1 = list(transform_map.keys())[i]
             c1 = set(transform_map[k1].get('consumes', []))
             p1 = set(transform_map[k1].get('produces', []))
             added = False
             for j in range(i + 1, len(transform_map)):
-                k2 = transform_map.keys()[j]
+                k2 = list(transform_map.keys())[j]
                 c2 = set(transform_map[k2].get('consumes', []))
                 p2 = set(transform_map[k2].get('produces', []))
                 if c2 & p1:
@@ -136,7 +136,7 @@ class ConfigManager(object):
         produces = {}
         for i in ('sources', 'transforms'):
             modules = channel_config.get(i, {})
-            for name, conf in modules.iteritems(): 
+            for name, conf in modules.items():
                 my_module = importlib.import_module(conf.get('module'))
                 try:
                     produces.setdefault(name, []).extend(getattr(my_module, 'PRODUCES'))

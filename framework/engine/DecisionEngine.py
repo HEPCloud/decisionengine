@@ -115,10 +115,10 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
     def rpc_print_product(self, product, columns=None, query=None):
         found = False
         txt = "Product {}: ".format(product)
-        for ch, worker in self.task_managers.items():
+        for ch, worker in list(self.task_managers.items()):
             channel_config = self.config_manager.get_channels()[ch]
             produces = self.config_manager.get_produces(channel_config)
-            r = filter(lambda x: product in x[1], produces.items())
+            r = [x for x in list(produces.items()) if product in x[1]]
             if not r:
                 continue
             found = True
@@ -162,9 +162,9 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         return txt[:-1]
 
     def rpc_print_products(self):
-        width = max(map(lambda x: len(x), self.task_managers.keys())) + 1
+        width = max([len(x) for x in list(self.task_managers.keys())]) + 1
         txt = ""
-        for ch, worker in self.task_managers.items():
+        for ch, worker in list(self.task_managers.items()):
             sname = TaskManager.STATE_NAMES[worker.task_manager.get_state()]
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
                                                                                       worker.task_manager.id,
@@ -184,9 +184,9 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                       "publishers"):
                 txt += "\t{}:\n".format(i)
                 modules = channel_config.get(i, {})
-                for mod_name, mod_config in modules.iteritems():
+                for mod_name, mod_config in modules.items():
                     txt += "\t\t{}\n".format(mod_name)
-                    products = produces.get(mod_name,[])
+                    products = produces.get(mod_name, [])
                     for product in products:
                         try:
                             df = data_block[product]
@@ -198,9 +198,9 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         return txt[:-1]
 
     def rpc_status(self):
-        width = max(map(lambda x: len(x), self.task_managers.keys())) + 1
+        width = max([len(x) for x in list(self.task_managers.keys())]) + 1
         txt=""
-        for ch, worker in self.task_managers.items():
+        for ch, worker in list(self.task_managers.items()):
             sname = TaskManager.STATE_NAMES[worker.task_manager.get_state()]
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
                                                                                       worker.task_manager.id,
@@ -213,7 +213,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                       "publishers"):
                 txt += "\t{}:\n".format(i)
                 modules = channel_config.get(i, {})
-                for mod_name, mod_config in modules.iteritems():
+                for mod_name, mod_config in modules.items():
                     txt += "\t\t{}\n".format(mod_name)
                     my_module = importlib.import_module(mod_config.get('module'))
                     produces = None
@@ -274,11 +274,11 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
             except Exception as e:
                 self.logger.error("Channel {} failed to start : {}".format(ch, str(e)))
 
-    def rpc_stop_channel(self,channel):
+    def rpc_stop_channel(self, channel):
         self.stop_channel(channel)
         return "OK"
 
-    def stop_channel(self,channel):
+    def stop_channel(self, channel):
         worker = self.task_managers[channel]
         if worker.task_manager.get_state() not in (TaskManager.SHUTTINGDOWN,
                                                    TaskManager.SHUTDOWN):
@@ -297,13 +297,13 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         return "OK"
 
     def stop_channels(self):
-        map(lambda x: x[1].task_manager.set_state(TaskManager.SHUTTINGDOWN),
-            self.task_managers.items())
-        channels = self.task_managers.keys()
+        for x in self.task_managers.items():
+            x[1].task_manager.set_state(TaskManager.SHUTTINGDOWN)
+        channels = list(self.task_managers.keys())
         for ch in channels:
             self.stop_channel(ch)
 
-    def handle_sighup(self, signum,frame):
+    def handle_sighup(self, signum, frame):
         self.stop_channels()
         self.reload_config()
         self.start_channels()
@@ -325,7 +325,7 @@ if __name__ == '__main__':
             raise RuntimeError("No channels configured")
 
         global_config = conf_manager.get_global_config()
-        server_address = global_config.get("server_address",("localhost", 8888))
+        server_address = global_config.get("server_address", ("localhost", 8888))
 
         server = DecisionEngine(conf_manager,
                                 server_address,
