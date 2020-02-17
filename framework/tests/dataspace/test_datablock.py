@@ -39,7 +39,7 @@ def are_dicts_same(x, y):
 
     return len(xitems) == len(yitems) and len(shared_items) == len(xitems)
 
-class TestDataBlock:
+class TestDataBlock(object):
 
     def test_datablock(self):
         print("Hello test_datablock")

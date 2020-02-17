@@ -2,7 +2,7 @@ import pytest
 from decisionengine.framework.util import tsort
 
 
-class TestTsort:
+class TestTsort(object):
 
     def test_tsort(self):
         a = [(3, [8, 10]),
