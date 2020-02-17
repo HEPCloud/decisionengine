@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
 import argparse
-import xmlrpclib
+try:
+    import xmlrpclib
+except ImportError:
+    import xmlrpc.client as xmlrpclib
 import pprint
 
 if __name__ == "__main__":
@@ -80,34 +83,34 @@ if __name__ == "__main__":
     s = xmlrpclib.ServerProxy(con_string, allow_none=True)
 
     if args.status:
-        print s.status()
+        print(s.status())
 
     if args.stop_channel:
-        print s.stop_channel(args.stop_channel)
+        print(s.stop_channel(args.stop_channel))
 
     if args.start_channel:
-        print s.start_channel(args.start_channel)
+        print(s.start_channel(args.start_channel))
 
     if args.stop_channels:
-        print s.stop_channels()
+        print(s.stop_channels())
 
     if args.start_channels:
-        print s.start_channels()
+        print(s.start_channels())
 
     if args.show_config:
         conf = s.show_config()
         pprint.pprint(conf)
 
     if args.reload_config:
-        print s.reload_config()
+        print(s.reload_config())
 
     if args.print_products:
-        print s.print_products()
+        print(s.print_products())
 
     if args.print_product:
-        print s.print_product(args.print_product,
+        print(s.print_product(args.print_product,
                               args.columns,
-                              args.query)
+                              args.query))
 
     if args.stop:
         s.stop()

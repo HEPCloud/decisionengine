@@ -27,7 +27,7 @@ class LogicError(TypeError):
 
 
 def function_name_from_call(callnode):
-    print "In name_from_call: ", callnode
+    print("In name_from_call: ", callnode)
     if (not isinstance(callnode, ast.Call)):
         raise LogicError("not a call node")
     if (isinstance(callnode.func, ast.Name)):

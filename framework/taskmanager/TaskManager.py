@@ -74,7 +74,7 @@ class Channel(object):
 
 # states
 
-BOOT, STEADY, OFFLINE, SHUTTINGDOWN, SHUTDOWN = range(5)
+BOOT, STEADY, OFFLINE, SHUTTINGDOWN, SHUTDOWN = list(range(5))
 STATE_NAMES = ['BOOT', 'STEADY', 'OFFLINE', 'SHUTTINGDOWN', 'SHUTDOWN']
 
 class TaskManager(object):
@@ -273,7 +273,7 @@ class TaskManager(object):
         :arg src: source Worker
         """
 
-        while 1:
+        while True:
             try:
                 logging.getLogger().info('Src %s calling acquire'%(src.name,))
                 data = src.worker.acquire()
@@ -372,9 +372,9 @@ class TaskManager(object):
         data_to = self.channel.task_manager.get('data_TO', TRANSFORMS_TO)
         consume_keys = transform.worker.consumes()
 
-        logging.getLogger().info('transform: %s expected keys: %s provided keys: %s'%(transform.name, consume_keys, data_block.keys()))
+        logging.getLogger().info('transform: %s expected keys: %s provided keys: %s'%(transform.name, consume_keys, list(data_block.keys())))
         loop_counter = 0
-        while 1:
+        while True:
             # Check if data is ready
             if set(consume_keys) <= set(data_block.keys()):
                 # data is ready -  may run transform()
@@ -462,15 +462,15 @@ if __name__ == '__main__':
     config_manager = configmanager.ConfigManager()
     config_manager.load()
     global_config = config_manager.get_global_config()
-    print 'GLOBAL CONF', global_config
+    print('GLOBAL CONF', global_config)
 
 
     try:
         de_logger.set_logging(log_file_name=global_config['logger']['log_file'],
                               max_file_size=global_config['logger']['max_file_size'],
                               max_backup_count=global_config['logger']['max_backup_count'])
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         sys.exit(1)
 
     my_logger = logging.getLogger('decision_engine')
@@ -499,7 +499,7 @@ if __name__ == '__main__':
     for ch in channels:
         task_managers[ch] = TaskManager(ch, taskmanager_id, generation_id, channels[ch], global_config)
 
-    for key, value in task_managers.iteritems():
+    for key, value in task_managers.items():
         p = multiprocessing.Process(target=value.run, args=(), name='Process-%s'%(key,), kwargs={})
         p.start()
 
@@ -507,8 +507,8 @@ if __name__ == '__main__':
         while True:
             if len(multiprocessing.active_children()) < 1:
                 break
-            for tm_name, tm in task_managers.iteritems():
-                print 'TM %s state %s'%(tm_name, STATE_NAMES[tm.get_state()])
+            for tm_name, tm in task_managers.items():
+                print('TM %s state %s'%(tm_name, STATE_NAMES[tm.get_state()]))
             time.sleep(10)
     except (SystemExit, KeyboardInterrupt):
         pass

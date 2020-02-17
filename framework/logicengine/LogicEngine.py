@@ -15,7 +15,7 @@ class LogicEngine(Module, object):
     def __init__(self, cfg):
         super(LogicEngine, self).__init__(cfg)
         self.logger = logging.getLogger()
-        self.facts = [NamedFact(name, expr) for name, expr in cfg["facts"].iteritems()]
+        self.facts = [NamedFact(name, expr) for name, expr in cfg["facts"].items()]
 
         # Only the names of facts are really needed. We pass in the
         # JSON form of the whole facts dictionary until the C++ is

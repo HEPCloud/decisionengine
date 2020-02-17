@@ -122,7 +122,7 @@ class SQLite3DB(decisionengine.framework.dataspace.datasource.DataSource):
 
 
     def connect(self):
-        print self.db_filename
+        print(self.db_filename)
         self.conn = sqlite3.connect(self.db_filename)
 
 
@@ -134,7 +134,7 @@ class SQLite3DB(decisionengine.framework.dataspace.datasource.DataSource):
         """
 
         try:
-            for table, cols in SQLite3DB.tables.iteritems():
+            for table, cols in SQLite3DB.tables.items():
                 if isinstance(cols, list):
                     cmd = """CREATE TABLE %s (%s)""" % (table, ', '.join(str(c) for c in cols))
                     cursor = self.conn.cursor()
@@ -173,7 +173,7 @@ class SQLite3DB(decisionengine.framework.dataspace.datasource.DataSource):
                 key, value)
             cursor = self.conn.cursor()
             cursor.execute(cmd)
-  
+
             # Insert header in the header table
             cmd = """INSERT INTO %s VALUES ("%s", %i, "%s", %f, %f, %f, "%s", "%s")""" % (
                 SQLite3DB.header_table, taskmanager_id, generation_id,
@@ -311,7 +311,7 @@ class SQLite3DB(decisionengine.framework.dataspace.datasource.DataSource):
     def duplicate_datablock(self, taskmanager_id, generation_id,
                             new_generation_id):
         """
-        For the given taskmanager_id, make a copy of the datablock with given 
+        For the given taskmanager_id, make a copy of the datablock with given
         generation_id, set the generation_id for the datablock copy
 
         :type taskmanager_id: :obj:`string`
@@ -363,7 +363,7 @@ class SQLite3DB(decisionengine.framework.dataspace.datasource.DataSource):
 
         :type taskmanager_id: :obj:`string`
         :arg taskmanager_id: taskmanager_id for generation to be retrieved
-        
+
         :rtype: :obj:`int`
 
         TODO: COALESCE is not safe. Find a better way check with DB experts
@@ -374,7 +374,7 @@ class SQLite3DB(decisionengine.framework.dataspace.datasource.DataSource):
 
             cursor = self.conn.cursor()
             cursor.execute(cmd)
-            value = cursor.fetchall()   
+            value = cursor.fetchall()
         except:
             raise
         return value[0][0]
@@ -388,7 +388,7 @@ class SQLite3DB(decisionengine.framework.dataspace.datasource.DataSource):
             cols = ['*']
         try:
             template = (taskmanager_id, generation_id, key)
-            
+
             #print cmd
             cmd = """SELECT %s FROM %s WHERE ((taskmanager_id=?) AND (generation_id=?) AND (key=?))""" % (', '.join(str(c) for c in cols), table)
             params = (taskmanager_id, generation_id, key)

@@ -5,5 +5,5 @@ class LogicEngine(Module.Module):
         super(LogicEngine, self).__init__(set_of_parameters)
 
     def evaluate(self, data_block):
-        print "Called LogicEngine.evaluate"
+        print("Called LogicEngine.evaluate")
         return True

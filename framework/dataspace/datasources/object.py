@@ -95,7 +95,7 @@ class ObjectDB(decisionengine.framework.dataspace.datasource.DataSource):
                 metadata['missed_update_count'])
 
     def get_datablock(self, taskmanager_id, generation_id):
-        return {k: v for (k, v) in ObjectDB._tables['dataproduct'].items() if (k[0]==taskmanager_id and k[1]==generation_id)}
+        return {k: v for (k, v) in list(ObjectDB._tables['dataproduct'].items()) if (k[0]==taskmanager_id and k[1]==generation_id)}
 
     def duplicate_datablock(self, taskmanager_id, generation_id,
                             new_generation_id):

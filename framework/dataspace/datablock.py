@@ -2,7 +2,10 @@
 
 import ast
 import copy
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import threading
 import time
 import uuid
@@ -28,7 +31,7 @@ STATE_EXPIRED = 'EXPIRED'
 
 def zdumps(obj):
     """
-    Pickle and compress     
+    Pickle and compress
     :param obj: a python object
     :return: compressed string
     """
@@ -39,12 +42,12 @@ def zdumps(obj):
 
 def zloads(zstring):
     """
-    Decompress and unpickle 
-    If input string is not a compressed string 
+    Decompress and unpickle
+    If input string is not a compressed string
     attempts to just unpickle the string.
-    
-    :param zstring: compressed string  
-    :return: returns python object  
+
+    :param zstring: compressed string
+    :return: returns python object
     """
     try:
         return pickle.loads(zlib.decompress(zstring))
@@ -54,19 +57,19 @@ def zloads(zstring):
 
 def compress(obj):
     """
-    Compress python object 
-    :param obj: python object 
-    :return: compressed string 
+    Compress python object
+    :param obj: python object
+    :return: compressed string
     """
     return zlib.compress(str(obj), 9)
 
 
 def decompress(zstring):
     """
-    Decompress a compressed string. 
+    Decompress a compressed string.
     Returns the same string if it is not compressed.
-    :param zstring: 
-    :return: uncompressed string 
+    :param zstring:
+    :return: uncompressed string
     """
     try:
         return zlib.decompress(zstring)
