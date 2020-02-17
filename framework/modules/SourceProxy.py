@@ -85,7 +85,7 @@ class SourceProxy(Source.Source):
           data_keys[key1] = (data_product_name, data_product_name_translation)
           ....
           or
-         
+
           data_keys[key1] = data_product_name
           ....
         """
@@ -134,7 +134,7 @@ class SourceProxy(Source.Source):
                         break
                     else:
                         retry_cnt += 1
-                        time.sleep(self.retry_to/3) # retry in 1/3 of configured TO
+                        time.sleep(self.retry_to//3) # retry in 1/3 of configured TO
                 else:
                     retry_cnt += 1
                     time.sleep(self.retry_to)
