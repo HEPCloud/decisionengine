@@ -1,11 +1,8 @@
-#!/usr/bin/python
-
 import abc
+import six
 
-
+@six.add_metaclass(abc.ABCMeta)
 class DataSource(object):
-
-    __metaclass__ = abc.ABCMeta
 
     #: Name of the taskmanager table
     taskmanager_table = 'taskmanager'
