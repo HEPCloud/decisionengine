@@ -1,4 +1,5 @@
 import importlib
+import six
 
 class DataSpaceConfigurationError(Exception):
     """
@@ -46,10 +47,8 @@ class Singleton(type):
 
         return cls._instances[cls]
 
-
-class DataSourceLoader(object):
-
-    __metaclass__ = Singleton
+@six.add_metaclass(Singleton)
+class DataSourceLoader():
 
     _ds = None
 
