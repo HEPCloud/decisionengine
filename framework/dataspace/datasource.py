@@ -2,7 +2,7 @@ import abc
 import six
 
 @six.add_metaclass(abc.ABCMeta)
-class DataSource():
+class DataSource(object):
 
     #: Name of the taskmanager table
     taskmanager_table = 'taskmanager'
