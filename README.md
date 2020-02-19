@@ -40,6 +40,7 @@ yum install mock
 yum install python2-boto3
 yum install python-psycopg2
 yum install python-setuptools
+yum install puppet-six
 
 easy_install DBUtils
 </pre>
