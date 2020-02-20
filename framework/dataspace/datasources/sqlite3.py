@@ -2,9 +2,6 @@
 
 import os
 import sqlite3
-import traceback
-import copy
-import ast
 import decisionengine.framework.dataspace.datasource
 
 #from UserDict import UserDict

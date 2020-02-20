@@ -7,7 +7,6 @@ import logging
 import time
 import sys
 import uuid
-import traceback
 import multiprocessing
 import pandas
 

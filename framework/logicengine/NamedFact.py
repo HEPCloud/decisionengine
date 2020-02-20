@@ -16,8 +16,6 @@ import ast
 # switch the definition of facts_globals to the commented-out
 # version.#
 
-import numpy as np
-import pandas as pd
 facts_globals = {}
 #facts_globals = {"np": np, "pd": pd}
 
