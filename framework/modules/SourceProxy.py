@@ -120,16 +120,16 @@ class SourceProxy(Source.Source):
         while retry_cnt < self.retries:
             try:
                 tm = self.dataspace.get_taskmanager(self.source_channel)
-                self.logger.debug('task manager %s'%(tm,))
+                self.logger.debug('task manager %s', tm)
                 if tm['taskmanager_id']:
                     # get last datablock
                     data_block = datablock.DataBlock(self.dataspace,
                                                      self.source_channel,
                                                      taskmanager_id = tm['taskmanager_id'],
                                                      sequence_id = tm['sequence_id'])
-                    self.logger.debug('data block %s'%(data_block,))
+                    self.logger.debug('data block %s', data_block)
                     if data_block and data_block.generation_id:
-                        self.logger.debug("DATABLOCK %s"%(data_block,))
+                        self.logger.debug("DATABLOCK %s", data_block)
                         # This is a valid datablock
                         break
                     else:
@@ -139,7 +139,7 @@ class SourceProxy(Source.Source):
                     retry_cnt += 1
                     time.sleep(self.retry_to)
             except Exception as detail:
-                self.logger.error('Error getting datablock for %s %s'%(self.source_channel, detail))
+                self.logger.error('Error getting datablock for %s %s', self.source_channel, detail)
 
         if not data_block:
             raise RuntimeError('Could not get data.')
@@ -160,7 +160,7 @@ class SourceProxy(Source.Source):
                             rc[k_out] = pd.DataFrame(self._get_data(data_block, k_in))
                             filled_keys.append(k)
                         except KeyError as ke:
-                            self.logger.debug("KEYERROR %s"%(ke,))
+                            self.logger.debug("KEYERROR %s", ke)
             if len(filled_keys) == len(self.data_keys):
                 break
             else:
@@ -169,7 +169,7 @@ class SourceProxy(Source.Source):
                 time.sleep(self.retry_to)
 
         if retry_cnt == self.retries and len(filled_keys) != len(self.data_keys):
-            raise RuntimeError('Could not get all data. Expected %s Filled %s'%(self.data_keys, filled_keys))
+            raise RuntimeError('Could not get all data. Expected %s Filled %s' % (self.data_keys, filled_keys))
         return rc
 
 def module_config_template():

@@ -43,7 +43,7 @@ class LogicEngine(Module, object):
 
         evaluated_facts = self.evaluate_facts(db)
         for key, val in evaluated_facts.items():
-            self.logger.info("Evaluated Fact: %s -> Value: %s -> TypeOf(Value): %s" % (key, val, type(val)))
+            self.logger.info("Evaluated Fact: %s -> Value: %s -> TypeOf(Value): %s", key, val, type(val))
 
         # Process rules
         self.logger.info("LE: calling execute")
