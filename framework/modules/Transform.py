@@ -4,6 +4,7 @@ from decisionengine.framework.modules import Module
 class Transform(Module.Module):
     def __init__(self, set_of_parameters):
         super(Transform, self).__init__(set_of_parameters)
+        self.name_list = []
 
     """
     name_list: A list of the data product names that
