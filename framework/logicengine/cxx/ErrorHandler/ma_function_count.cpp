@@ -1,10 +1,10 @@
-
 #include <ErrorHandler/ma_function_count.h>
 #include <ErrorHandler/ma_condition.h>
 #include <ErrorHandler/ma_participants.h>
 
 #include <boost/algorithm/string.hpp>
 
+#include <iostream>
 
 using namespace novadaq::errorhandler;
 
@@ -47,14 +47,3 @@ boost::any
 
   return boost::any(count);
 }
-
-
-
-
-
-
-
-
-
-
-
