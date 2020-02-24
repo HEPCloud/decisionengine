@@ -32,3 +32,5 @@ link_directories(
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 add_subdirectory(ErrorHandler)
+
+add_custom_target(liblinks ln -s ${CMAKE_BINARY_DIR}/ErrorHandler/RE.so ${CMAKE_SOURCE_DIR}/../ COMMAND ln -s ${CMAKE_BINARY_DIR}/ErrorHandler/libLogicEngine.so ${CMAKE_SOURCE_DIR}/../)
