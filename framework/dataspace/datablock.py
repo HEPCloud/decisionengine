@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import ast
 import copy
 try:
@@ -11,7 +9,11 @@ import time
 import uuid
 import zlib
 
-from UserDict import UserDict
+try:
+    from UserDict import UserDict
+except ImportError:
+    from collections import UserDict
+
 
 ###############################################################################
 # TODO:

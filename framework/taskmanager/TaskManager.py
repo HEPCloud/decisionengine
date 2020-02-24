@@ -455,7 +455,6 @@ class TaskManager(object):
 
 if __name__ == '__main__':
     import os
-    import string
 
     config_manager = configmanager.ConfigManager()
     config_manager.load()
@@ -480,7 +479,7 @@ if __name__ == '__main__':
         with open(os.path.abspath(channel_conf), 'r') as f:
             channels = {}
             channel_name = channel_name.split('.')[0]
-            code = 'channels[channel_name]=' + string.join(f.readlines(), '')
+            code = 'channels[channel_name]=' + ''.join(f.readlines())
             exec(code)
     else:
         channels = config_manager.get_channels()

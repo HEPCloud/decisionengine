@@ -1,4 +1,3 @@
-import string
 import time
 
 import DBUtils.PooledDB
@@ -28,7 +27,7 @@ def generate_insert_query(table_name, keys):
     query = """
     INSERT INTO {} ({}) VALUES ({})
     """
-    query = query.format(table_name, string.join(keys, ","), ("%s,"*len(keys))[:-1])
+    query = query.format(table_name, ",".join(keys), ("%s,"*len(keys))[:-1])
     return query
 
 SELECT_QUERY = """

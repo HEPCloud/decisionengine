@@ -160,7 +160,7 @@ class ConfigManager(object):
         code = None
         try:
             with open(self.config_file, "r") as f:
-                code = "self.global_config=" + string.join(f.readlines(), "")
+                code = "self.global_config=" + "".join(f.readlines())
             if code:
                 try:
                     exec(code)
@@ -194,7 +194,7 @@ class ConfigManager(object):
             channel_conf = os.path.join(self.channel_config_dir, direntry)
             try:
                 with open(os.path.abspath(channel_conf), "r") as f:
-                    code = "self.channels[name]=" + string.join(f.readlines(), "")
+                    code = "self.channels[name]=" + "".join(f.readlines())
                     try:
                         exec(code)
                     except Exception as msg:
