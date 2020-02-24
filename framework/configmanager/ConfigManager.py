@@ -27,6 +27,7 @@ class ConfigManager(object):
         self.channels = {}
         self.config = {}
         self.logger = None
+        self.last_update_time = 0.0
 
     def check_keys(self, channel_conf_dict):
         """

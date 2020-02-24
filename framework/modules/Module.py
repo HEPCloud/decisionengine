@@ -4,6 +4,7 @@ class Module(object):
 
     def __init__(self, set_of_parameters):
         self.parameters = set_of_parameters
+        self.data_block = None
 
     def get_paramaters(self):
         return self.parameters
