@@ -11,7 +11,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 #OpenSSL Libraries
 find_package(Boost REQUIRED)
-find_package(PythonLibs 3.6)
+find_package(PythonLibs ${PYVER})
 
 # for vim ycm plugin
 set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
