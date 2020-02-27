@@ -14,15 +14,37 @@ matrix:
     - python: "pypy"
     - python: "pypy3"
 
+# Just some useful info and minor env fixes
+before_install:
+  - uname -a
+  - python -VV
+  - pip install -U pip
+  - pip install -U pytest
+
+# Environment variables
+env:
+  - LD_LIBRARY_PATH="${TRAVIS_BUILD_DIR}/framework/logicengine/"   PYTHON_PATH=$(dirname ${TRAVIS_BUILD_DIR})
+
 # command to install dependencies
 install:
-  - python -VV
+  - sudo apt-get -y install cmake libboost-all-dev g++
+  - mkdir -p ${TRAVIS_BUILD_DIR}/framework/logicengine/cxx/build
+  - cd ${TRAVIS_BUILD_DIR}/framework/logicengine/cxx/build
+  - cmake ..
+  - make
+  - make liblinks
+  - cd ${TRAVIS_BUILD_DIR}
   - pip install -r requirements.txt
   - pip install coveralls
 
+# Just some useful info
+before_script:
+  - set
+
 # command to run tests
 script:
-  - pytest
+  - cd ${TRAVIS_BUILD_DIR}/../
+  - pytest -v -l --tb=native
 
 # hook into coveralls
 after_success:
