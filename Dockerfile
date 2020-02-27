@@ -30,4 +30,6 @@ RUN yum -y install python-boto3
 RUN yum -y install python-psycopg2
 RUN yum -y install python-setuptools
 RUN easy_install DBUtils
+RUN yum -y install cmake3 python3-devel
+RUN yum -y clean all
 ENTRYPOINT ["/bin/bash"]

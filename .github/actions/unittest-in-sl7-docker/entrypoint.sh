@@ -2,7 +2,7 @@
 export PYTHONPATH=`pwd`
 mkdir decisionengine/framework/logicengine/cxx/build
 cd decisionengine/framework/logicengine/cxx/build
-cmake ..
+cmake3 ..
 make VERBOSE=1
 cd ../../
 ln -s cxx/build/ErrorHandler/RE.so
