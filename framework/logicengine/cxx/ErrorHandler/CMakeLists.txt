@@ -1,4 +1,3 @@
-
 add_library(LogicEngine SHARED
     jsoncpp.cc
     ma_action.cpp
@@ -14,9 +13,6 @@ add_library(LogicEngine SHARED
     ma_domain_cond.cpp
     ma_domain_expr.cpp
     ma_function.cpp
-    ma_function_count.cpp
-    ma_function_countpercent.cpp
-    ma_function_is_syncd.cpp
     ma_hitmap.cpp
     ma_parse.cpp
     ma_participants.cpp
