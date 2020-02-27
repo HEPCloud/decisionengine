@@ -22,11 +22,12 @@ yum install git*
 yum install python-unittest2
 yum install python-behave
 yum install tmux
-yum install cmake
+yum install cmake3
 yum install boost
 yum install boost-devel
 yum install libevent-devel
 yum install ncurses-devel
+yum install python3-devel
 yum install ipython
 yum install matplotlib
 yum install python-matplotlib
@@ -40,7 +41,7 @@ yum install mock
 yum install python2-boto3
 yum install python-psycopg2
 yum install python-setuptools
-yum install puppet-six
+yum install puppet-six(? under SL7 this is not found)
 
 easy_install DBUtils
 </pre>

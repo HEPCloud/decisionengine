@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.0)
 
 project(logicengine)
 
@@ -11,7 +11,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 #OpenSSL Libraries
 find_package(Boost REQUIRED)
-find_package(PythonLibs)
+find_package(PythonLibs 3.6)
 
 # for vim ycm plugin
 set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
