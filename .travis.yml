@@ -1,4 +1,5 @@
 language: python
+os: linux
 
 # What versions of python do we test with
 python:
@@ -8,8 +9,8 @@ python:
   - "pypy"
   - "pypy3"
 
-matrix:
-  allow_failuers:
+jobs:
+  allow_failures:
     # These don't need to work, but be nice if they did
     - python: "pypy"
     - python: "pypy3"
@@ -27,7 +28,7 @@ env:
 
 # command to install dependencies
 install:
-  - sudo apt-get -y install cmake libboost-all-dev g++
+  - sudo apt-get -y install cmake libboost-all-dev g++ python-dev
   - mkdir -p ${TRAVIS_BUILD_DIR}/framework/logicengine/cxx/build
   - cd ${TRAVIS_BUILD_DIR}/framework/logicengine/cxx/build
   - cmake ..
