@@ -1,21 +1,22 @@
 on: [pull_request]
 
 jobs:
-  unit_test_job:
+  pylint_job:
     runs-on: ubuntu-latest
-    name: A job to run unit tests
+    name: A job to build the decision engine rpm
     steps:
     - uses: actions/checkout@v2
     - name: Checkout
       uses: actions/checkout@v2
       with:
         path: 'decisionengine'
-    - name: unit test action step
-      id: unit_test
-      uses: ./.github/actions/unittest-in-sl7-docker
-    - name: Archive unittest log
+      id: checkout
+    - name: pylint action step
+      uses: ./.github/actions/pylint-in-sl7-docker
+      id: pylint
+    - name: Archive reports
       if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: test-log
-        path: test.log
+        name: reports
+        path: logs.tar.bz2

@@ -1,0 +1,28 @@
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+      - 0*
+
+jobs:
+  rpm_build_job:
+    runs-on: ubuntu-latest
+    name: A job to build the decision engine rpm
+    steps:
+    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        path: 'decisionengine'
+      id: checkout
+    - name: rpm build action step
+      uses: ./.github/actions/rpmbuild-in-sl7-docker
+      id: rpm_build
+    - name: Archive rpm
+      if: always()
+      uses: actions/upload-artifact@v1
+      with:
+        name: rpms
+        path: rpmbuild.tar

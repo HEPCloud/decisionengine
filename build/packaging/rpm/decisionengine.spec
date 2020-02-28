@@ -35,7 +35,7 @@ URL:            http://hepcloud.fnal.gov
 Source0:        decisionengine.tar.gz
 
 BuildArch:      x86_64
-BuildRequires:  cmake
+BuildRequires:  cmake3
 #BuildRequires:  cmake numpy numpy-f2py python-pandas
 BuildRequires:  boost-python boost-regex boost-system
 #Requires:       numpy >= 1.7.1
@@ -80,7 +80,7 @@ The testcase used to try out the Decision Engine.
 pwd
 mkdir %{le_builddir}
 cd %{le_builddir}
-cmake ..
+cmake3 ..
 make
 [ -e ../../RE.so ] && rm ../../RE.so
 [ -e ../../libLogicEngine.so ] && rm ../../libLogicEngine.so
