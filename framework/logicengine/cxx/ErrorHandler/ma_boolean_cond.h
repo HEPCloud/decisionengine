@@ -6,9 +6,9 @@
 #include <ErrorHandler/ma_types.h>
 
 #include <boost/any.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <list>
+#include <memory>
 
 namespace novadaq {
   namespace errorhandler {
@@ -119,12 +119,12 @@ namespace novadaq {
       bool rhv_b;
       double rhv_d;
       string_t rhv_s;
-      boost::shared_ptr<ma_function> ext_func;
+      std::shared_ptr<ma_function> ext_func;
 
       // shared_ptr to an boolean expression
       //   a smart pointer to an boolean expression object
       //   DOES own the expression object
-      boost::shared_ptr<ma_boolean_expr> expr;
+      std::shared_ptr<ma_boolean_expr> expr;
     };
 
     typedef std::list<ma_boolean_cond> boolean_conds_t;

@@ -11,11 +11,11 @@
 #include <ErrorHandler/ma_utils.h>
 
 // from ups
-#include <boost/shared_ptr.hpp>
 //#include <fhiclcpp/ParameterSet.h>
 
 // sys headers
 #include <map>
+#include <memory>
 #include <sys/time.h>
 
 namespace novadaq {
@@ -229,7 +229,7 @@ namespace novadaq {
       strings_t str_facts;
     };
 
-    typedef boost::shared_ptr<ma_rule> rule_sp;
+    typedef std::shared_ptr<ma_rule> rule_sp;
     typedef std::map<string_t, ma_rule> rule_map_t;
 
   } // end of namespace errorhandler

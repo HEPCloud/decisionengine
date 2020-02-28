@@ -5,11 +5,8 @@
 #include <ErrorHandler/ma_condition.h>
 #include <ErrorHandler/ma_types.h>
 
-// from ups
-#include <boost/shared_ptr.hpp>
-
-// from system
 #include <list>
+#include <memory>
 
 namespace novadaq {
   namespace errorhandler {
@@ -61,7 +58,7 @@ namespace novadaq {
 
       // case EXPR: an expression
       // it has to be a ptr to domain_expression to avoid circulic inclusion
-      boost::shared_ptr<ma_domain_expr> expr;
+      std::shared_ptr<ma_domain_expr> expr;
     };
 
     typedef std::list<ma_domain_cond> domain_conds_t;

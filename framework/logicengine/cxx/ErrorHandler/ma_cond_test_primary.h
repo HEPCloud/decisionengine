@@ -5,9 +5,9 @@
 #include <ErrorHandler/ma_types.h>
 
 #include <boost/any.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <list>
+#include <memory>
 
 namespace novadaq {
   namespace errorhandler {
@@ -32,7 +32,7 @@ namespace novadaq {
     private:
       cond_type_t cond_type;
 
-      boost::shared_ptr<ma_test_function> func;
+      std::shared_ptr<ma_test_function> func;
 
       compare_op_t op;
       bool rhv_b;
@@ -40,7 +40,7 @@ namespace novadaq {
       string_t rhv_s;
 
       // shared_ptr to a test expression
-      boost::shared_ptr<ma_cond_test_expr> expr;
+      std::shared_ptr<ma_cond_test_expr> expr;
     };
 
     typedef std::list<ma_cond_test_primary> test_primaries_t;

@@ -8,8 +8,8 @@
 // ----------------------------------------------------------
 
 #include <boost/any.hpp>
-#include <boost/function.hpp>
 
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -37,7 +37,7 @@ namespace novadaq {
       }
     };
 
-    typedef boost::function<ma_test_function*()> gen_test_t;
+    typedef std::function<ma_test_function*()> gen_test_t;
 
     struct ma_test_function_factory {
       typedef std::map<std::string, gen_test_t> gen_map_t;

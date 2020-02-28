@@ -2,7 +2,7 @@
 #define ERROR_HANDLER_MA_TIMING_EVENT_H
 
 #include <ErrorHandler/ma_types.h>
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 #include <queue>
 
 namespace novadaq {
@@ -76,7 +76,7 @@ namespace novadaq {
       event_queue_t queue;
 
     public:
-      boost::mutex lock;
+      std::mutex lock;
     };
 
   }

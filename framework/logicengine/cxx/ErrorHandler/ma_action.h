@@ -1,6 +1,7 @@
 #ifndef ERROR_HANDLER_MA_ACTION_H
 #define ERROR_HANDLER_MA_ACTION_H
 
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -10,7 +11,6 @@
 //#include <fhiclcpp/ParameterSet.h>
 
 #include <boost/any.hpp>
-#include <boost/function.hpp>
 
 namespace novadaq {
   namespace errorhandler {
@@ -40,7 +40,7 @@ namespace novadaq {
 
     typedef std::vector<ma_action*> ma_actions;
 
-    typedef boost::function<ma_action*(ma_rule const*, pset_t const&)>
+    typedef std::function<ma_action*(ma_rule const*, pset_t const&)>
       gen_act_t;
 
     struct ma_action_factory {

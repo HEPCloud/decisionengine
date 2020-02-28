@@ -1,6 +1,7 @@
 #ifndef ERROR_HANDLER_MA_FUNCTION_H
 #define ERROR_HANDLER_MA_FUNCTION_H
 
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -8,7 +9,6 @@
 #include <ErrorHandler/ma_types.h>
 
 #include <boost/any.hpp>
-#include <boost/function.hpp>
 
 namespace novadaq {
   namespace errorhandler {
@@ -89,7 +89,7 @@ namespace novadaq {
     private:
     };
 
-    typedef boost::function<ma_function*()> gen_func_t;
+    typedef std::function<ma_function*()> gen_func_t;
 
     struct ma_function_factory {
       typedef std::map<std::string, gen_func_t> gen_map_t;

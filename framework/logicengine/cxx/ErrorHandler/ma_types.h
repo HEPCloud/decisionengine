@@ -12,13 +12,13 @@
 //#include <Extensions/interface/QtDDSReceiver.h>
 //#include <messagefacility/MessageLogger/MessageLogger.h>
 
-#include <boost/function.hpp>
 #include <boost/multi_array.hpp>
-#include <boost/shared_ptr.hpp>
 
 // system includes
+#include <functional>
 #include <list>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -125,7 +125,7 @@ namespace novadaq {
 
     typedef int sev_code_t;
     typedef std::list<msg_t> msgs_t;
-    typedef boost::shared_ptr<msgs_t> msgs_sp_t;
+    typedef std::shared_ptr<msgs_t> msgs_sp_t;
 
     typedef boost::multi_array_types::index_range range;
     typedef std::map<string_t, size_t> idx_t;
@@ -208,10 +208,10 @@ namespace novadaq {
     const unsigned int TARGET_CHANGE = 0x04;
 
     // alarm callback funtion type
-    typedef boost::function<void(string_t const&, string_t const&)> alarm_fn_t;
+    typedef std::function<void(string_t const&, string_t const&)> alarm_fn_t;
 
     // condition match callback function type
-    typedef boost::function<void(string_t const&)> cond_match_fn_t;
+    typedef std::function<void(string_t const&)> cond_match_fn_t;
 
     // alert message type
     enum message_type_t {

@@ -7,7 +7,6 @@
 #include <ErrorHandler/ma_types.h>
 
 #include <ErrorHandler/ma_timing_event.h>
-#include <boost/thread.hpp>
 
 namespace novadaq {
   namespace errorhandler {
@@ -251,9 +250,6 @@ namespace novadaq {
 
       // a list of scheduled events
       ma_timing_events events;
-
-      // event thread
-      // boost::thread event_worker_t;
 
       // whether this engine is an Error Handler Supervisor
       bool EHS;

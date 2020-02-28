@@ -1,4 +1,3 @@
-
 #include <ErrorHandler/ma_rule_engine.h>
 
 //#include <cetlib/filepath_maker.h>
@@ -245,7 +244,7 @@ ma_rule_engine::event_worker()
     // loop for all past due events, and execute them
     {
       // scoped lock
-      boost::mutex::scoped_lock lock(events.lock);
+      std::lock_guard<std::mutex> lock(events.lock);
 
       conds_t status;
       event_queue_t & eq = events.event_queue();

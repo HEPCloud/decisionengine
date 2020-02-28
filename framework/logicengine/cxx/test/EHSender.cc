@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <time.h>
@@ -12,8 +13,6 @@
 
 #include <DAQMessages/ccpp_ErrorHandlerMessages.h>
 
-#include <boost/shared_ptr.hpp>
-
 using namespace gov::fnal::cd::rms;
 
 int
@@ -21,7 +20,7 @@ main()
 {
 
   // create the connection to RMS
-  boost::shared_ptr<provider::DDSConnection> rmsConnection(
+  std::shared_ptr<provider::DDSConnection> rmsConnection(
     new provider::DDSConnection("EHTestApplication", 0));
 
   // create the destination that represents where we will receive

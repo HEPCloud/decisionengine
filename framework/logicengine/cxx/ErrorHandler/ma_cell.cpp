@@ -1,4 +1,3 @@
-
 #include <ErrorHandler/ma_cell.h>
 #include <ErrorHandler/ma_condition.h>
 
@@ -62,7 +61,7 @@ ma_cell::hit(msg_t const& msg,
     new_state = cond.at_least() ? true : false;
 
     // lock
-    boost::mutex::scoped_lock lock(cond.timing_events().lock);
+    std::lock_guard<std::mutex> lock(cond.timing_events().lock);
 
     // schedule event
     // t0 = events.front();
@@ -75,7 +74,7 @@ ma_cell::hit(msg_t const& msg,
   }
   else if (cond.at_most()) {
     // lock
-    boost::mutex::scoped_lock lock(cond.timing_events().lock);
+    std::lock_guard<std::mutex> lock(cond.timing_events().lock);
 
     // not reached the critical size
     // for occur_at_least, do nothing.

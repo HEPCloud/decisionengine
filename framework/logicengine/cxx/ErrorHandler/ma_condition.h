@@ -10,7 +10,6 @@
 
 // from ups
 #include <boost/regex.hpp>
-#include <boost/shared_ptr.hpp>
 
 // sys headers
 #include <list>
