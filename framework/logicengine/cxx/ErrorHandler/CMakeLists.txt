@@ -1,3 +1,9 @@
+include_directories(
+    ${PROJECT_SOURCE_DIR}
+    ${Boost_INCLUDE_DIRS}
+    ${PYTHON_INCLUDE_DIRS}
+)
+
 add_library(LogicEngine SHARED
     jsoncpp.cc
     ma_action.cpp
