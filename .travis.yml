@@ -12,6 +12,7 @@ jobs:
   allow_failures:
     # These don't need to work, but be nice if they did
     - python: "2.7"
+    # https://svn.boost.org/trac10/ticket/4125
     - python: "pypy3"
 
   fast_finish: true
@@ -24,8 +25,19 @@ before_install:
 
   # setup the 'simple major ver' link, missing for some versions on travis-ci....
   - if [[ ! -e /opt/python/${TRAVIS_PYTHON_VERSION} ]]; then
-        cd /opt/python/;
-        ln -s $(python -c 'import sys;print("%d.%d.%d" % sys.version_info[:3])') ${TRAVIS_PYTHON_VERSION};
+        sudo ln -s /opt/python/$(python -c 'import sys;print("%d.%d.%d" % sys.version_info[:3])') /opt/python/${TRAVIS_PYTHON_VERSION};
+    fi
+
+  # some things don't look for pymalloc version
+  - if [[ ! -e /opt/python/${TRAVIS_PYTHON_VERSION}/include/python${TRAVIS_PYTHON_VERSION} ]]; then
+        sudo ln -s /opt/python/${TRAVIS_PYTHON_VERSION}/include/python${TRAVIS_PYTHON_VERSION}m /opt/python/${TRAVIS_PYTHON_VERSION}/include/python${TRAVIS_PYTHON_VERSION};
+    fi
+
+  # old cmake and boost can't always find pypy
+  - if [[ -e /opt/python/${TRAVIS_PYTHON_VERSION}/lib/libpypy3-c.so ]]; then
+        PYPYVER=$(python -c 'import sys; print("%d.%d" % (sys.version_info.major, sys.version_info.minor))');
+        sudo ln -s /opt/python/${TRAVIS_PYTHON_VERSION}/lib/libpypy3-c.so /opt/python/${TRAVIS_PYTHON_VERSION}/lib/libpython3.so;
+        sudo ln -s /opt/python/${TRAVIS_PYTHON_VERSION}/lib/libpypy3-c.so /opt/python/${TRAVIS_PYTHON_VERSION}/lib/libpython${PYPYVER}.so;
     fi
 
 # Environment variables
@@ -34,7 +46,17 @@ env:
 
 # commands to install any dependencies
 install:
-  - sudo apt-get -y install cmake libboost-all-dev g++
+
+  # build a local boost with our specific python
+  - sudo apt-get install -y wget libicu-dev zlib1g-dev libbz2-dev g++
+  - cd ~/
+  - sudo chown -R travis /usr/local/
+  ## This version of boost matches the default version in travis
+  - travis_retry wget -c http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz
+  - tar xf boost_1_58_0.tar.gz
+  - cd boost_1_58_0
+  - ./bootstrap.sh --with-python=$(which python) --with-python-root=/opt/python/${TRAVIS_PYTHON_VERSION}/
+  - ./b2 -q --prefix=/usr/local/ cxxflags=-fpermissive include=/opt/python/${TRAVIS_PYTHON_VERSION}/include/ install  -j 6
 
     # Setup pkg-config and cmake search paths to use the virtualenv python from travis
   - export PKG_CONFIG_PATH="/opt/python/${TRAVIS_PYTHON_VERSION}/lib/pkgconfig"
@@ -43,6 +65,7 @@ install:
   - export PYVER=$(python -c 'import sys; print("%d.%d" % (sys.version_info.major, sys.version_info.minor))')
 
   # run cmake and build logic engine
+  - sudo apt-get -y install cmake g++
   - mkdir -p ${TRAVIS_BUILD_DIR}/framework/logicengine/cxx/build
   - cd ${TRAVIS_BUILD_DIR}/framework/logicengine/cxx/build
   - cmake -DPYVER=${PYVER} -DCMAKE_LIBRARY_PATH="${CMAKE_LIBRARY_PATH}" -DCMAKE_INCLUDE_PATH="${CMAKE_INCLUDE_PATH}" ..

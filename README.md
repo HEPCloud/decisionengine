@@ -3,6 +3,8 @@ HEPCloud Decision Engine framework
 
 # Building RPMs
 
+At this time we recommend Boost version 1.58 or newer.  You may need to complile this for your python interpreter.
+
 * REQUIREMENTS: RHEL 7
 
 * Install dependencies. Following is more than required and needs to be trimmed
