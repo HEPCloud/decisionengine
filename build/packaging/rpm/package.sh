@@ -50,7 +50,8 @@ mkdir -p $product_release_dir
 cp -r $source_dir/*  $product_release_dir
 cd $release_dir
 tar --exclude=.git --exclude=.gitignore --exclude=doc --exclude=cxx/build \
-    --exclude=readme --exclude=.cache \
+    --exclude=readme --exclude=.cache --exclude=Dockerfile --exclude=requirements.txt \
+    --exclude=decisionengine/decisionengine \
     -czf $release_tar decisionengine
 
 cp $release_tar $RPM_TOPDIR/SOURCES

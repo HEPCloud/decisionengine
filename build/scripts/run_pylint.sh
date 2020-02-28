@@ -43,7 +43,7 @@ process_branch() {
     le_builddir=$DECISIONENGINE_SRC/framework/logicengine/cxx/build
     mkdir $le_builddir
     cd $le_builddir
-    cmake --debug-output ..
+    cmake3 --debug-output ..
     make --debug
     [ -e ../../RE.so ] && rm ../../RE.so
     [ -e ../../libLogicEngine.so ] && ../../libLogicEngine.so
