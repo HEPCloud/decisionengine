@@ -75,15 +75,4 @@ void novadaq::errorhandler::domain_and(ma_cond_domains & d)
   while(++it!=d.end())  domain_and(d.front(), *it);
 }
 
-
 #endif
-
-
-
-
-
-
-
-
-
-

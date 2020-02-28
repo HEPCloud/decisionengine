@@ -1,44 +1,32 @@
 #ifndef ERROR_HANDLER_MA_COND_TEST_ANDEXPR_H
 #define ERROR_HANDLER_MA_COND_TEST_ANDEXPR_H
 
-
 #include <ErrorHandler/ma_cond_test_primary.h>
 
 #include <list>
 
-
 namespace novadaq {
-namespace errorhandler {
+  namespace errorhandler {
 
+    class ma_cond_test_andexpr {
+    public:
+      ma_cond_test_andexpr() : primaries() {}
 
-class ma_cond_test_andexpr
-{
-public:
+      bool evaluate(ma_condition const* cond) const;
 
-  ma_cond_test_andexpr( ) : primaries() { }
+      void
+      insert(ma_cond_test_primary const& primary)
+      {
+        primaries.push_back(primary);
+      }
 
-  bool evaluate( ma_condition const * cond ) const;
+    private:
+      test_primaries_t primaries;
+    };
 
-  void insert( ma_cond_test_primary const & primary )
-    { primaries.push_back(primary); }
+    typedef std::list<ma_cond_test_andexpr> test_andexprs_t;
 
-private:
-
-  test_primaries_t primaries;
-
-};
-
-typedef std::list<ma_cond_test_andexpr> test_andexprs_t;
-
-
-} // end of namespace errorhandler
+  } // end of namespace errorhandler
 } // end of namespace novadaq
 
-
-
 #endif
-
-
-
-
-
