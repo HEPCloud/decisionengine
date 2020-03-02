@@ -11,6 +11,14 @@ jobs:
       with:
         path: 'decisionengine'
       id: checkout
+    - name: Cache pip
+      uses: actions/cache@v1
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
     - name: pylint action step
       uses: ./.github/actions/pylint-in-sl7-docker
       id: pylint
