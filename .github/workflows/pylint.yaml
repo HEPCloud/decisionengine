@@ -3,7 +3,7 @@ on: [pull_request]
 jobs:
   pylint_job:
     runs-on: ubuntu-latest
-    name: A job to build the decision engine rpm
+    name: A job to run pylint action
     steps:
     - uses: actions/checkout@v2
     - name: Checkout
@@ -11,13 +11,13 @@ jobs:
       with:
         path: 'decisionengine'
       id: checkout
-    - name: Cache pip
+    - name: Cache venv
       uses: actions/cache@v1
       with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip
+        path: ./venv
+        key: ${{ runner.os }}-venv
         restore-keys: |
-          ${{ runner.os }}-pip-
+          ${{ runner.os }}-venv
           ${{ runner.os }}-
     - name: pylint action step
       uses: ./.github/actions/pylint-in-sl7-docker
