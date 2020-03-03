@@ -19,7 +19,7 @@ def test_rule_that_fires():
     assert len(result) == 2
     actions = result["actions"]
     newfacts = result["newfacts"]
-    assert isinstance(actions, dict)    
+    assert isinstance(actions, dict)
     assert isinstance(newfacts, pd.DataFrame)
     assert actions["r1"] == ["a1", "a2"]
     assert len(actions) == 1
