@@ -1,5 +1,6 @@
 from decisionengine.framework.logicengine.LogicEngine import LogicEngine
 import pytest
+import pandas as pd
 
 @pytest.fixture
 def myengine():
@@ -20,13 +21,11 @@ def test_rule_that_fires():
     actions = result["actions"]
     newfacts = result["newfacts"]
     assert isinstance(actions, dict)
-    assert isinstance(newfacts, dict)
+    assert isinstance(newfacts, pd.DataFrame)
     assert actions["r1"] == ["a1"]
     assert actions["r2"] == ["a2"]
     assert len(actions) == 2
-    assert newfacts["r1"] == {}
-    assert newfacts["r2"] == {}
-    assert len(newfacts) == 2
+    assert newfacts.empty
 
 
 def test_rule_that_does_not_fire():
@@ -42,10 +41,8 @@ def test_rule_that_does_not_fire():
     actions = result["actions"]
     newfacts = result["newfacts"]
     assert isinstance(actions, dict)
-    assert isinstance(newfacts, dict)
+    assert isinstance(newfacts, pd.DataFrame)
     assert len(actions) == 2
     assert actions["r1"] == []
     assert actions["r2"] == []
-    assert newfacts["r1"] == {}
-    assert newfacts["r2"] == {}
-    assert len(newfacts) == 2
+    assert newfacts.empty

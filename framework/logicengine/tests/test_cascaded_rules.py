@@ -1,3 +1,4 @@
+import pandas as pd
 from decisionengine.framework.logicengine.LogicEngine import LogicEngine
 import pytest
 
@@ -22,20 +23,20 @@ def test_rule_that_fires():
     actions = result["actions"]
     newfacts = result["newfacts"]
     assert isinstance(actions, dict)
-    assert isinstance(newfacts, dict)
+    assert isinstance(newfacts, pd.DataFrame)
     assert len(actions) == 4
     assert actions["r1"] == ["a1"]
     assert actions["r2"] == ["a2"]
     assert actions["r3"] == []
     assert actions["r4"] == ["a4"]
+    assert len(newfacts) == 3
+    newfacts_d = newfacts.set_index("rule_name").T.to_dict("list")
 
-    assert len(newfacts) == 4
-    assert newfacts["r1"] == {"f2": True}
-    assert newfacts["r2"] == {"f3": True}
-    assert newfacts["r3"] == {"f4": True}
-    assert newfacts["r4"] == {}
+    assert newfacts_d["r1"] == ["f2", True]
+    assert newfacts_d["r2"] == ["f3", True]
+    assert newfacts_d["r3"] == ["f4", True]
 
-def test_rule_that_does_not_file():
+def test_rule_that_does_not_fire():
     db = {"val": 5}
     ef = myengine().evaluate_facts(db)
     assert ef["f1"] is False
@@ -45,15 +46,15 @@ def test_rule_that_does_not_file():
     actions = result["actions"]
     newfacts = result["newfacts"]
     assert isinstance(actions, dict)
-    assert isinstance(newfacts, dict)
+    assert isinstance(newfacts, pd.DataFrame)
     assert len(actions) == 4
     assert actions["r1"] == []
     assert actions["r2"] == []
     assert actions["r3"] == []
     assert actions["r4"] == ["fa4"]
+    assert len(newfacts) == 3
+    newfacts_d = newfacts.set_index("rule_name").T.to_dict("list")
 
-    assert len(newfacts) == 4
-    assert newfacts["r1"] == {"f2": False}
-    assert newfacts["r2"] == {"f3": False}
-    assert newfacts["r3"] == {"f4": False}
-    assert newfacts["r4"] == {}
+    assert newfacts_d["r1"] == ["f2", False]
+    assert newfacts_d["r2"] == ["f3", False]
+    assert newfacts_d["r3"] == ["f4", False]

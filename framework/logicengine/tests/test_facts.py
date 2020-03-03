@@ -7,7 +7,7 @@ def test_simple_fact():
     assert fact.evaluate({"z": 50}) is True
     assert fact.evaluate({"z": 100}) is False
     assert fact.evaluate({"z": 200}) is False
-    assert set(fact.required_names()) is set(["z"])
+    #assert set(fact.required_names()) is set(["z"])
     assert fact.required_names() == ["z"]
 
 def test_compound_fact():
@@ -47,8 +47,3 @@ def test_fact_using_numpy_function():
     assert set(fact.required_names()) == set(["vals", "np"])
     with pytest.raises(BaseException):
         fact.evaluate(make_db(3))
-
-def test_no_numpy_found():
-    with pytest.raises(NameError):
-        import numpy as np
-        dummy = np.arange(10)
