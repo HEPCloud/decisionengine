@@ -28,6 +28,7 @@ add_library(LogicEngine SHARED
     ma_test_function.cpp
     ma_utils.cpp
 )
+target_link_libraries(LogicEngine boost_regex)
 
 add_executable(test_main test_main.cc)
 target_link_libraries(test_main LogicEngine boost_regex boost_system)
