@@ -1,4 +1,3 @@
-
 #include <ErrorHandler/ma_condition.h>
 #include <ErrorHandler/ma_hitmap.h>
 
@@ -241,11 +240,7 @@ ma_hitmap::get_message_group(ma_cond_domain v, size_t g) const
 bool
 ma_hitmap::get_status(ma_cond_domain v) const
 {
-  bool r = hitmap[v.first][v.second].is_on();
-
-  //std::cout << "hitmap::get_status @ "
-  //              << v.first << ", " << v.second << " = " << r << "\n";
-  return r;
+  return hitmap[v.first][v.second].is_on();
 }
 
 bool
@@ -253,39 +248,6 @@ ma_hitmap::get_defined(ma_cond_domain v) const
 {
   bool r = hitmap[v.first][v.second].is_defined();
   return r;
-}
-
-int
-ma_hitmap::get_alarm_count(ma_cond_domain v, arg_t arg) const
-{
-  ma_cond_range src, tgt;
-  get_cond_range(v, src, tgt);
-
-  int count = 0;
-  ;
-  if (arg == NONE) {
-    for (int s = src.first; s <= src.second; ++s)
-      for (int t = tgt.first; t <= tgt.second; ++t)
-        count += hitmap[s][t].get_message_count();
-  }
-  else if (arg == SOURCE) {
-    for (int s = src.first; s <= src.second; ++s)
-      for (int t = tgt.first; t <= tgt.second; ++t)
-        if (hitmap[s][t].is_on()) {
-          ++count;
-          break;
-        }
-  }
-  else {
-    for (int t = tgt.first; t <= tgt.second; ++t)
-      for (int s = src.first; s <= src.second; ++s)
-        if (hitmap[s][t].is_on()) {
-          ++count;
-          break;
-        }
-  }
-
-  return count;
 }
 
 // get a range of src/target

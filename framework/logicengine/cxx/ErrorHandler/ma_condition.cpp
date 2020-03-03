@@ -3,103 +3,6 @@
 
 using namespace novadaq::errorhandler;
 
-ma_condition::ma_condition(string_t const& desc,
-                           string_t const& sev,
-                           strings_t const& sources,
-                           strings_t const& categories,
-                           string_t const& regex,
-                           string_t const& test,
-                           bool persistent_cond,
-                           int occur,
-                           bool at_least,
-                           int timespan,
-                           bool per_source,
-                           bool per_target,
-                           int target_group,
-                           ma_timing_events& events)
-  : description_(desc)
-  , severity_(0)
-  , srcs_str()
-  , e_srcs()
-  , any_src(false)
-  , cats_str()
-  , e_cats()
-  , any_cat(false)
-  , match_type(MATCH_REGEX)
-  , regex_str(regex)
-  , e(regex)
-  , test_expr()
-  , tc(at_least ? occur : occur + 1)
-  , at_least_(at_least)
-  , ts(timespan)
-  , ps(per_source)
-  , pt(per_target)
-  , t_group(target_group)
-  , persistent_(persistent_cond)
-  , hitmap()
-  , events(events)
-  , sev_()
-  , src_()
-  , tgt_()
-  , cat_()
-  , bdy_()
-  , what_()
-  , last_sev_()
-  , last_src_()
-  , last_tgt_()
-  , last_cat_()
-  , last_bdy_()
-  , last_what_()
-  , notify_on_source()
-  , notify_on_target()
-  , notify_on_status()
-  , catched_messages(0)
-{
-  // parse sources
-  strings_t::const_iterator it = sources.begin();
-  while (it != sources.end()) {
-    if (*it == "*") {
-      any_src = true;
-      e_srcs.clear();
-      srcs_str = "any, ";
-      break;
-    }
-    e_srcs.push_back(regex_t(*it));
-    srcs_str.append(*it).append(", ");
-    ++it;
-  }
-
-  // remove the last ", "
-  srcs_str.resize(srcs_str.size() - 2);
-
-  // parse categories
-  it = categories.begin();
-  while (it != categories.end()) {
-    if (*it == "*") {
-      any_cat = true;
-      e_cats.clear();
-      cats_str = "any, ";
-      break;
-    }
-    e_cats.push_back(regex_t(*it));
-    cats_str.append(*it).append(", ");
-    ++it;
-  }
-
-  // remove the last ", "
-  cats_str.resize(cats_str.size() - 2);
-
-  // regex or contains?
-  if (regex.empty() || (regex.compare("*") == 0))
-    match_type = MATCH_ANY;
-  else
-    match_type = MATCH_REGEX;
-
-  // test functions
-  if (!parse_condition_test(test, test_expr))
-    throw std::runtime_error("condition test function parse failed");
-}
-
 ma_condition::ma_condition(string_t const& name)
   : description_(name)
   , severity_(0)
@@ -201,8 +104,6 @@ ma_condition::force(bool val, conds_t& status, conds_t& source, conds_t& target)
 
   // register to hitmap
   unsigned int result = hitmap.force(val);
-
-  //std::cout << "cond::match() result = " << result << "\n";
 
   // update reaction_start list
   if (result & STATUS_CHANGE) status.push_back(this);

@@ -79,8 +79,6 @@ namespace novadaq {
       bool get_status(ma_cond_domain v) const;
       bool get_defined(ma_cond_domain v) const;
 
-      int get_alarm_count(ma_cond_domain v, arg_t arg) const;
-
       // get a range of src/target
       void get_cond_range(ma_cond_domain d,
                           ma_cond_range& src,

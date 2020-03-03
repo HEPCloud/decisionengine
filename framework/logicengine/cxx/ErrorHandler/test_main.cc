@@ -4,14 +4,6 @@
 #include "ErrorHandler/json/json.h"
 #include "ErrorHandler/ma_rule_engine.h"
 
-void
-alarm_fn(std::string const& a, std::string const& b)
-{}
-
-void
-cond_match(std::string const& a)
-{}
-
 int
 main(int argc, char** argv)
 {
@@ -30,11 +22,11 @@ main(int argc, char** argv)
   std::cout << writer.write(conf);
 
   novadaq::errorhandler::ma_rule_engine engine(
-    conf["conditions"], conf["rules"], &alarm_fn, &cond_match);
+    conf["conditions"], conf["rules"]);
 
   std::map<std::string, bool> facts_vals;
-  facts_vals.insert(std::make_pair("c1", false));
-  facts_vals.insert(std::make_pair("c2", true));
+  facts_vals.emplace("c1", false);
+  facts_vals.emplace("c2", true);
 
   std::map<std::string, std::vector<std::string>> actions;
   std::map<std::string, std::map<std::string, bool>> facts;

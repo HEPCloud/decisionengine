@@ -25,24 +25,8 @@ namespace novadaq {
     // MsgAnalyzer Rule
     class ma_condition {
     public:
-      // c'tor full
-      ma_condition(string_t const& desc,
-                   string_t const& sev,
-                   strings_t const& sources,
-                   strings_t const& categories,
-                   string_t const& regex,
-                   string_t const& test,
-                   bool persistent_cond,
-                   int trigger_count,
-                   bool at_least,
-                   int timespan,
-                   bool per_source,
-                   bool per_target,
-                   int target_group,
-                   ma_timing_events& events);
 
-      // c'tor minified
-      ma_condition(string_t const& name);
+      explicit ma_condition(string_t const& name);
 
       // reset the condition to its ground state
       void reset();
@@ -208,12 +192,6 @@ namespace novadaq {
       // returns if the condition status has been defined on all spots
       bool get_defined() const;
 
-      int
-      get_alarm_count(ma_cond_domain v, arg_t arg) const
-      {
-        return hitmap.get_alarm_count(v, arg);
-      }
-
       // notification list
       void
       push_notify_source(ma_rule* rule)
@@ -374,11 +352,6 @@ namespace novadaq {
       // matter if it passed the frequency test
       int catched_messages;
     };
-
-    //typedef boost::shared_ptr<ma_condition> cond_sp;
-    //typedef std::list<cond_sp>              conds_t;
-    //typedef std::vector<cond_sp>            cond_vec_t;
-    //typedef std::map<string_t, cond_sp>     cond_map_t;
 
     typedef std::vector<ma_condition*> cond_vec_t;
     typedef std::map<string_t, ma_condition> cond_map_t;
