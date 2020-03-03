@@ -7,7 +7,7 @@
 
 using namespace novadaq::errorhandler;
 
-BOOST_AUTO_TEST_SUITE( ma_domain_ops_test )
+BOOST_AUTO_TEST_SUITE(ma_domain_ops_test)
 
 BOOST_AUTO_TEST_CASE(domain_ctor_test)
 {
@@ -28,7 +28,6 @@ BOOST_AUTO_TEST_CASE(domain_ctor_test)
     BOOST_CHECK_EQUAL(d.first, 5);
     BOOST_CHECK_EQUAL(d.second, 6);
   }
-
 }
 
 BOOST_AUTO_TEST_CASE(domain_intersect_test)
@@ -91,24 +90,19 @@ BOOST_AUTO_TEST_CASE(domain_intersect_test)
   // ma_domain_intersection
 
   {
-    ma_domain d1 = ma_domain_ctor(3, ma_cond_domain_ctor(2,3));
-    ma_domain d2 = ma_domain_ctor(4, ma_cond_domain_ctor(5,6));
-    BOOST_CHECK_THROW( domain_intersect(d1,d2), std::runtime_error );
+    ma_domain d1 = ma_domain_ctor(3, ma_cond_domain_ctor(2, 3));
+    ma_domain d2 = ma_domain_ctor(4, ma_cond_domain_ctor(5, 6));
+    BOOST_CHECK_THROW(domain_intersect(d1, d2), std::runtime_error);
   }
 
   {
-    ma_domain d1 = ma_domain_ctor(3, ma_cond_domain_ctor(2,3));
-    ma_domain d2 = ma_domain_ctor(3, ma_cond_domain_ctor(5,6));
+    ma_domain d1 = ma_domain_ctor(3, ma_cond_domain_ctor(2, 3));
+    ma_domain d2 = ma_domain_ctor(3, ma_cond_domain_ctor(5, 6));
     domain_intersect(d1, d2);
-    BOOST_CHECK( domain_is_null(d1) );
+    BOOST_CHECK(domain_is_null(d1));
   }
-
 }
 
-BOOST_AUTO_TEST_CASE(domain_union_test)
-{
-
-}
+BOOST_AUTO_TEST_CASE(domain_union_test) {}
 
 BOOST_AUTO_TEST_SUITE_END()
-
