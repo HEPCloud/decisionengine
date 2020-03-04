@@ -83,15 +83,6 @@ namespace novadaq {
       // public method, get the alarm message
       string_t get_alarm_message();
 
-      // number of alarms. if the repeatable alarm flag is true, it is the
-      // number of total alarms; otherwise it is the number of distinguishable
-      // alarms (one domain only alarms once)
-      int
-      get_alarm_count() const
-      {
-        return alarm_count;
-      }
-
       // get fields
       const string_t&
       name() const

@@ -11,9 +11,6 @@ namespace novadaq {
 
     class ma_cell {
     public:
-      ma_cell();
-      ~ma_cell();
-
       // reset to ground state
       void reset();
 
@@ -79,15 +76,15 @@ namespace novadaq {
       }
 
     private:
-      msgs_t msgs;
-      bool on;
-      bool defined;
+      msgs_t msgs{};
+      bool on{false};
+      bool defined{false};
 
       // groups from last hit
-      boost::smatch what_;
+      boost::smatch what_{};
 
       // time of next event
-      time_t t_event;
+      time_t t_event{};
     };
 
     typedef boost::multi_array<ma_cell, 2> hitmap_t;

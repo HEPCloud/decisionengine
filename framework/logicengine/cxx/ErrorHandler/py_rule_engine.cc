@@ -18,26 +18,13 @@ namespace {
     reader.parse(str, val);
     return val;
   }
-
-  void
-  alarm_fn(std::string const& a, std::string const& b)
-  {}
-
-  void
-  cond_match(std::string const& a)
-  {}
 }
 
 struct RuleEngine {
   RuleEngine(string const& facts, string const& rules)
-    : engine(string_to_json(facts),
-             string_to_json(rules),
-             &alarm_fn,
-             &cond_match)
-  {
-    //cout << "rules = " << rules << "\n";
-    //cout << "facts = " << facts << "\n";
-  }
+    : engine{string_to_json(facts),
+             string_to_json(rules)}
+  {}
 
   boost::python::tuple
   execute(boost::python::dict const& facts)
@@ -46,11 +33,8 @@ struct RuleEngine {
 
     auto fnames = facts.keys();
     for (int i = 0; i < len(fnames); ++i) {
-      fact_vals.emplace((string)extract<string>(fnames[i]),
+      fact_vals.emplace(extract<string>(fnames[i]),
                         extract<bool>(facts[fnames[i]]));
-
-      //cout << (string)extract<string>(fnames[i]) << " : "
-      //     << extract<bool>(facts[fnames[i]]) << "\n";
     }
 
     std::map<std::string, std::vector<std::string>> out_actions;

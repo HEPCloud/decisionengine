@@ -21,7 +21,6 @@ add_library(LogicEngine SHARED
     ma_function.cpp
     ma_hitmap.cpp
     ma_parse.cpp
-    ma_participants.cpp
     ma_richmsg.cpp
     ma_rule.cpp
     ma_rule_engine.cpp

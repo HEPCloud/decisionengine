@@ -5,10 +5,6 @@
 
 using namespace novadaq::errorhandler;
 
-ma_cell::ma_cell() : msgs(), on(false), defined(false), what_(), t_event(0) {}
-
-ma_cell::~ma_cell() {}
-
 bool
 ma_cell::hit(bool val)
 {

@@ -8,14 +8,9 @@
  *
  */
 
-// includes from ups
-//#include <Extensions/interface/QtDDSReceiver.h>
-//#include <messagefacility/MessageLogger/MessageLogger.h>
-
 #include <boost/multi_array.hpp>
 
 // system includes
-#include <functional>
 #include <list>
 #include <map>
 #include <memory>
@@ -206,12 +201,6 @@ namespace novadaq {
     const unsigned int STATUS_CHANGE = 0x01;
     const unsigned int SOURCE_CHANGE = 0x02;
     const unsigned int TARGET_CHANGE = 0x04;
-
-    // alarm callback funtion type
-    typedef std::function<void(string_t const&, string_t const&)> alarm_fn_t;
-
-    // condition match callback function type
-    typedef std::function<void(string_t const&)> cond_match_fn_t;
 
     // alert message type
     enum message_type_t {
