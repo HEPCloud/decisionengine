@@ -1,4 +1,6 @@
 # HEPCloud Decision Engine
+[![Travis Status](https://travis-ci.com/HEPCloud/decisionengine.svg?branch=master)](https://travis-ci.com/HEPCloud/decisionengine) [![Docker Unit Tests](https://github.com/HEPCloud/decisionengine/workflows/.github/workflows/unit-test.yaml/badge.svg)](https://github.com/HEPCloud/decisionengine/actions?query=workflow%3A.github%2Fworkflows%2Funit-test.yaml)
+
 HEPCloud Decision Engine framework
 
 # Building RPMs
