@@ -13,11 +13,11 @@ def myengine():
 
     return LogicEngine({"facts": facts, "rules": rules})
 
-def test_rule_that_fires():
+def test_rule_that_fires(myengine):
     db = {"val": 20}
-    ef = myengine().evaluate_facts(db)
+    ef = myengine.evaluate_facts(db)
     assert ef["f1"] is True
-    result = myengine().evaluate(db)
+    result = myengine.evaluate(db)
     assert isinstance(result, dict)
     assert len(result) == 2
     actions = result["actions"]
@@ -36,11 +36,11 @@ def test_rule_that_fires():
     assert newfacts_d["r2"] == ["f3", True]
     assert newfacts_d["r3"] == ["f4", True]
 
-def test_rule_that_does_not_fire():
+def test_rule_that_does_not_fire(myengine):
     db = {"val": 5}
-    ef = myengine().evaluate_facts(db)
+    ef = myengine.evaluate_facts(db)
     assert ef["f1"] is False
-    result = myengine().evaluate(db)
+    result = myengine.evaluate(db)
     assert isinstance(result, dict)
     assert len(result) == 2
     actions = result["actions"]
