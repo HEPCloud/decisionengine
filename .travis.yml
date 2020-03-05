@@ -12,7 +12,7 @@ jobs:
   allow_failures:
     # These don't need to work, but be nice if they did
     - python: "2.7"
-    # https://svn.boost.org/trac10/ticket/4125
+    # https://svn.boost.org/trac10/ticket/4125 / https://github.com/boostorg/python/pull/291
     - python: "pypy3"
 
   fast_finish: true
@@ -77,19 +77,11 @@ install:
   - pip install -r requirements.txt
   - pip install coveralls
 
-# Just some useful info
-before_script:
-  - set
-
 # command to run tests
 script:
-  - cd ${TRAVIS_BUILD_DIR}/../
-  - pytest -v -l --tb=native
+  - cd ${TRAVIS_BUILD_DIR}
+  - coverage run -m pytest -v -l --tb=native ${TRAVIS_BUILD_DIR}/../
 
 # hook into coveralls
 after_success:
   - coveralls
-
-# add docker service hook
-services:
-  - docker
