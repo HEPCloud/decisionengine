@@ -55,7 +55,7 @@ install:
   - travis_retry wget -c http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz
   - tar xf boost_1_58_0.tar.gz
   - cd boost_1_58_0
-  - ./bootstrap.sh --with-python=$(which python) --with-python-root=/opt/python/${TRAVIS_PYTHON_VERSION}/
+  - ./bootstrap.sh --with-python=$(which python) --with-python-root=/opt/python/${TRAVIS_PYTHON_VERSION}/ --with-libraries=python,regex,system
   - ./b2 -q --prefix=/usr/local/ cxxflags=-fpermissive include=/opt/python/${TRAVIS_PYTHON_VERSION}/include/ install  -j 6
 
     # Setup pkg-config and cmake search paths to use the virtualenv python from travis
