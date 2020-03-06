@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Task Manager
 """
@@ -13,19 +12,22 @@ import pandas
 import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.configmanager.ConfigManager as configmanager
-#import decisionengine.framework.modules.de_logger as de_logger
 
 TRANSFORMS_TO = 300
 
+
 def log_exception(logger, header_message):
     logger.exception(header_message)
+
 
 class Worker(object):
     """
     Provides interface to loadable modules an events to sycronise
     execution
     """
-    DEFAULT_SCHEDULE = 300 # 5 min
+
+    # 5 minutes
+    DEFAULT_SCHEDULE = 300
 
     def __init__(self, conf_dict):
         """
@@ -41,6 +43,7 @@ class Worker(object):
         self.run_counter = 0
         self.data_updated = threading.Event()
         self.stop_running = threading.Event()
+
 
 class Channel(object):
     """
@@ -76,6 +79,7 @@ class Channel(object):
 BOOT, STEADY, OFFLINE, SHUTTINGDOWN, SHUTDOWN = list(range(5))
 STATE_NAMES = ['BOOT', 'STEADY', 'OFFLINE', 'SHUTTINGDOWN', 'SHUTDOWN']
 
+
 class TaskManager(object):
     """
     Task Manager
@@ -104,7 +108,6 @@ class TaskManager(object):
         self.decision_cycle_active = False
         self.lock = threading.Lock()
         self.stop = False # stop running all loops when this is True
-
 
     def wait_for_all(self, events_done):
         """
@@ -180,7 +183,6 @@ class TaskManager(object):
 
             time.sleep(1)
         logging.getLogger().error('Error occured. Task Manager %s exits with state %s', self.id, STATE_NAMES[self.get_state()])
-
 
     def set_state(self, state):
         with self.state.get_lock():
@@ -291,7 +293,7 @@ class TaskManager(object):
                 src.data_updated.set()
                 logging.getLogger().info('Src %s %s finished cycle', src.name, src.module)
             except:
-                log_exception(logging.getLogger(), 'Exception running source %s', src.name)
+                log_exception(logging.getLogger(), 'Exception running source {}'.format(src.name))
                 self.offline_task_manager(self.data_block_t0)
             if src.schedule > 0:
                 s = src.stop_running.wait(src.schedule)
@@ -351,7 +353,7 @@ class TaskManager(object):
             try:
                 thread.start()
             except:
-                log_exception(logging.getLogger(), 'exception starting thread %s', transform.name)
+                log_exception(logging.getLogger(), 'exception starting thread {}'.format(transform.name))
                 self.offline_task_manager(data_block)
                 break
 
@@ -388,7 +390,7 @@ class TaskManager(object):
                     self.data_block_put(data, header, data_block)
                     logging.getLogger().info('transform put data')
                 except:
-                    log_exception(logging.getLogger(), 'exception from transform %s', transform.name)
+                    log_exception(logging.getLogger(), 'exception from transform {}',format(transform.name))
                     self.offline_task_manager(data_block)
                 break
             else:
@@ -460,15 +462,6 @@ if __name__ == '__main__':
     config_manager.load()
     global_config = config_manager.get_global_config()
     print('GLOBAL CONF', global_config)
-
-
-    try:
-        de_logger.set_logging(log_file_name=global_config['logger']['log_file'],
-                              max_file_size=global_config['logger']['max_file_size'],
-                              max_backup_count=global_config['logger']['max_backup_count'])
-    except Exception as e:
-        print(e)
-        sys.exit(1)
 
     my_logger = logging.getLogger('decision_engine')
     my_logger.info('Starting decision engine')
