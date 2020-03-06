@@ -73,4 +73,4 @@ BOOST_PYTHON_MODULE(RE)
 {
   class_<RuleEngine, boost::noncopyable>("RuleEngine", init<string, string>())
     .def("execute", &RuleEngine::execute);
-};
+}

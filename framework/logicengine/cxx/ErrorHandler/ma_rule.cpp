@@ -241,7 +241,7 @@ ma_rule::boolean_evaluate(ma_domain& value,
   //std::cout << "now evaluate boolean_expr with given value \n";
 
   // make sure all conditions are defined
-  for (int i = 0; i < conditions.size(); ++i)
+  for (size_t i = 0; i < conditions.size(); ++i)
     if (!conditions[i]->get_defined(value[i])) return false;
 
   // evaluate as true with given set of values
