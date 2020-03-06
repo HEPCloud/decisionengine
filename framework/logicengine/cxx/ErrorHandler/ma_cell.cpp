@@ -34,7 +34,7 @@ ma_cell::hit(msg_t const& msg,
   what_ = w;
 
   // push new message
-  time_t latest; // = msg.timestamp().tv_sec;
+  time_t latest = msg.timestamp().tv_sec;
   msgs.push_back(msg);
 
   if (on && cond.persistent()) {
