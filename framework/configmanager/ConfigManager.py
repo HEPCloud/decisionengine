@@ -6,7 +6,8 @@ import string
 import decisionengine.framework.modules.de_logger as de_logger
 import decisionengine.framework.util.tsort as tsort
 
-MANDATORY_CHANNEL_KEYS = {"sources", 'logicengines', "transforms", "publishers"}
+MANDATORY_CHANNEL_KEYS = {"sources",
+                          'logicengines', "transforms", "publishers"}
 MANDATORY_MODULE_KEYS = {"module", "name", "parameters"}
 
 
@@ -140,7 +141,8 @@ class ConfigManager(object):
             for name, conf in modules.items():
                 my_module = importlib.import_module(conf.get('module'))
                 try:
-                    produces.setdefault(name, []).extend(getattr(my_module, 'PRODUCES'))
+                    produces.setdefault(name, []).extend(
+                        getattr(my_module, 'PRODUCES'))
                 except:
                     pass
         return produces
@@ -168,7 +170,8 @@ class ConfigManager(object):
                     raise RuntimeError("Configuration file {} contains errors: {}".
                                        format(self.config_file, str(msg)))
             else:
-                raise RuntimeError("Empty configuration file {}".format(self.config_file))
+                raise RuntimeError(
+                    "Empty configuration file {}".format(self.config_file))
         except Exception as msg:
             raise RuntimeError("Failed to read configuration file {} {}".
                                format(self.config_file, str(msg)))
@@ -181,7 +184,6 @@ class ConfigManager(object):
                 self.logger = de_logger.get_logger()
             except Exception as msg:
                 raise RuntimeError("Failed to create log: {}".format(str(msg)))
-
 
         """
         load channels
@@ -214,7 +216,8 @@ class ConfigManager(object):
             try:
                 self.validate_channel(self.channels[name])
             except Exception as msg:
-                self.logger.error("{} {}, REMOVING the channel".format(name, str(msg)))
+                self.logger.error(
+                    "{} {}, REMOVING the channel".format(name, str(msg)))
                 del self.channels[name]
                 continue
 

@@ -36,7 +36,8 @@ import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
 
 CONFIG_UPDATE_PERIOD = 10  # seconds
-FORMATTER = logging.Formatter("%(asctime)s - %(name)s - %(module)s - %(process)d - %(threadName)s - %(levelname)s - %(message)s")
+FORMATTER = logging.Formatter(
+    "%(asctime)s - %(name)s - %(module)s - %(process)d - %(threadName)s - %(levelname)s - %(message)s")
 
 
 class Worker(multiprocessing.Process):
@@ -50,8 +51,9 @@ class Worker(multiprocessing.Process):
     def run(self):
         self.logger = logging.getLogger()
         file_handler = logging.handlers.RotatingFileHandler(os.path.join(
-                                                            os.path.dirname(self.config["logger"]["log_file"]),
-                                                                            self.task_manager.name+".log"),
+                                                            os.path.dirname(
+                                                                self.config["logger"]["log_file"]),
+                                                            self.task_manager.name+".log"),
                                                             maxBytes=self.config["logger"].get("max_file_size",
                                                                                                200*1000000),
                                                             backupCount=self.config["logger"].get("max_backup_count",
@@ -85,7 +87,8 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         signal.signal(signal.SIGHUP, self.handle_sighup)
         self.task_managers = {}
         self.config_manager = cfg
-        self.dataspace = dataspace.DataSpace(self.config_manager.get_global_config())
+        self.dataspace = dataspace.DataSpace(
+            self.config_manager.get_global_config())
 
     def get_logger(self):
         return self.logger
@@ -191,7 +194,8 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                         try:
                             df = data_block[product]
                             df = pd.read_json(df.to_json())
-                            txt += "{}\n".format(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
+                            txt += "{}\n".format(tabulate.tabulate(df,
+                                                                   headers='keys', tablefmt='psql'))
                         except Exception as e:
                             txt += "\t\t\t{}\n".format(str(e))
                             pass
@@ -199,7 +203,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
 
     def rpc_status(self):
         width = max([len(x) for x in list(self.task_managers.keys())]) + 1
-        txt=""
+        txt = ""
         for ch, worker in list(self.task_managers.items()):
             sname = TaskManager.STATE_NAMES[worker.task_manager.get_state()]
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
@@ -215,7 +219,8 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                 modules = channel_config.get(i, {})
                 for mod_name, mod_config in modules.items():
                     txt += "\t\t{}\n".format(mod_name)
-                    my_module = importlib.import_module(mod_config.get('module'))
+                    my_module = importlib.import_module(
+                        mod_config.get('module'))
                     produces = None
                     consumes = None
                     try:
@@ -272,7 +277,8 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
             try:
                 self.start_channel(ch)
             except Exception as e:
-                self.logger.error("Channel {} failed to start : {}".format(ch, str(e)))
+                self.logger.error(
+                    "Channel {} failed to start : {}".format(ch, str(e)))
 
     def rpc_stop_channel(self, channel):
         self.stop_channel(channel)
@@ -315,6 +321,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
     def reload_config(self):
         self.config_manager.reload()
 
+
 if __name__ == '__main__':
     try:
         conf_manager = Conf_Manager.ConfigManager()
@@ -325,7 +332,8 @@ if __name__ == '__main__':
             raise RuntimeError("No channels configured")
 
         global_config = conf_manager.get_global_config()
-        server_address = global_config.get("server_address", ("localhost", 8888))
+        server_address = global_config.get(
+            "server_address", ("localhost", 8888))
 
         server = DecisionEngine(conf_manager,
                                 server_address,
