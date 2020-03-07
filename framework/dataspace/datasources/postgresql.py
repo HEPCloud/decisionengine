@@ -30,6 +30,7 @@ def generate_insert_query(table_name, keys):
     query = query.format(table_name, ",".join(keys), ("%s,"*len(keys))[:-1])
     return query
 
+
 SELECT_QUERY = """
 SELECT * FROM {} WHERE taskmanager_id=%s AND generation_id=%s AND key=%s
 """
@@ -116,31 +117,33 @@ class Postgresql(ds.DataSource):
                 return self._select_dictresult(SELECT_TASKMANAGER_BY_NAME_AND_ID,
                                                (taskmanager_name, taskmanager_id))[0]
             except IndexError:
-                raise KeyError("Taskmanager={} taskmanager_id={} not found".format(taskmanager_name, taskmanager_id))
+                raise KeyError("Taskmanager={} taskmanager_id={} not found".format(
+                    taskmanager_name, taskmanager_id))
         else:
             try:
                 return self._select_dictresult(SELECT_TASKMANAGER_BY_NAME,
                                                (taskmanager_name,))[0]
             except IndexError:
-                raise KeyError("Taskmanager={} not found".format(taskmanager_name))
+                raise KeyError(
+                    "Taskmanager={} not found".format(taskmanager_name))
 
     def get_last_generation_id(self,
                                taskmanager_name,
                                taskmanager_id=None):
         if taskmanager_id:
-                try:
-                    return self._select(SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID,
-                                        (taskmanager_name, taskmanager_id))[0][0]
-                except IndexError:
-                    raise KeyError("Last generation id not found for taskmanager={} taskmanager_id={}".
-                                   format(taskmanager_name, taskmanager_id))
+            try:
+                return self._select(SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID,
+                                    (taskmanager_name, taskmanager_id))[0][0]
+            except IndexError:
+                raise KeyError("Last generation id not found for taskmanager={} taskmanager_id={}".
+                               format(taskmanager_name, taskmanager_id))
         else:
-                try:
-                    return self._select(SELECT_LAST_GENERATION_ID_BY_NAME,
-                                        (taskmanager_name, ))[0][0]
-                except IndexError:
-                    raise KeyError("Last generation id not found for taskmanager={}".
-                                   format(taskmanager_name, ))
+            try:
+                return self._select(SELECT_LAST_GENERATION_ID_BY_NAME,
+                                    (taskmanager_name, ))[0][0]
+            except IndexError:
+                raise KeyError("Last generation id not found for taskmanager={}".
+                               format(taskmanager_name, ))
 
     def insert(self, taskmanager_id, generation_id, key,
                value, header, metadata):
@@ -150,7 +153,7 @@ class Postgresql(ds.DataSource):
                       'generation_id': generation_id,
                       'key': key,
                       'value':  psycopg2.Binary(str(value))
-                     })
+                      })
 
         self._insert(ds.DataSource.header_table,
                      {'taskmanager_id': taskmanager_id,
@@ -160,7 +163,7 @@ class Postgresql(ds.DataSource):
                       'scheduled_create_time': header.get('scheduled_create_time'),
                       'creator': header.get('creator'),
                       'schema_id': header.get('schema_id')
-                     })
+                      })
 
         self._insert(ds.DataSource.metadata_table,
                      {'taskmanager_id': taskmanager_id,
@@ -179,7 +182,8 @@ class Postgresql(ds.DataSource):
                       WHERE taskmanager_id=%s AND generation_id=%s AND key=%s
             """.format(ds.DataSource.dataproduct_table)
 
-        self._update(q, (psycopg2.Binary(str(value)), taskmanager_id, generation_id, key))
+        self._update(q, (psycopg2.Binary(str(value)),
+                         taskmanager_id, generation_id, key))
 
         q = """
         UPDATE {} SET create_time=%s,
@@ -210,21 +214,24 @@ class Postgresql(ds.DataSource):
         try:
             return self._select(q, (taskmanager_id, generation_id, key))[0]
         except IndexError:
-            raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(taskmanager_id, generation_id, key))
+            raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
+                taskmanager_id, generation_id, key))
 
     def get_metadata(self, taskmanager_id, generation_id, key):
         q = SELECT_QUERY.format(ds.DataSource.metadata_table)
         try:
             return self._select(q, (taskmanager_id, generation_id, key))[0]
         except IndexError:
-            raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(taskmanager_id, generation_id, key))
+            raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
+                taskmanager_id, generation_id, key))
 
     def get_dataproduct(self, taskmanager_id, generation_id, key):
         q = SELECT_QUERY.format(ds.DataSource.dataproduct_table)
         try:
             return self._select_dictresult(q, (taskmanager_id, generation_id, key))[0]
         except IndexError:
-            raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(taskmanager_id, generation_id, key))
+            raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
+                taskmanager_id, generation_id, key))
 
     def get_datablock(self, taskmanager_id, generation_id):
         return {}
@@ -243,7 +250,7 @@ class Postgresql(ds.DataSource):
                    FROM {}
                    WHERE taskmanager_id=%s AND generation_id=%s
             """.format(ds.DataSource.dataproduct_table, ds.DataSource.dataproduct_table),
-            """
+                  """
             INSERT INTO {} (taskmanager_id,
                             generation_id,
                             key,
@@ -259,7 +266,7 @@ class Postgresql(ds.DataSource):
                    FROM {}
                    WHERE taskmanager_id=%s AND generation_id=%s
             """.format(ds.DataSource.metadata_table, ds.DataSource.metadata_table),
-            """
+                  """
             INSERT INTO {} (taskmanager_id,
                         generation_id,
                         key,
@@ -288,9 +295,8 @@ class Postgresql(ds.DataSource):
     def connect(self):
         pass
 
-    def get_schema(self,table=None):
+    def get_schema(self, table=None):
         return {}
-
 
     def get_connection(self):
         i = self.retries+1
@@ -339,7 +345,7 @@ class Postgresql(ds.DataSource):
             db = self.connection_pool.connection()
             cursor = db.cursor()
             if values:
-                res=cursor.execute(query_string, values)
+                res = cursor.execute(query_string, values)
             else:
                 cursor.execute(query_string)
             db.commit()
@@ -387,7 +393,8 @@ class Postgresql(ds.DataSource):
     def _insert(self, table_name_or_sql_query, record=None):
         if record:
             if isinstance(record, dict):
-                q = generate_insert_query(table_name_or_sql_query, list(record.keys()))
+                q = generate_insert_query(
+                    table_name_or_sql_query, list(record.keys()))
                 return self._update(q, list(record.values()))
             else:
                 return self._update(table_name_or_sql_query, record)
@@ -397,7 +404,8 @@ class Postgresql(ds.DataSource):
     def _insert_returning_result(self, table_name_or_sql_query, record=None):
         if record:
             if isinstance(record, dict):
-                q = generate_insert_query(table_name_or_sql_query, list(record.keys()))
+                q = generate_insert_query(
+                    table_name_or_sql_query, list(record.keys()))
                 return self._update_returning_result(q, list(record.values()))
             else:
                 return self._update_returning_result(table_name_or_sql_query, record)
@@ -412,16 +420,20 @@ class Postgresql(ds.DataSource):
 
     def _select_dictresult(self, sql_query, values=None):
         if values:
-            result = self._select(sql_query, values, cursor_factory=psycopg2.extras.RealDictCursor)
+            result = self._select(
+                sql_query, values, cursor_factory=psycopg2.extras.RealDictCursor)
         else:
-            result = self._select(sql_query, cursor_factory=psycopg2.extras.RealDictCursor)
+            result = self._select(
+                sql_query, cursor_factory=psycopg2.extras.RealDictCursor)
         return result
 
     def _select_getresult(self, sql_query, values=None):
         if values:
-            result = self._select(sql_query, values, cursor_factory=psycopg2.extras.DictCursor)
+            result = self._select(
+                sql_query, values, cursor_factory=psycopg2.extras.DictCursor)
         else:
-            result = self._select(sql_query, cursor_factory=psycopg2.extras.DictCursor)
+            result = self._select(
+                sql_query, cursor_factory=psycopg2.extras.DictCursor)
         return result
 
     def _select_tuple(self, sql_query, values):
