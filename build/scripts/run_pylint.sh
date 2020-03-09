@@ -41,12 +41,13 @@ process_branch() {
     # Build Logic Engine
     echo "Building Logic Engine ..."
     le_builddir=$DECISIONENGINE_SRC/framework/logicengine/cxx/build
+    [ -e $le_buildir ] && rm -rf $le_builddir
     mkdir $le_builddir
     cd $le_builddir
-    cmake3 --debug-output ..
+    cmake3 -Wno-dev --debug-output ..
     make --debug
     [ -e ../../RE.so ] && rm ../../RE.so
-    [ -e ../../libLogicEngine.so ] && ../../libLogicEngine.so
+    [ -e ../../libLogicEngine.so ] && rm ../../libLogicEngine.so
     cp ErrorHandler/RE.so ../..
     cp ErrorHandler/libLogicEngine.so ../..
     echo "Building Logic Engine ... DONE"
