@@ -30,7 +30,6 @@ STATE_ERROR = 'ERROR'
 STATE_EXPIRED = 'EXPIRED'
 
 
-
 def zdumps(obj):
     """
     Pickle and compress
@@ -77,6 +76,7 @@ def decompress(zstring):
         return zlib.decompress(zstring)
     except zlib.error:
         return zstring
+
 
 class KeyNotFoundError(Exception):
     """
@@ -149,7 +149,8 @@ class Metadata(UserDict):
         """
 
         if state not in Metadata.valid_states:
-            raise InvalidMetadataError('%s is not a valid Metadata state' % state)
+            raise InvalidMetadataError(
+                '%s is not a valid Metadata state' % state)
         self.data['state'] = state
 
 
@@ -228,7 +229,8 @@ class DataBlock(object):
         if generation_id:
             self.generation_id = generation_id
         else:
-            self.generation_id = self.dataspace.get_last_generation_id(name, taskmanager_id)
+            self.generation_id = self.dataspace.get_last_generation_id(
+                name, taskmanager_id)
         self._keys = []
         self.lock = threading.Lock()
 

@@ -44,7 +44,8 @@ class SourceProxy(Source.Source):
 
     def __init__(self, *args, **kwargs):
         if not set(must_have).issubset(set(args[0].keys())):
-            raise RuntimeError('SourceProxy misconfigured. Must have %s defined'%(must_have,))
+            raise RuntimeError(
+                'SourceProxy misconfigured. Must have %s defined' % (must_have,))
         self.source_channel = args[0]['channel_name']
         self.data_keys = args[0]['Dataproducts']
         self.retries = args[0].get('retries', RETRIES)
@@ -125,8 +126,8 @@ class SourceProxy(Source.Source):
                     # get last datablock
                     data_block = datablock.DataBlock(self.dataspace,
                                                      self.source_channel,
-                                                     taskmanager_id = tm['taskmanager_id'],
-                                                     sequence_id = tm['sequence_id'])
+                                                     taskmanager_id=tm['taskmanager_id'],
+                                                     sequence_id=tm['sequence_id'])
                     self.logger.debug('data block %s', data_block)
                     if data_block and data_block.generation_id:
                         self.logger.debug("DATABLOCK %s", data_block)
@@ -134,12 +135,14 @@ class SourceProxy(Source.Source):
                         break
                     else:
                         retry_cnt += 1
-                        time.sleep(self.retry_to//3) # retry in 1/3 of configured TO
+                        # retry in 1/3 of configured TO
+                        time.sleep(self.retry_to//3)
                 else:
                     retry_cnt += 1
                     time.sleep(self.retry_to)
             except Exception as detail:
-                self.logger.error('Error getting datablock for %s %s', self.source_channel, detail)
+                self.logger.error(
+                    'Error getting datablock for %s %s', self.source_channel, detail)
 
         if not data_block:
             raise RuntimeError('Could not get data.')
@@ -153,11 +156,12 @@ class SourceProxy(Source.Source):
                         k_in = k[0]
                         k_out = k[1]
                     else:
-                       k_in = k
-                       k_out = k
+                        k_in = k
+                        k_out = k
                     if k_in not in filled_keys:
                         try:
-                            rc[k_out] = pd.DataFrame(self._get_data(data_block, k_in))
+                            rc[k_out] = pd.DataFrame(
+                                self._get_data(data_block, k_in))
                             filled_keys.append(k)
                         except KeyError as ke:
                             self.logger.debug("KEYERROR %s", ke)
@@ -169,8 +173,10 @@ class SourceProxy(Source.Source):
                 time.sleep(self.retry_to)
 
         if retry_cnt == self.retries and len(filled_keys) != len(self.data_keys):
-            raise RuntimeError('Could not get all data. Expected %s Filled %s' % (self.data_keys, filled_keys))
+            raise RuntimeError('Could not get all data. Expected %s Filled %s' % (
+                self.data_keys, filled_keys))
         return rc
+
 
 def module_config_template():
     """
@@ -194,13 +200,13 @@ def module_config_template():
     print("Entry in channel cofiguration")
     pprint.pprint(d)
 
+
 def module_config_info():
     """
     print this module configuration information
     """
     print("produces: available dynamically based on configuration")
     module_config_template()
-
 
 
 def main():
@@ -222,6 +228,7 @@ def main():
         module_config_template()
     elif args.configinfo:
         module_config_info()
+
 
 if __name__ == "__main__":
     main()

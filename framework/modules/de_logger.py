@@ -11,7 +11,7 @@ MB = 1000000
 ROTATE_AFTER = 6
 
 
-def set_logging(log_file_name=LOG_FILE, max_file_size= 200*MB, max_backup_count = ROTATE_AFTER):
+def set_logging(log_file_name=LOG_FILE, max_file_size=200*MB, max_backup_count=ROTATE_AFTER):
     """
 
     :type log_file_name: :obj:`str`
@@ -28,7 +28,8 @@ def set_logging(log_file_name=LOG_FILE, max_file_size= 200*MB, max_backup_count 
     if logger.handlers:
         return
 
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(module)s - %(threadName)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(module)s - %(threadName)s - %(levelname)s - %(message)s")
 
     file_handler = logging.handlers.RotatingFileHandler(log_file_name,
                                                         maxBytes=max_file_size,
@@ -37,7 +38,7 @@ def set_logging(log_file_name=LOG_FILE, max_file_size= 200*MB, max_backup_count 
     file_handler.setLevel(logging.INFO)
     logger.addHandler(file_handler)
 
-    debug_handler = logging.handlers.RotatingFileHandler("%s_debug"%(log_file_name,),
+    debug_handler = logging.handlers.RotatingFileHandler("%s_debug" % (log_file_name,),
                                                          maxBytes=max_file_size,
                                                          backupCount=max_backup_count)
     debug_handler.setFormatter(formatter)
@@ -71,18 +72,20 @@ def set_stream_logging(logger_name=''):
     :rtype: :class:`logging.Logger`
     """
     logger = logging.getLogger("decision_engine")
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s")
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
     return logger
 
+
 if __name__ == '__main__':
     my_logger = logging.getLogger("decision_engine")
-    set_logging(log_file_name = '%s/de_log/decision_engine_log0' % (os.environ.get('HOME')),
-                max_file_size = 100000,
-                max_backup_count = 5)
+    set_logging(log_file_name='%s/de_log/decision_engine_log0' % (os.environ.get('HOME')),
+                max_file_size=100000,
+                max_backup_count=5)
     my_logger.info("THIS IS INFO")
     my_logger.error("THIS IS ERROR")
     my_logger.debug("THIS IS DEBUG")
