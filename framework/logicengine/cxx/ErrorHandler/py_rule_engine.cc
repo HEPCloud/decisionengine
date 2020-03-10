@@ -41,7 +41,6 @@ struct RuleEngine {
     std::map<std::string, std::map<std::string, bool>> out_facts;
 
     engine.execute(fact_vals, out_actions, out_facts);
-    engine.reset_rules();
 
     dict py_actions;
     dict py_facts;

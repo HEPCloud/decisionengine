@@ -25,7 +25,6 @@ namespace novadaq {
 
       // evaluateion
       bool evaluate(ma_domain& value,
-                    ma_domain& alarm,
                     ma_domain const& domain) const;
 
       // insert a boolean cond

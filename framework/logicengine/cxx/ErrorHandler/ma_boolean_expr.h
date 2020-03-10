@@ -23,7 +23,6 @@ namespace novadaq {
 
       // evaluation
       bool evaluate(ma_domain& value,
-                    ma_domain& alarm,
                     ma_domain const& domain) const;
 
       // insert an boolean and-expression

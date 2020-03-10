@@ -2,10 +2,8 @@
 #define ERROR_HANDLER_MA_TYPES_H
 
 /*
- *
  * ma_types.h has all typedefs and enums needed in the
  * message analyzer package
- *
  */
 
 #include <boost/multi_array.hpp>
@@ -108,15 +106,12 @@ namespace novadaq {
   namespace errorhandler {
 
     // forward declaration
-    class ma_condition;
+    class Fact;
     class ma_rule;
 
     // typdefs used in errorhandler
     typedef std::string string_t;
     typedef std::vector<std::string> strings_t;
-
-    //typedef mf::QtDDSReceiver::SeverityCode  sev_code_t;
-    //typedef mf::MessageFacilityMsg           msg_t;
 
     typedef int sev_code_t;
     typedef std::list<msg_t> msgs_t;
@@ -178,7 +173,7 @@ namespace novadaq {
       GROUP9
     };
 
-    typedef std::pair<ma_condition*, size_t> cond_idx_t;
+    typedef std::pair<Fact*, size_t> cond_idx_t;
     typedef std::pair<cond_idx_t, arg_t> cond_arg_t;
     typedef std::list<cond_arg_t> cond_arg_list_t;
 
@@ -188,29 +183,15 @@ namespace novadaq {
     // notification list
     enum notify_t { STATUS_NOTIFY, SOURCE_NOTIFY, TARGET_NOTIFY };
     typedef std::list<ma_rule*> notify_list_t;
-    typedef std::list<ma_condition*> conds_t;
+    typedef std::list<Fact*> conds_t;
 
     // reaction starter: conditions stored in the list will need to notify
     // rules for changes in status, domain source, or domain target
-    typedef std::list<ma_condition*> reaction_starters_t;
+    typedef std::list<Fact*> reaction_starters_t;
 
     // bit pattern indicating if theres
     // 1. status change
-    // 2. source list change
-    // 3. target list change
     const unsigned int STATUS_CHANGE = 0x01;
-    const unsigned int SOURCE_CHANGE = 0x02;
-    const unsigned int TARGET_CHANGE = 0x04;
-
-    // alert message type
-    enum message_type_t {
-      MSG_SYSTEM,
-      MSG_ERROR,
-      MSG_WARNING,
-      MSG_INFO,
-      MSG_DEBUG
-    };
-
   } // end of namespace errorhandler
 } // end of namespace novadaq
 

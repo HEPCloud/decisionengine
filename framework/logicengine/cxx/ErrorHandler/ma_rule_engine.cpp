@@ -7,54 +7,48 @@ using namespace novadaq::errorhandler;
 ma_rule_engine::ma_rule_engine(Json::Value const& facts,
                                Json::Value const& rules)
 {
-  // fact names and rule names
-  cnames = facts.getMemberNames();
-  rnames = rules.getMemberNames();
+  auto fact_names = facts.getMemberNames();
+  auto const rule_names = rules.getMemberNames();
 
   // find all facts from the rule's actions
-  for (size_t i = 0; i < rnames.size(); ++i) {
-    ParameterSet rule = rules[rnames[i]];
+  for (std::string const& name : rule_names) {
+    ParameterSet rule = rules[name];
 
     if (rule.isMember("facts")) {
       for (auto const& f : rule["facts"]) {
-        cnames.emplace_back(f.asString());
+        fact_names.emplace_back(f.asString());
       }
     }
+
+    // FIXME: What happens if a fact is specified that doesn't exist?
   }
 
   // create all facts
-  for (size_t i = 0; i < cnames.size(); ++i) {
-    // construct the condition object
-    ma_condition c(cnames[i]);
+  for (auto const& name : fact_names) {
+    Fact const c{name};
 
     // push the condition to the container, and parse the test function
-    auto it = cmap.emplace(cnames[i], c).first;
+    auto it = cmap.emplace(name, c).first;
 
     // init after the condition has been inserted into the map
     it->second.init();
   }
 
-  // go through all rules
-  for (size_t i = 0; i < rnames.size(); ++i) {
-    ParameterSet rule = rules[rnames[i]];
-
+  for (std::string const& rule_name : rule_names) {
     // construct the rule object
-    ma_rule r(rnames[i],
-              rnames[i],
-              false //, rule["repeat_alarm"].asBool()
-              ,
-              0 //, rule["holdoff"].asInt()
-    );
+    ma_rule const r{rule_name};
 
     // push the rule to the container
-    auto it = rmap.emplace(rnames[i], r).first;
+    auto it = rmap.emplace(rule_name, r).first;
 
-    // parse the condition expression and alarm message
-    // this is done in a two-step method (init the object, push into container
-    // then parse) because the parse process involves updating the conditions
-    // notification list which needs the pointer to the ma_rule object. There-
-    // fore we push the ma_rule object into the container first, then do the
-    // parse
+    // Parse the fact expression.  This is done in a two-step method
+    // (init the object, push into container then parse) because the
+    // parse process involves updating the factss notification list
+    // which needs the pointer to the ma_rule object. Therefore we
+    // push the ma_rule object into the container first, then do the
+    // parse.
+
+    ParameterSet rule = rules[rule_name];
 
     std::vector<std::string> actions;
     std::vector<std::string> false_actions;
@@ -70,17 +64,14 @@ ma_rule_engine::ma_rule_engine(Json::Value const& facts,
       facts.emplace_back(fact.asString());
 
     it->second.parse(rule["expression"].asString(),
-                     rule["message"].asString(),
                      actions,
                      false_actions,
                      facts,
-                     &cmap);
+                     cmap);
   }
 
-  // for all conditions sort their notification lists
-  cond_map_t::iterator it = cmap.begin();
-  for (; it != cmap.end(); ++it)
-    it->second.sort_notify_lists();
+  for (auto& pr : cmap)
+    pr.second.sort_notify_lists();
 }
 
 void
@@ -90,32 +81,18 @@ ma_rule_engine::execute(std::map<std::string, bool> const& fact_vals,
 {
   // reaction starters
   conds_t status;
-  conds_t source;
-  conds_t target;
 
-  // loop through conditions
-  for (std::map<std::string, bool>::const_iterator it = fact_vals.begin();
-       it != fact_vals.end();
-       ++it) {
-    cond_map_t::iterator cit = cmap.find(it->first);
+  // loop through facts
+  for (auto const& pr : fact_vals) {
+    fact_map_t::iterator cit = cmap.find(pr.first);
 
     if (cit == cmap.end()) throw std::runtime_error("invalid fact name");
 
-    cit->second.force(it->second, status, source, target);
+    cit->second.force(pr.second, status);
   }
 
-  // notification mechanism
-
   // merge notification lists from reaction starters
-  notify_list_t notify_status;
-  notify_list_t notify_domain;
-
-  merge_notify_list(notify_status, status, STATUS_NOTIFY);
-  merge_notify_list(notify_domain, source, SOURCE_NOTIFY);
-  merge_notify_list(notify_domain, target, TARGET_NOTIFY);
-
-  // update domains
-  evaluate_rules_domain(notify_domain);
+  auto notify_status = merge_notify_list(status);
 
   // prepare for the new facts
   std::map<string_t, std::map<string_t, bool>>
@@ -137,14 +114,10 @@ ma_rule_engine::execute(std::map<std::string, bool> const& fact_vals,
 
   // if there's any new fact values, we should call the execute again
   if (!new_fact_vals.empty()) { execute(new_fact_vals, actions, facts); }
-}
 
-void
-ma_rule_engine::evaluate_rules_domain(notify_list_t& notify_domain)
-{
-  notify_list_t::iterator it = notify_domain.begin();
-  for (; it != notify_domain.end(); ++it)
-    (*it)->evaluate_domain();
+  // Reset the rules
+  for (auto& pr : rmap)
+    pr.second.reset();
 }
 
 void
@@ -187,15 +160,15 @@ ma_rule_engine::evaluate_rules(
   }
 }
 
-void
-ma_rule_engine::merge_notify_list(notify_list_t& n_list,
-                                  conds_t const& c_list,
-                                  notify_t type)
+notify_list_t
+ma_rule_engine::merge_notify_list(conds_t const& c_list)
 {
+  notify_list_t result;
   conds_t::const_iterator it = c_list.begin();
   for (; it != c_list.end(); ++it) {
-    notify_list_t notify((*it)->get_notify_list(type));
-    n_list.merge(notify);
-    n_list.unique();
+    notify_list_t notify((*it)->get_notify_list());
+    result.merge(notify);
+    result.unique();
   }
+  return result;
 }
