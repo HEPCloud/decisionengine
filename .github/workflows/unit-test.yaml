@@ -4,18 +4,30 @@ jobs:
   unit_test_job:
     runs-on: ubuntu-latest
     name: A job to run unit tests
+    strategy:
+      matrix:
+        pyver: ["2.7", "3.6"]
     steps:
-    - uses: actions/checkout@v2
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        path: 'decisionengine'
-    - name: unit test action step
-      id: unit_test
-      uses: ./.github/actions/unittest-in-sl7-docker
-    - name: Archive unittest log
-      if: always()
-      uses: actions/upload-artifact@v1
-      with:
-        name: test-log
-        path: test.log
+      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: 'decisionengine'
+      - name: Cache venv
+        uses: actions/cache@v1
+        with:
+          path: ./venv
+          key: ${{ runner.os }}-${{ matrix.pyver}}-venv
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.pyver}}-venv
+      - name: unit test action step
+        id: unit_test
+        uses: ./.github/actions/unittest-in-sl7-docker
+        with:
+          PYVER: ${{ matrix.pyver }}
+      - name: Archive unittest log
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: test-log
+          path: test-${{ matrix.pyver }}.log

@@ -2,7 +2,7 @@
 
 get_current_git_branch() {
     cd $DECISIONENGINE_SRC
-    gb=`git branch | grep "\*" | cut -d ' ' -f2`
+    gb=`git rev-parse HEAD`
     cd $WORKSPACE
     echo $gb
 }

@@ -31,5 +31,20 @@ RUN yum -y install python-psycopg2
 RUN yum -y install python-setuptools
 RUN easy_install DBUtils
 RUN yum -y install cmake3 python3-devel
+RUN yum -y install make
+RUN yum -y install boost-python36-devel
+RUN yum -y install python3-devel 
+RUN yum -y install boost-regex 
+RUN yum -y install boost-system 
+RUN yum -y install boost-python-devel 
+RUN yum -y install python-devel
+RUN yum -y install redhat-lsb-core
+RUN yum -y install python36-virtualenv 
+RUN yum -y install python-virtualenv 
+RUN yum -y install postgresql-devel
+RUN yum -y install pytest
+RUN yum -y install python36-pytest
+RUN yum -y install python36-tabulate
+RUN yum -y install python2-tabulate
 RUN yum -y clean all
 ENTRYPOINT ["/bin/bash"]
