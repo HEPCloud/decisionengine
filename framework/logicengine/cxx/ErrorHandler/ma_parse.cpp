@@ -19,21 +19,15 @@ namespace phx = ::boost::phoenix;
 namespace qi = ::boost::spirit::qi;
 namespace ql = ::boost::spirit::qi::labels;
 
-using ascii::char_;
-using ascii::digit;
-using ascii::graph;
-using ascii::no_case;
-using ascii::space;
-
 using qi::bool_;
+using ascii::char_;
 using qi::double_;
-using qi::eol;
-using qi::int_;
+
 using qi::lexeme;
 using qi::lit;
 using qi::locals;
-using qi::no_skip;
-using qi::raw;
+using ascii::no_case;
+using ascii::space;
 
 using novadaq::errorhandler::CO_E;
 using novadaq::errorhandler::CO_G;
@@ -42,7 +36,6 @@ using novadaq::errorhandler::CO_L;
 using novadaq::errorhandler::CO_LE;
 using novadaq::errorhandler::CO_NE;
 using novadaq::errorhandler::compare_op_t;
-using novadaq::errorhandler::cond_arg_t;
 using novadaq::errorhandler::Fact;
 using novadaq::errorhandler::fact_map_t;
 using novadaq::errorhandler::ma_boolean_andexpr;
