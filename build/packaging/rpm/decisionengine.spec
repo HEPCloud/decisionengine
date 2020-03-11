@@ -1,7 +1,8 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
+%define pyver %{getenv:PYVER}
 %define version 0.3.10
-%define release 1
+%define release 1_py%pyver
 
 %define de_user decisionengine
 %define de_group decisionengine
@@ -23,6 +24,7 @@
 
 %define de_python_sitelib $RPM_BUILD_ROOT%{python_sitelib}
 
+
 Name:           decisionengine
 Version:        %{version}
 Release:        %{release}
@@ -36,12 +38,8 @@ Source0:        decisionengine.tar.gz
 
 BuildArch:      x86_64
 BuildRequires:  cmake3
-#BuildRequires:  cmake numpy numpy-f2py python-pandas
-BuildRequires:  boost-python boost-regex boost-system
-#Requires:       numpy >= 1.7.1
-#Requires:       numpy-f2py >= 1.7.1
-#Requires:       python-pandas >= 0.17.1
-Requires:       boost-python >= 1.53.0
+Requires:       boost-python%pyver-devel >= 1.53.0
+Requires:       boost-python%pyver >= 1.53.0
 Requires:       boost-regex >= 1.53.0
 Requires:       boost-system >= 1.53.0
 Requires(post): /sbin/service
@@ -80,7 +78,7 @@ The testcase used to try out the Decision Engine.
 pwd
 mkdir %{le_builddir}
 cd %{le_builddir}
-cmake3 ..
+cmake3 .. -DPYVER=%pyver
 make
 [ -e ../../RE.so ] && rm ../../RE.so
 [ -e ../../libLogicEngine.so ] && rm ../../libLogicEngine.so

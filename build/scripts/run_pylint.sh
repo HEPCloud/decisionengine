@@ -2,7 +2,7 @@
 
 get_current_git_branch() {
     cd $DECISIONENGINE_SRC
-    gb=`git branch | grep "\*" | cut -d ' ' -f2`
+    gb=`git rev-parse HEAD`
     cd $WORKSPACE
     echo $gb
 }
@@ -225,7 +225,7 @@ done
 #git_branches="$1"
 WORKSPACE=`pwd`
 export DECISIONENGINE_SRC=$WORKSPACE/decisionengine
-
+export PYVER=$PYVER
 source $DECISIONENGINE_SRC/build/scripts/utils.sh
 setup_python_venv $WORKSPACE
 

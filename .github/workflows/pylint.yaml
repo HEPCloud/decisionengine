@@ -4,27 +4,39 @@ jobs:
   pylint_job:
     runs-on: ubuntu-latest
     name: A job to run pylint action
+    strategy:
+      matrix:
+        pyver: ["2.7", "3.6"]
+      fail-fast: false
     steps:
-    - uses: actions/checkout@v2
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        path: 'decisionengine'
-      id: checkout
-    - name: Cache venv
-      uses: actions/cache@v1
-      with:
-        path: ./venv
-        key: ${{ runner.os }}-venv
-        restore-keys: |
-          ${{ runner.os }}-venv
-          ${{ runner.os }}-
-    - name: pylint action step
-      uses: ./.github/actions/pylint-in-sl7-docker
-      id: pylint
-    - name: Archive reports
-      if: always()
-      uses: actions/upload-artifact@v1
-      with:
-        name: reports
-        path: logs.tar.bz2
+      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: 'decisionengine'
+        id: checkout
+      - name: Cache venv
+        uses: actions/cache@v1
+        with:
+          path: ./venv
+          key: ${{ runner.os }}-${{ matrix.pyver}}-venv
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.pyver}}-venv
+      - name: Cache dependencies
+        uses: actions/cache@v1
+        with:
+          path: ./dependencies
+          key: ${{ runner.os }}-${{ matrix.pyver}}-deps
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.pyver}}-deps
+      - name: pylint action step
+        uses: ./.github/actions/pylint-in-sl7-docker
+        id: pylint
+        with:
+          PYVER: ${{ matrix.pyver }}
+      - name: Archive reports
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: reports
+          path: logs-${{ matrix.pyver }}.tar.bz2
