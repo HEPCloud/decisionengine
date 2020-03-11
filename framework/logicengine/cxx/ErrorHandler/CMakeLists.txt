@@ -5,7 +5,6 @@ include_directories(
 )
 
 add_library(LogicEngine SHARED
-    jsoncpp.cc
     ma_boolean_andexpr.cpp
     ma_boolean_cond.cpp
     ma_boolean_expr.cpp

@@ -7,6 +7,7 @@
  */
 
 #include <boost/multi_array.hpp>
+#include <boost/python.hpp>
 
 // system includes
 #include <list>
@@ -14,12 +15,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "json/json.h"
-
-namespace fhicl {
-  typedef Json::Value ParameterSet;
-}
 
 class msg_t {
 public:

@@ -12,8 +12,8 @@ namespace novadaq {
 
     class ma_rule_engine {
     public:
-      ma_rule_engine(Json::Value const& facts,
-                     Json::Value const& rules);
+      ma_rule_engine(boost::python::dict const& facts,
+                     boost::python::dict const& rules);
 
       void execute(std::map<std::string, bool> const& fact_vals,
                    std::map<std::string, strings_t>& actions,

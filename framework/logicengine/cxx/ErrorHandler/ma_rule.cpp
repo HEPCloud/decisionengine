@@ -1,7 +1,6 @@
 #include <ErrorHandler/ma_parse.h>
 #include <ErrorHandler/ma_rule.h>
 
-using fhicl::ParameterSet;
 using namespace novadaq::errorhandler;
 
 ma_rule::ma_rule(string_t const& rule_name)
