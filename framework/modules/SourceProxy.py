@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Fill in data from another channel data block
 """
@@ -70,15 +69,7 @@ class SourceProxy(Source.Source):
           ....
           ]
         """
-
-        l = []
-        for key in self.data_keys:
-            if isinstance(key, tuple):
-                d = key[0]
-            else:
-                d = key
-            l.append(d)
-        return l
+        return list(map(lambda x: x[0] if isinstance(x, tuple) else x, self.data_keys))
 
     def produces(self):
         """
@@ -90,15 +81,8 @@ class SourceProxy(Source.Source):
           data_keys[key1] = data_product_name
           ....
         """
+        return list(map(lambda x: x[1] if isinstance(x, tuple) else x, self.data_keys))
 
-        l = []
-        for key in self.data_keys:
-            if isinstance(key, tuple):
-                d = key[1]
-            else:
-                d = key
-            l.append(d)
-        return l
 
     def _get_data(self, data_block, key):
         while True:

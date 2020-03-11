@@ -1,7 +1,6 @@
 import copy
 import importlib
 import os
-import string
 
 import decisionengine.framework.modules.de_logger as de_logger
 import decisionengine.framework.util.tsort as tsort
@@ -143,7 +142,7 @@ class ConfigManager(object):
                 try:
                     produces.setdefault(name, []).extend(
                         getattr(my_module, 'PRODUCES'))
-                except:
+                except AttributeError:
                     pass
         return produces
 
@@ -152,7 +151,7 @@ class ConfigManager(object):
         old_config = copy.deepcopy(self.config)
         try:
             self.load()
-        except:
+        except Exception:
             self.global_config = copy.deepcopy(old_global_config)
             self.config = copy.deepcopy(old_config)
             raise RuntimeError

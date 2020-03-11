@@ -286,7 +286,7 @@ class Postgresql(ds.DataSource):
                  FROM {}
                  WHERE taskmanager_id=%s
                  AND   generation_id=%s
-            """.format(ds.DataSource.header_table, ds.DataSource.header_table)):
+                 """.format(ds.DataSource.header_table, ds.DataSource.header_table)):
             self._insert(q, (new_generation_id, taskmanager_id, generation_id))
 
     def close(self):
@@ -304,7 +304,7 @@ class Postgresql(ds.DataSource):
         while i:
             try:
                 return self.connection_pool.connection()
-            except:
+            except Exception:
                 i -= 1
                 if not i:
                     raise
@@ -331,12 +331,12 @@ class Postgresql(ds.DataSource):
             colnames = [desc[0] for desc in cursor.description]
             res = cursor.fetchall()
             return colnames, res
-        except psycopg2.Error as msg:
+        except psycopg2.Error:
             raise
         finally:
             try:
                 list([x.close if x else None for x in (cursor, db)])
-            except:
+            except psycopg2.Error:
                 pass
 
     def _update(self, query_string, values=None):
@@ -349,14 +349,14 @@ class Postgresql(ds.DataSource):
             else:
                 cursor.execute(query_string)
             db.commit()
-        except psycopg2.Error as msg:
+        except psycopg2.Error:
             try:
                 if db:
                     db.rollback()
-            except:
+            except psycopg2.Error:
                 pass
             raise
-        except:
+        except psycopg2.Error:
             if db:
                 db.rollback()
             raise
@@ -376,14 +376,14 @@ class Postgresql(ds.DataSource):
             res = cursor.fetchone()
             db.commit()
             return res
-        except psycopg2.Error as msg:
+        except psycopg2.Error:
             try:
                 if db:
                     db.rollback()
-            except:
+            except psycopg2.Error:
                 pass
             raise
-        except:
+        except psycopg2.Error:
             if db:
                 db.rollback()
             raise

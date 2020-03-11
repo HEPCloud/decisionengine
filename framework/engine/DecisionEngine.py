@@ -225,11 +225,11 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                     consumes = None
                     try:
                         produces = getattr(my_module, 'PRODUCES')
-                    except:
+                    except AttributeError:
                         pass
                     try:
                         consumes = getattr(my_module, 'CONSUMES')
-                    except:
+                    except AttributeError:
                         pass
                     txt += "\t\t\tconsumes : {}\n".format(consumes)
                     txt += "\t\t\tproduces : {}\n".format(produces)
