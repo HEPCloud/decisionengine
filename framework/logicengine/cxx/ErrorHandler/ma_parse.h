@@ -1,17 +1,17 @@
 #ifndef ERROR_HANDLER_MA_PARSE_H
 #define ERROR_HANDLER_MA_PARSE_H
 
+#include <ErrorHandler/Fact.h>
 #include <ErrorHandler/ma_types.h>
 
 namespace novadaq {
   namespace errorhandler {
 
     class ma_rule;
-    class ma_cond_test_expr;
 
-    bool parse_condition_expr(string_t const& s, ma_rule* rule);
-
-    bool parse_condition_test(string_t const& s, ma_cond_test_expr& expr);
+    bool parse_fact_expr(string_t const& s,
+                         fact_map_t& conditions,
+                         ma_rule* rule);
 
   } // end of namespace errorhandler
 } // end of namespace novadaq

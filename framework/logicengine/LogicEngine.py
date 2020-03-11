@@ -20,8 +20,7 @@ class LogicEngine(Module, object):
         # Only the names of facts are really needed. We pass in the
         # JSON form of the whole facts dictionary until the C++ is
         # updated to take a list of strings.
-        self.re = RuleEngine(json.dumps(cfg["facts"]),
-                             json.dumps(cfg["rules"]))
+        self.re = RuleEngine(cfg["facts"], cfg["rules"])
 
     def produces(self):
         return ["actions", "newfacts"]

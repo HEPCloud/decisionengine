@@ -5,7 +5,7 @@ project(logicengine)
 set(logicengine_version_major 2)
 set(logicengine_version_minor 0)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS} -pedantic -Wall")
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS} -pedantic -Wall -g -O3")
 
 find_package(PythonInterp ${PYVER} REQUIRED)
 find_package(PythonLibs REQUIRED)
