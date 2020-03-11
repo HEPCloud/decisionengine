@@ -35,8 +35,7 @@ ma_boolean_cond::reset()
 }
 
 bool
-ma_boolean_cond::evaluate(ma_domain& value,
-                          ma_domain const& domain) const
+ma_boolean_cond::evaluate(ma_domain& value, ma_domain const& domain) const
 {
   if (cond_type == EXPR) {
     // expression must not be null

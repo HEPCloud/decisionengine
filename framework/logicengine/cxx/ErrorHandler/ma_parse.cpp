@@ -43,11 +43,11 @@ using novadaq::errorhandler::CO_LE;
 using novadaq::errorhandler::CO_NE;
 using novadaq::errorhandler::compare_op_t;
 using novadaq::errorhandler::cond_arg_t;
+using novadaq::errorhandler::Fact;
 using novadaq::errorhandler::fact_map_t;
 using novadaq::errorhandler::ma_boolean_andexpr;
 using novadaq::errorhandler::ma_boolean_cond;
 using novadaq::errorhandler::ma_boolean_expr;
-using novadaq::errorhandler::Fact;
 using novadaq::errorhandler::ma_rule;
 using novadaq::errorhandler::string_t;
 
@@ -165,10 +165,14 @@ novadaq::errorhandler::boolean_expr_parser::boolean_expr_parser(
     | (lit('!') >> lit('(') >>
        boolean_expr[phx::bind(&insert_boolean_expr_neg, ql::_val, ql::_1)] >>
        ')') // '! (' >> expr >> ')'
-    | key[phx::bind(&insert_primitive_cond, ql::_val, ql::_1, phx::ref(conditions), rule)]
+    | key[phx::bind(
+        &insert_primitive_cond, ql::_val, ql::_1, phx::ref(conditions), rule)]
     // Cond
-    | (lit('!') >>
-       key[phx::bind(&insert_primitive_cond_neg, ql::_val, ql::_1, phx::ref(conditions), rule)]);
+    | (lit('!') >> key[phx::bind(&insert_primitive_cond_neg,
+                                 ql::_val,
+                                 ql::_1,
+                                 phx::ref(conditions),
+                                 rule)]);
 
   args = (arg % ',');
 
@@ -198,8 +202,8 @@ set_boolean_expr(ma_boolean_expr& expr, ma_rule* rule)
 
 bool
 novadaq::errorhandler::parse_fact_expr(string_t const& s,
-				       fact_map_t& conditions,
-				       ma_rule* rule)
+                                       fact_map_t& conditions,
+                                       ma_rule* rule)
 {
   boolean_expr_parser boolean_p(conditions, rule);
 
@@ -207,8 +211,8 @@ novadaq::errorhandler::parse_fact_expr(string_t const& s,
   iter_t const end = s.end();
 
   return qi::phrase_parse(begin,
-			  end,
-			  boolean_p[phx::bind(&set_boolean_expr, ql::_1, rule)],
-			  space) &&
+                          end,
+                          boolean_p[phx::bind(&set_boolean_expr, ql::_1, rule)],
+                          space) &&
          begin == end;
 }

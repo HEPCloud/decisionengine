@@ -7,10 +7,7 @@ const string_t ma_hitmap::global_s = "__S_GLOBAL__";
 const string_t ma_hitmap::global_t = "__T_GLOBAL__";
 
 ma_hitmap::ma_hitmap()
-  : src_idx()
-  , tgt_idx()
-  , cond(0)
-  , hitmap(boost::extents[1][1])
+  : src_idx(), tgt_idx(), cond(0), hitmap(boost::extents[1][1])
 {}
 
 void

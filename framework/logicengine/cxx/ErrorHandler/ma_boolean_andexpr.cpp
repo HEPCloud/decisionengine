@@ -11,8 +11,7 @@ ma_boolean_andexpr::reset()
 }
 
 bool
-ma_boolean_andexpr::evaluate(ma_domain& value,
-                             ma_domain const& domain) const
+ma_boolean_andexpr::evaluate(ma_domain& value, ma_domain const& domain) const
 {
   boolean_conds_t::const_iterator it = conds.begin();
 

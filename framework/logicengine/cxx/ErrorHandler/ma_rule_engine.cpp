@@ -1,16 +1,17 @@
-#include <ErrorHandler/ma_rule_engine.h>
 #include "boost/python/stl_iterator.hpp"
+#include <ErrorHandler/ma_rule_engine.h>
 
 using namespace novadaq::errorhandler;
 
 namespace bp = boost::python;
 
 namespace {
-  std::vector<std::string> 
+  std::vector<std::string>
   to_strings(bp::list const& py_list)
   {
-    return std::vector<std::string>(bp::stl_input_iterator<std::string>{py_list},
-				    bp::stl_input_iterator<std::string>{});
+    return std::vector<std::string>(
+      bp::stl_input_iterator<std::string>{py_list},
+      bp::stl_input_iterator<std::string>{});
   }
 
   std::vector<std::string>
@@ -71,7 +72,7 @@ ma_rule_engine::ma_rule_engine(boost::python::dict const& facts_dict,
     // parse.
 
     bp::dict rule = bp::extract<bp::dict>{rules.get(rule_name)};
-    
+
     it->second.parse(bp::extract<std::string>(rule.get("expression")),
                      to_strings_or_empty(rule, "actions"),
                      to_strings_or_empty(rule, "false_actions"),

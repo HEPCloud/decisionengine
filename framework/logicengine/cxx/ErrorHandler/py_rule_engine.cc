@@ -58,6 +58,7 @@ private:
 
 BOOST_PYTHON_MODULE(RE)
 {
-  class_<RuleEngine, boost::noncopyable>("RuleEngine", init<boost::python::dict, boost::python::dict>())
+  class_<RuleEngine, boost::noncopyable>(
+    "RuleEngine", init<boost::python::dict, boost::python::dict>())
     .def("execute", &RuleEngine::execute);
 }

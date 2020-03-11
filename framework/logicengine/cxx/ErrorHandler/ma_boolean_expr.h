@@ -22,8 +22,7 @@ namespace novadaq {
       void reset();
 
       // evaluation
-      bool evaluate(ma_domain& value,
-                    ma_domain const& domain) const;
+      bool evaluate(ma_domain& value, ma_domain const& domain) const;
 
       // insert an boolean and-expression
       void

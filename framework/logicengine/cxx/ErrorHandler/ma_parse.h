@@ -9,7 +9,9 @@ namespace novadaq {
 
     class ma_rule;
 
-    bool parse_fact_expr(string_t const& s, fact_map_t& conditions, ma_rule* rule);
+    bool parse_fact_expr(string_t const& s,
+                         fact_map_t& conditions,
+                         ma_rule* rule);
 
   } // end of namespace errorhandler
 } // end of namespace novadaq

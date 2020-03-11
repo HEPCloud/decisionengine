@@ -2,8 +2,8 @@
 #define ERROR_HANDLER_MA_RULE_H
 
 // from novadaq
-#include <ErrorHandler/ma_boolean_expr.h>
 #include <ErrorHandler/Fact.h>
+#include <ErrorHandler/ma_boolean_expr.h>
 #include <ErrorHandler/ma_types.h>
 
 #include <map>
@@ -70,8 +70,7 @@ namespace novadaq {
       }
 
       // called by the parser to push a cond_ptr to the container
-      cond_idx_t insert_fact_ptr(string_t const& name,
-				 fact_map_t& cond_map);
+      cond_idx_t insert_fact_ptr(string_t const& name, fact_map_t& cond_map);
 
     private:
       // recursive evaluation function
@@ -79,8 +78,7 @@ namespace novadaq {
       //   domain: the input domain where values are allowed
       //   n:      depth of the recursion
       //   return: true if new alarm found
-      bool recursive_evaluate(ma_domain& value,
-                              size_t n);
+      bool recursive_evaluate(ma_domain& value, size_t n);
 
       // evaluate the boolean expression with a given set of inputs
       //   value:  the input values for each condition

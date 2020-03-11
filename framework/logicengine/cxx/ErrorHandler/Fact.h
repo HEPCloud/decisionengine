@@ -22,7 +22,6 @@ namespace novadaq {
 
     class Fact {
     public:
-
       explicit Fact(string_t const& name);
 
       // reset the condition to its ground state
@@ -169,7 +168,7 @@ namespace novadaq {
       int tc;
       bool at_least_;
       int ts;
-      bool persistent_;     // persistent cond. never turns off
+      bool persistent_; // persistent cond. never turns off
       ma_hitmap hitmap;
 
       // timing events

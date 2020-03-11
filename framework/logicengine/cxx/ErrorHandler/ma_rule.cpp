@@ -3,9 +3,7 @@
 
 using namespace novadaq::errorhandler;
 
-ma_rule::ma_rule(string_t const& rule_name)
-  : name_{rule_name}
-{}
+ma_rule::ma_rule(string_t const& rule_name) : name_{rule_name} {}
 
 void
 ma_rule::parse(string_t const& fact_expr,
@@ -58,8 +56,7 @@ ma_rule::insert_fact_ptr(string_t const& name, fact_map_t& cond_map)
 }
 
 bool
-ma_rule::recursive_evaluate(ma_domain& value,
-                            size_t n)
+ma_rule::recursive_evaluate(ma_domain& value, size_t n)
 {
   // get range
   ma_cond_range src(D_NIL, D_NIL);
@@ -118,4 +115,3 @@ ma_rule::reset()
     condition->reset();
   }
 }
-
