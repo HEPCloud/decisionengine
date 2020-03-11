@@ -18,4 +18,7 @@ add_library(LogicEngine SHARED
 target_link_libraries(LogicEngine boost_regex)
 
 python_add_module(RE py_rule_engine.cc)
-target_link_libraries(RE LogicEngine boost_python boost_regex boost_system ${PYTHON_LIBRARIES})
+target_link_libraries(RE LogicEngine
+                      boost_python${BOOST_PY_SUFFIX}
+                      boost_system
+                      ${PYTHON_LIBRARIES})
