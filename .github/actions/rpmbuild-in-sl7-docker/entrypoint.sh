@@ -1,7 +1,8 @@
 #!/bin/bash
-echo PYVER=$1
-export PYVER=$1
+PYVER=${1:-"2.7"}
+export PYVER
+echo PYVER=$PYVER
 decisionengine/build/packaging/rpm/package.sh decisionengine
 status=$?
-tar cf $GITHUB_WORKSPACE/rpmbuild-$PYVER.tar /var/tmp/root/rpm/decisionengine/*
+tar cf $GITHUB_WORKSPACE/rpmbuild-$PYVER.tar /var/tmp/`whoami`/rpm/decisionengine/*
 exit $status
