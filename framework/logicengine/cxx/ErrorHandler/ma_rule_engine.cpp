@@ -1,3 +1,4 @@
+#include "boost/python.hpp"
 #include "boost/python/stl_iterator.hpp"
 #include <ErrorHandler/ma_rule_engine.h>
 
