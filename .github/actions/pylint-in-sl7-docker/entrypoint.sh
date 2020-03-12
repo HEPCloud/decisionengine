@@ -1,5 +1,6 @@
 #!/bin/bash
-export PYVER=$1
+PYVER=${1:-"2.7"}
+export PYVER
 echo PYVER=$PYVER
 decisionengine/build/scripts/run_pylint.sh
 status=$?

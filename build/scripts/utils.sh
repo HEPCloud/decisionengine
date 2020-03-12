@@ -11,30 +11,34 @@ setup_python_venv() {
         exit 1
     fi
     WORKSPACE=${1:-`pwd`}
-    VENV=$WORKSPACE/venv
+    VENV=$WORKSPACE/venv-$PYVER
 
     # Following is useful for running the script outside jenkins
     #if [ ! -d "$WORKSPACE" ]; then
     #    mkdir $WORKSPACE
     #fi
 
-    VIRTUALENV_EXE=virtualenv
+    VIRTUALENV_EXE=virtualenv-$PYVER
     PIP_EXE=pip
-    if [ "$PYVER" == "3.6" ];then
-        VIRTUALENV_EXE=virtualenv-$PYVER
-    fi
 
     if [ ! -d $VENV ] ; then
-       $VIRTUALENV_EXE --system-site-packages $VENV
+        if [ "$PYVER" == "3.6" ]; then
+            $VIRTUALENV_EXE $VENV
+        else
+            $VIRTUALENV_EXE --system-site-packages $VENV
+        fi
     fi
 
     source $VENV/bin/activate
-    export PYTHONPATH="$PWD"
+    export PYTHONPATH="$PWD:$PYTHONPATH"
 
     # Install dependancies first so we don't get uncompatible ones
     # Following RPMs need to be installed on the machine:
     #pip_packages="astroid pylint pep8 unittest2 coverage sphinx DBUtils pytest"
     pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx DBUtils pytest mock"
+    if [ "$PYVER" == "3.6" ]; then
+        pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx tabulate DBUtils psycopg2 pytest mock pandas"
+    fi
     for package in $pip_packages; do
         echo "Installing $package ..."
         status="DONE"
@@ -55,7 +59,7 @@ setup_python_venv() {
 
 setup_glideinwms() {
     WSPACE=${1:-`pwd`}
-    glideinwms_git="https://cdcvs.fnal.gov/projects/glideinwms"
+    glideinwms_git="https://github.com/glideinWMS/glideinwms.git"
     cd $WSPACE
     git clone $glideinwms_git
 }

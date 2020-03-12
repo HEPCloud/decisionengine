@@ -225,7 +225,10 @@ done
 #git_branches="$1"
 WORKSPACE=`pwd`
 export DECISIONENGINE_SRC=$WORKSPACE/decisionengine
-export PYVER=$PYVER
+if [ ! -e $PYVER ];then
+    PYVER=2.7
+fi
+export PYVER
 source $DECISIONENGINE_SRC/build/scripts/utils.sh
 setup_python_venv $WORKSPACE
 
