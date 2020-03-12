@@ -4,5 +4,5 @@ export PYVER
 echo PYVER=$PYVER
 decisionengine/build/packaging/rpm/package.sh decisionengine
 status=$?
-tar cf $GITHUB_WORKSPACE/rpmbuild-$PYVER.tar /var/tmp/`whoami`/rpm/decisionengine/*
+tar cf $GITHUB_WORKSPACE/rpmbuild-$PYVER.tar /var/tmp/`whoami`/rpm/decisionengine/*RPMS
 exit $status
