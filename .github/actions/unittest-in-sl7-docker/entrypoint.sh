@@ -17,11 +17,12 @@ export PYTHONPATH=$PWD:$PYTHONPATH
 source venv-$PYVER/bin/activate
 if [ "$PYVER" == "3.6" ];then
 which pytest
-pytest -v --tb=native decisionengine >  ./test-$PYVER.log 2>&1
+pytest -v --tb=native decisionengine >  ./pytest-$PYVER.log 2>&1
+status=$?
 else
 which py.test
-py.test -v --tb=native decisionengine >  ./test-$PYVER.log 2>&1
-fi 
-
+py.test -v --tb=native decisionengine >  ./pytest-$PYVER.log 2>&1
 status=$?
+fi
+cat ./pytest-$PYVER.log
 exit $status
