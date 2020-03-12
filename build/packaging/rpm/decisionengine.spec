@@ -1,6 +1,6 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
-%define version 0.3.10
+%define version 1.0.0
 %define release 1
 
 %define de_user decisionengine
