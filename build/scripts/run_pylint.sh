@@ -62,21 +62,13 @@ process_branch() {
 
     # pep8 related variables
     # default: E121,E123,E126,E226,E24,E704
-    # E501 line too long (90 > 79 characters)
-    # E251 unexpected spaces around keyword / parameter equals
-    # E303 too many blank lines (2)
-    # E225 missing whitespace around operator
-    # E231 missing whitespace after ','
-    # E228 missing whitespace around modulo operator
-    # E302 expected 2 blank lines, found 1
-    # E221 multiple spaces before operator
     # E261 at least two spaces before inline comment
-    # E111 indentation is not a multiple of four
-    # W293 blank line contains whitespace
-    # W291 trailing whitespace
     # E265 block comment should start with '# '
+    # E302 expected 2 blank lines, found 1
+    # E303 too many blank lines (2)
+    # E501 line too long (90 > 79 characters)
 
-    PEP8_OPTIONS="--ignore=E121,E123,E126,E226,E24,E704,E501,E251,E303,E225,E231,E228,E302,E221,E261,E111,W293,W291,E265"
+    PEP8_OPTIONS="--ignore=E261,E265,E302,E303,E501"
 
     # Generate pylint config file
     #pylint --generate-rcfile > $PYLINT_RCFILE
