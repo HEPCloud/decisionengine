@@ -370,9 +370,6 @@ class DataBlock(object):
             value = ast.literal_eval(str(decompress(value_row['value'])))
         except KeyNotFoundError:
             value = default
-        except:
-            # TODO: FINSIH with more exceptions, content
-            raise
 
         if value.get('pickled'):
             return_value = zloads(value.get('value'))
@@ -387,17 +384,13 @@ class DataBlock(object):
         :type key: :obj:`string`
         :rtype: :obj:`Header`
         """
-        try:
-            header_row = self.dataspace.get_header(self.sequence_id,
-                                                   self.generation_id, key)
-            header = Header(header_row[0], create_time=header_row[3],
-                            expiration_time=header_row[4],
-                            scheduled_create_time=header_row[5],
-                            creator=header_row[6],
-                            schema_id=header_row[7])
-        except:
-            # TODO: FINSIH with more exceptions, content
-            raise
+        header_row = self.dataspace.get_header(self.sequence_id,
+                                               self.generation_id, key)
+        header = Header(header_row[0], create_time=header_row[3],
+                        expiration_time=header_row[4],
+                        scheduled_create_time=header_row[5],
+                        creator=header_row[6],
+                        schema_id=header_row[7])
         return header
 
     def get_metadata(self, key):
@@ -407,16 +400,12 @@ class DataBlock(object):
         :type key: :obj:`string`
         :rtype: :obj:`Metadata`
         """
-        try:
-            metadata_row = self.dataspace.get_metadata(self.sequence_id,
-                                                       self.generation_id, key)
-            metadata = Metadata(metadata_row[0], state=metadata_row[3],
-                                generation_id=metadata_row[1],
-                                generation_time=metadata_row[4],
-                                missed_update_count=metadata_row[5])
-        except:
-            # TODO: FINSIH with more exceptions, content
-            raise
+        metadata_row = self.dataspace.get_metadata(self.sequence_id,
+                                                   self.generation_id, key)
+        metadata = Metadata(metadata_row[0], state=metadata_row[3],
+                            generation_id=metadata_row[1],
+                            generation_time=metadata_row[4],
+                            missed_update_count=metadata_row[5])
         return metadata
 
     def duplicate(self):

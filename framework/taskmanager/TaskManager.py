@@ -178,9 +178,9 @@ class TaskManager(object):
                         self.channel.transforms[t].stop_running.set()
                         time.sleep(5)
                     break
-            except:
+            except Exception as e:
                 log_exception(logging.getLogger(),
-                              'Exception in the task manager main loop')
+                              'Exception in the task manager main loop %s' % (str(e,)))
                 break
 
             time.sleep(1)
@@ -255,9 +255,9 @@ class TaskManager(object):
         data_block_t1 = self.do_backup()
         try:
             self.run_transforms(data_block_t1)
-        except:
+        except Exception as e:
             log_exception(logging.getLogger(),
-                          'error in decision cycle(transforms)')
+                          'error in decision cycle(transforms) ')
         try:
             actions_facts = self.run_logic_engine(data_block_t1)
             logging.getLogger().info('ran all logic engines')
@@ -265,12 +265,12 @@ class TaskManager(object):
                 try:
                     self.run_publishers(
                         a_f['actions'], a_f['newfacts'], data_block_t1)
-                except:
+                except Exception as e:
                     log_exception(logging.getLogger(),
-                                  'error in decision cycle(publishers)')
-        except:
+                                  'error in decision cycle(publishers) %s' % (str(e),))
+        except Exception as e:
             log_exception(logging.getLogger(),
-                          'error in decision cycle(logic engine)')
+                          'error in decision cycle(logic engine) %s' % (str(e),))
 
     def run_source(self, src):
         """
@@ -300,9 +300,9 @@ class TaskManager(object):
                 src.run_counter += 1
                 src.data_updated.set()
                 logging.getLogger().info('Src %s %s finished cycle', src.name, src.module)
-            except:
+            except Exception as e:
                 log_exception(logging.getLogger(),
-                              'Exception running source {}'.format(src.name))
+                              'Exception running source {} : {}'.format(src.name, str(e)))
                 self.offline_task_manager(self.data_block_t0)
             if src.schedule > 0:
                 s = src.stop_running.wait(src.schedule)
@@ -330,9 +330,9 @@ class TaskManager(object):
                                       name=self.channel.sources[s].name, args=([self.channel.sources[s]]), kwargs={})
             try:
                 thread.start()
-            except:
-                log_exception(logging.getLogger(), 'exception starting thread %s' % (
-                    self.channel.sources[s].name, ))
+            except Exception as e:
+                log_exception(logging.getLogger(), 'exception starting thread %s : %s' % (
+                    self.channel.sources[s].name, str(e)))
                 self.offline_task_manager(data_block)
                 break
         return event_list
@@ -362,9 +362,10 @@ class TaskManager(object):
 
             try:
                 thread.start()
-            except:
+            except Exception as e:
                 log_exception(
-                    logging.getLogger(), 'exception starting thread {}'.format(transform.name))
+                    logging.getLogger(), 'exception starting thread {} : {}'.format(transform.name,
+                                                                                    str(e)))
                 self.offline_task_manager(data_block)
                 break
 
@@ -401,9 +402,10 @@ class TaskManager(object):
                                               creator=transform.name)
                     self.data_block_put(data, header, data_block)
                     logging.getLogger().info('transform put data')
-                except:
+                except Exception as e:
                     log_exception(
-                        logging.getLogger(), 'exception from transform {}', format(transform.name))
+                        logging.getLogger(), 'exception from transform {} : {}'.format(transform.name,
+                                                                                       str(e)))
                     self.offline_task_manager(data_block)
                 break
             else:
