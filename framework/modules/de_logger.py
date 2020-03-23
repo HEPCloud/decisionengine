@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Looger to use in all modules
 """
