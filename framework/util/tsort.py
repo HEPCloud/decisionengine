@@ -42,7 +42,7 @@ def tsort(graph):
     for vertex, edges in list(graph.items()):
         incoming_edges.setdefault(vertex, 0)
         for edge in edges:
-            incoming_edges[edge] = incoming_edges.get(edge, 0)+1
+            incoming_edges[edge] = incoming_edges.get(edge, 0) + 1
 
     """
     create dict of vertices that have no incoming edges

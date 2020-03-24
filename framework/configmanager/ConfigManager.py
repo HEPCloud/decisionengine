@@ -95,7 +95,7 @@ class ConfigManager(object):
 
         if not all_consumes.issubset(all_produces):
             raise RuntimeError("consumes are not subset of produce, extra keys {}".
-                               format(list(all_consumes-all_produces)))
+                               format(list(all_consumes - all_produces)))
 
         """
         graph contains pairs of modules and lists of modules that depends on
