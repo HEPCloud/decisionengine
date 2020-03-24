@@ -68,7 +68,7 @@ process_branch() {
     # E303 too many blank lines (2)
     # E501 line too long (90 > 79 characters)
 
-    PEP8_OPTIONS="--ignore=E261,E265,E302,E303,E501"
+    PEP8_OPTIONS="--ignore=E261,E265,E302,E303,E501,E1004"
 
     # Generate pylint config file
     #pylint --generate-rcfile > $PYLINT_RCFILE
@@ -217,10 +217,6 @@ done
 #git_branches="$1"
 WORKSPACE=`pwd`
 export DECISIONENGINE_SRC=$WORKSPACE/decisionengine
-if [ ! -e $PYVER ];then
-    PYVER=2.7
-fi
-export PYVER
 source $DECISIONENGINE_SRC/build/scripts/utils.sh
 setup_python_venv $WORKSPACE
 

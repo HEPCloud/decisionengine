@@ -4,10 +4,6 @@ jobs:
   pylint_job:
     runs-on: ubuntu-latest
     name: A job to run pylint action
-    strategy:
-      matrix:
-        pyver: ["2.7", "3.6"]
-      fail-fast: false
     steps:
       - name: Sparse checkout
         shell: bash
@@ -36,11 +32,9 @@ jobs:
       - name: pylint action step
         uses: ./.github/actions/pylint-in-sl7-docker
         id: pylint
-        with:
-          PYVER: ${{ matrix.pyver }}
       - name: Archive reports
         if: always()
         uses: actions/upload-artifact@v1
         with:
           name: reports
-          path: logs-${{ matrix.pyver }}.tar.bz2
+          path: logs.tar.bz2
