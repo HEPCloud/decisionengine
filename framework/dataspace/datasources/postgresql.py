@@ -27,7 +27,7 @@ def generate_insert_query(table_name, keys):
     query = """
     INSERT INTO {} ({}) VALUES ({})
     """
-    query = query.format(table_name, ",".join(keys), ("%s,"*len(keys))[:-1])
+    query = query.format(table_name, ",".join(keys), ("%s," * len(keys))[:-1])
     return query
 
 
@@ -152,7 +152,7 @@ class Postgresql(ds.DataSource):
                      {'taskmanager_id': taskmanager_id,
                       'generation_id': generation_id,
                       'key': key,
-                      'value':  psycopg2.Binary(str(value))
+                      'value': psycopg2.Binary(str(value))
                       })
 
         self._insert(ds.DataSource.header_table,
@@ -299,7 +299,7 @@ class Postgresql(ds.DataSource):
         return {}
 
     def get_connection(self):
-        i = self.retries+1
+        i = self.retries + 1
         t = self.timeout
         while i:
             try:
