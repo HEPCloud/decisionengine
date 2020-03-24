@@ -255,7 +255,7 @@ class TaskManager(object):
         data_block_t1 = self.do_backup()
         try:
             self.run_transforms(data_block_t1)
-        except Exception as e:
+        except Exception:
             log_exception(logging.getLogger(),
                           'error in decision cycle(transforms) ')
         try:

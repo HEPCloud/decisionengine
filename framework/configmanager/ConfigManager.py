@@ -68,7 +68,7 @@ class ConfigManager(object):
             try:
                 produces = getattr(my_module, 'PRODUCES')
                 all_produces |= set(produces)
-            except AttributeError as msg:
+            except AttributeError:
                 raise RuntimeError("source module {} does not have required PRODUCES list".
                                    format(sname))
 

@@ -345,7 +345,7 @@ class Postgresql(ds.DataSource):
             db = self.connection_pool.connection()
             cursor = db.cursor()
             if values:
-                res = cursor.execute(query_string, values)
+                cursor.execute(query_string, values)
             else:
                 cursor.execute(query_string)
             db.commit()
