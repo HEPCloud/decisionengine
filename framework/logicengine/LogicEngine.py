@@ -13,7 +13,7 @@ class LogicEngine(Module, object):
     # Inheritance from object can be dropped if Module is modified to
     # inherit from object.
     def __init__(self, cfg):
-        super(LogicEngine, self).__init__(cfg)
+        super().__init__(cfg)
         self.logger = logging.getLogger()
         self.facts = [NamedFact(name, expr) for name, expr in cfg["facts"].items()]
 
@@ -72,10 +72,10 @@ class LogicEngine(Module, object):
         fact_value = []
 
         for rule in newfacts:
-            for fact in newfacts[rule]:
-                rule_name.append(rule)
-                fact_name.append(fact)
-                fact_value.append(newfacts[rule][fact])
+            facts = newfacts[rule]
+            rule_name += [rule] * len(facts)
+            fact_name += facts.keys()
+            fact_value += facts.values()
         facts = {
             'rule_name': rule_name,
             'fact_name': fact_name,

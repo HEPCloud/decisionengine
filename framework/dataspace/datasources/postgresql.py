@@ -98,7 +98,7 @@ class Postgresql(ds.DataSource):
     }
 
     def __init__(self, config_dict):
-        super(Postgresql, self).__init__(config_dict)
+        super().__init__(config_dict)
         self.connection_pool = DBUtils.PooledDB.PooledDB(psycopg2,
                                                          **config_dict)
         self.retries = MAX_NUMBER_OF_RETRIES
