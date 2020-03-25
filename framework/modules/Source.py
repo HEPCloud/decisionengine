@@ -3,7 +3,7 @@ from decisionengine.framework.modules import Module
 
 class Source(Module.Module):
     def __init__(self, set_of_parameters):
-        super(Source, self).__init__(set_of_parameters)
+        super().__init__(set_of_parameters)
 
     # name_schema_id_list: a list of dictionaries containing
     # the data product name and a pointer to a schema

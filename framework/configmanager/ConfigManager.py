@@ -46,7 +46,7 @@ class ConfigManager(object):
                     module_keys = set(module_conf.keys())
                 except Exception as msg:
                     raise RuntimeError("{} module {} is not a dictionary, {}".
-                                       format(name, module_name, str(msg)))
+                                       format(name, module_name, msg))
                 diff = MANDATORY_MODULE_KEYS - module_keys
                 if diff:
                     raise RuntimeError("{} module {} is missing one or more mandatory keys {} ".
@@ -68,7 +68,7 @@ class ConfigManager(object):
             try:
                 produces = getattr(my_module, 'PRODUCES')
                 all_produces |= set(produces)
-            except AttributeError as msg:
+            except AttributeError:
                 raise RuntimeError("source module {} does not have required PRODUCES list".
                                    format(sname))
 
@@ -91,7 +91,7 @@ class ConfigManager(object):
                                         'produces': produces}
             except AttributeError as msg:
                 raise RuntimeError("transform module {} does not have required lists {}".
-                                   format(tname, str(msg)))
+                                   format(tname, msg))
 
         if not all_consumes.issubset(all_produces):
             raise RuntimeError("consumes are not subset of produce, extra keys {}".
@@ -167,22 +167,23 @@ class ConfigManager(object):
                     exec(code)
                 except Exception as msg:
                     raise RuntimeError("Configuration file {} contains errors: {}".
-                                       format(self.config_file, str(msg)))
+                                       format(self.config_file, msg))
             else:
                 raise RuntimeError(
                     "Empty configuration file {}".format(self.config_file))
         except Exception as msg:
             raise RuntimeError("Failed to read configuration file {} {}".
-                               format(self.config_file, str(msg)))
+                               format(self.config_file, msg))
 
         if not self.logger:
             try:
-                de_logger.set_logging(log_file_name=self.global_config['logger']['log_file'],
-                                      max_file_size=self.global_config['logger']['max_file_size'],
-                                      max_backup_count=self.global_config['logger']['max_backup_count'])
+                logger_config = self.global_config['logger']
+                de_logger.set_logging(log_file_name=logger_config['log_file'],
+                                      max_file_size=logger_config['max_file_size'],
+                                      max_backup_count=logger_config['max_backup_count'])
                 self.logger = de_logger.get_logger()
             except Exception as msg:
-                raise RuntimeError("Failed to create log: {}".format(str(msg)))
+                raise RuntimeError("Failed to create log: {}".format(msg))
 
         """
         load channels
@@ -201,12 +202,12 @@ class ConfigManager(object):
                     except Exception as msg:
                         self.logger.error("Channel configuration file {} \
                                            contains error {}, SKIPPING".
-                                          format(channel_conf, str(msg)))
+                                          format(channel_conf, msg))
                         continue
             except Exception as msg:
                 self.logger.error("Failed to open channel configuration file {} \
                                   contains error {}, SKIPPING".
-                                  format(channel_conf, str(msg)))
+                                  format(channel_conf, msg))
 
             """
             check that channel configuration contains necessary keys
@@ -216,7 +217,7 @@ class ConfigManager(object):
                 self.validate_channel(self.channels[name])
             except Exception as msg:
                 self.logger.error(
-                    "{} {}, REMOVING the channel".format(name, str(msg)))
+                    "{} {}, REMOVING the channel".format(name, msg))
                 del self.channels[name]
                 continue
 

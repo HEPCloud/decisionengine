@@ -43,7 +43,7 @@ FORMATTER = logging.Formatter(
 class Worker(multiprocessing.Process):
 
     def __init__(self, task_manager, config):
-        super(Worker, self).__init__()
+        super().__init__()
         self.task_manager = task_manager
         self.logger = None
         self.config = config
@@ -158,8 +158,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                                                                headers='keys',
                                                                tablefmt='psql'))
             except Exception as e:
-                txt += "\t\t{}\n".format(str(e))
-                pass
+                txt += "\t\t{}\n".format(e)
             if not found:
                 txt += "Not Found\n"
         return txt[:-1]
@@ -197,8 +196,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                             txt += "{}\n".format(tabulate.tabulate(df,
                                                                    headers='keys', tablefmt='psql'))
                         except Exception as e:
-                            txt += "\t\t\t{}\n".format(str(e))
-                            pass
+                            txt += "\t\t\t{}\n".format(e)
         return txt[:-1]
 
     def rpc_status(self):
@@ -278,7 +276,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                 self.start_channel(ch)
             except Exception as e:
                 self.logger.error(
-                    "Channel {} failed to start : {}".format(ch, str(e)))
+                    "Channel {} failed to start : {}".format(ch, e))
 
     def rpc_stop_channel(self, channel):
         self.stop_channel(channel)

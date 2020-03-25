@@ -180,7 +180,7 @@ class TaskManager(object):
                     break
             except Exception as e:
                 log_exception(logging.getLogger(),
-                              'Exception in the task manager main loop %s' % (str(e,)))
+                              'Exception in the task manager main loop {}'.format(e))
                 break
 
             time.sleep(1)
@@ -244,7 +244,7 @@ class TaskManager(object):
 
         with self.lock:
             data_block = self.data_block_t0.duplicate()
-            logging.getLogger().debug('Duplicated block %s', data_block)
+            logging.getLogger().debug('Duplicated block {}'.format(data_block))
         return data_block
 
     def decision_cycle(self):
@@ -255,7 +255,7 @@ class TaskManager(object):
         data_block_t1 = self.do_backup()
         try:
             self.run_transforms(data_block_t1)
-        except Exception as e:
+        except Exception:
             log_exception(logging.getLogger(),
                           'error in decision cycle(transforms) ')
         try:
@@ -267,10 +267,10 @@ class TaskManager(object):
                         a_f['actions'], a_f['newfacts'], data_block_t1)
                 except Exception as e:
                     log_exception(logging.getLogger(),
-                                  'error in decision cycle(publishers) %s' % (str(e),))
+                                  'error in decision cycle(publishers) {}'.format(e))
         except Exception as e:
             log_exception(logging.getLogger(),
-                          'error in decision cycle(logic engine) %s' % (str(e),))
+                          'error in decision cycle(logic engine) {}'.format(e))
 
     def run_source(self, src):
         """
@@ -285,7 +285,6 @@ class TaskManager(object):
             try:
                 logging.getLogger().info('Src %s calling acquire', src.name)
                 data = src.worker.acquire()
-                #logging.getLogger().info('Src %s acquire retuned %s', src.name, data)
                 logging.getLogger().info('Src %s acquire retuned', src.name)
                 logging.getLogger().info('Src %s filling header', src.name)
                 if data:
@@ -302,7 +301,7 @@ class TaskManager(object):
                 logging.getLogger().info('Src %s %s finished cycle', src.name, src.module)
             except Exception as e:
                 log_exception(logging.getLogger(),
-                              'Exception running source {} : {}'.format(src.name, str(e)))
+                              'Exception running source {} : {}'.format(src.name, e))
                 self.offline_task_manager(self.data_block_t0)
             if src.schedule > 0:
                 s = src.stop_running.wait(src.schedule)
@@ -365,7 +364,7 @@ class TaskManager(object):
             except Exception as e:
                 log_exception(
                     logging.getLogger(), 'exception starting thread {} : {}'.format(transform.name,
-                                                                                    str(e)))
+                                                                                    e))
                 self.offline_task_manager(data_block)
                 break
 
@@ -405,7 +404,7 @@ class TaskManager(object):
                 except Exception as e:
                     log_exception(
                         logging.getLogger(), 'exception from transform {} : {}'.format(transform.name,
-                                                                                       str(e)))
+                                                                                       e))
                     self.offline_task_manager(data_block)
                 break
             else:
