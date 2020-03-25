@@ -1,7 +1,5 @@
 #!/bin/bash -x
-PYVER=${1:-"2.7"}
-export PYVER
-echo PYVER=$PYVER
+GITHUB_WORKSPACE=${GITHUB_WORKSPACE:-`pwd`}
 source decisionengine/build/scripts/utils.sh
 setup_python_venv
 setup_dependencies
@@ -9,20 +7,14 @@ le_builddir=decisionengine/framework/logicengine/cxx/build
 [ -e $le_buildir ] && rm -rf $le_builddir
 mkdir $le_builddir
 cd $le_builddir
-cmake3 -Wno-dev --debug-output -DPYVER=$PYVER ..
+cmake3 -Wno-dev --debug-output -DPYVER=3.6 ..
 make --debug
 make --debug liblinks
 cd -
 export PYTHONPATH=$PWD:$PYTHONPATH
-source venv-$PYVER/bin/activate
-if [ "$PYVER" == "3.6" ];then
+source venv/bin/activate
 which pytest
-pytest -v --tb=native decisionengine >  ./pytest-$PYVER.log 2>&1
+pytest -v --tb=native decisionengine >  ./pytest.log 2>&1
 status=$?
-else
-which py.test
-py.test -v --tb=native decisionengine >  ./pytest-$PYVER.log 2>&1
-status=$?
-fi
-cat ./pytest-$PYVER.log
+cat ./pytest.log
 exit $status

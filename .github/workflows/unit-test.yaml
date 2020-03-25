@@ -4,10 +4,6 @@ jobs:
   unit_test_job:
     runs-on: ubuntu-latest
     name: A job to run unit tests
-    strategy:
-      matrix:
-        pyver: ["2.7", "3.6"]
-      fail-fast: false
     steps:
       - name: Sparse checkout
         shell: bash
@@ -35,11 +31,9 @@ jobs:
       - name: unit test action step
         id: unit_test
         uses: ./.github/actions/unittest-in-sl7-docker
-        with:
-          PYVER: ${{ matrix.pyver }}
       - name: Archive unittest log
         if: always()
         uses: actions/upload-artifact@v1
         with:
           name: test-log
-          path: pytest-${{ matrix.pyver }}.log
+          path: pytest.log

@@ -11,22 +11,18 @@ setup_python_venv() {
         exit 1
     fi
     WORKSPACE=${1:-`pwd`}
-    VENV=$WORKSPACE/venv-$PYVER
+    VENV=$WORKSPACE/venv
 
     # Following is useful for running the script outside jenkins
     #if [ ! -d "$WORKSPACE" ]; then
     #    mkdir $WORKSPACE
     #fi
 
-    VIRTUALENV_EXE=virtualenv-$PYVER
+    VIRTUALENV_EXE=virtualenv-3.6
     PIP_EXE=pip
 
     if [ ! -d $VENV ] ; then
-        if [ "$PYVER" == "3.6" ]; then
-            $VIRTUALENV_EXE $VENV
-        else
-            $VIRTUALENV_EXE --system-site-packages $VENV
-        fi
+       $VIRTUALENV_EXE $VENV
     fi
 
     source $VENV/bin/activate
@@ -35,10 +31,7 @@ setup_python_venv() {
     # Install dependancies first so we don't get uncompatible ones
     # Following RPMs need to be installed on the machine:
     #pip_packages="astroid pylint pep8 unittest2 coverage sphinx DBUtils pytest"
-    pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx DBUtils pytest mock"
-    if [ "$PYVER" == "3.6" ]; then
-        pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx tabulate DBUtils psycopg2 pytest mock pandas"
-    fi
+    pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx tabulate DBUtils psycopg2 pytest mock pandas ipython"
     for package in $pip_packages; do
         echo "Installing $package ..."
         status="DONE"
