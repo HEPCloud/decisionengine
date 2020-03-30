@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Main loop for Decision Engine.
 The following environment variable points to decision engine configuration file:
