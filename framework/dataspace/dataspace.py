@@ -165,6 +165,7 @@ class DataSpace(object):
     def get_taskmanager(self, taskmanager_name, taskmanager_id=None):
         return self.datasource.get_taskmanager(taskmanager_name, taskmanager_id)
 
+
 MIN_RETENTION_INTERVAL_DAYS = 7
 State = enum.Enum("State", "IDLE RUNNING SLEEPING STOPPING STOPPED ERROR")
 
@@ -262,6 +263,3 @@ class Reaper(object):
     def __repr__(self):
         return "Reaper, retention interval {}, state {}".format(self.retention_interval,
                                                                 self.get_state())
-
-
-

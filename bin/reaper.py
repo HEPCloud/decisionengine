@@ -6,7 +6,7 @@ in configuration. Configuration file has to have this bit added:
                       "datasource" :  { ... }
                    }
     }
-Can be used in a cron job. 
+Can be used in a cron job.
 """
 import decisionengine.framework.configmanager.ConfigManager as config
 import decisionengine.framework.dataspace.dataspace as dataspace
