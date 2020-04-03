@@ -7,18 +7,18 @@ import decisionengine.framework.dataspace.dataspace as dataspace
 GLOBAL_CONFIG = {
     "dataspace": {
         "datasource": {
-           "module": "decisionengine.framework.dataspace.datasources.postgresql",
-           "name": "Postgresql",
-           "config": {
-              "user": "decisionengine",
-              "blocking": True,
-              "host": "decisionengine",
-              "port": 5435,
-              "database": "decisionengine",
-              "maxconnections": 100,
-              "maxcached": 10,
+            "module": "decisionengine.framework.dataspace.datasources.postgresql",
+            "name": "Postgresql",
+            "config": {
+                "user": "decisionengine",
+                "blocking": True,
+                "host": "decisionengine",
+                "port": 5435,
+                "database": "decisionengine",
+                "maxconnections": 100,
+                "maxcached": 10,
             },
-           },
+        },
     },
 }
 
@@ -53,7 +53,6 @@ class TestReaper(unittest.TestCase):
 
     def test_loop(self):
         for _ in range(3):
-            print (self.reaper)
             self.test_start_stop()
             time.sleep(1)
 
@@ -80,7 +79,6 @@ class TestReaper(unittest.TestCase):
             self.assertEqual(self.reaper.get_state(), dataspace.State.ERROR)
             function.side_effect = None
             self.reaper.start()
-            print (self.reaper.get_state())
             self.assertTrue(self.reaper.get_state() in (dataspace.State.RUNNING, dataspace.State.SLEEPING))
             self.reaper.stop()
             self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)

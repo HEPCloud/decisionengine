@@ -61,7 +61,7 @@ FROM taskmanager tm where tm.name = %s and tm.taskmanager_id = %s
 """
 
 DELETE_OLD_DATA_QUERY = """
-DELETE FROM taskmanager where datestamp < current_date - interval '%s days' 
+DELETE FROM taskmanager where datestamp < current_date - interval '%s days'
 """
 
 
