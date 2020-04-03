@@ -1,6 +1,7 @@
 import abc
 import six
 
+
 @six.add_metaclass(abc.ABCMeta)
 class DataSource(object):
 
@@ -16,7 +17,6 @@ class DataSource(object):
     #: Name of the metadata table
     metadata_table = 'metadata'
 
-
     def __init__(self, config):
         """
         :type config: :obj:`dict`
@@ -25,14 +25,11 @@ class DataSource(object):
 
         self.config = config
 
-
     def __repr__(self):
         return self.__str__()
 
-
     def __str__(self):
         return '%s' % vars(self)
-
 
     @abc.abstractmethod
     def get_schema(self, table=None):
@@ -61,7 +58,7 @@ class DataSource(object):
                 'schema_id INT',
             ],
             'schema': [
-                'schema_id INT', # Auto generated
+                'schema_id INT',  # Auto generated
                 'schema BLOB',   # keys in the value dict of the dataproduct table
             ],
             'metadata': [
@@ -84,7 +81,6 @@ class DataSource(object):
             return {table: schemas.get(table)}
         return schemas
 
-
     @abc.abstractmethod
     def connect(self):
         """
@@ -98,7 +94,6 @@ class DataSource(object):
         Create database tables
         """
         return
-
 
     @abc.abstractmethod
     def insert(self, taskmanager_id, generation_id, key,
@@ -122,7 +117,6 @@ class DataSource(object):
         """
         return
 
-
     @abc.abstractmethod
     def update(self, taskmanager_id, generation_id, key,
                value, header, metadata):
@@ -145,7 +139,6 @@ class DataSource(object):
         """
         return
 
-
     @abc.abstractmethod
     def get_dataproduct(self, taskmanager_id, generation_id, key):
         """
@@ -160,7 +153,6 @@ class DataSource(object):
         :arg key: key for the value
         """
         return
-
 
     @abc.abstractmethod
     def get_header(self, taskmanager_id, generation_id, key):
@@ -177,7 +169,6 @@ class DataSource(object):
         """
         return
 
-
     @abc.abstractmethod
     def get_metadata(self, taskmanager_id, generation_id, key):
         """
@@ -193,7 +184,6 @@ class DataSource(object):
         """
         return
 
-
     @abc.abstractmethod
     def get_datablock(self, taskmanager_id, generation_id):
         """
@@ -206,7 +196,6 @@ class DataSource(object):
         :arg generation_id: generation_id of the data
         """
         return
-
 
     @abc.abstractmethod
     def duplicate_datablock(self, taskmanager_id, generation_id,
@@ -263,5 +252,14 @@ class DataSource(object):
         :arg taskmanager_name: name of taskmanager to retrieve
         :type taskmanager_id: :obj:`string`
         :arg taskmanager_id: id of taskmanager to retrieve
+        """
+        return
+
+    @abc.abstractmethod
+    def delete_old_data(self, interval):
+        """
+        Delete data older that interval
+        :type interval: :obj:`long`
+        :arg interval: remove data older than interval
         """
         return
