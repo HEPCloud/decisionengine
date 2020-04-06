@@ -295,11 +295,11 @@ class Postgresql(ds.DataSource):
 
     def delete_data_older_than(self, days):
         """
-        Delete data older that interval
+        Delete data older that days interval
         :type days: :obj:`int`
-        :arg days: remove data older than interval days
+        :arg days: remove data older than days interval
         """
-        if interval <= 0:
+        if days <= 0:
             raise ValueError("Argument has to be positive, non zero integer. Supplied {}".format(days))
         self._remove(DELETE_OLD_DATA_QUERY, (days, ))
         return
