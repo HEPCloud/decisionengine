@@ -71,7 +71,7 @@ class TestReaper(unittest.TestCase):
                 dataspace.Reaper(GLOBAL_CONFIG)
 
     def test_source_fail(self):
-        with mock.patch.object(MockSource, "delete_old_data") as function:
+        with mock.patch.object(MockSource, "delete_data_older_than") as function:
             function.side_effect = KeyError
             self.reaper.start()
             self.assertEqual(self.reaper.get_state(), dataspace.State.ERROR)
