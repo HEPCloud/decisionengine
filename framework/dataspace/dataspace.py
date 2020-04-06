@@ -173,7 +173,7 @@ State = enum.Enum("State", "IDLE RUNNING SLEEPING STOPPING STOPPED ERROR")
 class Reaper(object):
     """
     Reaper provides functionality of periodic deletion
-    of data older than retentoin_interbal in days
+    of data older than retention_interval in days
     """
 
     def __init__(self, config):
@@ -227,12 +227,12 @@ class Reaper(object):
             return self.state
 
     def reap(self):
-        self._set_state(State.RUNNING)
-        self.datasource.delete_old_data(self.retention_interval)
+        self.datasource.delete_data_older_than(self.retention_interval)
 
     def _reaper_loop(self):
         while not self.stop_event.isSet():
             try:
+                self._set_state(State.RUNNING)
                 self.reap()
             except Exception as e:
                 self.logger.error("Reaper.reap() failed with {}".format(e))

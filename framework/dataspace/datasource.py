@@ -256,10 +256,10 @@ class DataSource(object):
         return
 
     @abc.abstractmethod
-    def delete_old_data(self, interval):
+    def delete_data_older_than(self, days):
         """
         Delete data older that interval
-        :type interval: :obj:`long`
-        :arg interval: remove data older than interval
+        :type days: :obj:`long`
+        :arg days: remove data older than interval
         """
         return

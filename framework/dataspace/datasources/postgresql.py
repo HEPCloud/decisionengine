@@ -293,15 +293,15 @@ class Postgresql(ds.DataSource):
                  """.format(ds.DataSource.header_table, ds.DataSource.header_table)):
             self._insert(q, (new_generation_id, taskmanager_id, generation_id))
 
-    def delete_old_data(self, interval):
+    def delete_data_older_than(self, days):
         """
         Delete data older that interval
-        :type interval: :obj:`int`
-        :arg interval: remove data older than interval days
+        :type days: :obj:`int`
+        :arg days: remove data older than interval days
         """
         if interval <= 0:
-            raise ValueError("Argument has to be positive, non zero integer. Supplied {}".format(interval))
-        self._remove(DELETE_OLD_DATA_QUERY, (interval, ))
+            raise ValueError("Argument has to be positive, non zero integer. Supplied {}".format(days))
+        self._remove(DELETE_OLD_DATA_QUERY, (days, ))
         return
 
     def close(self):
