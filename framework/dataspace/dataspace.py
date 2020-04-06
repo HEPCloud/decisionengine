@@ -230,7 +230,7 @@ class Reaper(object):
         self.datasource.delete_data_older_than(self.retention_interval)
 
     def _reaper_loop(self):
-        while not self.stop_event.isSet():
+        while not self.stop_event.is_set():
             try:
                 self._set_state(State.RUNNING)
                 self.reap()
@@ -244,14 +244,14 @@ class Reaper(object):
             self._set_state(State.STOPPED)
 
     def start(self):
-        if (not self.thread or not self.thread.isAlive()) and not self.stop_event.isSet():
+        if (not self.thread or not self.thread.()) and not self.stop_event.is_set():
             self.thread = threading.Thread(group=None,
                                            target=self._reaper_loop,
                                            name="Reaper_loop_thread")
             self.thread.start()
 
     def stop(self):
-        if self.thread and self.thread.isAlive() and not self.stop_event.isSet():
+        if self.thread and self.thread.is_alive() and not self.stop_event.is_set():
             self.stop_event.set()
             self._set_state(State.STOPPING)
             try:
