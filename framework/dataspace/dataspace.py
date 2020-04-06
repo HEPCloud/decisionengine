@@ -244,7 +244,7 @@ class Reaper(object):
             self._set_state(State.STOPPED)
 
     def start(self):
-        if (not self.thread or not self.thread.()) and not self.stop_event.is_set():
+        if (not self.thread or not self.thread.is_alive()) and not self.stop_event.is_set():
             self.thread = threading.Thread(group=None,
                                            target=self._reaper_loop,
                                            name="Reaper_loop_thread")
