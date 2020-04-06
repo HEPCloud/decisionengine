@@ -25,7 +25,7 @@ GLOBAL_CONFIG = {
 
 class MockSource(object):
 
-    def delete_old_data(self, interval):
+    def delete_data_older_than(self, day):
         pass
 
 
