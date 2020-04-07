@@ -60,6 +60,10 @@ SELECT tm.name, tm.sequence_id, tm.taskmanager_id, tm.datestamp
 FROM taskmanager tm where tm.name = %s and tm.taskmanager_id = %s
 """
 
+DELETE_OLD_DATA_QUERY = """
+DELETE FROM taskmanager where datestamp < current_date - interval '%s days'
+"""
+
 
 class Postgresql(ds.DataSource):
     """
@@ -288,6 +292,17 @@ class Postgresql(ds.DataSource):
                  AND   generation_id=%s
                  """.format(ds.DataSource.header_table, ds.DataSource.header_table)):
             self._insert(q, (new_generation_id, taskmanager_id, generation_id))
+
+    def delete_data_older_than(self, days):
+        """
+        Delete data older that days interval
+        :type days: :obj:`int`
+        :arg days: remove data older than days interval
+        """
+        if days <= 0:
+            raise ValueError("Argument has to be positive, non zero integer. Supplied {}".format(days))
+        self._remove(DELETE_OLD_DATA_QUERY, (days, ))
+        return
 
     def close(self):
         pass

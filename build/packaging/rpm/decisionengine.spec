@@ -113,12 +113,13 @@ install -m 0755 build/packaging/rpm/decisionengine_initd_template $RPM_BUILD_ROO
 #install -m 0644 framework/tests/etc/decisionengine/config.d/channelA.conf $RPM_BUILD_ROOT%{de_channel_confdir}
 
 # Remove unwanted files
-rm $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/README.md
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/tests
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/build
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/tests
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/logicengine/cxx
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/logicengine/tests
+rm $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/README.md
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/tests
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/build
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/tests
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/dataspace/tests
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/logicengine/cxx
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/logicengine/tests
 # BUILDING testcase RPM: Comment following line
 rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/testcases
 
