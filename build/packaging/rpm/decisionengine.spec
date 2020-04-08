@@ -167,6 +167,9 @@ usermod --append --groups  %{de_group}  %{de_user} >/dev/null
 if [ ! -e /usr/bin/de-client ]; then
    ln -s %{python3_sitelib}/decisionengine/framework/engine/de_client.py /usr/bin/de-client
 fi
+if [ ! -e /usr/bin/de-reaper ]; then
+   ln -s %{python3_sitelib}/decisionengine/bin/reaper.py /usr/bin/de-reaper
+fi
 if [ ! -e /usr/sbin/decisionengine ]; then
    ln -s %{python3_sitelib}/decisionengine/framework/engine/DecisionEngine.py /usr/sbin/decisionengine
 fi
@@ -186,6 +189,7 @@ fi
 
 if [ "$1" = "0" ] ; then
     /sbin/chkconfig --del decision-engine
+    rm -f  /usr/bin/de-client /usr/bin/de-reaper /usr/sbin/decisionengine
 fi
 
 
