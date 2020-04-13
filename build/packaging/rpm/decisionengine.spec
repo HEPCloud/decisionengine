@@ -1,7 +1,7 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
 %define pyver %{getenv:PYVER}
-%define version 0.3.10
+%define version 1.1.0
 %define release 1_py%pyver
 
 %define de_user decisionengine
@@ -113,13 +113,13 @@ install -m 0755 build/packaging/rpm/decisionengine_initd_template $RPM_BUILD_ROO
 #install -m 0644 framework/tests/etc/decisionengine/config.d/channelA.conf $RPM_BUILD_ROOT%{de_channel_confdir}
 
 # Remove unwanted files
-rm $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/README.md
-rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/tests
-rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/build
-rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/tests
-rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/dataspace/tests
-rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/logicengine/cxx
-rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/logicengine/tests
+rm $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/README.md
+rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/tests
+rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/build
+rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/tests
+rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/dataspace/tests
+rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/logicengine/cxx
+rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/logicengine/tests
 # BUILDING testcase RPM: Comment following line
 rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/testcases
 
@@ -134,6 +134,7 @@ rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/testcases
 %{python_sitelib}/decisionengine/framework/__init__.py
 %{python_sitelib}/decisionengine/framework/__init__.pyo
 %{python_sitelib}/decisionengine/framework/__init__.pyc
+%{python_sitelib}/decisionengine/bin
 %{python_sitelib}/decisionengine/__init__.py
 %{python_sitelib}/decisionengine/__init__.pyo
 %{python_sitelib}/decisionengine/__init__.pyc
@@ -178,7 +179,7 @@ if [ ! -e /usr/bin/de-client ]; then
    ln -s %{python_sitelib}/decisionengine/framework/engine/de_client.py /usr/bin/de-client
 fi
 if [ ! -e /usr/bin/de-reaper ]; then
-   ln -s %{python3_sitelib}/decisionengine/bin/reaper.py /usr/bin/de-reaper
+   ln -s %{python_sitelib}/decisionengine/bin/reaper.py /usr/bin/de-reaper
 fi
 if [ ! -e /usr/sbin/decisionengine ]; then
    ln -s %{python_sitelib}/decisionengine/framework/engine/DecisionEngine.py /usr/sbin/decisionengine
