@@ -120,7 +120,7 @@ class SourceProxy(Source.Source):
                     else:
                         retry_cnt += 1
                         # retry in 1/3 of configured TO
-                        time.sleep(self.retry_to//3)
+                        time.sleep(self.retry_to // 3)
                 else:
                     retry_cnt += 1
                     time.sleep(self.retry_to)
@@ -177,7 +177,7 @@ def module_config_template():
                 "retries": "<number of retries to acquire data>",
                 "retry_timeout": "<retry timeout>"
             },
-            "schedule": 60*60,
+            "schedule": 60 * 60,
         }
     }
 
