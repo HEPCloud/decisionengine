@@ -1,17 +1,18 @@
 #!/bin/bash -x
 PYVER=${1:-"2.7"}
+GITHUB_WORKSPACE=${GITHUB_WORKSPACE:-`pwd`}
 export PYVER
 echo PYVER=$PYVER
 source decisionengine/build/scripts/utils.sh
-setup_python_venv
+setup_python_venv $GITHUB_WORKSPACE $PYVER
 setup_dependencies
 le_builddir=decisionengine/framework/logicengine/cxx/build
 [ -e $le_buildir ] && rm -rf $le_builddir
 mkdir $le_builddir
 cd $le_builddir
 cmake3 -Wno-dev --debug-output -DPYVER=$PYVER ..
-make --debug
-make --debug liblinks
+make 
+make liblinks
 cd -
 export PYTHONPATH=$PWD:$PYTHONPATH
 source venv-$PYVER/bin/activate
