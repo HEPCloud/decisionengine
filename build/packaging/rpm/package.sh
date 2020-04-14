@@ -36,6 +36,9 @@ release_tar=$release_dir/decisionengine.tar.gz
 
 spec_template=$source_dir/build/packaging/rpm/decisionengine.spec
 spec_file=$RPM_TOPDIR/SPECS/decisionengine.spec
+if [[ "$PYVER" == "3.6" ]];then
+spec_file=$RPM_TOPDIR/SPECS/decisionengine-py3.spec
+fi
 
 rpm_dirs="BUILD RPMS SOURCES SPECS SRPMS"
 
