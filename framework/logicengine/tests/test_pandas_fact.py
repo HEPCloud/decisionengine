@@ -6,8 +6,9 @@ import pandas as pd
 @pytest.fixture
 def myengine():
     facts = {"f1": "y > 10", "f2": "vals.one.sum() > 10"}
-    rules = {"r1": {"expression":"f1 && f2", "actions": ["a1", "a2"]}}
+    rules = {"r1": {"expression": "f1 && f2", "actions": ["a1", "a2"]}}
     return LogicEngine({"facts": facts, "rules": rules})
+
 
 def mydata(y):
     """Return a 'datablock' surrogate carrying a Pandas DataFrame, and a
@@ -19,6 +20,7 @@ def mydata(y):
     db["vals"] = pd.DataFrame(data)
     db["y"] = y
     return db
+
 
 def test_rule_that_fires(myengine):
     db = mydata(20)
