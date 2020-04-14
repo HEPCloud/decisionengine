@@ -74,9 +74,9 @@ class TestReaper(unittest.TestCase):
         with mock.patch.object(MockSource, "delete_data_older_than") as function:
             function.side_effect = KeyError
             self.reaper.start()
-            self.assertEqual(self.reaper.get_state(), dataspace.State.ERROR)
+            self.assertTrue(self.reaper.get_state() in (dataspace.State.RUNNING, dataspace.State.ERROR))
             self.reaper.stop()
-            self.assertEqual(self.reaper.get_state(), dataspace.State.ERROR)
+            self.assertTrue(self.reaper.get_state() in (dataspace.State.RUNNING, dataspace.State.ERROR))
             function.side_effect = None
             self.reaper.start()
             self.assertTrue(self.reaper.get_state() in (dataspace.State.RUNNING, dataspace.State.SLEEPING))
