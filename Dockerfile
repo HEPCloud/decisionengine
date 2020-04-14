@@ -44,6 +44,7 @@ RUN yum -y install condor-python \
   python36-pytest \
   python36-tabulate \
   python2-tabulate \
+  python2-mock \
   python36-pip \
   && pip install --upgrade pip \
   && pip3.6 install argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx DBUtils pytest mock \
