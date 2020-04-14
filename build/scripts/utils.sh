@@ -6,11 +6,12 @@ log_nonzero_rc() {
 
 
 setup_python_venv() {
-    if [ $# -gt 1 ]; then
+    if [ $# -gt 2 ]; then
         echo "Invalid number of arguments to setup_python_venv. Will accept the location to install venv or use PWD as default"
         exit 1
     fi
     WORKSPACE=${1:-`pwd`}
+    PYVER=${2:-"2.7"}
     VENV=$WORKSPACE/venv-$PYVER
 
     # Following is useful for running the script outside jenkins
@@ -22,11 +23,11 @@ setup_python_venv() {
     PIP_EXE=pip
 
     if [ ! -d $VENV ] ; then
-        if [ "$PYVER" == "3.6" ]; then
+        #if [ "$PYVER" == "3.6" ]; then
             $VIRTUALENV_EXE $VENV
-        else
-            $VIRTUALENV_EXE --system-site-packages $VENV
-        fi
+        #else
+        #    $VIRTUALENV_EXE --system-site-packages $VENV
+        #fi
     fi
 
     source $VENV/bin/activate
@@ -35,10 +36,10 @@ setup_python_venv() {
     # Install dependancies first so we don't get uncompatible ones
     # Following RPMs need to be installed on the machine:
     #pip_packages="astroid pylint pep8 unittest2 coverage sphinx DBUtils pytest"
-    pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx DBUtils pytest mock"
-    if [ "$PYVER" == "3.6" ]; then
-        pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx tabulate DBUtils psycopg2 pytest mock pandas"
-    fi
+    #pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx DBUtils pytest mock"
+    #if [ "$PYVER" == "3.6" ]; then
+        pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx tabulate DBUtils psycopg2 pytest mock pandas numpy"
+    #fi
     for package in $pip_packages; do
         echo "Installing $package ..."
         status="DONE"
