@@ -38,8 +38,8 @@ Source0:        decisionengine.tar.gz
 
 BuildArch:      x86_64
 BuildRequires:  cmake3
-Requires:       boost-python%pyver-devel >= 1.53.0
-Requires:       boost-python%pyver >= 1.53.0
+BuildRequires:       boost-python36-devel >= 1.53.0
+Requires:       boost-python36 >= 1.53.0
 Requires:       boost-regex >= 1.53.0
 Requires:       boost-system >= 1.53.0
 Requires(post): /sbin/service
