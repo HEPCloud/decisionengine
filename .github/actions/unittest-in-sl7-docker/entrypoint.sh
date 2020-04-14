@@ -2,9 +2,10 @@
 PYVER=${1:-"2.7"}
 export PYVER
 echo PYVER=$PYVER
+GITHUB_WORKSPACE=${GITHUB_WORKSPACE:-`pwd`}
 source decisionengine/build/scripts/utils.sh
-setup_python_venv
-setup_dependencies
+setup_python_venv $GITHUB_WORKSPACE $PYVER
+setup_dependencies $GITHUB_WORKSPACE
 le_builddir=decisionengine/framework/logicengine/cxx/build
 [ -e $le_buildir ] && rm -rf $le_builddir
 mkdir $le_builddir
@@ -20,9 +21,8 @@ which pytest
 pytest -v --tb=native decisionengine >  ./pytest-$PYVER.log 2>&1
 status=$?
 else
-#which py.test
-#py.test -v --tb=native decisionengine >  ./pytest-$PYVER.log 2>&1
-python -m pytest decisionengine >  ./pytest-$PYVER.log 2>&1 
+which py.test
+py.test -v --tb=native decisionengine >  ./pytest-$PYVER.log 2>&1
 status=$?
 fi
 cat ./pytest-$PYVER.log
