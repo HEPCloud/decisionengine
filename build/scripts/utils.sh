@@ -38,7 +38,7 @@ setup_python_venv() {
     #pip_packages="astroid pylint pep8 unittest2 coverage sphinx DBUtils pytest"
     #pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx DBUtils pytest mock"
     #if [ "$PYVER" == "3.6" ]; then
-        pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx tabulate DBUtils psycopg2 pytest mock pandas numpy"
+        pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx tabulate DBUtils psycopg2 pytest mock pandas numpy ipython"
     #fi
     for package in $pip_packages; do
         echo "Installing $package ..."
