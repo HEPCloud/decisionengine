@@ -1,11 +1,8 @@
 #ifndef ERROR_HANDLER_MA_BOOLEAN_COND_H
 #define ERROR_HANDLER_MA_BOOLEAN_COND_H
 
-#include <ErrorHandler/ma_condition.h>
-#include <ErrorHandler/ma_function.h>
+#include <ErrorHandler/Fact.h>
 #include <ErrorHandler/ma_types.h>
-
-#include <boost/any.hpp>
 
 #include <list>
 #include <memory>
@@ -32,11 +29,7 @@ namespace novadaq {
         : cond_type(COND)
         , neg_cond(false)
         , cond_arg(cond_arg_t(cond_idx_t(NULL, 0), NONE))
-        , op(CO_L)
-        , rhv_b(false)
-        , rhv_d(0.0)
         , rhv_s()
-        , ext_func()
         , expr()
       {}
 
@@ -44,9 +37,7 @@ namespace novadaq {
       void reset();
 
       // evaluation
-      bool evaluate(ma_domain& value,
-                    ma_domain& alarm,
-                    ma_domain const& domain) const;
+      bool evaluate(ma_domain& value, ma_domain const& domain) const;
 
       // insert a boolean expression
       void insert_expr(ma_boolean_expr const& expr);
@@ -69,35 +60,6 @@ namespace novadaq {
         neg_cond = true;
       }
 
-      void insert_ext_func(cond_idx_t ci,
-                           arg_t arg,
-                           std::vector<boost::any> const& func_args,
-                           string_t const& function);
-
-      void
-      insert_compare_op_bool(compare_op_t cop, bool v)
-      {
-        op = cop;
-        rhv_b = v;
-        cond_type = FUNCTION_BOOL;
-      }
-
-      void
-      insert_compare_op_double(compare_op_t cop, double v)
-      {
-        op = cop;
-        rhv_d = v;
-        cond_type = FUNCTION_DOUBLE;
-      }
-
-      void
-      insert_compare_op_string(compare_op_t cop, string_t const& v)
-      {
-        op = cop;
-        rhv_s = v;
-        cond_type = FUNCTION_STRING;
-      }
-
     private:
       // type of this element condition
       cond_type_t cond_type;
@@ -105,7 +67,7 @@ namespace novadaq {
       // negtive condition ( !cond )
       bool neg_cond;
 
-      // case COND: this boolean cond is the boolean value of a ma_condition
+      // case COND: this boolean cond is the boolean value of a Fact
       //   a pointer to the condition in the one big condition container
       //   DOES NOT own the condition
       cond_arg_t cond_arg;
@@ -115,11 +77,7 @@ namespace novadaq {
       //   rhv:      righ-hand value
       //   ext_func: ptr to a customized evaluation function. use ext_func->evaluate()
       //             to evaluate
-      compare_op_t op;
-      bool rhv_b;
-      double rhv_d;
       string_t rhv_s;
-      std::shared_ptr<ma_function> ext_func;
 
       // shared_ptr to an boolean expression
       //   a smart pointer to an boolean expression object

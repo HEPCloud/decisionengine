@@ -11,6 +11,7 @@ import sys
 import tokenize
 from ast import AST, iter_fields, parse
 
+
 def dump(node, annotate_fields=True, include_attributes=False, indent='  '):
     """
     Return a formatted dump of the tree in *node*.  This is mainly useful for
@@ -36,7 +37,7 @@ def dump(node, annotate_fields=True, include_attributes=False, indent='  '):
         elif isinstance(node, list):
             lines = ['[']
             lines.extend((indent * (level + 2) + _format(x, level + 2) + ','
-                         for x in node))
+                          for x in node))
             if len(lines) > 1:
                 lines.append(indent * (level + 1) + ']')
             else:
@@ -48,13 +49,16 @@ def dump(node, annotate_fields=True, include_attributes=False, indent='  '):
         raise TypeError('expected AST, got %r' % node.__class__.__name__)
     return _format(node)
 
+
 def parseprint(code, filename="<string>", mode="exec", **kwargs):
     """Parse some code from a string and pretty-print it."""
     node = parse(code, mode=mode)   # An ode to the code
     print(dump(node, **kwargs))
 
+
 # Short name: pdp = parse, dump, print
 pdp = parseprint
+
 
 def load_ipython_extension(ip):
     from IPython.core.magic import Magics, magics_class, cell_magic
@@ -76,6 +80,7 @@ def load_ipython_extension(ip):
             parseprint(cell, mode=args.mode)
 
     ip.register_magics(AstMagics)
+
 
 if __name__ == '__main__':
     for filename in sys.argv[1:]:

@@ -1,5 +1,9 @@
+import enum
 import importlib
+import logging
 import six
+import threading
+
 
 class DataSpaceConfigurationError(Exception):
     """
@@ -39,8 +43,8 @@ class Singleton(type):
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args,
-                                                                 **kwargs)
+            cls._instances[cls] = super().__call__(*args,
+                                                   **kwargs)
         # Uncomment following to run __init__ everytime class is called
         # else:
         #     cls._instances[cls].__init__(*args, **kwargs)
@@ -160,3 +164,102 @@ class DataSpace(object):
 
     def get_taskmanager(self, taskmanager_name, taskmanager_id=None):
         return self.datasource.get_taskmanager(taskmanager_name, taskmanager_id)
+
+
+MIN_RETENTION_INTERVAL_DAYS = 7
+State = enum.Enum("State", "IDLE RUNNING SLEEPING STOPPING STOPPED ERROR")
+
+
+class Reaper(object):
+    """
+    Reaper provides functionality of periodic deletion
+    of data older than retention_interval in days
+    """
+
+    def __init__(self, config):
+        """
+        :type config: :obj:`dict`
+        :arg config: Configuration dictionary
+        """
+        # Validate configuration
+        if not config.get('dataspace'):
+            raise DataSpaceConfigurationError('Configuration is missing dataspace information: dataspace key not found.')
+        elif not isinstance(config.get('dataspace'), dict):
+            raise DataSpaceConfigurationError('Invalid dataspace configuration: '
+                                              'dataspace key must correspond to a dictionary')
+        try:
+            db_driver_name = config['dataspace']['datasource']['name']
+            db_driver_module = config['dataspace']['datasource']['module']
+            db_driver_config = config['dataspace']['datasource']['config']
+            self.retention_interval = int(config['dataspace']['retention_interval_in_days'])
+            if self.retention_interval < MIN_RETENTION_INTERVAL_DAYS:
+                raise ValueError("For safety the data retention interval has to be greater than {} days".
+                                 format(MIN_RETENTION_INTERVAL_DAYS))
+        except KeyError as e:
+            raise DataSpaceConfigurationError('Invalid dataspace configuration: {}'.format(e))
+
+        self.datasource = DataSourceLoader().create_datasource(db_driver_module,
+                                                               db_driver_name,
+                                                               db_driver_config)
+
+        self.stop_event = threading.Event()
+        self.thread = None
+        self.state = State.IDLE
+        self.state_lock = threading.Lock()
+        self.logger = logging.getLogger()
+
+    def get_retention_interval(self):
+        return self.retention_interval
+
+    def set_retention_interval(self, interval):
+        if int(interval) < MIN_RETENTION_INTERVAL_DAYS:
+            raise ValueError("For safety the data retention interval has to be greater than {} days".
+                             format(MIN_RETENTION_INTERVAL_DAYS))
+        self.retention_interval = interval
+
+    def _set_state(self, value):
+        with self.state_lock:
+            if self.state != value:
+                self.state = value
+
+    def get_state(self):
+        with self.state_lock:
+            return self.state
+
+    def reap(self):
+        self.datasource.delete_data_older_than(self.retention_interval)
+
+    def _reaper_loop(self):
+        while not self.stop_event.is_set():
+            try:
+                self._set_state(State.RUNNING)
+                self.reap()
+            except Exception as e:
+                self.logger.error("Reaper.reap() failed with {}".format(e))
+                self._set_state(State.ERROR)
+                break
+            self._set_state(State.SLEEPING)
+            self.stop_event.wait(86400)
+        else:
+            self._set_state(State.STOPPED)
+
+    def start(self):
+        if (not self.thread or not self.thread.is_alive()) and not self.stop_event.is_set():
+            self.thread = threading.Thread(group=None,
+                                           target=self._reaper_loop,
+                                           name="Reaper_loop_thread")
+            self.thread.start()
+
+    def stop(self):
+        if self.thread and self.thread.is_alive() and not self.stop_event.is_set():
+            self.stop_event.set()
+            self._set_state(State.STOPPING)
+            try:
+                self.thread.join()
+            finally:
+                self.thread = None
+                self.stop_event.clear()
+
+    def __repr__(self):
+        return "Reaper, retention interval {}, state {}".format(self.retention_interval,
+                                                                self.get_state())

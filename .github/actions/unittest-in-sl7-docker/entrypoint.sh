@@ -1,15 +1,20 @@
 #!/bin/bash -x
-echo $PWD
-export PYTHONPATH=$PWD
-mkdir decisionengine/framework/logicengine/cxx/build
-cd decisionengine/framework/logicengine/cxx/build
-cmake3 ..
-make VERBOSE=1
-cd ../../
-ln -s cxx/build/ErrorHandler/RE.so
-ln -s cxx/build/ErrorHandler/libLogicEngine.so
-export LD_LIBRARY_PATH=$PWD
-cd ../../
-
-py.test -v --tb=native >  $GITHUB_WORKSPACE/test.log 2>&1
-exit 0
+GITHUB_WORKSPACE=${GITHUB_WORKSPACE:-`pwd`}
+source decisionengine/build/scripts/utils.sh
+setup_python_venv
+setup_dependencies
+le_builddir=decisionengine/framework/logicengine/cxx/build
+[ -e $le_buildir ] && rm -rf $le_builddir
+mkdir $le_builddir
+cd $le_builddir
+cmake3 -Wno-dev --debug-output -DPYVER=3.6 ..
+make --debug
+make --debug liblinks
+cd -
+export PYTHONPATH=$PWD:$PYTHONPATH
+source venv/bin/activate
+which pytest
+pytest -v --tb=native decisionengine >  ./pytest.log 2>&1
+status=$?
+cat ./pytest.log
+exit $status

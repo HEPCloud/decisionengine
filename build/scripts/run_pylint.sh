@@ -2,7 +2,7 @@
 
 get_current_git_branch() {
     cd $DECISIONENGINE_SRC
-    gb=`git branch | grep "\*" | cut -d ' ' -f2`
+    gb=`git branch | grep "\*" | cut -d ' ' -f2-| sed -e's/ //g'`
     cd $WORKSPACE
     echo $gb
 }
@@ -41,12 +41,13 @@ process_branch() {
     # Build Logic Engine
     echo "Building Logic Engine ..."
     le_builddir=$DECISIONENGINE_SRC/framework/logicengine/cxx/build
+    [ -e $le_buildir ] && rm -rf $le_builddir
     mkdir $le_builddir
     cd $le_builddir
-    cmake3 --debug-output ..
+    cmake3 -Wno-dev --debug-output ..
     make --debug
     [ -e ../../RE.so ] && rm ../../RE.so
-    [ -e ../../libLogicEngine.so ] && ../../libLogicEngine.so
+    [ -e ../../libLogicEngine.so ] && rm ../../libLogicEngine.so
     cp ErrorHandler/RE.so ../..
     cp ErrorHandler/libLogicEngine.so ../..
     echo "Building Logic Engine ... DONE"
@@ -61,21 +62,13 @@ process_branch() {
 
     # pep8 related variables
     # default: E121,E123,E126,E226,E24,E704
-    # E501 line too long (90 > 79 characters)
-    # E251 unexpected spaces around keyword / parameter equals
-    # E303 too many blank lines (2)
-    # E225 missing whitespace around operator
-    # E231 missing whitespace after ','
-    # E228 missing whitespace around modulo operator
-    # E302 expected 2 blank lines, found 1
-    # E221 multiple spaces before operator
     # E261 at least two spaces before inline comment
-    # E111 indentation is not a multiple of four
-    # W293 blank line contains whitespace
-    # W291 trailing whitespace
     # E265 block comment should start with '# '
+    # E302 expected 2 blank lines, found 1
+    # E303 too many blank lines (2)
+    # E501 line too long (90 > 79 characters)
 
-    PEP8_OPTIONS="--ignore=E121,E123,E126,E226,E24,E704,E501,E251,E303,E225,E231,E228,E302,E221,E261,E111,W293,W291,E265"
+    PEP8_OPTIONS="--ignore=E261,E265,E302,E303,E501,E1004"
 
     # Generate pylint config file
     #pylint --generate-rcfile > $PYLINT_RCFILE
@@ -224,7 +217,6 @@ done
 #git_branches="$1"
 WORKSPACE=`pwd`
 export DECISIONENGINE_SRC=$WORKSPACE/decisionengine
-
 source $DECISIONENGINE_SRC/build/scripts/utils.sh
 setup_python_venv $WORKSPACE
 

@@ -32,6 +32,7 @@ yum install boost-devel
 yum install libevent-devel
 yum install ncurses-devel
 yum install python3-devel
+yum install python36-virtualenv
 yum install ipython
 yum install matplotlib
 yum install python-matplotlib

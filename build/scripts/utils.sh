@@ -11,37 +11,27 @@ setup_python_venv() {
         exit 1
     fi
     WORKSPACE=${1:-`pwd`}
-    VIRTUALENV_VER=15.2.0
-    VIRTUALENV_TARBALL=virtualenv-${VIRTUALENV_VER}.tar.gz
-    #VIRTUALENV_URL="https://pypi.python.org/packages/d4/0c/9840c08189e030873387a73b90ada981885010dd9aea134d6de30cd24cb8/$VIRTUALENV_TARBALL"
-    VIRTUALENV_URL="https://glideinwms.fnal.gov/downloads/$VIRTUALENV_TARBALL"
-    VIRTUALENV_EXE=$WORKSPACE/virtualenv-${VIRTUALENV_VER}/virtualenv.py
     VENV=$WORKSPACE/venv
 
     # Following is useful for running the script outside jenkins
-    if [ ! -d "$WORKSPACE" ]; then
-        mkdir $WORKSPACE
-    fi
+    #if [ ! -d "$WORKSPACE" ]; then
+    #    mkdir $WORKSPACE
+    #fi
 
-    echo "SETTING UP VIRTUAL ENVIRONMENT ..."
-    if [ -f $WORKSPACE/$VIRTUALENV_TARBALL ]; then
-        rm $WORKSPACE/$VIRTUALENV_TARBALL
-    fi
-    # Get latest virtualenv package that works with python 2.6
-    curl -o $WORKSPACE/$VIRTUALENV_TARBALL $VIRTUALENV_URL
-    tar xzf $WORKSPACE/$VIRTUALENV_TARBALL
+    VIRTUALENV_EXE=virtualenv-3.6
+    PIP_EXE=pip
+
     if [ ! -d $VENV ] ; then
-       $VIRTUALENV_EXE --system-site-packages $VENV
+       $VIRTUALENV_EXE $VENV
     fi
 
     source $VENV/bin/activate
-
     export PYTHONPATH="$PWD:$PYTHONPATH"
 
     # Install dependancies first so we don't get uncompatible ones
     # Following RPMs need to be installed on the machine:
     #pip_packages="astroid pylint pep8 unittest2 coverage sphinx DBUtils pytest"
-    pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx DBUtils pytest mock"
+    pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx tabulate DBUtils psycopg2 pytest mock pandas ipython"
     for package in $pip_packages; do
         echo "Installing $package ..."
         status="DONE"
@@ -62,7 +52,7 @@ setup_python_venv() {
 
 setup_glideinwms() {
     WSPACE=${1:-`pwd`}
-    glideinwms_git="http://cdcvs.fnal.gov/projects/glideinwms"
+    glideinwms_git="https://github.com/glideinWMS/glideinwms.git"
     cd $WSPACE
     git clone $glideinwms_git
 }

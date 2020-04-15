@@ -4,32 +4,21 @@ RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
 RUN yum -y install https://repo.opensciencegrid.org/osg/3.4/osg-3.4-el7-release-latest.rpm \
     && yum -y clean all
 RUN yum -y install condor-python \
-  python-pandas \
   gcc gcc-c++ libgcc \
-  python-pip \
   git \
-  python-unittest2 \
-  python-behave \
-  tmux \
   cmake \
   boost \
   boost-devel \
   libevent-devel \
   ncurses-devel \
   ipython \
-  python-matplotlib \
-  python-pytest \
-  pytest \
   graphviz.x86_64 \
   rpm-build \
   rpm-build-libs \
   rpm-devel \
   mock \
-  python-boto3 \
-  python-psycopg2 \ 
   python-setuptools \
-  && easy_install DBUtils \
-  &&  yum -y install cmake3 python3-devel make \
+  cmake3  make \
   boost-python36-devel \
   python3-devel \
   boost-regex \
@@ -37,15 +26,10 @@ RUN yum -y install condor-python \
   boost-python-devel \
   python-devel \
   redhat-lsb-core \
-  python36-virtualenv \
+  python-pip \
   python-virtualenv \
-  postgresql-devel \
-  pytest \
-  python36-pytest \
-  python36-tabulate \
-  python2-tabulate \
   python36-pip \
-  && pip install --upgrade pip \
-  && pip3.6 install argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx DBUtils pytest mock \
+  python36-virtualenv \
+  postgresql-devel \
   && yum -y clean all
 ENTRYPOINT ["/bin/bash"]

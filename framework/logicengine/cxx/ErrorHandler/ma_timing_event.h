@@ -8,11 +8,11 @@
 namespace novadaq {
   namespace errorhandler {
 
-    class ma_condition;
+    class Fact;
 
     class ma_timing_event {
     public:
-      ma_timing_event(time_t t, ma_condition& c, size_t src, size_t tgt)
+      ma_timing_event(time_t t, Fact& c, size_t src, size_t tgt)
         : ts(t), cond(&c), s_idx(src), t_idx(tgt)
       {}
 
@@ -21,7 +21,7 @@ namespace novadaq {
       {
         return ts;
       }
-      ma_condition&
+      Fact&
       condition() const
       {
         return *cond;
@@ -39,7 +39,7 @@ namespace novadaq {
 
     private:
       time_t ts;
-      ma_condition* cond;
+      Fact* cond;
       size_t s_idx;
       size_t t_idx;
     };

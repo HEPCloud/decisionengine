@@ -5,26 +5,36 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to run pylint action
     steps:
-    - uses: actions/checkout@v2
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        path: 'decisionengine'
-      id: checkout
-    - name: Cache venv
-      uses: actions/cache@v1
-      with:
-        path: ./venv
-        key: ${{ runner.os }}-venv
-        restore-keys: |
-          ${{ runner.os }}-venv
-          ${{ runner.os }}-
-    - name: pylint action step
-      uses: ./.github/actions/pylint-in-sl7-docker
-      id: pylint
-    - name: Archive reports
-      if: always()
-      uses: actions/upload-artifact@v1
-      with:
-        name: reports
-        path: logs.tar.bz2
+      - name: Sparse checkout
+        shell: bash
+        run: |
+          REPO="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          BRANCH="${GITHUB_REF/#refs\/heads\//}"
+          # Following code is based on logs of actions/checkout@v, with sparseCheckout stuff inserted in the middle
+          echo "Syncing repository: $GITHUB_REPOSITORY"
+          echo "Working directory is '$(pwd)' GITHUB_WORKSPACE=$GITHUB_WORKSPACE BRANCH=$BRANCH"
+          git version
+          git init $GITHUB_WORKSPACE
+          git remote add origin https://github.com/$GITHUB_REPOSITORY
+          git config --local gc.auto 0
+          # Now interesting part
+          git config core.sparseCheckout true
+          # Add here contents of sparse-checkout line by line
+          echo ".github" >> .git/info/sparse-checkout
+          git -c protocol.version=2 fetch --no-tags --prune --progress --depth=10 origin +${GITHUB_SHA}:refs/remotes/origin/${BRANCH}
+          git checkout --progress --force -B ${BRANCH} refs/remotes/origin/${BRANCH}
+        id: sparse-checkout
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: 'decisionengine'
+        id: checkout
+      - name: pylint action step
+        uses: ./.github/actions/pylint-in-sl7-docker
+        id: pylint
+      - name: Archive reports
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: reports
+          path: logs.tar.bz2

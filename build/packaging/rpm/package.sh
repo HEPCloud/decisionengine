@@ -12,6 +12,7 @@ else
 fi
 
 echo "Using source dir: $source_dir"
+echo "Using Python version: $PYVER"
 
 export RPM_TOPDIR=/var/tmp/$id/rpm/decisionengine
 mkdir -p $RPM_TOPDIR
@@ -26,6 +27,7 @@ cat > $rpm_macros << RPM_MACROS
 %_specdir   %{_topdir}/SPECS
 %_srcrpmdir %{_topdir}/SRPMS
 %_tmppath   %{_topdir}/TMP
+%pyver %(echo \$PYVER)
 RPM_MACROS
 
 release_dir=/var/tmp/$id/release
@@ -50,7 +52,7 @@ mkdir -p $product_release_dir
 cp -r $source_dir/*  $product_release_dir
 cd $release_dir
 tar --exclude=.git --exclude=.gitignore --exclude=doc --exclude=cxx/build \
-    --exclude=readme --exclude=.cache --exclude=Dockerfile --exclude=requirements.txt \
+    --exclude=readme --exclude=.cache --exclude=Dockerfile* --exclude=requirements.txt \
     --exclude=decisionengine/decisionengine \
     -czf $release_tar decisionengine
 

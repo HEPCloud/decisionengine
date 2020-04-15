@@ -1,4 +1,3 @@
-import json
 import logging
 import pandas
 from itertools import chain
@@ -13,15 +12,14 @@ class LogicEngine(Module, object):
     # Inheritance from object can be dropped if Module is modified to
     # inherit from object.
     def __init__(self, cfg):
-        super(LogicEngine, self).__init__(cfg)
+        super().__init__(cfg)
         self.logger = logging.getLogger()
         self.facts = [NamedFact(name, expr) for name, expr in cfg["facts"].items()]
 
         # Only the names of facts are really needed. We pass in the
         # JSON form of the whole facts dictionary until the C++ is
         # updated to take a list of strings.
-        self.re = RuleEngine(json.dumps(cfg["facts"]),
-                             json.dumps(cfg["rules"]))
+        self.re = RuleEngine(cfg["facts"], cfg["rules"])
 
     def produces(self):
         return ["actions", "newfacts"]
@@ -73,10 +71,10 @@ class LogicEngine(Module, object):
         fact_value = []
 
         for rule in newfacts:
-            for fact in newfacts[rule]:
-                rule_name.append(rule)
-                fact_name.append(fact)
-                fact_value.append(newfacts[rule][fact])
+            facts = newfacts[rule]
+            rule_name += [rule] * len(facts)
+            fact_name += facts.keys()
+            fact_value += facts.values()
         facts = {
             'rule_name': rule_name,
             'fact_name': fact_name,

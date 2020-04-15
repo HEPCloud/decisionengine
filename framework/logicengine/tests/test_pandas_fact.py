@@ -6,7 +6,7 @@ import pandas as pd
 @pytest.fixture
 def myengine():
     facts = {"f1": "y > 10", "f2": "vals.one.sum() > 10"}
-    rules = {"r1": {"expression":"f1 && f2", "actions": ["a1", "a2"]}}
+    rules = {"r1": {"expression": "f1 && f2", "actions": ["a1", "a2"]}}
     return LogicEngine({"facts": facts, "rules": rules})
 
 def mydata(y):

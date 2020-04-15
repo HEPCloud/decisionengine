@@ -9,21 +9,9 @@
 using namespace std;
 using namespace boost::python;
 
-namespace {
-  Json::Value
-  string_to_json(std::string const& str)
-  {
-    Json::Reader reader;
-    Json::Value val;
-    reader.parse(str, val);
-    return val;
-  }
-}
-
 struct RuleEngine {
-  RuleEngine(string const& facts, string const& rules)
-    : engine{string_to_json(facts),
-             string_to_json(rules)}
+  RuleEngine(boost::python::dict const& facts, boost::python::dict const& rules)
+    : engine{facts, rules}
   {}
 
   boost::python::tuple
@@ -41,7 +29,6 @@ struct RuleEngine {
     std::map<std::string, std::map<std::string, bool>> out_facts;
 
     engine.execute(fact_vals, out_actions, out_facts);
-    engine.reset_rules();
 
     dict py_actions;
     dict py_facts;
@@ -71,6 +58,7 @@ private:
 
 BOOST_PYTHON_MODULE(RE)
 {
-  class_<RuleEngine, boost::noncopyable>("RuleEngine", init<string, string>())
+  class_<RuleEngine, boost::noncopyable>(
+    "RuleEngine", init<boost::python::dict, boost::python::dict>())
     .def("execute", &RuleEngine::execute);
 }
