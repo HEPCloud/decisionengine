@@ -5,5 +5,5 @@ echo PYVER=$PYVER
 env PYVER=$PYVER decisionengine/build/packaging/rpm/package.sh decisionengine
 status=$?
 tar cf $GITHUB_WORKSPACE/rpmbuild-$PYVER.tar /var/tmp/`whoami`/rpm/decisionengine/*RPMS
-rpm -iv /var/tmp/`whoami`/rpm/decisionengine/RPMS/*/*.rpm
+sudo rpm -iv /var/tmp/`whoami`/rpm/decisionengine/RPMS/*/*.rpm
 exit $status
