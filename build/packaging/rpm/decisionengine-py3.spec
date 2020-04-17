@@ -1,6 +1,6 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
-%define pyver 2.7
+%define pyver 3.6
 %define version 1.1.0
 %define release 1_py%pyver
 
@@ -38,8 +38,8 @@ Source0:        decisionengine.tar.gz
 
 BuildArch:      x86_64
 BuildRequires:  cmake3
-BuildRequires:  boost-python-devel >= 1.53.0
-Requires:       boost-python >= 1.53.0
+BuildRequires:       boost-python36-devel >= 1.53.0
+Requires:       boost-python36 >= 1.53.0
 Requires:       boost-regex >= 1.53.0
 Requires:       boost-system >= 1.53.0
 Requires(post): /sbin/service
