@@ -16,8 +16,6 @@ RUN yum -y install condor-python \
   boost-devel \
   libevent-devel \
   ncurses-devel \
-  ipython \
-  python-matplotlib \
   python-pytest \
   pytest \
   graphviz.x86_64 \

@@ -33,9 +33,6 @@ yum install libevent-devel
 yum install ncurses-devel
 yum install python3-devel
 yum install python36-virtualenv
-yum install ipython
-yum install matplotlib
-yum install python-matplotlib
 yum install python-pytest  ( under SL7 this is python2-pytest)
 yum install pytest
 yum install graphviz.x86_64
