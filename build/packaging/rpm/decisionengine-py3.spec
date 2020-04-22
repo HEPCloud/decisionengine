@@ -1,8 +1,8 @@
 #%define version __DECISIONENGINE_RPM_VERSION__
 #%define release __DECISIONENGINE_RPM_RELEASE__
-%define pyver 3.6
-%define version 1.1.0
-%define release 1_py%pyver
+%define pyver %{getenv:PYVER}
+%define version 0.3.10
+%define release 1_py3
 
 %define de_user decisionengine
 %define de_group decisionengine
@@ -18,11 +18,11 @@
 # From http://fedoraproject.org/wiki/Packaging:Python
 # Define python_sitelib
 %if ! (0%{?fedora} > 12 || 0%{?rhel} > 5)
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
+%{!?python3_sitelib: %global python3_sitelib %(%{__python3} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
+%{!?python3_sitearch: %global python3_sitearch %(%{__python3} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 %endif
 
-%define de_python_sitelib $RPM_BUILD_ROOT%{python_sitelib}
+%define de_python3_sitelib $RPM_BUILD_ROOT%{python3_sitelib}
 
 
 Name:           decisionengine
@@ -37,11 +37,14 @@ URL:            http://hepcloud.fnal.gov
 Source0:        decisionengine.tar.gz
 
 BuildArch:      x86_64
-BuildRequires:  cmake3
-BuildRequires:       boost-python36-devel >= 1.53.0
+Requires:       boost-python36-devel >= 1.53.0
 Requires:       boost-python36 >= 1.53.0
 Requires:       boost-regex >= 1.53.0
 Requires:       boost-system >= 1.53.0
+Requires:       python3
+BuildRequires:  cmake3
+BuildRequires:  python36-devel
+BuildRequires:  python3-rpm-macros
 Requires(post): /sbin/service
 Requires(post): /usr/sbin/useradd
 
@@ -78,7 +81,7 @@ The testcase used to try out the Decision Engine.
 pwd
 mkdir %{le_builddir}
 cd %{le_builddir}
-cmake3 .. -DPYVER=%pyver
+cmake3 .. -DPYVER=3.6
 make
 [ -e ../../RE.so ] && rm ../../RE.so
 [ -e ../../libLogicEngine.so ] && rm ../../libLogicEngine.so
@@ -98,10 +101,10 @@ install -d $RPM_BUILD_ROOT%{de_channel_confdir}
 install -d $RPM_BUILD_ROOT%{de_logdir}
 install -d $RPM_BUILD_ROOT%{de_lockdir}
 install -d $RPM_BUILD_ROOT%{systemddir}
-install -d $RPM_BUILD_ROOT%{python_sitelib}
+install -d $RPM_BUILD_ROOT%{python3_sitelib}
 
 # Copy files in place
-cp -r ../decisionengine $RPM_BUILD_ROOT%{python_sitelib}
+cp -r ../decisionengine $RPM_BUILD_ROOT%{python3_sitelib}
 
 mkdir -p $RPM_BUILD_ROOT%{de_confdir}/config.d
 install -m 0644 build/packaging/rpm/decision_engine_template.conf $RPM_BUILD_ROOT%{de_confdir}/decision_engine.conf
@@ -113,32 +116,18 @@ install -m 0755 build/packaging/rpm/decisionengine_initd_template $RPM_BUILD_ROO
 #install -m 0644 framework/tests/etc/decisionengine/config.d/channelA.conf $RPM_BUILD_ROOT%{de_channel_confdir}
 
 # Remove unwanted files
-rm $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/README.md
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/tests
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/build
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/tests
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/dataspace/tests
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/logicengine/cxx
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/framework/logicengine/tests
+rm $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/README.md
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/tests
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/build
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/tests
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/dataspace/tests
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/logicengine/cxx
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/framework/logicengine/tests
 # BUILDING testcase RPM: Comment following line
-rm -Rf $RPM_BUILD_ROOT%{python_sitelib}/decisionengine/testcases
+rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/testcases
 
 %files
-%{python_sitelib}/decisionengine/framework/configmanager
-%{python_sitelib}/decisionengine/framework/dataspace
-%{python_sitelib}/decisionengine/framework/engine
-%{python_sitelib}/decisionengine/framework/logicengine
-%{python_sitelib}/decisionengine/framework/modules
-%{python_sitelib}/decisionengine/framework/taskmanager
-%{python_sitelib}/decisionengine/framework/util
-%{python_sitelib}/decisionengine/framework/__init__.py
-%{python_sitelib}/decisionengine/framework/__init__.pyo
-%{python_sitelib}/decisionengine/framework/__init__.pyc
-%{python_sitelib}/decisionengine/bin
-%{python_sitelib}/decisionengine/__init__.py
-%{python_sitelib}/decisionengine/__init__.pyo
-%{python_sitelib}/decisionengine/__init__.pyc
-%{python_sitelib}/decisionengine/LICENSE.txt
+%{python3_sitelib}/decisionengine/
 %{de_confdir}/config.d
 
 %{systemddir}/decision-engine.service
@@ -176,13 +165,13 @@ usermod --append --groups  %{de_group}  %{de_user} >/dev/null
 # $1 = 2 - Upgrade
 /sbin/chkconfig --add decision-engine
 if [ ! -e /usr/bin/de-client ]; then
-   ln -s %{python_sitelib}/decisionengine/framework/engine/de_client.py /usr/bin/de-client
+   ln -s %{python3_sitelib}/decisionengine/framework/engine/de_client.py /usr/bin/de-client
 fi
 if [ ! -e /usr/bin/de-reaper ]; then
-   ln -s %{python_sitelib}/decisionengine/bin/reaper.py /usr/bin/de-reaper
+   ln -s %{python3_sitelib}/decisionengine/bin/reaper.py /usr/bin/de-reaper
 fi
 if [ ! -e /usr/sbin/decisionengine ]; then
-   ln -s %{python_sitelib}/decisionengine/framework/engine/DecisionEngine.py /usr/sbin/decisionengine
+   ln -s %{python3_sitelib}/decisionengine/framework/engine/DecisionEngine.py /usr/sbin/decisionengine
 fi
 
 # Change the ownership of log and lock dir if they already exist
@@ -205,6 +194,9 @@ fi
 
 
 %changelog
+* Tue Mar 24 2020 Patrick Gartung <gartung@fnal.gov> - 0.3.10-1_py3
+- Build with python36
+
 * Tue May 7 2019 Parag Mhashilkar <parag@fnal.gov> - 0.3.10-1
 - Compress data in datablock before storing to the database to conserve space
 
