@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS taskmanager;
+DROP TABLE IF EXISTS taskmanager CASCADE;
 CREATE TABLE taskmanager (
    sequence_id BIGSERIAL,
    taskmanager_id character varying(36),
@@ -11,7 +11,7 @@ ALTER TABLE ONLY taskmanager
 
 CREATE INDEX i_taskmanager_datestamp ON taskmanager(datestamp);
 
-DROP TABLE IF EXISTS header;
+DROP TABLE IF EXISTS header CASCADE;
 CREATE TABLE header (
     taskmanager_id BIGINT,
     generation_id INTEGER,
@@ -30,13 +30,13 @@ ALTER TABLE ONLY header
 
 CREATE INDEX i_header_taskmanager_id ON header(taskmanager_id);
 
-DROP TABLE IF EXISTS schema;
+DROP TABLE IF EXISTS schema CASCADE;
 CREATE TABLE schema (
     schema_id SERIAL,
     schema BYTEA
     );
 
-DROP TABLE IF EXISTS metadata;
+DROP TABLE IF EXISTS metadata CASCADE;
 CREATE TABLE metadata (
     taskmanager_id BIGINT,
     generation_id INTEGER,
@@ -53,7 +53,7 @@ ALTER TABLE ONLY metadata
 
 CREATE INDEX i_metadata_taskmanager_id ON metadata(taskmanager_id);
 
-DROP TABLE IF EXISTS dataproduct;
+DROP TABLE IF EXISTS dataproduct CASCADE;
 CREATE TABLE dataproduct (
     taskmanager_id BIGINT,
     generation_id INTEGER,
@@ -68,24 +68,22 @@ ALTER TABLE ONLY dataproduct
 
 CREATE INDEX i_dataproduct_taskmanager_id ON dataproduct(taskmanager_id);
 
-CREATE FUNCTION f_id2sequence(character varying) RETURNS BIGINT
+CREATE OR REPLACE FUNCTION f_id2sequence(character varying) RETURNS BIGINT
     LANGUAGE sql
     AS $_$
                 SELECT sequence_id FROM taskmanager WHERE taskmanager_id = $1;
             $_$;
 
 
-CREATE FUNCTION f_get_current_task_sequence(character varying) RETURNS BIGINT
+CREATE OR REPLACE FUNCTION f_get_current_task_sequence(character varying) RETURNS BIGINT
     LANGUAGE sql
     AS $_$
                 SELECT max(sequence_id) FROM taskmanager WHERE name = $1;
             $_$;
 
-CREATE FUNCTION f_get_current_task_id(character varying) RETURNS CHARACTER VARYING
+CREATE OR REPLACE FUNCTION f_get_current_task_id(character varying) RETURNS CHARACTER VARYING
     LANGUAGE sql
     AS $_$
                 SELECT taskmanager_id FROM taskmanager
 		WHERE sequence_id  = f_get_current_task_sequence($1);
             $_$;
-
-
