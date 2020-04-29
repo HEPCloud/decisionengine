@@ -1,14 +1,17 @@
 import ast
 import pickle
 import zlib
+import unittest
 
 from decisionengine.framework.dataspace import datablock
 
 
-class TestDatablock:
+class TestDatablock(unittest.TestCase):
 
-    def __init__(self):
+    def setUp(self):
         self.obj = {'a': {'b': 'c'}}
+
+    def tearDown(self):
         pass
 
     def test_compress(self):
@@ -25,3 +28,7 @@ class TestDatablock:
         value = ast.literal_eval(datablock.decompress(zstring))
         value = datablock.zloads(value.get('value'))
         assert value, self.obj
+
+
+if __name__ == "__main__":
+    unittest.main()
