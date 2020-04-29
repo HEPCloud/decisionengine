@@ -3,6 +3,8 @@ RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
     && yum -y clean all
 RUN yum -y install https://repo.opensciencegrid.org/osg/3.4/osg-3.4-el7-release-latest.rpm \
     && yum -y clean all
+RUN yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm \
+    && yum -y clean all
 RUN yum -y install condor-python \
   python-pandas \
   gcc gcc-c++ libgcc \
@@ -37,7 +39,8 @@ RUN yum -y install condor-python \
   redhat-lsb-core \
   python36-virtualenv \
   python-virtualenv \
-  postgresql-devel \
+  postgresql11-server \
+  postgresql11-devel \
   pytest \
   python36-pytest \
   python36-tabulate \
