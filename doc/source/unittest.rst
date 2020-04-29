@@ -1,5 +1,5 @@
 
-First command ``cd`` is just to make sure that you end up in a directory that will contain two subdirectory ``decisionengine`` and ``decisionengine_modules``. Of course this can be done in any directory, not necessarily home directory. 
+First command ``cd`` is just to make sure that you end up in a directory that will contain two subdirectory ``decisionengine`` and ``decisionengine_modules``. Of course this can be done in any directory, not necessarily home directory.
 
 Decisionengine framework
 ========================
@@ -29,7 +29,7 @@ Build & test
    cmake3 .. -DPYVER=3.6
    make -j <number> # say number of CPUs on your box
    cd ../../
-   ln -s cxx/build/ErrorHandler/RE.so 
+   ln -s cxx/build/ErrorHandler/RE.so
    ln -s cxx/build/ErrorHandler/libLogicEngine.so
    export LD_LIBRARY_PATH=`pwd`
    cd ../../
@@ -39,7 +39,7 @@ Build & test
    ==================================== test session starts =====================================
    platform linux -- Python 3.6.8, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
    rootdir: /root/junjk/decisionengine
-   collected 26 items                                                                           
+   collected 26 items
 
    framework/dataspace/tests/test_Reaper.py .......                                       [ 26%]
    framework/logicengine/tests/test_cascaded_rules.py ..                                  [ 34%]
@@ -83,7 +83,7 @@ Current status:
    ==================================== test session starts =====================================
    platform linux -- Python 3.6.8, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
    rootdir: /root/junjk
-   collected 85 items                                                                           
+   collected 85 items
 
    decisionengine_modules/AWS/tests/test_AWSInstancePerformance.py ..                     [  2%]
    decisionengine_modules/AWS/tests/test_AWSJobLimits.py ..                               [  4%]

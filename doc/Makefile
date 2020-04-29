@@ -15,7 +15,7 @@ help:
 
 .PHONY: help Makefile
 
-rst: 
+rst:
 	@$(SPHINXDOC)  -f -o source/code ../ ../framework/logicengine ../framework/dataspace/tests ../framework/util/tests
 
 # Catch-all target: route all unknown targets to Sphinx using the new
