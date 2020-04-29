@@ -23,11 +23,11 @@ Developer Documentation
 
 
 
-Source code 
+Source code
 ===========
 .. toctree::
    :maxdepth: 1
-    
+
    code/modules
    code/decisionengine
 
