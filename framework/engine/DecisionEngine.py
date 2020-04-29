@@ -87,8 +87,8 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         signal.signal(signal.SIGHUP, self.handle_sighup)
         self.task_managers = {}
         self.config_manager = cfg
-        self.dataspace = dataspace.DataSpace(self.config_manager.get_global_config())
-        self.reaper = dataspace.Reaper(self.config_manager.get_global_config())
+        self.dataspace = dataspace.DataSpace(
+            self.config_manager.get_global_config())
 
     def get_logger(self):
         return self.logger
@@ -231,11 +231,9 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                         pass
                     txt += "\t\t\tconsumes : {}\n".format(consumes)
                     txt += "\t\t\tproduces : {}\n".format(produces)
-        txt += self.reaper_status()
         return txt[:-1]
 
     def rpc_stop(self):
-        self.reaper_stop()
         self.stop_channels()
         self.shutdown()
         return "OK"
@@ -310,11 +308,9 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
             self.stop_channel(ch)
 
     def handle_sighup(self, signum, frame):
-        self.reaper_stop()
         self.stop_channels()
         self.reload_config()
         self.start_channels()
-        self.reaper_start(delay=self.global_config.get('dataspace', ('reaper_start_delay_seconds', 1818)))
 
     def rpc_reload_config(self):
         self.reload_config()
@@ -322,37 +318,6 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
 
     def reload_config(self):
         self.config_manager.reload()
-
-    def rpc_reaper_start(self, delay=0):
-        '''
-        Start the reaper process after 'delay' seconds.
-        Default 0 seconds delay.
-        :type delay: int
-        '''
-        self.reaper_start(delay)
-        return "OK"
-
-    def reaper_start(self, delay):
-        self.reaper.start(delay)
-
-    def rpc_reaper_stop(self):
-        self.reaper_stop()
-        return "OK"
-
-    def reaper_stop(self):
-        self.reaper.stop()
-
-    def rpc_reaper_status(self):
-        interval = self.reaper.get_retention_interval()
-        state = self.reaper.get_state()
-        txt = 'reaper:\n\tstate: {state}\n\tretention_interval: {interval}'.format(state, interval)
-        return txt
-
-    def reaper_status(self):
-        interval = self.reaper.get_retention_interval()
-        state = self.reaper.get_state()
-        txt = '\nreaper:\n\tstate: {state}\n\tretention_interval: {interval}\n'.format(state, interval)
-        return txt
 
 
 if __name__ == '__main__':
@@ -371,7 +336,6 @@ if __name__ == '__main__':
         server = DecisionEngine(conf_manager,
                                 server_address,
                                 RequestHandler)
-        server.start_reaper(delay=global_config.get('dataspace', ('reaper_start_delay_seconds', 1818)))
         server.start_channels()
         server.serve_forever()
 

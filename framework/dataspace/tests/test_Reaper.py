@@ -51,12 +51,6 @@ class TestReaper(unittest.TestCase):
         self.reaper.stop()
         self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)
 
-    def test_start_stop_delay(self):
-        self.reaper.start(delay=20)
-        self.assertEqual(self.reaper.get_state(), dataspace.State.STARTING)
-        self.reaper.stop()
-        self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)
-
     def test_loop(self):
         for _ in range(3):
             self.test_start_stop()

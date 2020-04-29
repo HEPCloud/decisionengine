@@ -3,7 +3,6 @@ import importlib
 import logging
 import six
 import threading
-import time
 
 
 class DataSpaceConfigurationError(Exception):
@@ -168,7 +167,7 @@ class DataSpace(object):
 
 
 MIN_RETENTION_INTERVAL_DAYS = 7
-State = enum.Enum("State", "IDLE STARTING RUNNING SLEEPING STOPPING STOPPED ERROR")
+State = enum.Enum("State", "IDLE RUNNING SLEEPING STOPPING STOPPED ERROR")
 
 
 class Reaper(object):
@@ -230,11 +229,7 @@ class Reaper(object):
     def reap(self):
         self.datasource.delete_data_older_than(self.retention_interval)
 
-    def _reaper_loop(self, delay):
-        if delay:
-            self._set_state(State.STARTING)
-            time.sleep(delay)
-
+    def _reaper_loop(self):
         while not self.stop_event.is_set():
             try:
                 self._set_state(State.RUNNING)
@@ -248,14 +243,10 @@ class Reaper(object):
         else:
             self._set_state(State.STOPPED)
 
-    def start(self, delay=0):
-        '''
-        Start thread with an optional delay to start the thread in X seconds
-        '''
+    def start(self):
         if (not self.thread or not self.thread.is_alive()) and not self.stop_event.is_set():
             self.thread = threading.Thread(group=None,
                                            target=self._reaper_loop,
-                                           args=(delay, ),
                                            name="Reaper_loop_thread")
             self.thread.start()
 

@@ -77,27 +77,6 @@ if __name__ == "__main__":
         "--columns",
         help="comma separated list of columns")
 
-    parser.add_argument(
-        "--reaper-start",
-        action='store_true',
-        help="start the database cleanup process")
-
-    parser.add_argument(
-        "--reaper-start-delay-secs",
-        default="0",
-        type=int,
-        help="Delay the database cleanup process start")
-
-    parser.add_argument(
-        "--reaper-stop",
-        action='store_true',
-        help="stop the database cleanup process")
-
-    parser.add_argument(
-        "--reaper-status",
-        action='store_true',
-        help="show the database cleanup process status")
-
     args = parser.parse_args()
 
     con_string = "http://{}:{}".format(args.host, args.port)
@@ -135,12 +114,3 @@ if __name__ == "__main__":
 
     if args.stop:
         s.stop()
-
-    if args.reaper_stop:
-        print(s.reaper_stop())
-
-    if args.reaper_start:
-        print(s.reaper_start(delay=args.reaper_start_delay_secs))
-
-    if args.reaper_status:
-        print(s.reaper_status())
