@@ -67,8 +67,9 @@ process_branch() {
     # E302 expected 2 blank lines, found 1
     # E303 too many blank lines (2)
     # E501 line too long (90 > 79 characters)
+    # W504/W504 permit line breaks in binary operators
 
-    PEP8_OPTIONS="--ignore=E261,E265,E302,E303,E501,E1004"
+    PEP8_OPTIONS="--ignore=E261,E265,E302,E303,E501,W503,W504"
 
     # Generate pylint config file
     #pylint --generate-rcfile > $PYLINT_RCFILE
