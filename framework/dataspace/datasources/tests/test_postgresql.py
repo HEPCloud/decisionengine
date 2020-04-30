@@ -1,22 +1,16 @@
 import os
 import pytest
 import psycopg2
+import pytest_postgresql
+from decisionengine.framework.dataspace.datasources.postgresql import Postgresql, generate_insert_query
 
-from pytest_postgresql import factories
-from decisionengine.framework.dataspace.datasources.postgresql import *
-
-pg_ctl = "/usr/pgsql-11/bin/pg_ctl"
-if "PG_CTL" in os.environ:
-    pg_ctl = os.environ["PG_CTL"]
-
-postgresql_server = factories.postgresql_proc(pg_ctl)
 
 @pytest.fixture(scope="function")
-def postgresql(postgresql_server, data):
+def postgresql(postgresql_proc, data):
     dsn = {
-        "user": postgresql_server.user,
-        "port": postgresql_server.port,
-        "host": postgresql_server.unixsocketdir
+        "user": postgresql_proc.user,
+        "port": postgresql_proc.port,
+        "host": postgresql_proc.unixsocketdir
     }
 
     with psycopg2.connect(**dsn) as connection:
@@ -82,8 +76,12 @@ def test_get_taskmanager(postgresql, taskmanager, data):
         result = postgresql.get_taskmanager(taskmanager["name"], taskmanager["taskmanager_id"])
     except Exception as e:
         assert e.__class__ == KeyError
-    
+
     try:
         result = postgresql.get_taskmanager(taskmanager["name"])
     except Exception as e:
         assert e.__class__ == KeyError
+
+def test_get_last_generation_id(postgresql, data):
+    postgresql.get_last_generation_id(data["taskmanager"][0]["name"], data["taskmanager"][0]["taskmanager_id"])
+    assert True

@@ -61,7 +61,7 @@ install:
   - sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list'
   - sudo apt update
   - sudo apt-get install postgresql-11
-  - export PG_CTL="/usr/lib/postgresql/11/bin/pg_ctl"
+  - export PATH=$PATH:/usr/lib/postgresql/11/bin
 
   ## This version of boost matches the default version in travis
   - travis_retry wget -c http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz
