@@ -369,7 +369,7 @@ class DataBlock(object):
             value_row = self.dataspace.get_dataproduct(self.sequence_id,
                                                        self.generation_id, key)
 
-            value = ast.literal_eval(str(decompress(value_row['value'])))
+            value = ast.literal_eval(decompress(value_row['value'].tobytes()))
         except KeyNotFoundError:
             value = default
 
