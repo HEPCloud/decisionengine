@@ -71,7 +71,7 @@ def decompress(zbytes):
     try:
         return zlib.decompress(zbytes).decode(_ENCODING)
     except zlib.error:
-        return zbytes.deconde(_ENCODING)
+        return zbytes.decode(_ENCODING)
 
 
 class KeyNotFoundError(Exception):
