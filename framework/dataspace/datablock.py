@@ -58,7 +58,6 @@ def compress(obj):
     :param obj: python object
     :return: compressed object
     """
-    #return zlib.compress(str(obj).encode(_ENCODING), 9).decode(_ENCODING)
     return zlib.compress(str(obj).encode(_ENCODING), 9)
 
 

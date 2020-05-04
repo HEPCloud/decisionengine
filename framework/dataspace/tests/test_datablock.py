@@ -29,6 +29,10 @@ class TestDatablock(unittest.TestCase):
         value = datablock.zloads(value.get('value'))
         self.assertEqual(value, self.obj)
 
+        value = str(self.obj).encode("latin1")
+        value = ast.literal_eval(datablock.decompress(value))
+        self.assertEqual(value, self.obj)
+
 
 if __name__ == "__main__":
     unittest.main()
