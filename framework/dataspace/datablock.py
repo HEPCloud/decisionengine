@@ -1,19 +1,11 @@
 import ast
 import copy
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 import threading
 import time
 import uuid
 import zlib
-
-try:
-    from UserDict import UserDict
-except ImportError:
-    from collections import UserDict
-
+from collections import UserDict
 
 ###############################################################################
 # TODO:
@@ -28,7 +20,7 @@ STATE_NEW = 'NEW'
 STATE_STEADY = 'STEADY'
 STATE_ERROR = 'ERROR'
 STATE_EXPIRED = 'EXPIRED'
-_ENCODING = 'ISO 8859-1'
+_ENCODING = 'latin1'
 
 
 def zdumps(obj):
@@ -53,6 +45,9 @@ def zloads(zbytes):
     """
     try:
         return pickle.loads(zlib.decompress(zbytes))
+    except TypeError:
+        b = bytes(zbytes, _ENCODING)
+        return pickle.loads(b, encoding=_ENCODING)
     except zlib.error:
         return pickle.loads(zbytes)
 
@@ -61,23 +56,22 @@ def compress(obj):
     """
     Compress python object
     :param obj: python object
-    :return: compressed string
+    :return: compressed object
     """
-    return zlib.compress(str(obj).encode(_ENCODING), 9).decode(_ENCODING)
+    #return zlib.compress(str(obj).encode(_ENCODING), 9).decode(_ENCODING)
+    return zlib.compress(str(obj).encode(_ENCODING), 9)
 
 
-def decompress(zstring):
+def decompress(zbytes):
     """
-    Decompress a compressed string.
-    Returns the same string if it is not compressed.
-    :param zstring:
+    Decompress zipped byte stream, convert to string.
+    :param zbytes: byte stream
     :return: uncompressed string
     """
     try:
-        return zlib.decompress(zstring.encode(_ENCODING)).decode(_ENCODING)
-
+        return zlib.decompress(zbytes).decode(_ENCODING)
     except zlib.error:
-        return zstring
+        return zbytes.deconde(_ENCODING)
 
 
 class KeyNotFoundError(Exception):
