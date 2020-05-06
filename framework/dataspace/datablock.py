@@ -28,6 +28,7 @@ STATE_NEW = 'NEW'
 STATE_STEADY = 'STEADY'
 STATE_ERROR = 'ERROR'
 STATE_EXPIRED = 'EXPIRED'
+_ENCODING = 'ISO 8859-1'
 
 
 def zdumps(obj):
@@ -41,19 +42,19 @@ def zdumps(obj):
                          9)
 
 
-def zloads(zstring):
+def zloads(zbytes):
     """
     Decompress and unpickle
-    If input string is not a compressed string
-    attempts to just unpickle the string.
+    If input is not compressed
+    attempts to just unpickle it
 
-    :param zstring: compressed string
+    :param zbytes: compressed bytes
     :return: returns python object
     """
     try:
-        return pickle.loads(zlib.decompress(zstring))
+        return pickle.loads(zlib.decompress(zbytes))
     except zlib.error:
-        return pickle.loads(zstring)
+        return pickle.loads(zbytes)
 
 
 def compress(obj):
@@ -62,7 +63,7 @@ def compress(obj):
     :param obj: python object
     :return: compressed string
     """
-    return zlib.compress(str(obj), 9)
+    return zlib.compress(str(obj).encode(_ENCODING), 9).decode(_ENCODING)
 
 
 def decompress(zstring):
@@ -73,7 +74,8 @@ def decompress(zstring):
     :return: uncompressed string
     """
     try:
-        return zlib.decompress(zstring)
+        return zlib.decompress(zstring.encode(_ENCODING)).decode(_ENCODING)
+
     except zlib.error:
         return zstring
 

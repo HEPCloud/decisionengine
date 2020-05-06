@@ -6,6 +6,7 @@ The following environment variable points to decision engine configuration file:
 if this environment variable is not defined the ``DE-Config.py`` file from the ``../tests/etc/` directory will be used.
 """
 
+import argparse
 import importlib
 import logging
 import signal
@@ -87,8 +88,8 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         signal.signal(signal.SIGHUP, self.handle_sighup)
         self.task_managers = {}
         self.config_manager = cfg
-        self.dataspace = dataspace.DataSpace(
-            self.config_manager.get_global_config())
+        self.dataspace = dataspace.DataSpace(self.config_manager.get_global_config())
+        self.reaper = dataspace.Reaper(self.config_manager.get_global_config())
 
     def get_logger(self):
         return self.logger
@@ -231,9 +232,11 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                         pass
                     txt += "\t\t\tconsumes : {}\n".format(consumes)
                     txt += "\t\t\tproduces : {}\n".format(produces)
+        txt += self.reaper_status()
         return txt[:-1]
 
     def rpc_stop(self):
+        self.reaper_stop()
         self.stop_channels()
         self.shutdown()
         return "OK"
@@ -308,9 +311,11 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
             self.stop_channel(ch)
 
     def handle_sighup(self, signum, frame):
+        self.reaper_stop()
         self.stop_channels()
         self.reload_config()
         self.start_channels()
+        self.reaper_start(delay=self.global_config.get('dataspace', ('reaper_start_delay_seconds', 1818)))
 
     def rpc_reload_config(self):
         self.reload_config()
@@ -319,26 +324,70 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
     def reload_config(self):
         self.config_manager.reload()
 
+    def rpc_reaper_start(self, delay=0):
+        '''
+        Start the reaper process after 'delay' seconds.
+        Default 0 seconds delay.
+        :type delay: int
+        '''
+        self.reaper_start(delay)
+        return "OK"
+
+    def reaper_start(self, delay):
+        self.reaper.start(delay)
+
+    def rpc_reaper_stop(self):
+        self.reaper_stop()
+        return "OK"
+
+    def reaper_stop(self):
+        self.reaper.stop()
+
+    def rpc_reaper_status(self):
+        interval = self.reaper.get_retention_interval()
+        state = self.reaper.get_state()
+        txt = 'reaper:\n\tstate: {}\n\tretention_interval: {}'.format(state, interval)
+        return txt
+
+    def reaper_status(self):
+        interval = self.reaper.get_retention_interval()
+        state = self.reaper.get_state()
+        txt = '\nreaper:\n\tstate: {}\n\tretention_interval: {}\n'.format(state, interval)
+        return txt
+
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--port", default=None, type=int, choices=range(1, 65535), help="Override server port to this value")
+    args = parser.parse_args()
+
     try:
         conf_manager = Conf_Manager.ConfigManager()
         conf_manager.load()
         channels = conf_manager.get_channels()
+        require_loading_channels = os.getenv('DEVISIONENGINE_NO_CHANNELS')
 
-        if not channels:
+        if not require_loading_channels and not channels:
             raise RuntimeError("No channels configured")
 
         global_config = conf_manager.get_global_config()
-        server_address = global_config.get(
-            "server_address", ("localhost", 8888))
 
-        server = DecisionEngine(conf_manager,
-                                server_address,
-                                RequestHandler)
-        server.start_channels()
+        if args.port:
+            server_address = ("localhost", args.port)
+        else:
+            server_address = global_config.get("server_address", ("localhost", 8888))
+
+        server = DecisionEngine(conf_manager, server_address, RequestHandler)
+
+        server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
+
+        if not require_loading_channels:
+            server.start_channels()
+
         server.serve_forever()
 
     except Exception as msg:
+        sys.stderr.write("Server Address:{}\n".format(server_address))
+        sys.stderr.write("Config Dir:{}\n".format(conf_manager.config_dir))
         sys.stderr.write("Fatal Error: {}\n".format(msg))
         sys.exit(1)
