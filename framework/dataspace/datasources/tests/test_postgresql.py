@@ -35,6 +35,18 @@ def data():
             {
                 "name": "taskmanager1",
                 "taskmanager_id": "1"
+            },
+            {
+                "name": "taskmanager2",
+                "taskmanager_id": "2"
+            }
+        ],
+        "dataproduct": [
+            {
+                "taskmanager_id": "1",
+                "generation_id": "1",
+                "key": "test_key1",
+                "value": "test_value1"
             }
         ]
     }
@@ -73,15 +85,33 @@ def test_get_taskmanager(postgresql, taskmanager, data):
 
     # test taskmanager not present in the database
     try:
-        result = postgresql.get_taskmanager(taskmanager["name"], taskmanager["taskmanager_id"])
+        postgresql.get_taskmanager(taskmanager["name"], taskmanager["taskmanager_id"])
     except Exception as e:
         assert e.__class__ == KeyError
 
     try:
-        result = postgresql.get_taskmanager(taskmanager["name"])
+        postgresql.get_taskmanager(taskmanager["name"])
     except Exception as e:
         assert e.__class__ == KeyError
 
-def test_get_last_generation_id(postgresql, data):
-    postgresql.get_last_generation_id(data["taskmanager"][0]["name"], data["taskmanager"][0]["taskmanager_id"])
-    assert True
+def test_get_last_generation_id(postgresql, taskmanager, data):
+    # test valid taskmanager
+    result = postgresql.get_last_generation_id(data["taskmanager"][0]["name"], data["taskmanager"][0]["taskmanager_id"])
+    assert result == int(data["dataproduct"][0]["generation_id"])
+
+    result = postgresql.get_last_generation_id(data["taskmanager"][0]["name"])
+    assert result == int(data["dataproduct"][0]["generation_id"])
+
+    # test taskmanager not present in the database
+    try:
+        result = postgresql.get_last_generation_id(taskmanager["name"], taskmanager["taskmanager_id"])
+    except Exception as e:
+        assert e.__class__ == KeyError
+
+    try:
+        postgresql.get_last_generation_id(taskmanager["name"])
+    except Exception as e:
+        assert e.__class__ == KeyError
+
+def test_insert(postgresql, data):
+    pass
