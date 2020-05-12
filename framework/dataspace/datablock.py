@@ -1,19 +1,11 @@
 import ast
 import copy
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 import threading
 import time
 import uuid
 import zlib
-
-try:
-    from UserDict import UserDict
-except ImportError:
-    from collections import UserDict
-
+from collections import UserDict
 
 ###############################################################################
 # TODO:
@@ -28,6 +20,7 @@ STATE_NEW = 'NEW'
 STATE_STEADY = 'STEADY'
 STATE_ERROR = 'ERROR'
 STATE_EXPIRED = 'EXPIRED'
+_ENCODING = 'latin1'
 
 
 def zdumps(obj):
@@ -41,41 +34,43 @@ def zdumps(obj):
                          9)
 
 
-def zloads(zstring):
+def zloads(zbytes):
     """
     Decompress and unpickle
-    If input string is not a compressed string
-    attempts to just unpickle the string.
+    If input is not compressed
+    attempts to just unpickle it
 
-    :param zstring: compressed string
+    :param zbytes: compressed bytes
     :return: returns python object
     """
     try:
-        return pickle.loads(zlib.decompress(zstring))
+        return pickle.loads(zlib.decompress(zbytes))
+    except TypeError:
+        b = bytes(zbytes, _ENCODING)
+        return pickle.loads(b, encoding=_ENCODING)
     except zlib.error:
-        return pickle.loads(zstring)
+        return pickle.loads(zbytes)
 
 
 def compress(obj):
     """
     Compress python object
     :param obj: python object
-    :return: compressed string
+    :return: compressed object
     """
-    return zlib.compress(str(obj), 9)
+    return zlib.compress(str(obj).encode(_ENCODING), 9)
 
 
-def decompress(zstring):
+def decompress(zbytes):
     """
-    Decompress a compressed string.
-    Returns the same string if it is not compressed.
-    :param zstring:
+    Decompress zipped byte stream, convert to string.
+    :param zbytes: byte stream
     :return: uncompressed string
     """
     try:
-        return zlib.decompress(zstring)
+        return zlib.decompress(zbytes).decode(_ENCODING)
     except zlib.error:
-        return zstring
+        return zbytes.decode(_ENCODING)
 
 
 class KeyNotFoundError(Exception):
@@ -367,7 +362,7 @@ class DataBlock(object):
             value_row = self.dataspace.get_dataproduct(self.sequence_id,
                                                        self.generation_id, key)
 
-            value = ast.literal_eval(str(decompress(value_row['value'])))
+            value = ast.literal_eval(decompress(value_row['value'].tobytes()))
         except KeyNotFoundError:
             value = default
 

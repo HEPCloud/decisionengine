@@ -3,7 +3,6 @@ import importlib
 import logging
 import six
 import threading
-import time
 
 
 class DataSpaceConfigurationError(Exception):
@@ -233,7 +232,7 @@ class Reaper(object):
     def _reaper_loop(self, delay):
         if delay:
             self._set_state(State.STARTING)
-            time.sleep(delay)
+            self.stop_event.wait(delay)
 
         while not self.stop_event.is_set():
             try:

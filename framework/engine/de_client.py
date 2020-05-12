@@ -140,7 +140,7 @@ if __name__ == "__main__":
         print(s.reaper_stop())
 
     if args.reaper_start:
-        print(s.reaper_start(delay=args.reaper_start_delay_secs))
+        print(s.reaper_start(args.reaper_start_delay_secs))
 
     if args.reaper_status:
         print(s.reaper_status())

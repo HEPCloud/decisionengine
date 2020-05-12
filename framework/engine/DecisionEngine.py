@@ -6,6 +6,7 @@ The following environment variable points to decision engine configuration file:
 if this environment variable is not defined the ``DE-Config.py`` file from the ``../tests/etc/` directory will be used.
 """
 
+import argparse
 import importlib
 import logging
 import signal
@@ -345,36 +346,48 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
     def rpc_reaper_status(self):
         interval = self.reaper.get_retention_interval()
         state = self.reaper.get_state()
-        txt = 'reaper:\n\tstate: {state}\n\tretention_interval: {interval}'.format(state, interval)
+        txt = 'reaper:\n\tstate: {}\n\tretention_interval: {}'.format(state, interval)
         return txt
 
     def reaper_status(self):
         interval = self.reaper.get_retention_interval()
         state = self.reaper.get_state()
-        txt = '\nreaper:\n\tstate: {state}\n\tretention_interval: {interval}\n'.format(state, interval)
+        txt = '\nreaper:\n\tstate: {}\n\tretention_interval: {}\n'.format(state, interval)
         return txt
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--port", default=None, type=int, choices=range(1, 65535), help="Override server port to this value")
+    args = parser.parse_args()
+
     try:
         conf_manager = Conf_Manager.ConfigManager()
         conf_manager.load()
         channels = conf_manager.get_channels()
+        require_loading_channels = os.getenv('DEVISIONENGINE_NO_CHANNELS')
 
-        if not channels:
+        if not require_loading_channels and not channels:
             raise RuntimeError("No channels configured")
 
         global_config = conf_manager.get_global_config()
-        server_address = global_config.get(
-            "server_address", ("localhost", 8888))
 
-        server = DecisionEngine(conf_manager,
-                                server_address,
-                                RequestHandler)
-        server.start_reaper(delay=global_config.get('dataspace', ('reaper_start_delay_seconds', 1818)))
-        server.start_channels()
+        if args.port:
+            server_address = ("localhost", args.port)
+        else:
+            server_address = global_config.get("server_address", ("localhost", 8888))
+
+        server = DecisionEngine(conf_manager, server_address, RequestHandler)
+
+        server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
+
+        if not require_loading_channels:
+            server.start_channels()
+
         server.serve_forever()
 
     except Exception as msg:
+        sys.stderr.write("Server Address:{}\n".format(server_address))
+        sys.stderr.write("Config Dir:{}\n".format(conf_manager.config_dir))
         sys.stderr.write("Fatal Error: {}\n".format(msg))
         sys.exit(1)

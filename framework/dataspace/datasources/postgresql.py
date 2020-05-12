@@ -156,7 +156,7 @@ class Postgresql(ds.DataSource):
                      {'taskmanager_id': taskmanager_id,
                       'generation_id': generation_id,
                       'key': key,
-                      'value': psycopg2.Binary(str(value))
+                      'value': psycopg2.Binary(value)
                       })
 
         self._insert(ds.DataSource.header_table,
@@ -186,7 +186,7 @@ class Postgresql(ds.DataSource):
                       WHERE taskmanager_id=%s AND generation_id=%s AND key=%s
             """.format(ds.DataSource.dataproduct_table)
 
-        self._update(q, (psycopg2.Binary(str(value)),
+        self._update(q, (psycopg2.Binary(value),
                          taskmanager_id, generation_id, key))
 
         q = """
