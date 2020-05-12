@@ -28,7 +28,7 @@ Source code
 .. toctree::
    :maxdepth: 1
 
-   code/modules
+   code/index
    code/decisionengine
 
 Indices and tables

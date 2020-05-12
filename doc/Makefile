@@ -16,7 +16,12 @@ help:
 .PHONY: help Makefile
 
 rst:
-	@$(SPHINXDOC)  -f -o source/code ../ ../framework/logicengine ../framework/dataspace/tests ../framework/util/tests
+	@$(SPHINXDOC)  --ext-autodoc --ext-coverage --ext-viewcode \
+	 -P -F -T -l -f -o "$(SOURCEDIR)"/code \
+	../ ../framework/logicengine ../framework/dataspace/tests \
+	../framework/util/tests ../framework/engine/tests
+clean:
+	@rm -rf "$(SOURCEDIR)"/code "$(BUILDDIR)"
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
