@@ -7,7 +7,7 @@ In this release:
 
 * Fixed. https://github.com/HEPCloud/decisionengine_modules/issues/108 "Supply Postgres script to delete fields in main database before a certain date"
 * significant code cleanup and pep8 compliance
-* unit test work 
+* unit test work
 * CI (GitHub actions and Travis) is introduced
 
 commits
