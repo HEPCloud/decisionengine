@@ -15,7 +15,9 @@ import sys
 import time
 
 sys.path.insert(0, os.path.abspath('..'))
-
+sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__name__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__name__), '../..'))
 
 # -- Project information -----------------------------------------------------
 
