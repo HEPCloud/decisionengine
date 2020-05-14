@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>decisionengine.framework.modules.SourceProxy &#8212; decisionengine 1.1.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for decisionengine.framework.modules.SourceProxy</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Fill in data from another channel data block</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">decisionengine.framework.configmanager.ConfigManager</span> <span class="k">as</span> <span class="nn">configmanager</span>
+<span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="k">as</span> <span class="nn">datablock</span>
+<span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="k">import</span> <span class="n">Source</span>
+
+<span class="n">RETRIES</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">RETRY_TO</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">PRODUCES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Job_Limits&#39;</span><span class="p">]</span>
+<span class="n">must_have</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;channel_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Dataproducts&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SourceProxy"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.SourceProxy">[docs]</a><span class="k">class</span> <span class="nc">SourceProxy</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">Source</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Source Proxy</span>
+<span class="sd">    Channel configuration using source proxy</span>
+<span class="sd">    must have in parameters &#39;channel_name&#39;, defining foreign channel name and</span>
+<span class="sd">    &#39;Dataproducts&#39;, defining foreign (and optionally local) data keys.</span>
+<span class="sd">    See consumes() doc.</span>
+<span class="sd">    Example of source proxy configuration:</span>
+<span class="sd">        &quot;AWSJobLimits&quot; : {</span>
+<span class="sd">        &quot;module&quot; : &quot;modules.source_proxy&quot;,</span>
+<span class="sd">        &quot;name&quot;   : &quot;SourceProxy&quot;,</span>
+<span class="sd">        &quot;parameters&quot;: {&quot;channel_name&quot;: &quot;channel_aws_config_data&quot;,</span>
+<span class="sd">                       &quot;Dataproducts&quot;:[(&quot;aws_instance_limits&quot;, &quot;Job_Limits&quot;)],</span>
+<span class="sd">                       &quot;retries&quot;: 3,</span>
+<span class="sd">                       &quot;retry_timeout&quot;: 20,</span>
+<span class="sd">                      },</span>
+<span class="sd">        &quot;schedule&quot;: 360,</span>
+<span class="sd">    },</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">must_have</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;channel_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Dataproducts&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">must_have</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s1">&#39;SourceProxy misconfigured. Must have </span><span class="si">%s</span><span class="s1"> defined&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">must_have</span><span class="p">,))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_channel</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;channel_name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;Dataproducts&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retries&#39;</span><span class="p">,</span> <span class="n">RETRIES</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retry_timeout&#39;</span><span class="p">,</span> <span class="n">RETRY_TO</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="n">config_manager</span> <span class="o">=</span> <span class="n">configmanager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="p">()</span>
+        <span class="n">config_manager</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="n">global_config</span> <span class="o">=</span> <span class="n">config_manager</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SourceProxy.consumes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.SourceProxy.consumes">[docs]</a>    <span class="k">def</span> <span class="nf">consumes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assumes that self.datakeys has the following structure:</span>
+<span class="sd">          is a list of tuples or singletons:</span>
+<span class="sd">          [</span>
+<span class="sd">          (data_product_name, data_product_name_translation),</span>
+<span class="sd">          ....</span>
+<span class="sd">          ]</span>
+<span class="sd">          or</span>
+<span class="sd">          [</span>
+<span class="sd">          data_product_name,</span>
+<span class="sd">          ....</span>
+<span class="sd">          ]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="SourceProxy.produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.SourceProxy.produces">[docs]</a>    <span class="k">def</span> <span class="nf">produces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assumes that self.datakeys has the following structure</span>
+<span class="sd">          data_keys[key1] = (data_product_name, data_product_name_translation)</span>
+<span class="sd">          ....</span>
+<span class="sd">          or</span>
+
+<span class="sd">          data_keys[key1] = data_product_name</span>
+<span class="sd">          ....</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="SourceProxy._get_data"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.SourceProxy._get_data">[docs]</a>    <span class="k">def</span> <span class="nf">_get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_block</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data_block</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">ke</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">data_block</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">data_block</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">ke</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="SourceProxy.acquire"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.SourceProxy.acquire">[docs]</a>    <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overrides Source class method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">retry_cnt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">data_block</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">while</span> <span class="n">retry_cnt</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">retries</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_channel</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;task manager </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">tm</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">tm</span><span class="p">[</span><span class="s1">&#39;taskmanager_id&#39;</span><span class="p">]:</span>
+                    <span class="c1"># get last datablock</span>
+                    <span class="n">data_block</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="p">,</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">source_channel</span><span class="p">,</span>
+                                                     <span class="n">taskmanager_id</span><span class="o">=</span><span class="n">tm</span><span class="p">[</span><span class="s1">&#39;taskmanager_id&#39;</span><span class="p">],</span>
+                                                     <span class="n">sequence_id</span><span class="o">=</span><span class="n">tm</span><span class="p">[</span><span class="s1">&#39;sequence_id&#39;</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;data block </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">data_block</span> <span class="ow">and</span> <span class="n">data_block</span><span class="o">.</span><span class="n">generation_id</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DATABLOCK </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
+                        <span class="c1"># This is a valid datablock</span>
+                        <span class="k">break</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">retry_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="c1"># retry in 1/3 of configured TO</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span> <span class="o">//</span> <span class="mi">3</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">retry_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">detail</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">&#39;Error getting datablock for </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_channel</span><span class="p">,</span> <span class="n">detail</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data_block</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not get data.&#39;</span><span class="p">)</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">retry_cnt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">filled_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">retry_cnt</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">retries</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filled_keys</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                        <span class="n">k_in</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">k_out</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">k_in</span> <span class="o">=</span> <span class="n">k</span>
+                        <span class="n">k_out</span> <span class="o">=</span> <span class="n">k</span>
+                    <span class="k">if</span> <span class="n">k_in</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filled_keys</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">rc</span><span class="p">[</span><span class="n">k_out</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_get_data</span><span class="p">(</span><span class="n">data_block</span><span class="p">,</span> <span class="n">k_in</span><span class="p">))</span>
+                            <span class="n">filled_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">ke</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;KEYERROR </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ke</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filled_keys</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># expected data is not ready yet</span>
+                <span class="n">retry_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">retry_cnt</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">filled_keys</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not get all data. Expected </span><span class="si">%s</span><span class="s1"> Filled </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">,</span> <span class="n">filled_keys</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">rc</span></div></div>
+
+
+<div class="viewcode-block" id="module_config_template"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.module_config_template">[docs]</a><span class="k">def</span> <span class="nf">module_config_template</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    print a template for this module configuration data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;source_proxy1&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;modules.source_proxy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SourceProxy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;source_channel_name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Dataproducts&quot;</span><span class="p">:</span> <span class="s2">&quot;list of data keys to retrieve from source channel data&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;retries&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;number of retries to acquire data&gt;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;retry_timeout&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;retry timeout&gt;&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;schedule&quot;</span><span class="p">:</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Entry in channel cofiguration&quot;</span><span class="p">)</span>
+    <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="module_config_info"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.module_config_info">[docs]</a><span class="k">def</span> <span class="nf">module_config_info</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    print this module configuration information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;produces: available dynamically based on configuration&quot;</span><span class="p">)</span>
+    <span class="n">module_config_template</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call this a a test unit or use as CLI of this module</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">argparse</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--configtemplate&#39;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;prints the expected module configuration&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--configinfo&#39;</span><span class="p">,</span>
+                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;prints config template along with produces and consumes info&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">configtemplate</span><span class="p">:</span>
+        <span class="n">module_config_template</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">configinfo</span><span class="p">:</span>
+        <span class="n">module_config_info</span><span class="p">()</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">decisionengine</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html">Decisionengine framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Fermi Research Alliance, LLC..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,547 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>decisionengine.framework.dataspace.datablock &#8212; decisionengine 1.1.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for decisionengine.framework.dataspace.datablock</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">zlib</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">UserDict</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># TODO:</span>
+<span class="c1"># 1) Need to make sure there are no race conditions</span>
+<span class="c1"># 2) Add mutex/locks/critical sections where ever required</span>
+<span class="c1"># 3) Manipulations on the Header functionality</span>
+<span class="c1"># 4) Manipulations on the Metadata functionality</span>
+<span class="c1"># 5) get() needs to error in case of expired data</span>
+<span class="c1">###############################################################################</span>
+
+<span class="n">STATE_NEW</span> <span class="o">=</span> <span class="s1">&#39;NEW&#39;</span>
+<span class="n">STATE_STEADY</span> <span class="o">=</span> <span class="s1">&#39;STEADY&#39;</span>
+<span class="n">STATE_ERROR</span> <span class="o">=</span> <span class="s1">&#39;ERROR&#39;</span>
+<span class="n">STATE_EXPIRED</span> <span class="o">=</span> <span class="s1">&#39;EXPIRED&#39;</span>
+<span class="n">_ENCODING</span> <span class="o">=</span> <span class="s1">&#39;latin1&#39;</span>
+
+
+<div class="viewcode-block" id="zdumps"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.zdumps">[docs]</a><span class="k">def</span> <span class="nf">zdumps</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pickle and compress</span>
+<span class="sd">    :param obj: a python object</span>
+<span class="sd">    :return: compressed string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span>
+                                      <span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">),</span>
+                         <span class="mi">9</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="zloads"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.zloads">[docs]</a><span class="k">def</span> <span class="nf">zloads</span><span class="p">(</span><span class="n">zbytes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decompress and unpickle</span>
+<span class="sd">    If input is not compressed</span>
+<span class="sd">    attempts to just unpickle it</span>
+
+<span class="sd">    :param zbytes: compressed bytes</span>
+<span class="sd">    :return: returns python object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">zbytes</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">zbytes</span><span class="p">,</span> <span class="n">_ENCODING</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">_ENCODING</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">zlib</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">zbytes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="compress"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.compress">[docs]</a><span class="k">def</span> <span class="nf">compress</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compress python object</span>
+<span class="sd">    :param obj: python object</span>
+<span class="sd">    :return: compressed object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">_ENCODING</span><span class="p">),</span> <span class="mi">9</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="decompress"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.decompress">[docs]</a><span class="k">def</span> <span class="nf">decompress</span><span class="p">(</span><span class="n">zbytes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decompress zipped byte stream, convert to string.</span>
+<span class="sd">    :param zbytes: byte stream</span>
+<span class="sd">    :return: uncompressed string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">zbytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">_ENCODING</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">zlib</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">zbytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">_ENCODING</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KeyNotFoundError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.KeyNotFoundError">[docs]</a><span class="k">class</span> <span class="nc">KeyNotFoundError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Errors due to invalid Metadata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="ExpiredDataError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.ExpiredDataError">[docs]</a><span class="k">class</span> <span class="nc">ExpiredDataError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Errors due to invalid Metadata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="InvalidMetadataError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.InvalidMetadataError">[docs]</a><span class="k">class</span> <span class="nc">InvalidMetadataError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Errors due to invalid Metadata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="InvalidHeaderError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.InvalidHeaderError">[docs]</a><span class="k">class</span> <span class="nc">InvalidHeaderError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Errors due to invalid Metadata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Metadata"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.Metadata">[docs]</a><span class="k">class</span> <span class="nc">Metadata</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
+
+    <span class="c1"># Minimum information required for the Metadata dict to be valid</span>
+    <span class="n">required_keys</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;taskmanager_id&#39;</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;generation_id&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;generation_time&#39;</span><span class="p">,</span> <span class="s1">&#39;missed_update_count&#39;</span><span class="p">}</span>
+
+    <span class="c1"># Valid states</span>
+    <span class="n">valid_states</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;NEW&#39;</span><span class="p">,</span> <span class="s1">&#39;START_BACKUP&#39;</span><span class="p">,</span> <span class="s1">&#39;METADATA_UPDATE&#39;</span><span class="p">,</span> <span class="s1">&#39;END_CYCLE&#39;</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s1">&#39;NEW&#39;</span><span class="p">,</span> <span class="n">generation_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">generation_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missed_update_count</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize Metadata object</span>
+
+<span class="sd">        :type taskmanager_id: :obj:`string`</span>
+<span class="sd">        :type state: :obj:`string`</span>
+<span class="sd">        :type generation_id: :obj:`int`</span>
+<span class="sd">        :type generation_time: :obj:`float`</span>
+<span class="sd">        :type missed_update_count: :obj:`int`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">UserDict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Metadata</span><span class="o">.</span><span class="n">valid_states</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidMetadataError</span><span class="p">(</span><span class="s1">&#39;Invalid Metadata state &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">generation_time</span><span class="p">:</span>
+            <span class="n">generation_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;taskmanager_id&#39;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
+            <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span>
+            <span class="s1">&#39;generation_id&#39;</span><span class="p">:</span> <span class="n">generation_id</span><span class="p">,</span>
+            <span class="s1">&#39;generation_time&#39;</span><span class="p">:</span> <span class="n">generation_time</span><span class="p">,</span>
+            <span class="s1">&#39;missed_update_count&#39;</span><span class="p">:</span> <span class="n">missed_update_count</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="Metadata.set_state"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.Metadata.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the state for the Metadata</span>
+
+<span class="sd">        :type state: :obj:`string`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Metadata</span><span class="o">.</span><span class="n">valid_states</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidMetadataError</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> is not a valid Metadata state&#39;</span> <span class="o">%</span> <span class="n">state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span></div></div>
+
+
+<div class="viewcode-block" id="Header"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.Header">[docs]</a><span class="k">class</span> <span class="nc">Header</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
+
+    <span class="c1"># Minimum information required for the Header dict to be valid</span>
+    <span class="n">required_keys</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;taskmanager_id&#39;</span><span class="p">,</span> <span class="s1">&#39;create_time&#39;</span><span class="p">,</span> <span class="s1">&#39;expiration_time&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;scheduled_create_time&#39;</span><span class="p">,</span> <span class="s1">&#39;creator&#39;</span><span class="p">,</span> <span class="s1">&#39;schema_id&#39;</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Default lifetime of the data if the expiration time is not specified</span>
+    <span class="n">default_data_lifetime</span> <span class="o">=</span> <span class="mi">1800</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">create_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expiration_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">scheduled_create_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">creator</span><span class="o">=</span><span class="s1">&#39;module&#39;</span><span class="p">,</span> <span class="n">schema_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize Header object</span>
+
+<span class="sd">        :type taskmanager_id: :obj:`string`</span>
+<span class="sd">        :type create_time: :obj:`float`</span>
+<span class="sd">        :type expiration_time: :obj:`float`</span>
+<span class="sd">        :type scheduled_create_time: :obj:`float`</span>
+<span class="sd">        :type creator: :obj:`string`</span>
+<span class="sd">        :type schema_id: :obj:`int`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">UserDict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">create_time</span><span class="p">:</span>
+            <span class="n">create_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">expiration_time</span><span class="p">:</span>
+            <span class="n">expiration_time</span> <span class="o">=</span> <span class="n">create_time</span> <span class="o">+</span> <span class="n">Header</span><span class="o">.</span><span class="n">default_data_lifetime</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">scheduled_create_time</span><span class="p">:</span>
+            <span class="n">scheduled_create_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;taskmanager_id&#39;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
+            <span class="s1">&#39;create_time&#39;</span><span class="p">:</span> <span class="n">create_time</span><span class="p">,</span>
+            <span class="s1">&#39;expiration_time&#39;</span><span class="p">:</span> <span class="n">expiration_time</span><span class="p">,</span>
+            <span class="s1">&#39;scheduled_create_time&#39;</span><span class="p">:</span> <span class="n">scheduled_create_time</span><span class="p">,</span>
+            <span class="s1">&#39;creator&#39;</span><span class="p">:</span> <span class="n">creator</span><span class="p">,</span>
+            <span class="s1">&#39;schema_id&#39;</span><span class="p">:</span> <span class="n">schema_id</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="Header.is_valid"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.Header.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the Header has minimum required information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">Header</span><span class="o">.</span><span class="n">required_keys</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DataBlock"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock">[docs]</a><span class="k">class</span> <span class="nc">DataBlock</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataspace</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generation_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sequence_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize DataBlock object</span>
+
+<span class="sd">        :type dataspace: :obj:`DataSpace`</span>
+<span class="sd">        :type name: :obj:`string`</span>
+<span class="sd">        :type taskmanager_id: :obj:`string`</span>
+<span class="sd">        :type generation_id: :obj:`int`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span> <span class="o">=</span> <span class="n">dataspace</span>
+
+        <span class="c1"># If taskmanager_id is None create new or</span>
+        <span class="k">if</span> <span class="n">taskmanager_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">=</span> <span class="n">taskmanager_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">sequence_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span> <span class="o">=</span> <span class="n">sequence_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">generation_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">=</span> <span class="n">generation_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;taskamanger_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span>
+            <span class="s1">&#39;generation_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+            <span class="s1">&#39;sequence_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
+            <span class="s1">&#39;keys&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">dp</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">:</span>
+            <span class="n">dp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">value</span><span class="p">[</span><span class="s1">&#39;dataproducts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dp</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span>
+
+<div class="viewcode-block" id="DataBlock.keys"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span></div>
+
+<div class="viewcode-block" id="DataBlock.store_taskmanager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.store_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">store_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Persist TaskManager, returns sequence number</span>
+<span class="sd">        :type taskmanager_name: :obj:`string`</span>
+<span class="sd">        :type taskmanager_id: :obj: `string`</span>
+<span class="sd">        :rtype: :obj:`int`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataBlock.get_taskmanager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.get_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">get_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve TaskManager</span>
+<span class="sd">        :type taskmanager_name: :obj:`string`</span>
+<span class="sd">        :arg taskmanager_name: name of taskmanager to retrieve</span>
+<span class="sd">        :type taskmanager_id: :obj:`string`</span>
+<span class="sd">        :arg taskmanager_id: id of taskmanager to retrieve</span>
+<span class="sd">        :rtype: :obj: `dict`</span>
+
+<span class="sd">        The dictionary returned looks like :</span>
+<span class="sd">        {&#39;datestamp&#39;: datetime.datetime(2017, 12, 20, 17, 37, 17, 503210,</span>
+<span class="sd">                      tzinfo=psycopg2.tz.FixedOffsetTimezone(offset=-360, name=None)),</span>
+<span class="sd">         &#39;sequence_id&#39;: 135L,</span>
+<span class="sd">         &#39;name&#39;: &#39;AWS_Calculations&#39;,</span>
+<span class="sd">         &#39;taskmanager_id&#39;: &#39;77B16EB5-C79E-45B0-B1B1-37E846692E1D&#39;}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataBlock.put"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.put">[docs]</a>    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Put data into the DataBlock</span>
+
+<span class="sd">        :type key: :obj:`string`</span>
+<span class="sd">        :type value: :obj:`dict`</span>
+<span class="sd">        :type header: :obj:`Header`</span>
+<span class="sd">        :type metadata: :obj:`Metadata`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setitem</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataBlock.get"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the value associated with the key in the database</span>
+
+<span class="sd">        :type key: :obj:`string`</span>
+<span class="sd">        :rtype: :obj:`dict`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataBlock._insert"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock._insert">[docs]</a>    <span class="k">def</span> <span class="nf">_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Insert a new product into database with header and metadata</span>
+
+<span class="sd">        :type key: :obj:`string`</span>
+<span class="sd">        :type value: :obj:`dict`</span>
+<span class="sd">        :type header: :obj:`Header`</span>
+<span class="sd">        :type metadata: :obj:`Metadata`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+                              <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataBlock._update"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock._update">[docs]</a>    <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update an existing product in the database with header and metadata</span>
+
+<span class="sd">        :type key: :obj:`string`</span>
+<span class="sd">        :type value: :obj:`dict`</span>
+<span class="sd">        :type header: :obj:`Header`</span>
+<span class="sd">        :type metadata: :obj:`Metadata`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+                              <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataBlock._setitem"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock._setitem">[docs]</a>    <span class="k">def</span> <span class="nf">_setitem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        put a product in the database with header and metadata</span>
+
+<span class="sd">        :type key: :obj:`string`</span>
+<span class="sd">        :type value: :obj:`dict`</span>
+<span class="sd">        :type header: :obj:`Header`</span>
+<span class="sd">        :type metadata: :obj:`Metadata`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">metadata</span><span class="p">:</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s1">&#39;NEW&#39;</span><span class="p">,</span>
+                                <span class="n">generation_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+                                <span class="n">generation_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
+                                <span class="n">missed_update_count</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">store_value</span> <span class="o">=</span> <span class="n">compress</span><span class="p">({</span><span class="s1">&#39;pickled&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">store_value</span> <span class="o">=</span> <span class="n">compress</span><span class="p">({</span><span class="s1">&#39;pickled&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">,</span>
+                                                                           <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)})</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">:</span>
+            <span class="c1"># This has been already inserted, so you are working on a copy</span>
+            <span class="c1"># that was backed up. You need to update and adjust the update</span>
+            <span class="c1"># counter</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">store_value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_insert</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">store_value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the value associated with the key in the database</span>
+
+<span class="sd">        :type key: :obj:`string`</span>
+<span class="sd">        :type default: :obj:`dict`</span>
+<span class="sd">        :rtype: :obj:`dict`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_dataproduct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+            <span class="n">value</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">decompress</span><span class="p">(</span><span class="n">value_row</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()))</span>
+        <span class="k">except</span> <span class="n">KeyNotFoundError</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">default</span>
+
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pickled&#39;</span><span class="p">):</span>
+            <span class="n">return_value</span> <span class="o">=</span> <span class="n">zloads</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">return_value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">return_value</span>
+
+<div class="viewcode-block" id="DataBlock.get_header"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.get_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the Header associated with the key in the database</span>
+
+<span class="sd">        :type key: :obj:`string`</span>
+<span class="sd">        :rtype: :obj:`Header`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">header_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">header_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">create_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                        <span class="n">expiration_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+                        <span class="n">scheduled_create_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                        <span class="n">creator</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
+                        <span class="n">schema_id</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">header</span></div>
+
+<div class="viewcode-block" id="DataBlock.get_metadata"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.get_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the metadata associated with the key in the database</span>
+
+<span class="sd">        :type key: :obj:`string`</span>
+<span class="sd">        :rtype: :obj:`Metadata`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metadata_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                            <span class="n">generation_id</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                            <span class="n">generation_time</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+                            <span class="n">missed_update_count</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">metadata</span></div>
+
+<div class="viewcode-block" id="DataBlock.duplicate"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Duplicate the datablock and return this new DataBlock. The intent is</span>
+<span class="sd">        that at the point the duplication occurs there is only information</span>
+<span class="sd">        from the sources in the DataBlock.</span>
+<span class="sd">        This also increments the generation_id of this DataBlock.</span>
+
+<span class="sd">        TODO: Also update the header and the metadata information</span>
+<span class="sd">        TODO: Make this threadsafe</span>
+
+<span class="sd">        :rtype: :obj:`DataBlock`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">dup_datablock</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">dup_datablock</span><span class="o">.</span><span class="n">_keys</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">duplicate_datablock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
+                                           <span class="n">dup_datablock</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dup_datablock</span></div>
+
+<div class="viewcode-block" id="DataBlock.is_expired"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.is_expired">[docs]</a>    <span class="k">def</span> <span class="nf">is_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the dataproduct for a given key or any key is expired</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DataBlock.mark_expired"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.mark_expired">[docs]</a>    <span class="k">def</span> <span class="nf">mark_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expiration_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the expiration_time for the current generation of the dataproduct</span>
+<span class="sd">        and mark it as expired if expiration_time &lt;= current time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">decisionengine</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html">Decisionengine framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Fermi Research Alliance, LLC..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

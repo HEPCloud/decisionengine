@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>decisionengine.framework.util package &#8212; decisionengine 1.1.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="decisionengine.framework.taskmanager package" href="decisionengine.framework.taskmanager.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="decisionengine-framework-util-package">
+<h1>decisionengine.framework.util package<a class="headerlink" href="#decisionengine-framework-util-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-decisionengine.framework.util.tsort">
+<span id="decisionengine-framework-util-tsort-module"></span><h2>decisionengine.framework.util.tsort module<a class="headerlink" href="#module-decisionengine.framework.util.tsort" title="Permalink to this headline">¶</a></h2>
+<p>See:</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Topological_sorting">https://en.wikipedia.org/wiki/Topological_sorting</a></p>
+<p>Kahn’s topological sorting algorithm</p>
+<p>L Empty list that will contain the sorted elements
+S Set of all nodes with no incoming edge
+while S is non-empty do</p>
+<blockquote>
+<div><p>remove a node n from S
+add n to tail of L
+for each node m with an edge e from n to m do</p>
+<blockquote>
+<div><p>remove edge e from the graph
+if m has no other incoming edges then</p>
+<blockquote>
+<div><p>insert m into S</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<dl class="simple">
+<dt>if graph has edges then</dt><dd><p>return error (graph has at least one cycle)</p>
+</dd>
+<dt>else</dt><dd><p>return L (a topologically sorted order)</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt id="decisionengine.framework.util.tsort.tsort">
+<code class="sig-prename descclassname">decisionengine.framework.util.tsort.</code><code class="sig-name descname">tsort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/util/tsort.html#tsort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.util.tsort.tsort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function implementing Kahn’s topological sorting algorithm
+returns two lists : sorted list and cyclic lost
+(if graph is acyclic second list is always None)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-decisionengine.framework.util">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-decisionengine.framework.util" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">decisionengine</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../unittest.html">Decisionengine framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="decisionengine.html">decisionengine package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Welcome to decisionengine’s documentation!</a><ul>
+  <li><a href="decisionengine.html">decisionengine package</a><ul>
+  <li><a href="decisionengine.framework.html">decisionengine.framework package</a><ul>
+      <li>Previous: <a href="decisionengine.framework.taskmanager.html" title="previous chapter">decisionengine.framework.taskmanager package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Fermi Research Alliance, LLC..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/code/decisionengine.framework.util.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
