@@ -20,24 +20,33 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
+    - name: Install sphinx within the container
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip python3-psycopg2 latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+        sudo pip install -U pip
+        sudo pip3 install sphinx
+
+    - name: Install required modules for AST to parse the codebase
+      run: pip3 install -r requirements.txt
+
     - name: Setup safe/unique tmp dir for out of tree storage
       run: rm -rf /tmp/${{ github.sha }}
 
-    - name: Make sure PYTHONPATH is accurate
+    - name: Make source code importable
       run: |
-        PYTHONPATH=$(pwd)
-        echo ${PYTHONPATH}
+        touch __init__.py
+        cd ..
+        touch __init__.py
+
+    - name: Set PYTHONPATH
+      run: echo "::set-env name=PYTHONPATH::${GITHUB_WORKSPACE}/../"
 
     - name: Run sphinx to make docs
-      uses: ammaraskar/sphinx-action@master
-      with:
-        pre-build-command: "apt-get update -y && apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended"
-        build-command: "make rst html latexpdf"
-        docs-folder: "doc/"
-
-    # the sphinx action tends to run as root to install missing packages
-    - name: Correct any incorrect document ownership
-      run: sudo chown -Rh $(whoami) doc
+      run: |
+        cd doc
+        make rst html latexpdf
+        cd ..
 
     - name: Move HTML docs someplace safe for the moment
       run: mv -v doc/build/html /tmp/${{ github.sha }}
