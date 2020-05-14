@@ -2,7 +2,9 @@ import os
 import pytest
 import psycopg2
 import pytest_postgresql
+
 from decisionengine.framework.dataspace.datasources.postgresql import Postgresql, generate_insert_query
+from decisionengine.framework.dataspace.datablock import Header, Metadata
 
 
 @pytest.fixture(scope="function")
@@ -57,6 +59,27 @@ def taskmanager():
         "name": "new_taskmanager",
         "taskmanager_id": "123"
     }
+
+@pytest.fixture(scope="session")
+def dataproduct():
+    return {
+        "taskmanager_id": "1",
+        "generation_id": "2",
+        "key": "new_key",
+        "value": "new_value"
+    }
+
+@pytest.fixture(scope="session")
+def header(data):
+    return Header(
+        data["taskmanager"][0]["taskmanager_id"]
+    )
+
+@pytest.fixture(scope="session")
+def metadata(data):
+    return Metadata(
+        data["taskmanager"][0]["taskmanager_id"]
+    )
 
 def test_generate_insert_query():
     table_name = "header"
@@ -113,5 +136,6 @@ def test_get_last_generation_id(postgresql, taskmanager, data):
     except Exception as e:
         assert e.__class__ == KeyError
 
-def test_insert(postgresql, data):
-    pass
+def test_insert(postgresql, dataproduct, header, metadata):
+    postgresql.insert(dataproduct["taskmanager_id"], dataproduct["generation_id"], dataproduct["key"],
+                      dataproduct["value"], header, metadata)
