@@ -1,0 +1,72 @@
+name: Make Our Github Pages
+
+# Controls when the action will run. Triggers the workflow on push
+# events - but only for the master branch
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: checkout code tree
+      uses: actions/checkout@v2
+
+    - name: Configure owner of git commits
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: Setup safe/unique tmp dir for out of tree storage
+      run: rm -rf /tmp/${{ github.sha }}
+
+    - name: Make sure PYTHONPATH is accurate
+      run: |
+        PYTHONPATH=$(pwd)
+        echo ${PYTHONPATH}
+
+    - name: Run sphinx to make docs
+      uses: ammaraskar/sphinx-action@master
+      with:
+        pre-build-command: "apt-get update -y && apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended"
+        build-command: "make rst html latexpdf"
+        docs-folder: "doc/"
+
+    # the sphinx action tends to run as root to install missing packages
+    - name: Correct any incorrect document ownership
+      run: sudo chown -Rh $(whoami) doc
+
+    - name: Move HTML docs someplace safe for the moment
+      run: mv -v doc/build/html /tmp/${{ github.sha }}
+
+    - name: Move PDF docs someplace safe for the moment
+      run: mv -v doc/build/latex/*.pdf /tmp/${{ github.sha }}
+
+    - name: Make sure repo is clean
+      run: |
+        rm -rf *
+        git reset --hard
+
+    - name: Switch to the gh-pages branch
+      run: |
+        git fetch -a
+        git checkout gh-pages
+
+    - name: Put files where they belong
+      run: rsync -avh /tmp/${{ github.sha }}/* .
+
+    - name: Add files
+      run: git add *
+
+    - name: Commit files (or do nothing)
+      run: git commit -m "Update doc to match ${{ github.sha }}" || true
+
+    - name: Push changes, make take up to 10m to sync to github CDN
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: gh-pages
+        force: True
