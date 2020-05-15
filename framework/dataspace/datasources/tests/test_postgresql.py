@@ -8,27 +8,20 @@ from decisionengine.framework.dataspace.datablock import Header, Metadata
 
 
 @pytest.fixture(scope="function")
-def postgresql(postgresql_proc, data):
-    dsn = {
-        "user": postgresql_proc.user,
-        "port": postgresql_proc.port,
-        "host": postgresql_proc.unixsocketdir
-    }
+def datasource(postgresql, data):
+    with postgresql.cursor() as cursor:
+        cwd = os.path.split(os.path.abspath(__file__))[0]
+        # Load decision engine schema
+        cursor.execute(open(cwd + "/../postgresql.sql", "r").read())
+        # Load test data
+        for table, rows in data.items():
+            for row in rows:
+                keys = ",".join(row.keys())
+                values = ",".join([f"'{value}'" for value in row.values()])
+                cursor.execute(f"INSERT INTO {table} ({keys}) VALUES ({values})")
+    postgresql.commit()
 
-    with psycopg2.connect(**dsn) as connection:
-        with connection.cursor() as cursor:
-            cwd = os.path.split(os.path.abspath(__file__))[0]
-            # Load decision engine schema
-            cursor.execute(open(cwd + "/../postgresql.sql", "r").read())
-            # Load test data
-            for table, rows in data.items():
-                for row in rows:
-                    keys = ",".join(row.keys())
-                    values = ",".join([f"'{value}'" for value in row.values()])
-                    cursor.execute(f"INSERT INTO {table} ({keys}) VALUES ({values})")
-        connection.commit()
-
-    return Postgresql(dsn)
+    return Postgresql(postgresql.info.dsn_parameters)
 
 @pytest.fixture(scope="session")
 def data():
@@ -90,52 +83,52 @@ def test_generate_insert_query():
 
     assert result_query == expected_query
 
-def test_create_tables(postgresql):
-    assert postgresql.create_tables()
+def test_create_tables(datasource):
+    assert datasource.create_tables()
 
-def test_store_taskmanager(postgresql, taskmanager):
-    result = postgresql.store_taskmanager(taskmanager["name"], taskmanager["taskmanager_id"])
+def test_store_taskmanager(datasource, taskmanager):
+    result = datasource.store_taskmanager(taskmanager["name"], taskmanager["taskmanager_id"])
     assert result > 0
 
-def test_get_taskmanager(postgresql, taskmanager, data):
+def test_get_taskmanager(datasource, taskmanager, data):
     # test valid taskmanager
-    result = postgresql.get_taskmanager(data["taskmanager"][0]["name"], data["taskmanager"][0]["taskmanager_id"])
+    result = datasource.get_taskmanager(data["taskmanager"][0]["name"], data["taskmanager"][0]["taskmanager_id"])
     assert result["name"] == data["taskmanager"][0]["name"]
     assert result["taskmanager_id"] == data["taskmanager"][0]["taskmanager_id"]
 
-    result = postgresql.get_taskmanager(data["taskmanager"][0]["name"])
+    result = datasource.get_taskmanager(data["taskmanager"][0]["name"])
     assert result["name"] == data["taskmanager"][0]["name"]
 
     # test taskmanager not present in the database
     try:
-        postgresql.get_taskmanager(taskmanager["name"], taskmanager["taskmanager_id"])
+        datasource.get_taskmanager(taskmanager["name"], taskmanager["taskmanager_id"])
     except Exception as e:
         assert e.__class__ == KeyError
 
     try:
-        postgresql.get_taskmanager(taskmanager["name"])
+        datasource.get_taskmanager(taskmanager["name"])
     except Exception as e:
         assert e.__class__ == KeyError
 
-def test_get_last_generation_id(postgresql, taskmanager, data):
+def test_get_last_generation_id(datasource, taskmanager, data):
     # test valid taskmanager
-    result = postgresql.get_last_generation_id(data["taskmanager"][0]["name"], data["taskmanager"][0]["taskmanager_id"])
+    result = datasource.get_last_generation_id(data["taskmanager"][0]["name"], data["taskmanager"][0]["taskmanager_id"])
     assert result == int(data["dataproduct"][0]["generation_id"])
 
-    result = postgresql.get_last_generation_id(data["taskmanager"][0]["name"])
+    result = datasource.get_last_generation_id(data["taskmanager"][0]["name"])
     assert result == int(data["dataproduct"][0]["generation_id"])
 
     # test taskmanager not present in the database
     try:
-        result = postgresql.get_last_generation_id(taskmanager["name"], taskmanager["taskmanager_id"])
+        result = datasource.get_last_generation_id(taskmanager["name"], taskmanager["taskmanager_id"])
     except Exception as e:
         assert e.__class__ == KeyError
 
     try:
-        postgresql.get_last_generation_id(taskmanager["name"])
+        datasource.get_last_generation_id(taskmanager["name"])
     except Exception as e:
         assert e.__class__ == KeyError
 
-def test_insert(postgresql, dataproduct, header, metadata):
-    postgresql.insert(dataproduct["taskmanager_id"], dataproduct["generation_id"], dataproduct["key"],
+def test_insert(datasource, dataproduct, header, metadata):
+    datasource.insert(dataproduct["taskmanager_id"], dataproduct["generation_id"], dataproduct["key"],
                       dataproduct["value"], header, metadata)
