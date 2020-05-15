@@ -13,6 +13,7 @@ make --debug liblinks
 cd -
 export PYTHONPATH=$PWD:$PYTHONPATH
 source venv/bin/activate
+export PATH=$PATH:/usr/pgsql-11/bin
 which pytest
 pytest -v --tb=native decisionengine >  ./pytest.log 2>&1
 status=$?
