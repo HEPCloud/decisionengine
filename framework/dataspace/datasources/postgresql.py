@@ -160,7 +160,7 @@ class Postgresql(ds.DataSource):
                      {'taskmanager_id': taskmanager_id,
                       'generation_id': generation_id,
                       'key': key,
-                      'value': psycopg2.Binary(value.encode())
+                      'value': psycopg2.Binary(value)
                       })
 
         self._insert(ds.DataSource.header_table,

@@ -1,10 +1,10 @@
 import os
-import pytest
 import psycopg2
+import pytest
 import pytest_postgresql
 
-from decisionengine.framework.dataspace.datasources.postgresql import Postgresql, generate_insert_query
 from decisionengine.framework.dataspace.datablock import Header, Metadata
+from decisionengine.framework.dataspace.datasources.postgresql import Postgresql, generate_insert_query
 
 
 @pytest.fixture(scope="function")
@@ -131,4 +131,4 @@ def test_get_last_generation_id(datasource, taskmanager, data):
 
 def test_insert(datasource, dataproduct, header, metadata):
     datasource.insert(dataproduct["taskmanager_id"], dataproduct["generation_id"], dataproduct["key"],
-                      dataproduct["value"], header, metadata)
+                      dataproduct["value"].encode(), header, metadata)
