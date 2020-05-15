@@ -169,16 +169,20 @@
                                <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">taskmanager_id</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID</span><span class="p">,</span>
-                                    <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="n">generation_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID</span><span class="p">,</span>
+                                             <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">generation_id</span>
+                <span class="k">return</span> <span class="n">generation_id</span>
+            <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Last generation id not found for taskmanager=</span><span class="si">{}</span><span class="s2"> taskmanager_id=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
                                <span class="nb">format</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">SELECT_LAST_GENERATION_ID_BY_NAME</span><span class="p">,</span>
-                                    <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="n">generation_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">SELECT_LAST_GENERATION_ID_BY_NAME</span><span class="p">,</span>
+                                             <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">generation_id</span>
+                <span class="k">return</span> <span class="n">generation_id</span>
+            <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Last generation id not found for taskmanager=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
                                <span class="nb">format</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="p">))</span></div>
 
