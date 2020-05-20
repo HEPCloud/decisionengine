@@ -1,0 +1,6 @@
+FROM hepcloud/decision-engine-ci
+COPY entrypoint.sh /entrypoint.sh
+RUN groupadd -g 500 decision-engine-ci
+RUN useradd -u 500 -g 500 decision-engine-ci
+USER decision-engine-ci
+ENTRYPOINT ["/entrypoint.sh"]
