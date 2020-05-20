@@ -6,7 +6,7 @@ pipeline {
       stage('setup') {
          steps {
             echo "cleanup workspace"
-            sh "for f in $(ls -A); do rm -rf ${f}; done"
+            sh 'for f in $(ls -A); do rm -rf ${f}; done'
             echo "clone decisionengine code from ${DE_REPO}"
             sh "git clone ${DE_REPO}"
          }
