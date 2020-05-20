@@ -3,6 +3,10 @@
 
 HEPCloud Decision Engine framework
 
+# Code Documentation
+
+https://hepcloud.github.io/decisionengine/code/
+
 # Building RPMs
 
 At this time we recommend Boost version 1.58 or newer.  You may need to complile this for your python interpreter.
