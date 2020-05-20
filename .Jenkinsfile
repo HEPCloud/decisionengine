@@ -3,19 +3,12 @@ pipeline {
 
    stages {
 
-      stage('cleanup') {
+      stage('setup') {
          steps {
-            sh '''
-            pwd
-            for f in $(ls -A); do rm -rf ${f}; done
-            '''
-         }
-      }
-
-      stage('clone') {
-         steps {
-            // sh 'git clone https://github.com/HEPCloud/decisionengine.git'
-            sh 'git clone https://github.com/vitodb/decisionengine.git'
+            echo "cleanup workspace"
+            sh "for f in $(ls -A); do rm -rf ${f}; done"
+            echo "clone decisionengine code from ${DE_REPO}"
+            sh "git clone ${DE_REPO}"
          }
       }
 
