@@ -90,6 +90,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         self.config_manager = cfg
         self.dataspace = dataspace.DataSpace(self.config_manager.get_global_config())
         self.reaper = dataspace.Reaper(self.config_manager.get_global_config())
+        self.logger.info("DecisionEngine started on {}".format(server_address))
 
     def get_logger(self):
         return self.logger
@@ -261,6 +262,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                         self.config_manager.get_global_config())
         self.task_managers[channel] = worker
         worker.start()
+        self.logger.info("Channel {} started : {}".format(channel))
 
     def rpc_start_channels(self):
         self.reload_config()
