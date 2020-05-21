@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import errno
 import os
-import random
 import socket
 import subprocess
 import sys
