@@ -7,6 +7,7 @@ pipeline {
          steps {
             echo "cleanup workspace"
             sh 'for f in $(ls -A); do rm -rf ${f}; done'
+            // DE_REPO is defined through Jenkins project
             echo "clone decisionengine code from ${DE_REPO}"
             sh "git clone ${DE_REPO}"
          }
