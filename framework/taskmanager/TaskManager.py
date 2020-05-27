@@ -79,6 +79,9 @@ class Channel(object):
 BOOT, STEADY, OFFLINE, SHUTTINGDOWN, SHUTDOWN = list(range(5))
 STATE_NAMES = ['BOOT', 'STEADY', 'OFFLINE', 'SHUTTINGDOWN', 'SHUTDOWN']
 
+# log levels
+NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL = [0, 10, 20, 30, 40, 50]
+LOG_LEVELS_DICT = {'NOTSET': 0, 'DEBUG': 10, 'INFO': 20, 'WARNING': 30, 'ERROR': 40, 'CRITICAL': 50}
 
 class TaskManager(object):
     """
@@ -105,6 +108,7 @@ class TaskManager(object):
         self.id = task_manager_id
         self.channel = Channel(channel_dict)
         self.state = multiprocessing.Value('i', BOOT)
+        self.loglevel = multiprocessing.Value('i', LOG_LEVELS_DICT['INFO'])
         self.decision_cycle_active = False
         self.lock = threading.Lock()
         self.stop = False  # stop running all loops when this is True
@@ -116,7 +120,6 @@ class TaskManager(object):
         :type events_done: :obj:`list`
         :arg events_done: list of events to wait for
         """
-
         logging.getLogger().info('Waiting for all tasks to run')
         while not all([e.isSet() for e in events_done]):
             time.sleep(1)
@@ -146,7 +149,7 @@ class TaskManager(object):
         """
         Task Manager main loop
         """
-
+        logging.getLogger().setLevel(self.loglevel.value)
         logging.getLogger().info('Starting Task Manager %s', self.id)
         done_events = self.start_sources(self.data_block_t0)
         # This is a boot phase
@@ -167,6 +170,7 @@ class TaskManager(object):
 
         while self.get_state() == STEADY:
             try:
+                logging.getLogger().setLevel(self.loglevel.value)
                 self.wait_for_any(done_events)
                 self.decision_cycle()
                 if self.stop:
@@ -194,6 +198,14 @@ class TaskManager(object):
     def get_state(self):
         with self.state.get_lock():
             return self.state.value
+
+    def set_loglevel(self, log_level):
+        with self.loglevel.get_lock():
+            self.loglevel.value = log_level
+
+    def get_loglevel(self):
+        with self.loglevel.get_lock():
+            return self.loglevel.value
 
     def stop_task_manager(self):
         """

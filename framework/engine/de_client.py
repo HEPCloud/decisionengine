@@ -78,6 +78,11 @@ if __name__ == "__main__":
         help="comma separated list of columns")
 
     parser.add_argument(
+        "--channel-log-level",
+        nargs=2,
+        help="<channel name> log_level, e.g. <channel name> INFO ")
+
+    parser.add_argument( 
         "--reaper-start",
         action='store_true',
         help="start the database cleanup process")
@@ -117,6 +122,9 @@ if __name__ == "__main__":
 
     if args.start_channels:
         print(s.start_channels())
+
+    if args.channel_log_level:
+      print(s.set_channel_log_level(args.channel_log_level[0],args.channel_log_level[1]))
 
     if args.show_config:
         conf = s.show_config()

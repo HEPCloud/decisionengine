@@ -90,6 +90,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         self.config_manager = cfg
         self.dataspace = dataspace.DataSpace(self.config_manager.get_global_config())
         self.reaper = dataspace.Reaper(self.config_manager.get_global_config())
+        self.logger.info("creating an instance of Decision Engine")
 
     def get_logger(self):
         return self.logger
@@ -320,7 +321,17 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
     def rpc_reload_config(self):
         self.reload_config()
         return "OK"
-
+    
+    def rpc_set_channel_log_level(self, channel, log_level):
+        worker = self.task_managers[channel]
+        if worker.task_manager.get_loglevel() == TaskManager.LOG_LEVELS_DICT[log_level]:
+          txt = "Nothing to do. Current log level is : {} ".format(log_level)
+          return txt[:-1]
+        else:
+          worker.task_manager.set_loglevel(TaskManager.LOG_LEVELS_DICT[log_level])
+          txt = "Log level changed to : {} ".format(log_level)
+          return txt[:-1]
+    
     def reload_config(self):
         self.config_manager.reload()
 
