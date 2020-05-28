@@ -1,0 +1,81 @@
+name: Make Our Github Pages
+
+# Controls when the action will run. Triggers the workflow on push
+# events - but only for the master branch
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: checkout code tree
+      uses: actions/checkout@v2
+
+    - name: Configure owner of git commits
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: Install sphinx within the container
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip python3-psycopg2 latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+        sudo pip install -U pip
+        sudo pip3 install sphinx
+
+    - name: Install required modules for AST to parse the codebase
+      run: pip3 install -r requirements.txt
+
+    - name: Setup safe/unique tmp dir for out of tree storage
+      run: rm -rf /tmp/${{ github.sha }}
+
+    - name: Make source code importable
+      run: |
+        touch __init__.py
+        cd ..
+        touch __init__.py
+
+    - name: Set PYTHONPATH
+      run: echo "::set-env name=PYTHONPATH::${GITHUB_WORKSPACE}/../"
+
+    - name: Run sphinx to make docs
+      run: |
+        cd doc
+        make rst html latexpdf
+        cd ..
+
+    - name: Move HTML docs someplace safe for the moment
+      run: mv -v doc/build/html /tmp/${{ github.sha }}
+
+    - name: Move PDF docs someplace safe for the moment
+      run: mv -v doc/build/latex/*.pdf /tmp/${{ github.sha }}
+
+    - name: Make sure repo is clean
+      run: |
+        rm -rf *
+        git reset --hard
+
+    - name: Switch to the gh-pages branch
+      run: |
+        git fetch -a
+        git checkout gh-pages
+
+    - name: Put files where they belong
+      run: rsync -avh /tmp/${{ github.sha }}/* .
+
+    - name: Add files
+      run: git add *
+
+    - name: Commit files (or do nothing)
+      run: git commit -m "Update doc to match ${{ github.sha }}" || true
+
+    - name: Push changes, make take up to 10m to sync to github CDN
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: gh-pages
+        force: True

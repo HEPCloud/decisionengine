@@ -1,6 +1,10 @@
 language: python
 os: linux
 
+branches:
+  only:
+  - master
+
 # What versions of python do we test with
 python:
   - "2.7"
@@ -51,6 +55,14 @@ install:
   - sudo apt-get install -y wget libicu-dev zlib1g-dev libbz2-dev g++
   - cd ~/
   - sudo chown -R travis /usr/local/
+
+  # install PostgreSQL 11
+  - wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  - sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list'
+  - sudo apt update
+  - sudo apt-get install postgresql-11
+  - export PATH=$PATH:/usr/lib/postgresql/11/bin
+
   ## This version of boost matches the default version in travis
   - travis_retry wget -c http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz
   - tar xf boost_1_58_0.tar.gz
@@ -82,6 +94,4 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   - coverage run -m pytest -v -l --tb=native ${TRAVIS_BUILD_DIR}/../
 
-# hook into coveralls
-after_success:
   - coveralls
