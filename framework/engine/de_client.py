@@ -82,7 +82,7 @@ if __name__ == "__main__":
         nargs=2,
         help="<channel name> log_level, e.g. <channel name> INFO ")
 
-    parser.add_argument( 
+    parser.add_argument(
         "--reaper-start",
         action='store_true',
         help="start the database cleanup process")

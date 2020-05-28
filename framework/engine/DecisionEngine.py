@@ -321,7 +321,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
     def rpc_reload_config(self):
         self.reload_config()
         return "OK"
-    
+
     def rpc_set_channel_log_level(self, channel, log_level):
         worker = self.task_managers[channel]
         if worker.task_manager.get_loglevel() == TaskManager.LOG_LEVELS_DICT[log_level]:
@@ -331,7 +331,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
           worker.task_manager.set_loglevel(TaskManager.LOG_LEVELS_DICT[log_level])
           txt = "Log level changed to : {} ".format(log_level)
           return txt[:-1]
-    
+
     def reload_config(self):
         self.config_manager.reload()
 
