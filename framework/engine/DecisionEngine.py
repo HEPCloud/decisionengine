@@ -90,6 +90,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         self.config_manager = cfg
         self.dataspace = dataspace.DataSpace(self.config_manager.get_global_config())
         self.reaper = dataspace.Reaper(self.config_manager.get_global_config())
+        self.logger.info("DecisionEngine started on {}".format(server_address))
 
     def get_logger(self):
         return self.logger
@@ -261,6 +262,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                         self.config_manager.get_global_config())
         self.task_managers[channel] = worker
         worker.start()
+        self.logger.info("Channel {} started".format(channel))
 
     def rpc_start_channels(self):
         self.reload_config()
@@ -355,11 +357,21 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         txt = '\nreaper:\n\tstate: {}\n\tretention_interval: {}\n'.format(state, interval)
         return txt
 
-
-if __name__ == '__main__':
+def main_create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", default=None, type=int, choices=range(1, 65535), help="Override server port to this value")
-    args = parser.parse_args()
+
+    return parser
+
+def main(args_to_parse=None):
+    '''If you pass a list of args, they will be used instead of sys.argv'''
+
+    parser = main_create_parser()
+
+    if args_to_parse:
+        args = parser.parse_args(args_to_parse)
+    else:
+        args = parser.parse_args()
 
     try:
         conf_manager = Conf_Manager.ConfigManager()
@@ -391,3 +403,7 @@ if __name__ == '__main__':
         sys.stderr.write("Config Dir:{}\n".format(conf_manager.config_dir))
         sys.stderr.write("Fatal Error: {}\n".format(msg))
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
