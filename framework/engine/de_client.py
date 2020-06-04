@@ -34,7 +34,6 @@ if __name__ == "__main__":
         "--start-channel",
         help="channel name")
 
-
     parser.add_argument(
         "--host",
         default="localhost",
@@ -78,9 +77,18 @@ if __name__ == "__main__":
         help="comma separated list of columns")
 
     parser.add_argument(
-        "--channel-log-level",
+        "--print-engine-loglevel",
+        action='store_true',
+        help="print engine log level")
+
+    parser.add_argument(
+        "--get-channel-loglevel",
+        help="print channel log level")
+
+    parser.add_argument(
+        "--set-channel-loglevel",
         nargs=2,
-        help="<channel name> log_level, e.g. <channel name> INFO ")
+        help="<channel name> loglevel, (possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL)")
 
     parser.add_argument(
         "--reaper-start",
@@ -123,8 +131,18 @@ if __name__ == "__main__":
     if args.start_channels:
         print(s.start_channels())
 
-    if args.channel_log_level:
-      print(s.set_channel_log_level(args.channel_log_level[0],args.channel_log_level[1]))
+    if args.print_engine_loglevel:
+        print(s.get_log_level())
+
+    if args.get_channel_loglevel:
+        level=args.get_channel_loglevel    
+        if level=="UNITTEST":
+            print("NOTSET")
+        else:
+            print(s.get_channel_log_level(args.get_channel_loglevel))
+
+    if args.set_channel_loglevel:
+        print(s.set_channel_log_level(args.set_channel_loglevel[0],args.set_channel_loglevel[1]))
 
     if args.show_config:
         conf = s.show_config()

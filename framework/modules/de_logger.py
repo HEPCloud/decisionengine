@@ -8,10 +8,9 @@ import logging.handlers
 LOG_FILE = '/tmp/decision_engine_logs/decision_engine_log'
 MB = 1000000
 ROTATE_AFTER = 6
-LOG_LEVEL = "DEBUG"
 
 
-def set_logging(log_file_name=LOG_FILE, max_file_size=200 * MB, max_backup_count=ROTATE_AFTER, log_level=LOG_LEVEL):
+def set_logging(log_file_name=LOG_FILE, max_file_size=200 * MB, max_backup_count=ROTATE_AFTER, log_level="DEBUG"):
     """
 
     :type log_file_name: :obj:`str`
@@ -86,7 +85,7 @@ if __name__ == '__main__':
     set_logging(log_file_name='%s/de_log/decision_engine_log0' % (os.environ.get('HOME')),
                 max_file_size=100000,
                 max_backup_count=5,
-                log_level=DEBUG)
+                log_level="DEBUG")
     my_logger.info("THIS IS INFO")
     my_logger.error("THIS IS ERROR")
     my_logger.debug("THIS IS DEBUG")
