@@ -7,8 +7,7 @@ except ImportError:
     import xmlrpc.client as xmlrpclib
 import pprint
 
-if __name__ == "__main__":
-
+def create_parser():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -111,62 +110,85 @@ if __name__ == "__main__":
         action='store_true',
         help="show the database cleanup process status")
 
-    args = parser.parse_args()
+    return parser
 
-    con_string = "http://{}:{}".format(args.host, args.port)
+def build_xmlrpc_connection(host, port):
+    con_string = "http://{}:{}".format(host, port)
     s = xmlrpclib.ServerProxy(con_string, allow_none=True)
 
-    if args.status:
-        print(s.status())
+    return s
 
-    if args.stop_channel:
-        print(s.stop_channel(args.stop_channel))
+def execute_command_from_args(argsparsed, xmlrpcsocket):
+    '''argsparsed should be from create_parser in this file'''
 
-    if args.start_channel:
-        print(s.start_channel(args.start_channel))
+    if argsparsed.status:
+        return xmlrpcsocket.status()
 
-    if args.stop_channels:
-        print(s.stop_channels())
+    if argsparsed.stop_channel:
+        return xmlrpcsocket.stop_channel(argsparsed.stop_channel)
 
-    if args.start_channels:
-        print(s.start_channels())
+    if argsparsed.start_channel:
+        return xmlrpcsocket.start_channel(argsparsed.start_channel)
 
-    if args.print_engine_loglevel:
-        print(s.get_log_level())
+    if argsparsed.stop_channels:
+        return xmlrpcsocket.stop_channels()
 
-    if args.get_channel_loglevel:
-        level=args.get_channel_loglevel    
+    if argsparsed.start_channels:
+        return xmlrpcsocket.start_channels()
+
+    if argsparsed.print_engine_loglevel:
+        return xmlrpcsocket.get_log_level()
+
+    if argsparsed.get_channel_loglevel:
+        level=argsparsed.get_channel_loglevel
         if level=="UNITTEST":
-            print("NOTSET")
+            return "NOTSET"
         else:
-            print(s.get_channel_log_level(args.get_channel_loglevel))
+            return xmlrpcsocket.get_channel_log_level(argsparsed.get_channel_loglevel)
 
-    if args.set_channel_loglevel:
-        print(s.set_channel_log_level(args.set_channel_loglevel[0],args.set_channel_loglevel[1]))
+    if argsparsed.set_channel_loglevel:
+        return xmlrpcsocket.set_channel_log_level(argsparsed.set_channel_loglevel[0],argsparsed.set_channel_loglevel[1])
 
-    if args.show_config:
-        conf = s.show_config()
-        pprint.pprint(conf)
+    if argsparsed.show_config:
+        return pprint.pformat(xmlrpcsocket.show_config())
 
-    if args.reload_config:
-        print(s.reload_config())
+    if argsparsed.reload_config:
+        return xmlrpcsocket.reload_config()
 
-    if args.print_products:
-        print(s.print_products())
+    if argsparsed.print_products:
+        return xmlrpcsocket.print_products()
 
-    if args.print_product:
-        print(s.print_product(args.print_product,
-                              args.columns,
-                              args.query))
+    if argsparsed.print_product:
+        return xmlrpcsocket.print_product(argsparsed.print_product,
+                                          argsparsed.columns,
+                                          argsparsed.query)
 
-    if args.stop:
-        s.stop()
+    if argsparsed.stop:
+        return xmlrpcsocket.stop()
 
-    if args.reaper_stop:
-        print(s.reaper_stop())
+    if argsparsed.reaper_stop:
+        return xmlrpcsocket.reaper_stop()
 
-    if args.reaper_start:
-        print(s.reaper_start(args.reaper_start_delay_secs))
+    if argsparsed.reaper_start:
+        return xmlrpcsocket.reaper_start(argsparsed.reaper_start_delay_secs)
 
-    if args.reaper_status:
-        print(s.reaper_status())
+    if argsparsed.reaper_status:
+        return xmlrpcsocket.reaper_status()
+
+def main(args_to_parse=None):
+    '''If you pass a list of args, they will be used instead of sys.argv'''
+
+    parser = create_parser()
+
+    if args_to_parse:
+        args = parser.parse_args(args_to_parse)
+    else:
+        args = parser.parse_args()
+
+    socket = build_xmlrpc_connection(args.host, args.port)
+
+    return execute_command_from_args(args, socket)
+
+
+if __name__ == "__main__":
+    print(main())
