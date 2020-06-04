@@ -134,11 +134,11 @@ class TestClientServerBehaviors(unittest.TestCase):
 
     def test_client_can_get_de_server_show_logger_level(self):
         output = subprocess.run([DE_CLIENT, '--port=' + self.port, '--print-engine-loglevel'], cwd=os.path.dirname(__file__) + '/../', stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, check=True)
-        self.assertIn(output.stdout,['NOTSET\n', 'DEBUG\n', 'INFO\n', 'WARNING\n', 'ERROR\n', 'CRITICAL\n'],msg="DE didn't give a valid log level")
+        self.assertIn(output.stdout, ['NOTSET\n', 'DEBUG\n', 'INFO\n', 'WARNING\n', 'ERROR\n', 'CRITICAL\n'], msg="DE didn't give a valid log level")
 
     def test_client_can_get_de_server_show_channel_logger_level(self):
         output = subprocess.run([DE_CLIENT, '--port=' + self.port, '--get-channel-loglevel=UNITTEST'], cwd=os.path.dirname(__file__) + '/../', stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, check=True)
-        self.assertIn(output.stdout,['NOTSET\n', 'DEBUG\n', 'INFO\n', 'WARNING\n', 'ERROR\n', 'CRITICAL\n'],msg="DE didn't get channel logger level")
+        self.assertIn(output.stdout, ['NOTSET\n', 'DEBUG\n', 'INFO\n', 'WARNING\n', 'ERROR\n', 'CRITICAL\n'], msg="DE didn't get channel logger level")
 
 
 if __name__ == '__main__':
