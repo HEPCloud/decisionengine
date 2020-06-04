@@ -30,7 +30,7 @@ class TestCanRunAtAll(unittest.TestCase):
 
     def test_can_run_de_server(self):
         ''' Am I syntax valid '''
-        os.environ['DEVISIONENGINE_NO_CHANNELS'] = "1"
+        os.environ['DECISIONENGINE_NO_CHANNELS'] = "1"
         try:
             proc = subprocess.run([DE_SERVER, '--port=' + self.port], cwd=os.path.dirname(__file__) + '/../', timeout=4, check=True)
         except subprocess.TimeoutExpired:
@@ -43,7 +43,7 @@ class TestCanRunAtAll(unittest.TestCase):
                 proc.kill()
             except Exception:
                 pass
-        del os.environ['DEVISIONENGINE_NO_CHANNELS']
+        del os.environ['DECISIONENGINE_NO_CHANNELS']
 
     def test_can_run_de_client(self):
         ''' Am I syntax valid '''
@@ -56,7 +56,7 @@ class TestClientServerBehaviors(unittest.TestCase):
 
         os.environ['CONFIG_PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/../../tests/etc/decisionengine/'
 
-        os.environ['DEVISIONENGINE_NO_CHANNELS'] = "1"
+        os.environ['DECISIONENGINE_NO_CHANNELS'] = "1"
 
         self.server_proc = subprocess.Popen([DE_SERVER, '--port=' + self.port], cwd=os.path.dirname(__file__) + '/../', stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         time.sleep(2)
@@ -71,7 +71,7 @@ class TestClientServerBehaviors(unittest.TestCase):
             soc.connect(('localhost', int(self.port)))
 
     def tearDown(self):
-        del os.environ['DEVISIONENGINE_NO_CHANNELS']
+        del os.environ['DECISIONENGINE_NO_CHANNELS']
 
         try:
             subprocess.run([DE_CLIENT, '--port=' + self.port, '--stop'], cwd=os.path.dirname(__file__) + '/../', stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=4, check=False)
@@ -131,6 +131,14 @@ class TestClientServerBehaviors(unittest.TestCase):
         self.assertIn('reaper:', output.stdout, msg="Couldn't find reaper section")
         self.assertIn('state:', output.stdout, msg="Couldn't find reaper state")
         self.assertIn('State.STARTING', output.stdout, msg="reaper state incorrect")
+
+    def test_client_can_get_de_server_show_logger_level(self):
+        output = subprocess.run([DE_CLIENT, '--port=' + self.port, '--print-engine-loglevel'], cwd=os.path.dirname(__file__) + '/../', stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, check=True)
+        self.assertIn(output.stdout, ['NOTSET\n', 'DEBUG\n', 'INFO\n', 'WARNING\n', 'ERROR\n', 'CRITICAL\n'], msg="DE didn't give a valid log level")
+
+    def test_client_can_get_de_server_show_channel_logger_level(self):
+        output = subprocess.run([DE_CLIENT, '--port=' + self.port, '--get-channel-loglevel=UNITTEST'], cwd=os.path.dirname(__file__) + '/../', stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, check=True)
+        self.assertIn(output.stdout, ['NOTSET\n', 'DEBUG\n', 'INFO\n', 'WARNING\n', 'ERROR\n', 'CRITICAL\n'], msg="DE didn't get channel logger level")
 
 
 if __name__ == '__main__':

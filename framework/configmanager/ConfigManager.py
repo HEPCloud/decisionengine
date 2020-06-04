@@ -180,7 +180,8 @@ class ConfigManager(object):
                 logger_config = self.global_config['logger']
                 de_logger.set_logging(log_file_name=logger_config['log_file'],
                                       max_file_size=logger_config['max_file_size'],
-                                      max_backup_count=logger_config['max_backup_count'])
+                                      max_backup_count=logger_config['max_backup_count'],
+                                      log_level=logger_config['log_level'])
                 self.logger = de_logger.get_logger()
             except Exception as msg:
                 raise RuntimeError("Failed to create log: {}".format(msg))

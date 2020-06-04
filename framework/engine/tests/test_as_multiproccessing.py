@@ -23,7 +23,7 @@ class TestClientServerPython(unittest.TestCase):
 
         os.environ['CONFIG_PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/../../tests/etc/decisionengine/'
 
-        os.environ['DEVISIONENGINE_NO_CHANNELS'] = "1"
+        os.environ['DECISIONENGINE_NO_CHANNELS'] = "1"
 
         self.server_proc = multiprocessing.Process(target=de_server.main, args=([('--port', self.port)]), name='de-server')
         self.server_proc.start()
@@ -46,7 +46,7 @@ class TestClientServerPython(unittest.TestCase):
             raise RuntimeError('DE Server old child process not terminated')
 
     def tearDown(self):
-        del os.environ['DEVISIONENGINE_NO_CHANNELS']
+        del os.environ['DECISIONENGINE_NO_CHANNELS']
 
         try:
             de_client.main(args_to_parse=['--host=127.0.0.1', '--port=' + self.port, '--stop'])
