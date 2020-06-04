@@ -39,7 +39,7 @@ import decisionengine.framework.taskmanager.TaskManager as TaskManager
 CONFIG_UPDATE_PERIOD = 10  # seconds
 FORMATTER = logging.Formatter(
     "%(asctime)s - %(name)s - %(module)s - %(process)d - %(threadName)s - %(levelname)s - %(message)s")
-
+LOG_LEVELS_DICT = {0: 'NOTSET', 10: 'DEBUG', 20: 'INFO', 30: 'WARNING', 40: 'ERROR', 50: 'CRITICAL'}
 
 class Worker(multiprocessing.Process):
 
@@ -326,6 +326,27 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
     def reload_config(self):
         self.config_manager.reload()
 
+    def rpc_get_log_level(self):
+        engineloglevel = self.get_logger().getEffectiveLevel()
+        txt = "{}".format(LOG_LEVELS_DICT[engineloglevel])
+        return txt
+
+    def rpc_get_channel_log_level(self, channel):
+        worker = self.task_managers[channel]
+        loglevel = LOG_LEVELS_DICT[worker.task_manager.get_loglevel()]
+        txt = "{} ".format(loglevel)
+        return txt[:-1]
+
+    def rpc_set_channel_log_level(self, channel, log_level):
+        worker = self.task_managers[channel]
+        if worker.task_manager.get_loglevel() == TaskManager.LOG_LEVELS_DICT[log_level]:
+            txt = "Nothing to do. Current log level is : {} ".format(log_level)
+            return txt[:-1]
+        else:
+            worker.task_manager.set_loglevel(TaskManager.LOG_LEVELS_DICT[log_level])
+            txt = "Log level changed to : {} ".format(log_level)
+            return txt[:-1]
+
     def rpc_reaper_start(self, delay=0):
         '''
         Start the reaper process after 'delay' seconds.
@@ -377,7 +398,7 @@ def main(args_to_parse=None):
         conf_manager = Conf_Manager.ConfigManager()
         conf_manager.load()
         channels = conf_manager.get_channels()
-        require_loading_channels = os.getenv('DEVISIONENGINE_NO_CHANNELS')
+        require_loading_channels = os.getenv('DECISIONENGINE_NO_CHANNELS')
 
         if not require_loading_channels and not channels:
             raise RuntimeError("No channels configured")
