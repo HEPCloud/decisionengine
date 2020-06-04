@@ -109,6 +109,20 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;comma separated list of columns&quot;</span><span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--print-engine-loglevel&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print engine log level&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--get-channel-loglevel&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print channel log level&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--set-channel-loglevel&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&lt;channel name&gt; loglevel, (possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL)&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--reaper-start&quot;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;start the database cleanup process&quot;</span><span class="p">)</span>
@@ -154,6 +168,19 @@
 
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">start_channels</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">xmlrpcsocket</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">print_engine_loglevel</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">xmlrpcsocket</span><span class="o">.</span><span class="n">get_log_level</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">get_channel_loglevel</span><span class="p">:</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">get_channel_loglevel</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="s2">&quot;UNITTEST&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;NOTSET&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">xmlrpcsocket</span><span class="o">.</span><span class="n">get_channel_log_level</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">get_channel_loglevel</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">xmlrpcsocket</span><span class="o">.</span><span class="n">set_channel_log_level</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_config</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">xmlrpcsocket</span><span class="o">.</span><span class="n">show_config</span><span class="p">())</span>

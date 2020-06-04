@@ -112,6 +112,9 @@
 <span class="n">BOOT</span><span class="p">,</span> <span class="n">STEADY</span><span class="p">,</span> <span class="n">OFFLINE</span><span class="p">,</span> <span class="n">SHUTTINGDOWN</span><span class="p">,</span> <span class="n">SHUTDOWN</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
 <span class="n">STATE_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BOOT&#39;</span><span class="p">,</span> <span class="s1">&#39;STEADY&#39;</span><span class="p">,</span> <span class="s1">&#39;OFFLINE&#39;</span><span class="p">,</span> <span class="s1">&#39;SHUTTINGDOWN&#39;</span><span class="p">,</span> <span class="s1">&#39;SHUTDOWN&#39;</span><span class="p">]</span>
 
+<span class="c1"># log levels</span>
+<span class="n">NOTSET</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">CRITICAL</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+<span class="n">LOG_LEVELS_DICT</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;NOTSET&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;DEBUG&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;CRITICAL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}</span>
 
 <div class="viewcode-block" id="TaskManager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager">[docs]</a><span class="k">class</span> <span class="nc">TaskManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -138,6 +141,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">task_manager_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">Channel</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">BOOT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">LOG_LEVELS_DICT</span><span class="p">[</span><span class="s1">&#39;INFO&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">decision_cycle_active</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># stop running all loops when this is True</span>
@@ -149,7 +153,6 @@
 <span class="sd">        :type events_done: :obj:`list`</span>
 <span class="sd">        :arg events_done: list of events to wait for</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Waiting for all tasks to run&#39;</span><span class="p">)</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">isSet</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events_done</span><span class="p">]):</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -179,7 +182,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Task Manager main loop</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting Task Manager </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="n">done_events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_sources</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span><span class="p">)</span>
         <span class="c1"># This is a boot phase</span>
@@ -200,6 +203,7 @@
 
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">==</span> <span class="n">STEADY</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_any</span><span class="p">(</span><span class="n">done_events</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">decision_cycle</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
@@ -227,6 +231,14 @@
 <div class="viewcode-block" id="TaskManager.get_state"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="TaskManager.set_loglevel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.set_loglevel">[docs]</a>    <span class="k">def</span> <span class="nf">set_loglevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">log_level</span></div>
+
+<div class="viewcode-block" id="TaskManager.get_loglevel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_loglevel">[docs]</a>    <span class="k">def</span> <span class="nf">get_loglevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">value</span></div>
 
 <div class="viewcode-block" id="TaskManager.stop_task_manager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.stop_task_manager">[docs]</a>    <span class="k">def</span> <span class="nf">stop_task_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

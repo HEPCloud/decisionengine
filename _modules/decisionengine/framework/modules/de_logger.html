@@ -43,7 +43,7 @@
 <span class="n">ROTATE_AFTER</span> <span class="o">=</span> <span class="mi">6</span>
 
 
-<div class="viewcode-block" id="set_logging"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.de_logger.set_logging">[docs]</a><span class="k">def</span> <span class="nf">set_logging</span><span class="p">(</span><span class="n">log_file_name</span><span class="o">=</span><span class="n">LOG_FILE</span><span class="p">,</span> <span class="n">max_file_size</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">MB</span><span class="p">,</span> <span class="n">max_backup_count</span><span class="o">=</span><span class="n">ROTATE_AFTER</span><span class="p">):</span>
+<div class="viewcode-block" id="set_logging"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.de_logger.set_logging">[docs]</a><span class="k">def</span> <span class="nf">set_logging</span><span class="p">(</span><span class="n">log_file_name</span><span class="o">=</span><span class="n">LOG_FILE</span><span class="p">,</span> <span class="n">max_file_size</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">MB</span><span class="p">,</span> <span class="n">max_backup_count</span><span class="o">=</span><span class="n">ROTATE_AFTER</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    :type log_file_name: :obj:`str`</span>
@@ -57,6 +57,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">)):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">))</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;decision_engine&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">log_level</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
     <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
         <span class="k">return</span>
 
@@ -81,7 +82,6 @@
     <span class="n">console_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
     <span class="n">console_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_handler</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">logger</span></div>
 
@@ -117,7 +117,8 @@
     <span class="n">my_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;decision_engine&quot;</span><span class="p">)</span>
     <span class="n">set_logging</span><span class="p">(</span><span class="n">log_file_name</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/de_log/decision_engine_log0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)),</span>
                 <span class="n">max_file_size</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span>
-                <span class="n">max_backup_count</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+                <span class="n">max_backup_count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
     <span class="n">my_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;THIS IS INFO&quot;</span><span class="p">)</span>
     <span class="n">my_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;THIS IS ERROR&quot;</span><span class="p">)</span>
     <span class="n">my_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;THIS IS DEBUG&quot;</span><span class="p">)</span>
