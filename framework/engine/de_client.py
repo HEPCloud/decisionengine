@@ -140,14 +140,14 @@ def execute_command_from_args(argsparsed, xmlrpcsocket):
         return xmlrpcsocket.get_log_level()
 
     if argsparsed.get_channel_loglevel:
-        level=argsparsed.get_channel_loglevel
-        if level=="UNITTEST":
+        level = argsparsed.get_channel_loglevel
+        if level == "UNITTEST":
             return "NOTSET"
         else:
             return xmlrpcsocket.get_channel_log_level(argsparsed.get_channel_loglevel)
 
     if argsparsed.set_channel_loglevel:
-        return xmlrpcsocket.set_channel_log_level(argsparsed.set_channel_loglevel[0],argsparsed.set_channel_loglevel[1])
+        return xmlrpcsocket.set_channel_log_level(argsparsed.set_channel_loglevel[0], argsparsed.set_channel_loglevel[1])
 
     if argsparsed.show_config:
         return pprint.pformat(xmlrpcsocket.show_config())
