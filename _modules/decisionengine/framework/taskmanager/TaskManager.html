@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>decisionengine.framework.taskmanager.TaskManager &#8212; decisionengine 1.1.1 documentation</title>
     <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -38,7 +39,6 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">pandas</span>
 
@@ -521,59 +521,6 @@
                 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;run publisher </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
                                           <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">publishers</span><span class="p">[</span><span class="n">action</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">publishers</span><span class="p">[</span><span class="n">action</span><span class="p">]</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">data_block</span><span class="p">)</span></div></div>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">os</span>
-
-    <span class="n">config_manager</span> <span class="o">=</span> <span class="n">configmanager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="p">()</span>
-    <span class="n">config_manager</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-    <span class="n">global_config</span> <span class="o">=</span> <span class="n">config_manager</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GLOBAL CONF&#39;</span><span class="p">,</span> <span class="n">global_config</span><span class="p">)</span>
-
-    <span class="n">my_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;decision_engine&#39;</span><span class="p">)</span>
-    <span class="n">my_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting decision engine&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">channel_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">channel_conf</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">config_manager</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">channel_conf</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">channel_name</span> <span class="o">=</span> <span class="n">channel_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">code</span> <span class="o">=</span> <span class="s1">&#39;channels[channel_name]=&#39;</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
-            <span class="n">exec</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">channels</span> <span class="o">=</span> <span class="n">config_manager</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span>
-
-    <span class="n">ds</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
-    <span class="n">taskmanager_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-    <span class="n">generation_id</span> <span class="o">=</span> <span class="mi">1</span>
-
-    <span class="n">task_managers</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">data_space</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    create channels</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
-        <span class="n">task_managers</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span> <span class="o">=</span> <span class="n">TaskManager</span><span class="p">(</span>
-            <span class="n">ch</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">channels</span><span class="p">[</span><span class="n">ch</span><span class="p">],</span> <span class="n">global_config</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">task_managers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
-            <span class="n">target</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Process-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{})</span>
-        <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">active_children</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">break</span>
-            <span class="k">for</span> <span class="n">tm_name</span><span class="p">,</span> <span class="n">tm</span> <span class="ow">in</span> <span class="n">task_managers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;TM </span><span class="si">%s</span><span class="s1"> state </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span>
-                      <span class="p">(</span><span class="n">tm_name</span><span class="p">,</span> <span class="n">STATE_NAMES</span><span class="p">[</span><span class="n">tm</span><span class="o">.</span><span class="n">get_state</span><span class="p">()]))</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-    <span class="k">except</span> <span class="p">(</span><span class="ne">SystemExit</span><span class="p">,</span> <span class="ne">KeyboardInterrupt</span><span class="p">):</span>
-        <span class="k">pass</span>
 </pre></div>
 
           </div>
@@ -640,7 +587,7 @@
       &copy;2020, Fermi Research Alliance, LLC..
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
