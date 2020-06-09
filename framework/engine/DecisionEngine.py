@@ -399,7 +399,7 @@ def main(args_to_parse=None):
     try:
         conf_manager.load()
     except Exception as msg:
-        sys.stderr("Failed to load configuration {} {}".format(conf_manager.config_dir,
+        sys.stderr.write("Failed to load configuration {} {}".format(conf_manager.config_dir,
                                                                msg))
         sys.exit(1)
 
@@ -407,7 +407,7 @@ def main(args_to_parse=None):
     require_loading_channels = os.getenv('DECISIONENGINE_NO_CHANNELS')
 
     if not require_loading_channels and not channels:
-        sys.stderr("No channels configured. {}".format(conf_manager.config_dir))
+        sys.stderr.write("No channels configured. {}".format(conf_manager.config_dir))
         sys.exit(1)
 
     global_config = conf_manager.get_global_config()
