@@ -394,31 +394,35 @@ def main(args_to_parse=None):
     else:
         args = parser.parse_args()
 
+    conf_manager = Conf_Manager.ConfigManager()
+
     try:
-        conf_manager = Conf_Manager.ConfigManager()
         conf_manager.load()
-        channels = conf_manager.get_channels()
-        require_loading_channels = os.getenv('DECISIONENGINE_NO_CHANNELS')
+    except Exception as msg:
+        sys.stderr("Failed to load configuration {} {}".format(conf_manager.config_dir,
+                                                               msg))
+        sys.exit(1)
 
-        if not require_loading_channels and not channels:
-            raise RuntimeError("No channels configured")
+    channels = conf_manager.get_channels()
+    require_loading_channels = os.getenv('DECISIONENGINE_NO_CHANNELS')
 
-        global_config = conf_manager.get_global_config()
+    if not require_loading_channels and not channels:
+        sys.stderr("No channels configured. {}".format(conf_manager.config_dir))
+        sys.exit(1)
 
-        if args.port:
-            server_address = ("localhost", args.port)
-        else:
-            server_address = global_config.get("server_address", ("localhost", 8888))
+    global_config = conf_manager.get_global_config()
 
+    if args.port:
+        server_address = ("localhost", args.port)
+    else:
+        server_address = global_config.get("server_address", ("localhost", 8888))
+
+    try:
         server = DecisionEngine(conf_manager, server_address, RequestHandler)
-
         server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
-
         if not require_loading_channels:
             server.start_channels()
-
         server.serve_forever()
-
     except Exception as msg:
         sys.stderr.write("Server Address:{}\n".format(server_address))
         sys.stderr.write("Config Dir:{}\n".format(conf_manager.config_dir))
