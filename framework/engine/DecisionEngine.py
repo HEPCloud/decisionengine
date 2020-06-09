@@ -400,7 +400,7 @@ def main(args_to_parse=None):
         conf_manager.load()
     except Exception as msg:
         sys.stderr.write("Failed to load configuration {} {}".format(conf_manager.config_dir,
-                                                               msg))
+                                                                     msg))
         sys.exit(1)
 
     channels = conf_manager.get_channels()
