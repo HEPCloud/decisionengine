@@ -5,7 +5,6 @@ import threading
 import logging
 import time
 import sys
-import uuid
 import multiprocessing
 import pandas
 
