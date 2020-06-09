@@ -5,7 +5,6 @@ import threading
 import logging
 import time
 import sys
-import uuid
 import multiprocessing
 import pandas
 
@@ -488,56 +487,3 @@ class TaskManager(object):
                 logging.getLogger().debug('run publisher %s %s',
                                           self.channel.publishers[action].name, data_block)
                 self.channel.publishers[action].worker.publish(data_block)
-
-
-if __name__ == '__main__':
-    import os
-
-    config_manager = configmanager.ConfigManager()
-    config_manager.load()
-    global_config = config_manager.get_global_config()
-    print('GLOBAL CONF', global_config)
-
-    my_logger = logging.getLogger('decision_engine')
-    my_logger.info('Starting decision engine')
-
-    if len(sys.argv) > 1:
-        channel_name = sys.argv[1]
-        channel_conf = os.path.join(
-            config_manager.channel_config_dir, channel_name)
-        with open(os.path.abspath(channel_conf), 'r') as f:
-            channels = {}
-            channel_name = channel_name.split('.')[0]
-            code = 'channels[channel_name]=' + ''.join(f.readlines())
-            exec(code)
-    else:
-        channels = config_manager.get_channels()
-
-    ds = dataspace.DataSpace(global_config)
-    taskmanager_id = str(uuid.uuid4()).upper()
-    generation_id = 1
-
-    task_managers = {}
-    data_space = {}
-    """
-    create channels
-    """
-    for ch in channels:
-        task_managers[ch] = TaskManager(
-            ch, taskmanager_id, generation_id, channels[ch], global_config)
-
-    for key, value in task_managers.items():
-        p = multiprocessing.Process(
-            target=value.run, args=(), name='Process-%s' % (key,), kwargs={})
-        p.start()
-
-    try:
-        while True:
-            if len(multiprocessing.active_children()) < 1:
-                break
-            for tm_name, tm in task_managers.items():
-                print('TM %s state %s' %
-                      (tm_name, STATE_NAMES[tm.get_state()]))
-            time.sleep(10)
-    except (SystemExit, KeyboardInterrupt):
-        pass
