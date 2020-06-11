@@ -428,31 +428,35 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
+    <span class="n">conf_manager</span> <span class="o">=</span> <span class="n">Conf_Manager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="p">()</span>
+
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">conf_manager</span> <span class="o">=</span> <span class="n">Conf_Manager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="p">()</span>
         <span class="n">conf_manager</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-        <span class="n">channels</span> <span class="o">=</span> <span class="n">conf_manager</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span>
-        <span class="n">require_loading_channels</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DECISIONENGINE_NO_CHANNELS&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Failed to load configuration </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">conf_manager</span><span class="o">.</span><span class="n">config_dir</span><span class="p">,</span>
+                                                                     <span class="n">msg</span><span class="p">))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">require_loading_channels</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">channels</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No channels configured&quot;</span><span class="p">)</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="n">conf_manager</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span>
+    <span class="n">require_loading_channels</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DECISIONENGINE_NO_CHANNELS&#39;</span><span class="p">)</span>
 
-        <span class="n">global_config</span> <span class="o">=</span> <span class="n">conf_manager</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">require_loading_channels</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">channels</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;No channels configured. </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">conf_manager</span><span class="o">.</span><span class="n">config_dir</span><span class="p">))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
-            <span class="n">server_address</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">server_address</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;server_address&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">8888</span><span class="p">))</span>
+    <span class="n">global_config</span> <span class="o">=</span> <span class="n">conf_manager</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
 
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
+        <span class="n">server_address</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">server_address</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;server_address&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">8888</span><span class="p">))</span>
+
+    <span class="k">try</span><span class="p">:</span>
         <span class="n">server</span> <span class="o">=</span> <span class="n">DecisionEngine</span><span class="p">(</span><span class="n">conf_manager</span><span class="p">,</span> <span class="n">server_address</span><span class="p">,</span> <span class="n">RequestHandler</span><span class="p">)</span>
-
         <span class="n">server</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reaper_start_delay_seconds&#39;</span><span class="p">,</span> <span class="mi">1818</span><span class="p">))</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="n">require_loading_channels</span><span class="p">:</span>
             <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
-
         <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
-
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Server Address:</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">server_address</span><span class="p">))</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Config Dir:</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">conf_manager</span><span class="o">.</span><span class="n">config_dir</span><span class="p">))</span>
