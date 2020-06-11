@@ -30,8 +30,7 @@ setup_python_venv() {
 
     # Install dependancies first so we don't get uncompatible ones
     # Following RPMs need to be installed on the machine:
-    #pip_packages="astroid pylint pep8 unittest2 coverage sphinx DBUtils pytest"
-    pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx tabulate DBUtils psycopg2-binary pytest mock pandas ipython pytest-postgresql"
+    pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx tabulate DBUtils psycopg2-binary pytest mock pandas ipython pytest-postgresql jsonnet"
     for package in $pip_packages; do
         echo "Installing $package ..."
         status="DONE"
