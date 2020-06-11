@@ -12,6 +12,7 @@ Release Notes
    :maxdepth: 1
 
    release_notes/release_notes_1.1
+   release_notes/release_notes_1.2
 
 Developer Documentation
 =======================
