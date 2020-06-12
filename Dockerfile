@@ -1,7 +1,7 @@
 FROM sl:7
 RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm yum-plugin-priorities \
     && yum -y clean all
-RUN yum -y install https://repo.opensciencegrid.org/osg/3.4/osg-3.4-el7-release-latest.rpm \
+RUN yum -y install https://repo.opensciencegrid.org/osg/3.5/osg-3.5-el7-release-latest.rpm \
     && yum -y clean all
 RUN yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm \
     && yum -y clean all
@@ -26,7 +26,7 @@ RUN yum -y install condor-python \
   rpm-devel \
   mock \
   python-boto3 \
-  python-psycopg2 \ 
+  python-psycopg2 \
   python-setuptools \
   && easy_install DBUtils \
   &&  yum -y install cmake3 python3-devel make \
