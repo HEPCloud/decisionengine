@@ -21,7 +21,7 @@ yum -y install \
     yum-plugin-priorities \
   && yum -y clean all
 yum -y install \
-    https://repo.opensciencegrid.org/osg/3.4/osg-3.4-el7-release-latest.rpm \
+   https://repo.opensciencegrid.org/osg/3.5/osg-3.5-el7-release-latest.rpm \
   && yum -y clean all
 yum -y install \
     https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm \
