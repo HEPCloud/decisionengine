@@ -16,40 +16,62 @@ At this time we recommend Boost version 1.58 or newer.  You may need to complile
 * Install dependencies. Following is more than required and needs to be trimmed
 
 <pre>
-yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install yum-plugin-priorities
-yum clean all
-yum install https://repo.opensciencegrid.org/osg/3.4/osg-3.4-el7-release-latest.rpm
-yum clean all
-yum install condor-python
-yum install python-pandas
-yum install gcc gcc-devel  (gcc-devel doesn't exist)
-yum install gcc* ( not done--what you really need is gcc, gcc-c++, libgcc)
-yum install python-pip
-yum install git*
-yum install python-unittest2
-yum install python-behave
-yum install tmux
-yum install cmake3
-yum install boost
-yum install boost-devel
-yum install libevent-devel
-yum install ncurses-devel
-yum install python3-devel
-yum install python36-virtualenv
-yum install python-pytest  ( under SL7 this is python2-pytest)
-yum install pytest
-yum install graphviz.x86_64
-yum install rpm-build
-yum install rpm-build-libs
-yum install rpm-devel
-yum install mock
-yum install python2-boto3
-yum install python-psycopg2
-yum install python-setuptools
-yum install puppet-six(? under SL7 this is not found)
-
-easy_install DBUtils
+yum -y install \
+    https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+    yum-plugin-priorities \
+  && yum -y clean all
+yum -y install \
+   https://repo.opensciencegrid.org/osg/3.5/osg-3.5-el7-release-latest.rpm \
+  && yum -y clean all
+yum -y install \
+    https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm \
+  && yum -y clean all
+yum -y install \
+    condor-python \
+    python-pandas \
+    gcc gcc-c++ libgcc \
+    python-pip \
+    git \
+    python-unittest2 \
+    python-behave \
+    tmux \
+    cmake \
+    boost \
+    boost-devel \
+    libevent-devel \
+    ncurses-devel \
+    python-pytest \
+    pytest \
+    graphviz.x86_64 \
+    rpm-build \
+    rpm-build-libs \
+    rpm-devel \
+    mock \
+    python-boto3 \
+    python-psycopg2 \
+    python-setuptools \
+  && easy_install DBUtils
+yum -y install \
+    cmake3 python3-devel make \
+    boost-python36-devel \
+    python3-devel \
+    boost-regex \
+    boost-system \
+    boost-python-devel \
+    python-devel \
+    redhat-lsb-core \
+    python36-virtualenv \
+    python-virtualenv \
+    postgresql11-server \
+    postgresql11-devel \
+    pytest \
+    python36-pytest \
+    python36-tabulate \
+    python2-tabulate \
+    python36-pip \
+  && pip install --upgrade pip \
+  && pip3.6 install argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx DBUtils pytest mock jsonnet \
+  && yum -y clean all
 </pre>
 
 * Checkout the decision engine framework code
