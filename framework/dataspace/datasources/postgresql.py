@@ -32,8 +32,14 @@ def generate_insert_query(table_name, keys):
 
 
 SELECT_QUERY = """
-SELECT tm.taskmanager_id, foo.* FROM {} as foo, taskmanager tm WHERE tm.sequence_id = foo.taskmanager_id
+SELECT tm.taskmanager_id, foo.* FROM {} as foo, taskmanager tm
+WHERE tm.sequence_id = foo.taskmanager_id
 and foo.taskmanager_id=%s AND foo.generation_id=%s AND key=%s
+"""
+
+
+SELECT_QUERY = """
+SELECT * FROM {} WHERE taskmanager_id=%s AND generation_id=%s AND key=%s
 """
 
 SELECT_LAST_GENERATION_ID_BY_NAME = """
@@ -137,16 +143,20 @@ class Postgresql(ds.DataSource):
                                taskmanager_id=None):
         if taskmanager_id:
             try:
-                return self._select(SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID,
-                                    (taskmanager_name, taskmanager_id))[0][0]
-            except IndexError:
+                generation_id = self._select(SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID,
+                                             (taskmanager_name, taskmanager_id))[0][0]
+                assert generation_id
+                return generation_id
+            except AssertionError:
                 raise KeyError("Last generation id not found for taskmanager={} taskmanager_id={}".
                                format(taskmanager_name, taskmanager_id))
         else:
             try:
-                return self._select(SELECT_LAST_GENERATION_ID_BY_NAME,
-                                    (taskmanager_name, ))[0][0]
-            except IndexError:
+                generation_id = self._select(SELECT_LAST_GENERATION_ID_BY_NAME,
+                                             (taskmanager_name, ))[0][0]
+                assert generation_id
+                return generation_id
+            except AssertionError:
                 raise KeyError("Last generation id not found for taskmanager={}".
                                format(taskmanager_name, ))
 
