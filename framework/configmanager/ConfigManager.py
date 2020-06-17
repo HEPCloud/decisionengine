@@ -15,11 +15,11 @@ CONFIG_FILE_NAME = "decision_engine.conf"
 
 class ConfigManager():
 
-    def __init__(self):
+    def __init__(self, config_file_name=CONFIG_FILE_NAME):
         self.config_dir = os.getenv("CONFIG_PATH", "/etc/decisionengine")
         if not os.path.isdir(self.config_dir):
             raise Exception("Config dir '%s' not found" % self.config_dir)
-        self.config_file = os.path.join(self.config_dir, CONFIG_FILE_NAME)
+        self.config_file = os.path.join(self.config_dir, config_file_name)
         if not os.path.isfile(self.config_file):
             raise Exception("Config file '%s' not found" % self.config_file)
         self.channel_config_dir = os.path.join(self.config_dir, "config.d")
@@ -167,7 +167,12 @@ class ConfigManager():
         except Exception as msg:
             raise RuntimeError(f"Failed to read configuration file {self.config_file}\n{msg}")
 
+        if not isinstance(self.global_config, dict):
+            raise RuntimeError("The configuration file must be a Python dictionary.")
+
         if not self.logger:
+            if 'logger' not in self.global_config:
+                raise RuntimeError("No logger configuration has been specified.")
             try:
                 logger_config = self.global_config['logger']
                 de_logger.set_logging(log_file_name=logger_config['log_file'],
