@@ -166,7 +166,7 @@
             <span class="s1">&#39;taskmanager_id&#39;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
             <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span>
             <span class="s1">&#39;generation_id&#39;</span><span class="p">:</span> <span class="n">generation_id</span><span class="p">,</span>
-            <span class="s1">&#39;generation_time&#39;</span><span class="p">:</span> <span class="n">generation_time</span><span class="p">,</span>
+            <span class="s1">&#39;generation_time&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">generation_time</span><span class="p">),</span>
             <span class="s1">&#39;missed_update_count&#39;</span><span class="p">:</span> <span class="n">missed_update_count</span>
         <span class="p">}</span>
 
@@ -217,9 +217,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;taskmanager_id&#39;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
-            <span class="s1">&#39;create_time&#39;</span><span class="p">:</span> <span class="n">create_time</span><span class="p">,</span>
-            <span class="s1">&#39;expiration_time&#39;</span><span class="p">:</span> <span class="n">expiration_time</span><span class="p">,</span>
-            <span class="s1">&#39;scheduled_create_time&#39;</span><span class="p">:</span> <span class="n">scheduled_create_time</span><span class="p">,</span>
+            <span class="s1">&#39;create_time&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">create_time</span><span class="p">),</span>
+            <span class="s1">&#39;expiration_time&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">expiration_time</span><span class="p">),</span>
+            <span class="s1">&#39;scheduled_create_time&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">scheduled_create_time</span><span class="p">),</span>
             <span class="s1">&#39;creator&#39;</span><span class="p">:</span> <span class="n">creator</span><span class="p">,</span>
             <span class="s1">&#39;schema_id&#39;</span><span class="p">:</span> <span class="n">schema_id</span>
         <span class="p">}</span>
@@ -415,11 +415,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">header_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
                                                <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">header_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">create_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
-                        <span class="n">expiration_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
-                        <span class="n">scheduled_create_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
-                        <span class="n">creator</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
-                        <span class="n">schema_id</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">header_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">create_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+                        <span class="n">expiration_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                        <span class="n">scheduled_create_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
+                        <span class="n">creator</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                        <span class="n">schema_id</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">8</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">header</span></div>
 
 <div class="viewcode-block" id="DataBlock.get_metadata"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.get_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -431,10 +431,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">metadata_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
                                                    <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-        <span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
-                            <span class="n">generation_id</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                            <span class="n">generation_time</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
-                            <span class="n">missed_update_count</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+                            <span class="n">generation_id</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                            <span class="n">generation_time</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                            <span class="n">missed_update_count</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">metadata</span></div>
 
 <div class="viewcode-block" id="DataBlock.duplicate"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
