@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>decisionengine.framework.configmanager.tests.test_configmanager &#8212; decisionengine 1.1.1 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for decisionengine.framework.configmanager.tests.test_configmanager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.configmanager</span> <span class="k">import</span> <span class="n">ConfigManager</span>
+
+<div class="viewcode-block" id="env_setup"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.env_setup">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">autouse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">env_setup</span><span class="p">(</span><span class="n">monkeypatch</span><span class="p">):</span>
+    <span class="n">this_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setenv</span><span class="p">(</span><span class="s1">&#39;CONFIG_PATH&#39;</span><span class="p">,</span>
+                       <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">this_dir</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">manager</span><span class="o">.</span><span class="n">load</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="test_empty_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_empty_config">[docs]</a><span class="k">def</span> <span class="nf">test_empty_config</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">load</span><span class="p">(</span><span class="s1">&#39;empty.conf&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;invalid syntax&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_wrong_type"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_wrong_type">[docs]</a><span class="k">def</span> <span class="nf">test_wrong_type</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">load</span><span class="p">(</span><span class="s1">&#39;wrong_type.conf&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;The configuration file must be a Python dictionary&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_empty_dict"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_empty_dict">[docs]</a><span class="k">def</span> <span class="nf">test_empty_dict</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">load</span><span class="p">(</span><span class="s1">&#39;empty_dict.conf&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;No logger configuration has been specified&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_empty_dict_with_leading_comment"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_empty_dict_with_leading_comment">[docs]</a><span class="k">def</span> <span class="nf">test_empty_dict_with_leading_comment</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">load</span><span class="p">(</span><span class="s1">&#39;empty_dict_with_leading_comment.conf&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;invalid syntax&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../../index.html">decisionengine</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.2.html">Release 1.2.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../unittest.html">Decisionengine framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Fermi Research Alliance, LLC..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
