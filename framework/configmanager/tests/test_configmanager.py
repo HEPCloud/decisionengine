@@ -28,7 +28,7 @@ def test_empty_dict():
         load('empty_dict.conf')
     assert e.match('No logger configuration has been specified')
 
-def test_empty_dict_with_comment():
+def test_empty_dict_with_leading_comment():
     with pytest.raises(RuntimeError) as e:
-        load('empty_dict_with_comment.conf')
+        load('empty_dict_with_leading_comment.conf')
     assert e.match('invalid syntax')
