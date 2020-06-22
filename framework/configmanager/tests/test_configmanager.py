@@ -16,7 +16,7 @@ def load(filename):
 def test_empty_config():
     with pytest.raises(RuntimeError) as e:
         load('empty.conf')
-    assert e.match('invalid syntax')
+    assert e.match('Empty configuration file .*/empty\\.conf')
 
 def test_wrong_type():
     with pytest.raises(RuntimeError) as e:
@@ -31,4 +31,4 @@ def test_empty_dict():
 def test_empty_dict_with_leading_comment():
     with pytest.raises(RuntimeError) as e:
         load('empty_dict_with_leading_comment.conf')
-    assert e.match('invalid syntax')
+    assert e.match('No logger configuration has been specified')
