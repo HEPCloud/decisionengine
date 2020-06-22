@@ -21,8 +21,9 @@ def set_logging(log_file_name=LOG_FILE, max_file_size=200 * MB, max_backup_count
     :arg  max_backup_count: start rotaion after this number is reached
     :rtype: :class:`logging.Logger` - rotating file logger
     """
-    if not os.path.exists(os.path.dirname(log_file_name)):
-        os.makedirs(os.path.dirname(log_file_name))
+    dirname = os.path.dirname(log_file_name)
+    if dirname and not os.path.exists(dirname):
+        os.makedirs(dirname)
     logger = logging.getLogger("decision_engine")
     logger.setLevel(getattr(logging, log_level.upper()))
     if logger.handlers:
