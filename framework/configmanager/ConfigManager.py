@@ -12,6 +12,24 @@ MANDATORY_MODULE_KEYS = {"module", "name", "parameters"}
 
 CONFIG_FILE_NAME = "decision_engine.conf"
 
+def _config_from_file(config_file):
+    if os.path.getsize(config_file) == 0:
+        raise RuntimeError(f"Empty configuration file {config_file}")
+
+    global_config = None
+    try:
+        with open(config_file, "r") as f:
+            try:
+                global_config = eval(f.read())
+            except Exception as msg:
+                raise RuntimeError(f"Configuration file {config_file} contains errors:\n{msg}")
+    except Exception as msg:
+        raise RuntimeError(f"Failed to read configuration file {config_file}\n{msg}")
+
+    if not isinstance(global_config, dict):
+        raise RuntimeError("The configuration file must be a Python dictionary.")
+    return global_config
+
 
 class ConfigManager():
 
@@ -153,22 +171,7 @@ class ConfigManager():
 
     def load(self):
         self.last_update_time = os.stat(self.config_file).st_mtime
-        code = None
-        try:
-            with open(self.config_file, "r") as f:
-                code = "self.global_config=" + "".join(f.readlines())
-            if code:
-                try:
-                    exec(code)
-                except Exception as msg:
-                    raise RuntimeError(f"Configuration file {self.config_file} contains errors:\n{msg}")
-            else:
-                raise RuntimeError(f"Empty configuration file {self.config_file}")
-        except Exception as msg:
-            raise RuntimeError(f"Failed to read configuration file {self.config_file}\n{msg}")
-
-        if not isinstance(self.global_config, dict):
-            raise RuntimeError("The configuration file must be a Python dictionary.")
+        self.global_config = _config_from_file(self.config_file)
 
         if not self.logger:
             if 'logger' not in self.global_config:
