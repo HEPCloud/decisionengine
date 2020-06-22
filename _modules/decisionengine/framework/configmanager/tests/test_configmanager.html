@@ -50,7 +50,7 @@
 <div class="viewcode-block" id="test_empty_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_empty_config">[docs]</a><span class="k">def</span> <span class="nf">test_empty_config</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">load</span><span class="p">(</span><span class="s1">&#39;empty.conf&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;invalid syntax&#39;</span><span class="p">)</span></div>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;Empty configuration file .*/empty</span><span class="se">\\</span><span class="s1">.conf&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="test_wrong_type"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_wrong_type">[docs]</a><span class="k">def</span> <span class="nf">test_wrong_type</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -65,7 +65,7 @@
 <div class="viewcode-block" id="test_empty_dict_with_leading_comment"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_empty_dict_with_leading_comment">[docs]</a><span class="k">def</span> <span class="nf">test_empty_dict_with_leading_comment</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">load</span><span class="p">(</span><span class="s1">&#39;empty_dict_with_leading_comment.conf&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;invalid syntax&#39;</span><span class="p">)</span></div>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;No logger configuration has been specified&#39;</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
