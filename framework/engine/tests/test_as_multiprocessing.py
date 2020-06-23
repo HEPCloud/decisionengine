@@ -16,6 +16,11 @@ def get_random_port():
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         return s.getsockname()[1]
 
+
+# Insulate from parent environments
+multiprocessing.set_start_method('spawn')
+
+
 class TestClientServerPython(unittest.TestCase):
 
     def setUp(self):
