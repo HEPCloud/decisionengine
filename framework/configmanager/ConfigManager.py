@@ -1,6 +1,9 @@
 import copy
 import importlib
 import os
+import _jsonnet
+import json
+import sys
 
 import decisionengine.framework.modules.de_logger as de_logger
 import decisionengine.framework.util.tsort as tsort
@@ -12,25 +15,49 @@ MANDATORY_MODULE_KEYS = {"module", "name", "parameters"}
 
 CONFIG_FILE_NAME = "decision_engine.conf"
 
-def _verify_not_empty(config_file):
-    if os.path.getsize(config_file) == 0:
-        raise RuntimeError(f"Empty configuration file {config_file}")
-
-def _config_from_file(config_file):
-    _verify_not_empty(config_file)
+def _attempt_conversion_to_json(config_file):
     global_config = None
     try:
         with open(config_file) as f:
             try:
                 global_config = eval(f.read())
             except Exception as msg:
-                raise RuntimeError(f"Configuration file {config_file} contains errors:\n{msg}")
+                raise RuntimeError(f"Configuration file {config_file} contains errors:\n{msg}\n"
+                                   "The supplied configuration must be a valid Jsonnet/JSON document.")
     except Exception as msg:
         raise RuntimeError(f"Failed to read configuration file {config_file}\n{msg}")
 
     if not isinstance(global_config, dict):
-        raise RuntimeError("The configuration file must be a Python dictionary.")
-    return global_config
+        raise RuntimeError("The supplied configuration must be a valid Jsonnet/JSON document.")
+
+    json_config = None
+    try:
+        json_config = json.dumps(global_config)
+    except Exception:
+        raise RuntimeError("The supplied configuration is not convertible to a Jsonnet/JSON document.")
+
+    print(f"The supplied configuration file {config_file} is not a valid Jsonnet/JSON document.\n"
+          "It has been converted to a valid JSON construct, but it should be fixed.",
+          file=sys.stderr)
+    return json_config
+
+def _verify_not_empty(config_file):
+    if os.path.getsize(config_file) == 0:
+        raise RuntimeError(f"Empty configuration file {config_file}")
+
+def _config_from_file(config_file):
+    _verify_not_empty(config_file)
+    config_str = None
+    try:
+        config_str = _jsonnet.evaluate_file(config_file)
+        basename, ext = os.path.splitext(config_file)
+        if ext != 'jsonnet':
+            print(f"Please rename '{config_file}' to '{basename}.jsonnet'.",
+                  file=sys.stderr)
+    except Exception:
+        config_str = _attempt_conversion_to_json(config_file)
+
+    return json.loads(config_str)
 
 def _make_logger(global_config):
     if 'logger' not in global_config:
@@ -199,20 +226,14 @@ class ConfigManager():
     def _load_channels(self):
         for entry in os.scandir(self.channel_config_dir):
             name, path = entry.name, entry.path
-            if not name.endswith(".conf"):
+            if not name.endswith((".conf", ".jsonnet")):
                 continue
-            _verify_not_empty(path)
             try:
-                with open(path) as f:
-                    try:
-                        self.channels[name] = eval(f.read())
-                    except Exception as msg:
-                        self.logger.error(f"Channel configuration file {path} "
-                                          f"contains error\n-> {msg}\nSKIPPING channel")
-                        continue
+                self.channels[name] = _config_from_file(path)
             except Exception as msg:
                 self.logger.error(f"Failed to open channel configuration file {path} "
                                   f"contains error\n-> {msg}\nSKIPPING channel")
+                continue
 
             # Verify channel configuration contains necessary keys.
             # If keys are missing, the channel is removed and an error
