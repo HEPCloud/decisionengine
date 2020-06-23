@@ -12,14 +12,32 @@ MANDATORY_MODULE_KEYS = {"module", "name", "parameters"}
 
 CONFIG_FILE_NAME = "decision_engine.conf"
 
+def _config_from_file(config_file):
+    if os.path.getsize(config_file) == 0:
+        raise RuntimeError(f"Empty configuration file {config_file}")
 
-class ConfigManager(object):
+    global_config = None
+    try:
+        with open(config_file, "r") as f:
+            try:
+                global_config = eval(f.read())
+            except Exception as msg:
+                raise RuntimeError(f"Configuration file {config_file} contains errors:\n{msg}")
+    except Exception as msg:
+        raise RuntimeError(f"Failed to read configuration file {config_file}\n{msg}")
 
-    def __init__(self):
+    if not isinstance(global_config, dict):
+        raise RuntimeError("The configuration file must be a Python dictionary.")
+    return global_config
+
+
+class ConfigManager():
+
+    def __init__(self, config_file_name=CONFIG_FILE_NAME):
         self.config_dir = os.getenv("CONFIG_PATH", "/etc/decisionengine")
         if not os.path.isdir(self.config_dir):
             raise Exception("Config dir '%s' not found" % self.config_dir)
-        self.config_file = os.path.join(self.config_dir, CONFIG_FILE_NAME)
+        self.config_file = os.path.join(self.config_dir, config_file_name)
         if not os.path.isfile(self.config_file):
             raise Exception("Config file '%s' not found" % self.config_file)
         self.channel_config_dir = os.path.join(self.config_dir, "config.d")
@@ -37,20 +55,18 @@ class ConfigManager(object):
         channel_keys = set(channel_conf_dict.keys())
         diff = MANDATORY_CHANNEL_KEYS - channel_keys
         if diff:
-            raise RuntimeError("channel is missing one or more mandatory keys {} ".
-                               format(list(diff)))
+            raise RuntimeError(f"channel is missing one or more mandatory keys {list(diff)} ")
         for name in MANDATORY_CHANNEL_KEYS:
             conf = channel_conf_dict[name]
             for module_name, module_conf in conf.items():
                 try:
                     module_keys = set(module_conf.keys())
                 except Exception as msg:
-                    raise RuntimeError("{} module {} is not a dictionary, {}".
-                                       format(name, module_name, msg))
+                    raise RuntimeError(f"{name} module {module_name} is not a dictionary, {msg}")
                 diff = MANDATORY_MODULE_KEYS - module_keys
                 if diff:
-                    raise RuntimeError("{} module {} is missing one or more mandatory keys {} ".
-                                       format(name, module_name, str(list(diff))))
+                    missing_keys = str(list(diff))
+                    raise RuntimeError(f"{name} module {module_name} is missing one or more mandatory keys {missing_keys} ")
 
     def validate_channel(self, channel):
         """
@@ -69,8 +85,7 @@ class ConfigManager(object):
                 produces = getattr(my_module, 'PRODUCES')
                 all_produces |= set(produces)
             except AttributeError:
-                raise RuntimeError("source module {} does not have required PRODUCES list".
-                                   format(sname))
+                raise RuntimeError(f"source module {sname} does not have required PRODUCES list")
 
         all_consumes = set()
 
@@ -90,12 +105,11 @@ class ConfigManager(object):
                 transform_map[tname] = {'consumes': consumes,
                                         'produces': produces}
             except AttributeError as msg:
-                raise RuntimeError("transform module {} does not have required lists {}".
-                                   format(tname, msg))
+                raise RuntimeError(f"transform module {tname} does not have required lists {msg}")
 
         if not all_consumes.issubset(all_produces):
-            raise RuntimeError("consumes are not subset of produce, extra keys {}".
-                               format(list(all_consumes - all_produces)))
+            extra_keys = list(all_consumes - all_produces)
+            raise RuntimeError(f"consumes are not subset of produce, extra keys {extra_keys}")
 
         """
         graph contains pairs of modules and lists of modules that depends on
@@ -130,8 +144,7 @@ class ConfigManager(object):
         sorted_modules, cyclic_modules = tsort.tsort(graph)
 
         if cyclic_modules:
-            raise RuntimeError("cyclic dependency detected for modules {}".
-                               format(list(cyclic_modules)))
+            raise RuntimeError(f"cyclic dependency detected for modules {list(cyclic_modules)}")
 
     def get_produces(self, channel_config):
         produces = {}
@@ -158,24 +171,11 @@ class ConfigManager(object):
 
     def load(self):
         self.last_update_time = os.stat(self.config_file).st_mtime
-        code = None
-        try:
-            with open(self.config_file, "r") as f:
-                code = "self.global_config=" + "".join(f.readlines())
-            if code:
-                try:
-                    exec(code)
-                except Exception as msg:
-                    raise RuntimeError("Configuration file {} contains errors: {}".
-                                       format(self.config_file, msg))
-            else:
-                raise RuntimeError(
-                    "Empty configuration file {}".format(self.config_file))
-        except Exception as msg:
-            raise RuntimeError("Failed to read configuration file {} {}".
-                               format(self.config_file, msg))
+        self.global_config = _config_from_file(self.config_file)
 
         if not self.logger:
+            if 'logger' not in self.global_config:
+                raise RuntimeError("No logger configuration has been specified.")
             try:
                 logger_config = self.global_config['logger']
                 de_logger.set_logging(log_file_name=logger_config['log_file'],
@@ -184,7 +184,7 @@ class ConfigManager(object):
                                       log_level=logger_config.get('log_level', 'WARNING'))
                 self.logger = de_logger.get_logger()
             except Exception as msg:
-                raise RuntimeError("Failed to create log: {}".format(msg))
+                raise RuntimeError(f"Failed to create log: {msg}")
 
         """
         load channels
@@ -201,14 +201,12 @@ class ConfigManager(object):
                     try:
                         exec(code)
                     except Exception as msg:
-                        self.logger.error("Channel configuration file {} \
-                                           contains error {}, SKIPPING".
-                                          format(channel_conf, msg))
+                        self.logger.error(f"Channel configuration file {channel_conf} \
+                                            contains error {msg}, SKIPPING")
                         continue
             except Exception as msg:
-                self.logger.error("Failed to open channel configuration file {} \
-                                  contains error {}, SKIPPING".
-                                  format(channel_conf, msg))
+                self.logger.error(f"Failed to open channel configuration file {channel_conf} \
+                                  contains error {msg}, SKIPPING")
 
             """
             check that channel configuration contains necessary keys
@@ -217,8 +215,7 @@ class ConfigManager(object):
             try:
                 self.validate_channel(self.channels[name])
             except Exception as msg:
-                self.logger.error(
-                    "{} {}, REMOVING the channel".format(name, msg))
+                self.logger.error(f"{name} {msg}, REMOVING the channel")
                 del self.channels[name]
                 continue
 
