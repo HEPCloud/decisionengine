@@ -1,5 +1,4 @@
 import os
-import psycopg2
 import pytest
 import pytest_postgresql
 
@@ -7,7 +6,7 @@ from decisionengine.framework.dataspace.datablock import Header, Metadata
 from decisionengine.framework.dataspace.datasources.postgresql import Postgresql, generate_insert_query
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def datasource(postgresql, data):
     with postgresql.cursor() as cursor:
         cwd = os.path.split(os.path.abspath(__file__))[0]
