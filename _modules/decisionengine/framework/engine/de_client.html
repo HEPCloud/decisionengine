@@ -83,6 +83,15 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print configuration&quot;</span><span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--show-channel-config&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print channel configuration&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--show-de-config&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print Decision Engine configuration&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--reload-config&quot;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;reload configuration&quot;</span><span class="p">)</span>
@@ -184,7 +193,14 @@
         <span class="k">return</span> <span class="n">xmlrpcsocket</span><span class="o">.</span><span class="n">set_channel_log_level</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_config</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">xmlrpcsocket</span><span class="o">.</span><span class="n">show_config</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">xmlrpcsocket</span><span class="o">.</span><span class="n">show_config</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_channel_config</span><span class="p">:</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_channel_config</span>
+        <span class="k">return</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">xmlrpcsocket</span><span class="o">.</span><span class="n">show_config</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_de_config</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">xmlrpcsocket</span><span class="o">.</span><span class="n">show_de_config</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">reload_config</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">xmlrpcsocket</span><span class="o">.</span><span class="n">reload_config</span><span class="p">()</span>
