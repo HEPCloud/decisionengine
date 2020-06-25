@@ -46,13 +46,15 @@
 
 <span class="n">CONFIG_FILE_NAME</span> <span class="o">=</span> <span class="s2">&quot;decision_engine.conf&quot;</span>
 
-<div class="viewcode-block" id="_config_from_file"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager._config_from_file">[docs]</a><span class="k">def</span> <span class="nf">_config_from_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
+<div class="viewcode-block" id="_verify_not_empty"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager._verify_not_empty">[docs]</a><span class="k">def</span> <span class="nf">_verify_not_empty</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Empty configuration file </span><span class="si">{config_file}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Empty configuration file </span><span class="si">{config_file}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="_config_from_file"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager._config_from_file">[docs]</a><span class="k">def</span> <span class="nf">_config_from_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
+    <span class="n">_verify_not_empty</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
     <span class="n">global_config</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">global_config</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
@@ -64,121 +66,127 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The configuration file must be a Python dictionary.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">global_config</span></div>
 
+<div class="viewcode-block" id="_make_logger"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager._make_logger">[docs]</a><span class="k">def</span> <span class="nf">_make_logger</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;logger&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">global_config</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No logger configuration has been specified.&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger_config</span> <span class="o">=</span> <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">]</span>
+        <span class="n">de_logger</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span><span class="n">log_file_name</span><span class="o">=</span><span class="n">logger_config</span><span class="p">[</span><span class="s1">&#39;log_file&#39;</span><span class="p">],</span>
+                              <span class="n">max_file_size</span><span class="o">=</span><span class="n">logger_config</span><span class="p">[</span><span class="s1">&#39;max_file_size&#39;</span><span class="p">],</span>
+                              <span class="n">max_backup_count</span><span class="o">=</span><span class="n">logger_config</span><span class="p">[</span><span class="s1">&#39;max_backup_count&#39;</span><span class="p">],</span>
+                              <span class="n">log_level</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;log_level&#39;</span><span class="p">,</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">de_logger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to create log: </span><span class="si">{msg}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="_check_keys"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager._check_keys">[docs]</a><span class="k">def</span> <span class="nf">_check_keys</span><span class="p">(</span><span class="n">channel_conf_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    check that channel config has mandatory keys</span>
+<span class="sd">    :type data: :obj:`dict`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">channel_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">channel_conf_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">MANDATORY_CHANNEL_KEYS</span> <span class="o">-</span> <span class="n">channel_keys</span>
+    <span class="k">if</span> <span class="n">diff</span><span class="p">:</span>
+        <span class="n">missing</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;channel is missing one or more mandatory keys </span><span class="si">{missing}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">MANDATORY_CHANNEL_KEYS</span><span class="p">:</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">channel_conf_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">module_conf</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">module_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">module_conf</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> module </span><span class="si">{module_name}</span><span class="s2"> is not a dictionary, </span><span class="si">{msg}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">MANDATORY_MODULE_KEYS</span> <span class="o">-</span> <span class="n">module_keys</span>
+            <span class="k">if</span> <span class="n">diff</span><span class="p">:</span>
+                <span class="n">missing_keys</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> module </span><span class="si">{module_name}</span><span class="s2"> is missing one or more mandatory keys </span><span class="si">{missing_keys}</span><span class="s2"> &quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="_validate_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager._validate_channel">[docs]</a><span class="k">def</span> <span class="nf">_validate_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate channels</span>
+<span class="sd">    :type channel: :obj:`dict`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_check_keys</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+
+    <span class="c1"># Sources</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sources&#39;</span><span class="p">)</span>
+    <span class="n">all_produces</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">sname</span><span class="p">,</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">sources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">my_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">produces</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="s1">&#39;PRODUCES&#39;</span><span class="p">)</span>
+            <span class="n">all_produces</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">(</span><span class="n">produces</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;source module </span><span class="si">{sname}</span><span class="s2"> does not have required PRODUCES list&quot;</span><span class="p">)</span>
+
+    <span class="n">all_consumes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="c1"># Transforms</span>
+    <span class="n">transforms</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;transforms&#39;</span><span class="p">)</span>
+    <span class="n">transform_map</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">tname</span><span class="p">,</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">transforms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">my_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">consumes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="s1">&#39;CONSUMES&#39;</span><span class="p">))</span>
+            <span class="n">produces</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="s1">&#39;PRODUCES&#39;</span><span class="p">))</span>
+            <span class="n">all_consumes</span> <span class="o">|=</span> <span class="n">consumes</span>
+            <span class="n">all_produces</span> <span class="o">|=</span> <span class="n">produces</span>
+            <span class="n">transform_map</span><span class="p">[</span><span class="n">tname</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;consumes&#39;</span><span class="p">:</span> <span class="n">consumes</span><span class="p">,</span>
+                                    <span class="s1">&#39;produces&#39;</span><span class="p">:</span> <span class="n">produces</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;transform module </span><span class="si">{tname}</span><span class="s2"> does not have required lists </span><span class="si">{msg}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">all_consumes</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">all_produces</span><span class="p">):</span>
+        <span class="n">extra_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_consumes</span> <span class="o">-</span> <span class="n">all_produces</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;consumes are not subset of produce, extra keys </span><span class="si">{extra_keys}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># graph contains pairs of modules and lists of modules that depends on</span>
+    <span class="c1"># this module, e.g.:</span>
+    <span class="c1"># { &quot;A&quot; : [B,C,D],</span>
+    <span class="c1"># &quot;D&quot; : [C,B] }</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">transform_map</span><span class="p">)):</span>
+        <span class="n">k1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">transform_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">transform_map</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;consumes&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">transform_map</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;produces&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="n">added</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">transform_map</span><span class="p">)):</span>
+            <span class="n">k2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">transform_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">c2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">transform_map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;consumes&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="n">p2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">transform_map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;produces&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="k">if</span> <span class="n">c2</span> <span class="o">&amp;</span> <span class="n">p1</span><span class="p">:</span>
+                <span class="n">added</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">p2</span> <span class="o">&amp;</span> <span class="n">c1</span><span class="p">:</span>
+                <span class="n">added</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k2</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">added</span><span class="p">:</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="p">[])</span>
+
+    <span class="c1"># sort modules using topological sort</span>
+    <span class="c1"># sorted_modules are transform modules in order of execution</span>
+    <span class="n">sorted_modules</span><span class="p">,</span> <span class="n">cyclic_modules</span> <span class="o">=</span> <span class="n">tsort</span><span class="o">.</span><span class="n">tsort</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cyclic_modules</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;cyclic dependency detected for modules {list(cyclic_modules)}&quot;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="ConfigManager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager">[docs]</a><span class="k">class</span> <span class="nc">ConfigManager</span><span class="p">():</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file_name</span><span class="o">=</span><span class="n">CONFIG_FILE_NAME</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;CONFIG_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;/etc/decisionengine&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Config dir &#39;</span><span class="si">%s</span><span class="s2">&#39; not found&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">config_file_name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_file</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Config file &#39;</span><span class="si">%s</span><span class="s2">&#39; not found&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_file</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">,</span> <span class="s2">&quot;config.d&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Config dir &#39;</span><span class="si">{self.config_dir}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;CHANNEL_CONFIG_PATH&quot;</span><span class="p">,</span>
+                                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">,</span> <span class="s2">&quot;config.d&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Channel config dir &#39;</span><span class="si">{self.channel_config_dir}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_update_time</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-<div class="viewcode-block" id="ConfigManager.check_keys"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.check_keys">[docs]</a>    <span class="k">def</span> <span class="nf">check_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_conf_dict</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        check that channel config has mandatory keys</span>
-<span class="sd">        :type data: :obj:`dict`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">channel_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">channel_conf_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="n">diff</span> <span class="o">=</span> <span class="n">MANDATORY_CHANNEL_KEYS</span> <span class="o">-</span> <span class="n">channel_keys</span>
-        <span class="k">if</span> <span class="n">diff</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;channel is missing one or more mandatory keys {list(diff)} &quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">MANDATORY_CHANNEL_KEYS</span><span class="p">:</span>
-            <span class="n">conf</span> <span class="o">=</span> <span class="n">channel_conf_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">module_conf</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">module_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">module_conf</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> module </span><span class="si">{module_name}</span><span class="s2"> is not a dictionary, </span><span class="si">{msg}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">diff</span> <span class="o">=</span> <span class="n">MANDATORY_MODULE_KEYS</span> <span class="o">-</span> <span class="n">module_keys</span>
-                <span class="k">if</span> <span class="n">diff</span><span class="p">:</span>
-                    <span class="n">missing_keys</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> module </span><span class="si">{module_name}</span><span class="s2"> is missing one or more mandatory keys </span><span class="si">{missing_keys}</span><span class="s2"> &quot;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ConfigManager.validate_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.validate_channel">[docs]</a>    <span class="k">def</span> <span class="nf">validate_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validate channels</span>
-<span class="sd">        :type channel: :obj:`dict`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_keys</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        sources</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sources</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sources&#39;</span><span class="p">)</span>
-        <span class="n">all_produces</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">sname</span><span class="p">,</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">sources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">my_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">))</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">produces</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="s1">&#39;PRODUCES&#39;</span><span class="p">)</span>
-                <span class="n">all_produces</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">(</span><span class="n">produces</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;source module </span><span class="si">{sname}</span><span class="s2"> does not have required PRODUCES list&quot;</span><span class="p">)</span>
-
-        <span class="n">all_consumes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        transforms</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">transforms</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;transforms&#39;</span><span class="p">)</span>
-        <span class="n">transform_map</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="k">for</span> <span class="n">tname</span><span class="p">,</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">transforms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">my_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">))</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">consumes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="s1">&#39;CONSUMES&#39;</span><span class="p">))</span>
-                <span class="n">produces</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="s1">&#39;PRODUCES&#39;</span><span class="p">))</span>
-                <span class="n">all_consumes</span> <span class="o">|=</span> <span class="n">consumes</span>
-                <span class="n">all_produces</span> <span class="o">|=</span> <span class="n">produces</span>
-                <span class="n">transform_map</span><span class="p">[</span><span class="n">tname</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;consumes&#39;</span><span class="p">:</span> <span class="n">consumes</span><span class="p">,</span>
-                                        <span class="s1">&#39;produces&#39;</span><span class="p">:</span> <span class="n">produces</span><span class="p">}</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;transform module </span><span class="si">{tname}</span><span class="s2"> does not have required lists </span><span class="si">{msg}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">all_consumes</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">all_produces</span><span class="p">):</span>
-            <span class="n">extra_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_consumes</span> <span class="o">-</span> <span class="n">all_produces</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;consumes are not subset of produce, extra keys </span><span class="si">{extra_keys}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        graph contains pairs of modules and lists of modules that depends on</span>
-<span class="sd">        this module, e.g.:</span>
-<span class="sd">        { &quot;A&quot; : [B,C,D],</span>
-<span class="sd">        &quot;D&quot; : [C,B] }</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">graph</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">transform_map</span><span class="p">)):</span>
-            <span class="n">k1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">transform_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">c1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">transform_map</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;consumes&#39;</span><span class="p">,</span> <span class="p">[]))</span>
-            <span class="n">p1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">transform_map</span><span class="p">[</span><span class="n">k1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;produces&#39;</span><span class="p">,</span> <span class="p">[]))</span>
-            <span class="n">added</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">transform_map</span><span class="p">)):</span>
-                <span class="n">k2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">transform_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">j</span><span class="p">]</span>
-                <span class="n">c2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">transform_map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;consumes&#39;</span><span class="p">,</span> <span class="p">[]))</span>
-                <span class="n">p2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">transform_map</span><span class="p">[</span><span class="n">k2</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;produces&#39;</span><span class="p">,</span> <span class="p">[]))</span>
-                <span class="k">if</span> <span class="n">c2</span> <span class="o">&amp;</span> <span class="n">p1</span><span class="p">:</span>
-                    <span class="n">added</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="n">graph</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k2</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">p2</span> <span class="o">&amp;</span> <span class="n">c1</span><span class="p">:</span>
-                    <span class="n">added</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="n">graph</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k2</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k1</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">added</span><span class="p">:</span>
-                <span class="n">graph</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="p">[])</span>
-
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        sort modules using topological sort</span>
-<span class="sd">        sorted_modules are transform modules in order of execution</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sorted_modules</span><span class="p">,</span> <span class="n">cyclic_modules</span> <span class="o">=</span> <span class="n">tsort</span><span class="o">.</span><span class="n">tsort</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">cyclic_modules</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;cyclic dependency detected for modules {list(cyclic_modules)}&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ConfigManager.get_produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.get_produces">[docs]</a>    <span class="k">def</span> <span class="nf">get_produces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
         <span class="n">produces</span> <span class="o">=</span> <span class="p">{}</span>
@@ -193,65 +201,25 @@
                     <span class="k">pass</span>
         <span class="k">return</span> <span class="n">produces</span></div>
 
-<div class="viewcode-block" id="ConfigManager.reload"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ConfigManager.reload"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file_name</span><span class="o">=</span><span class="n">CONFIG_FILE_NAME</span><span class="p">):</span>
         <span class="n">old_global_config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">)</span>
         <span class="n">old_config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">config_file_name</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">old_global_config</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">old_config</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span></div>
 
-<div class="viewcode-block" id="ConfigManager.load"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last_update_time</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_file</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span> <span class="o">=</span> <span class="n">_config_from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_file</span><span class="p">)</span>
-
+<div class="viewcode-block" id="ConfigManager.load"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file_name</span><span class="o">=</span><span class="n">CONFIG_FILE_NAME</span><span class="p">):</span>
+        <span class="n">config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">config_file_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Config file &#39;</span><span class="si">{config_file}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_update_time</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span> <span class="o">=</span> <span class="n">_config_from_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;logger&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No logger configuration has been specified.&quot;</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">logger_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">]</span>
-                <span class="n">de_logger</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span><span class="n">log_file_name</span><span class="o">=</span><span class="n">logger_config</span><span class="p">[</span><span class="s1">&#39;log_file&#39;</span><span class="p">],</span>
-                                      <span class="n">max_file_size</span><span class="o">=</span><span class="n">logger_config</span><span class="p">[</span><span class="s1">&#39;max_file_size&#39;</span><span class="p">],</span>
-                                      <span class="n">max_backup_count</span><span class="o">=</span><span class="n">logger_config</span><span class="p">[</span><span class="s1">&#39;max_backup_count&#39;</span><span class="p">],</span>
-                                      <span class="n">log_level</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;log_level&#39;</span><span class="p">,</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">de_logger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to create log: </span><span class="si">{msg}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        load channels</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">for</span> <span class="n">direntry</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">direntry</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.conf&quot;</span><span class="p">):</span>
-                <span class="k">continue</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">direntry</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">channel_conf</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="n">direntry</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">channel_conf</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">code</span> <span class="o">=</span> <span class="s2">&quot;self.channels[name]=&quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">exec</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Channel configuration file </span><span class="si">{channel_conf}</span><span class="s2"> </span><span class="se">\</span>
-<span class="s2">                                            contains error </span><span class="si">{msg}</span><span class="s2">, SKIPPING&quot;</span><span class="p">)</span>
-                        <span class="k">continue</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to open channel configuration file </span><span class="si">{channel_conf}</span><span class="s2"> </span><span class="se">\</span>
-<span class="s2">                                  contains error </span><span class="si">{msg}</span><span class="s2">, SKIPPING&quot;</span><span class="p">)</span>
-
-            <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            check that channel configuration contains necessary keys</span>
-<span class="sd">            if keys are missing channel is removed and error is printed</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">validate_channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> </span><span class="si">{msg}</span><span class="s2">, REMOVING the channel&quot;</span><span class="p">)</span>
-                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-                <span class="k">continue</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">_make_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_channels</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ConfigManager.is_updated"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.is_updated">[docs]</a>    <span class="k">def</span> <span class="nf">is_updated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span></div>
@@ -262,11 +230,39 @@
 <div class="viewcode-block" id="ConfigManager.get_global_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.get_global_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span></div>
 
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Factory method:  create instance of dynamically loaded module</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ConfigManager._load_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager._load_channels">[docs]</a>    <span class="k">def</span> <span class="nf">_load_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">):</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">path</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.conf&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">_verify_not_empty</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Channel configuration file </span><span class="si">{path}</span><span class="s2"> &quot;</span>
+                                          <span class="n">f</span><span class="s2">&quot;contains error</span><span class="se">\n</span><span class="s2">-&gt; </span><span class="si">{msg}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">)</span>
+                        <span class="k">continue</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to open channel configuration file </span><span class="si">{path}</span><span class="s2"> &quot;</span>
+                                  <span class="n">f</span><span class="s2">&quot;contains error</span><span class="se">\n</span><span class="s2">-&gt; </span><span class="si">{msg}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Verify channel configuration contains necessary keys.</span>
+            <span class="c1"># If keys are missing, the channel is removed and an error</span>
+            <span class="c1"># message is logged.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_validate_channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> </span><span class="si">{msg}</span><span class="s2">, REMOVING the channel&quot;</span><span class="p">)</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                <span class="k">continue</span></div>
+
 <div class="viewcode-block" id="ConfigManager.create"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Factory method:  create instance of dynamically loaded module</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">my_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
         <span class="n">clazz</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="n">clazz</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
