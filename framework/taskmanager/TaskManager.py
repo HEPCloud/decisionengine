@@ -107,7 +107,7 @@ class TaskManager(object):
         self.id = task_manager_id
         self.channel = Channel(channel_dict)
         self.state = multiprocessing.Value('i', BOOT)
-        self.loglevel = multiprocessing.Value('i', LOG_LEVELS_DICT['INFO'])
+        self.loglevel = multiprocessing.Value('i', LOG_LEVELS_DICT['WARNING'])
         self.decision_cycle_active = False
         self.lock = threading.Lock()
         self.stop = False  # stop running all loops when this is True

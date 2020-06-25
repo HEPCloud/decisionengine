@@ -60,8 +60,10 @@ class Worker(multiprocessing.Process):
                                                             backupCount=self.config["logger"].get("max_backup_count",
                                                                                                   6))
         file_handler.setFormatter(FORMATTER)
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.WARNING)
         self.logger.addHandler(file_handler)
+        channel_log_level = self.config["logger"].get("global_channel_log_level", "WARNING")
+        self.task_manager.set_loglevel(TaskManager.LOG_LEVELS_DICT[channel_log_level])
         self.task_manager.run()
 
 
@@ -107,15 +109,28 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         else:
             return func(*params)
 
-    def rpc_show_config(self, channel=None):
+    def rpc_show_config(self, channel):
         """
 
         :type channel: string
         """
-        if not channel:
-            return self.config_manager.get_channels()
+        txt = ""
+        channels = self.config_manager.get_channels()
+        if channel == 'all':
+            for ch in channels:
+                txt += "Channel: {} ".format(ch)
+                txt += "Config: {} ".format(channels[ch])
         else:
-            return self.config_manager.get_channels()[channel]
+            txt += "Channel: {} ".format(channel)
+            txt += "Config: {} ".format(channels[channel])
+        return txt[:-1]
+
+    def rpc_show_de_config(self):
+        config = self.config_manager.get_global_config()
+        txt = ""
+        for k in config:
+            txt += "{}".format(config[k])
+        return txt[:-1]
 
     def rpc_print_product(self, product, columns=None, query=None):
         found = False

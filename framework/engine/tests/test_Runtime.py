@@ -97,7 +97,7 @@ class TestClientServerBehaviors(unittest.TestCase):
 
     def test_client_can_get_de_server_show_config(self):
         output = subprocess.run([DE_CLIENT, '--port=' + self.port, '--show-config'], cwd=os.path.dirname(__file__) + '/../', stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, check=True)
-        self.assertEqual('{}\n', output.stdout, msg="DE didn't share empty config")
+        self.assertNotEqual('{}\n', output.stdout, msg="DE didn't get channel configuration.")
 
     def test_client_can_get_de_server_reload_config(self):
         output = subprocess.run([DE_CLIENT, '--port=' + self.port, '--reload-config'], cwd=os.path.dirname(__file__) + '/../', stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, check=True)
@@ -139,6 +139,10 @@ class TestClientServerBehaviors(unittest.TestCase):
     def test_client_can_get_de_server_show_channel_logger_level(self):
         output = subprocess.run([DE_CLIENT, '--port=' + self.port, '--get-channel-loglevel=UNITTEST'], cwd=os.path.dirname(__file__) + '/../', stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, check=True)
         self.assertIn(output.stdout, ['NOTSET\n', 'DEBUG\n', 'INFO\n', 'WARNING\n', 'ERROR\n', 'CRITICAL\n'], msg="DE didn't get channel logger level")
+
+    def test_global_channel_log_level_in_config(self):
+        output = subprocess.run([DE_CLIENT, '--port=' + self.port, '--show-de-config'], cwd=os.path.dirname(__file__) + '/../', stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, check=True)
+        self.assertIn('global_channel_log_level', output.stdout, msg="Global channel log level not set in config file. Default value is INFO.")
 
 
 if __name__ == '__main__':

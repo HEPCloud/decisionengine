@@ -49,6 +49,15 @@ def create_parser():
         help="print configuration")
 
     parser.add_argument(
+        "--show-channel-config",
+        help="print channel configuration")
+
+    parser.add_argument(
+        "--show-de-config",
+        action='store_true',
+        help="print Decision Engine configuration")
+
+    parser.add_argument(
         "--reload-config",
         action="store_true",
         help="reload configuration")
@@ -150,7 +159,14 @@ def execute_command_from_args(argsparsed, xmlrpcsocket):
         return xmlrpcsocket.set_channel_log_level(argsparsed.set_channel_loglevel[0], argsparsed.set_channel_loglevel[1])
 
     if argsparsed.show_config:
-        return pprint.pformat(xmlrpcsocket.show_config())
+        return pprint.pformat(xmlrpcsocket.show_config("all"))
+
+    if argsparsed.show_channel_config:
+        channel = argsparsed.show_channel_config
+        return pprint.pformat(xmlrpcsocket.show_config(channel))
+
+    if argsparsed.show_de_config:
+        return xmlrpcsocket.show_de_config()
 
     if argsparsed.reload_config:
         return xmlrpcsocket.reload_config()
