@@ -65,7 +65,7 @@ class TestClientServerPython(unittest.TestCase):
 
     def test_client_can_get_de_server_show_config(self):
         output = de_client.main(['--host=127.0.0.1', '--port', self.port, '--show-config'])
-        self.assertEqual('{}', output, msg="DE didn't share empty config")
+        self.assertNotEqual('{}', output, msg="DE didn't share channel configs")
 
     def test_client_can_get_de_server_reload_config(self):
         output = de_client.main(['--host=127.0.0.1', '--port', self.port, '--reload-config'])
