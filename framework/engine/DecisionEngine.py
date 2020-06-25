@@ -62,7 +62,7 @@ class Worker(multiprocessing.Process):
         file_handler.setFormatter(FORMATTER)
         self.logger.setLevel(logging.WARNING)
         self.logger.addHandler(file_handler)
-        channel_log_level = self.config["logger"].get("global_channel_log_level","WARNING")
+        channel_log_level = self.config["logger"].get("global_channel_log_level", "WARNING")
         self.task_manager.set_loglevel(TaskManager.LOG_LEVELS_DICT[channel_log_level])
         self.task_manager.run()
 
