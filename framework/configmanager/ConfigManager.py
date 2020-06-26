@@ -16,6 +16,14 @@ MANDATORY_MODULE_KEYS = {"module", "name", "parameters"}
 CONFIG_FILE_NAME = "decision_engine.conf"
 
 def _convert_to_json(config_file):
+    """
+    Attempt to convert JSON non-compliant configuration into a compliant one.
+
+    This is a temporary facility to aid the migration of Python-based
+    configurations to Jsonnet-based ones.  Python dictionaries that
+    are similar in structure to JSON documents are generally trivially
+    convertible.
+    """
     global_config = None
     try:
         with open(config_file) as f:
