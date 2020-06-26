@@ -55,7 +55,9 @@
     <span class="k">return</span> <span class="n">_call</span></div>
 
 
-<span class="c1">#-------------------------------------------------</span>
+<span class="c1"># --------------------------------------------------------------------</span>
+<span class="c1"># These tests demonstrate failure modes when reading a DE</span>
+<span class="c1"># applicaation configuration file.</span>
 <div class="viewcode-block" id="test_empty_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_empty_config">[docs]</a><span class="k">def</span> <span class="nf">test_empty_config</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">load</span><span class="p">(</span><span class="s1">&#39;empty.conf&#39;</span><span class="p">)</span>
@@ -64,8 +66,12 @@
 <div class="viewcode-block" id="test_wrong_type"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_wrong_type">[docs]</a><span class="k">def</span> <span class="nf">test_wrong_type</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">load</span><span class="p">(</span><span class="s1">&#39;wrong_type.conf&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;The configuration file must be a Python dictionary&#39;</span><span class="p">)</span></div>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;The supplied configuration must be a valid Jsonnet/JSON document&#39;</span><span class="p">)</span></div>
 
+<span class="c1"># --------------------------------------------------------------------</span>
+<span class="c1"># These tests yield valid DE configuration structures. However, the</span>
+<span class="c1"># configurations are missing a logger configuration, which is the next</span>
+<span class="c1"># failure mode after reading the configuration files.</span>
 <div class="viewcode-block" id="test_empty_dict"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_empty_dict">[docs]</a><span class="k">def</span> <span class="nf">test_empty_dict</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">load</span><span class="p">(</span><span class="s1">&#39;empty_dict.conf&#39;</span><span class="p">)</span>
@@ -76,18 +82,36 @@
         <span class="n">load</span><span class="p">(</span><span class="s1">&#39;empty_dict_with_leading_comment.conf&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;No logger configuration has been specified&#39;</span><span class="p">)</span></div>
 
-<span class="c1"># -------------------------------------------------</span>
-<div class="viewcode-block" id="test_minimal_python"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_minimal_python">[docs]</a><span class="k">def</span> <span class="nf">test_minimal_python</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">)</span></div>
+<span class="c1"># --------------------------------------------------------------------</span>
+<span class="c1"># These tests validate well-formed DE configurations, but they also</span>
+<span class="c1"># check that the appropriate warning messages are emitted regarding</span>
+<span class="c1"># Python support for a Jsonnet configuration system.</span>
+<div class="viewcode-block" id="test_minimal_python"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_minimal_python">[docs]</a><span class="k">def</span> <span class="nf">test_minimal_python</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">capsys</span><span class="p">):</span>
+    <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">)</span>
+    <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">capsys</span><span class="o">.</span><span class="n">readouterr</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">stdout</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="s2">&quot;The supplied configuration.*has been converted to a valid JSON construct&quot;</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">stderr</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span></div>
 
-<span class="c1"># -------------------------------------------------</span>
+<div class="viewcode-block" id="test_minimal_jsonnet_wrong_extension"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_minimal_jsonnet_wrong_extension">[docs]</a><span class="k">def</span> <span class="nf">test_minimal_jsonnet_wrong_extension</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">capsys</span><span class="p">):</span>
+    <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_jsonnet.conf&#39;</span><span class="p">)</span>
+    <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">capsys</span><span class="o">.</span><span class="n">readouterr</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">stdout</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Please rename &#39;.*/minimal_jsonnet\.conf&#39; to &#39;.*/minimal_jsonnet\.jsonnet&#39;&quot;</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">stderr</span><span class="p">)</span></div>
+
+<span class="c1"># --------------------------------------------------------------------</span>
+<span class="c1"># These tests verify expected behavior for channel (not DE)</span>
+<span class="c1"># configurations.</span>
 <div class="viewcode-block" id="test_channel_no_config_files"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_channel_no_config_files">[docs]</a><span class="k">def</span> <span class="nf">test_channel_no_config_files</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
     <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span> <span class="s1">&#39;channels/no_config_files&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="test_channel_empty_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_channel_empty_config">[docs]</a><span class="k">def</span> <span class="nf">test_channel_empty_config</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span> <span class="s1">&#39;channels/empty_config&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;Empty configuration file .*</span><span class="se">\\</span><span class="s1">.conf&#39;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="test_channel_empty_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_channel_empty_config">[docs]</a><span class="k">def</span> <span class="nf">test_channel_empty_config</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">capsys</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
+    <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span> <span class="s1">&#39;channels/empty_config&#39;</span><span class="p">)</span>
+    <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">capsys</span><span class="o">.</span><span class="n">readouterr</span><span class="p">()</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="s2">&quot;The supplied configuration.*has been converted to a valid JSON construct&quot;</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">stderr</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;Empty configuration file .*</span><span class="se">\\</span><span class="s1">.jsonnet&#39;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="test_channel_empty_dictionary"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_channel_empty_dictionary">[docs]</a><span class="k">def</span> <span class="nf">test_channel_empty_dictionary</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
     <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span> <span class="s1">&#39;channels/empty_dictionary&#39;</span><span class="p">)</span>
