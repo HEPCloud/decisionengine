@@ -15,7 +15,7 @@ MANDATORY_MODULE_KEYS = {"module", "name", "parameters"}
 
 CONFIG_FILE_NAME = "decision_engine.conf"
 
-def _attempt_conversion_to_json(config_file):
+def _convert_to_json(config_file):
     global_config = None
     try:
         with open(config_file) as f:
@@ -41,12 +41,10 @@ def _attempt_conversion_to_json(config_file):
           file=sys.stderr)
     return json_config
 
-def _verify_not_empty(config_file):
+def _config_from_file(config_file):
     if os.path.getsize(config_file) == 0:
         raise RuntimeError(f"Empty configuration file {config_file}")
 
-def _config_from_file(config_file):
-    _verify_not_empty(config_file)
     config_str = None
     try:
         config_str = _jsonnet.evaluate_file(config_file)
@@ -55,7 +53,7 @@ def _config_from_file(config_file):
             print(f"Please rename '{config_file}' to '{basename}.jsonnet'.",
                   file=sys.stderr)
     except Exception:
-        config_str = _attempt_conversion_to_json(config_file)
+        config_str = _convert_to_json(config_file)
 
     return json.loads(config_str)
 
