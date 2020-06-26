@@ -21,7 +21,9 @@ def load(monkeypatch):
     return _call
 
 
-#-------------------------------------------------
+# --------------------------------------------------------------------
+# These tests demonstrate failure modes when reading a DE
+# applicaation configuration file.
 def test_empty_config(load):
     with pytest.raises(RuntimeError) as e:
         load('empty.conf')
@@ -30,8 +32,12 @@ def test_empty_config(load):
 def test_wrong_type(load):
     with pytest.raises(RuntimeError) as e:
         load('wrong_type.conf')
-    assert e.match('The configuration file must be a Python dictionary')
+    assert e.match('The supplied configuration must be a valid Jsonnet/JSON document')
 
+# --------------------------------------------------------------------
+# These tests yield valid DE configuration structures. However, the
+# configurations are missing a logger configuration, which is the next
+# failure mode after reading the configuration files.
 def test_empty_dict(load):
     with pytest.raises(RuntimeError) as e:
         load('empty_dict.conf')
@@ -42,18 +48,36 @@ def test_empty_dict_with_leading_comment(load):
         load('empty_dict_with_leading_comment.conf')
     assert e.match('No logger configuration has been specified')
 
-# -------------------------------------------------
-def test_minimal_python(load):
+# --------------------------------------------------------------------
+# These tests validate well-formed DE configurations, but they also
+# check that the appropriate warning messages are emitted regarding
+# Python support for a Jsonnet configuration system.
+def test_minimal_python(load, capsys):
     load('minimal_python.conf')
+    stdout, stderr = capsys.readouterr()
+    assert not stdout
+    expected = "The supplied configuration.*has been converted to a valid JSON construct"
+    assert re.search(expected, stderr, flags=re.DOTALL)
 
-# -------------------------------------------------
+def test_minimal_jsonnet_wrong_extension(load, capsys):
+    load('minimal_jsonnet.conf')
+    stdout, stderr = capsys.readouterr()
+    assert not stdout
+    expected = r"Please rename '.*/minimal_jsonnet\.conf' to '.*/minimal_jsonnet\.jsonnet'"
+    assert re.match(expected, stderr)
+
+# --------------------------------------------------------------------
+# These tests verify expected behavior for channel (not DE)
+# configurations.
 def test_channel_no_config_files(load):
     load('minimal_python.conf', 'channels/no_config_files')
 
-def test_channel_empty_config(load):
-    with pytest.raises(RuntimeError) as e:
-        load('minimal_python.conf', 'channels/empty_config')
-    assert e.match('Empty configuration file .*\\.conf')
+def test_channel_empty_config(load, capsys, caplog):
+    load('minimal_python.conf', 'channels/empty_config')
+    stdout, stderr = capsys.readouterr()
+    expected = "The supplied configuration.*has been converted to a valid JSON construct"
+    assert re.search(expected, stderr, flags=re.DOTALL)
+    assert re.search('Empty configuration file .*\\.jsonnet', caplog.text)
 
 def test_channel_empty_dictionary(load, caplog):
     load('minimal_python.conf', 'channels/empty_dictionary')
