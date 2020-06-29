@@ -173,7 +173,7 @@ def _validate_channel(channel):
 
 class ConfigManager():
 
-    def __init__(self):
+    def __init__(self, program_options=None):
         self.config_dir = os.getenv("CONFIG_PATH", "/etc/decisionengine")
         if not os.path.isdir(self.config_dir):
             raise Exception(f"Config dir '{self.config_dir}' not found")
@@ -181,7 +181,8 @@ class ConfigManager():
                                             os.path.join(self.config_dir, "config.d"))
         if not os.path.isdir(self.channel_config_dir):
             raise Exception(f"Channel config dir '{self.channel_config_dir}' not found")
-        self.global_config = {}
+        self.program_options = program_options
+        self.global_config = None
         self.channels = {}
         self.config = {}
         self.logger = None
@@ -216,6 +217,10 @@ class ConfigManager():
             raise Exception(f"Config file '{config_file}' not found")
         self.last_update_time = os.stat(config_file).st_mtime
         self.global_config = _config_from_file(config_file)
+        # If present, the configuration as specified via program
+        # options takes precedence.
+        if self.program_options:
+            self.global_config.update(self.program_options)
         if not self.logger:
             self.logger = _make_logger(self.global_config)
         self._load_channels()
