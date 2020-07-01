@@ -42,7 +42,9 @@
 
 <div class="viewcode-block" id="load"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.load">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">monkeypatch</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span>
+              <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">program_options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setenv</span><span class="p">(</span><span class="s1">&#39;CONFIG_PATH&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_this_dir</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">relative_channel_config_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setenv</span><span class="p">(</span><span class="s1">&#39;CHANNEL_CONFIG_PATH&#39;</span><span class="p">,</span>
@@ -50,8 +52,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setenv</span><span class="p">(</span><span class="s1">&#39;CHANNEL_CONFIG_PATH&#39;</span><span class="p">,</span>
                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_this_dir</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="p">))</span>
-        <span class="n">manager</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="p">()</span>
+        <span class="n">manager</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="p">(</span><span class="n">program_options</span><span class="p">)</span>
         <span class="n">manager</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">_call</span></div>
 
 
@@ -99,6 +102,25 @@
     <span class="k">assert</span> <span class="ow">not</span> <span class="n">stdout</span>
     <span class="n">expected</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Please rename &#39;.*/minimal_jsonnet\.conf&#39; to &#39;.*/minimal_jsonnet\.jsonnet&#39;&quot;</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">stderr</span><span class="p">)</span></div>
+
+<span class="c1"># --------------------------------------------------------------------</span>
+<span class="c1"># These tests verify that program options are correctly included</span>
+<span class="c1"># as/override part of the final configuration.</span>
+<div class="viewcode-block" id="test_program_options_default"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_program_options_default">[docs]</a><span class="k">def</span> <span class="nf">test_program_options_default</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">1234</span><span class="p">]</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal.jsonnet&#39;</span><span class="p">,</span>
+                  <span class="n">program_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="n">address</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">address</span></div>
+
+<div class="viewcode-block" id="test_program_options_update"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_program_options_update">[docs]</a><span class="k">def</span> <span class="nf">test_program_options_update</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
+    <span class="c1"># Verify non-modified &#39;server_address&#39; value</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_with_address.jsonnet&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># Override value with program option</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">1234</span><span class="p">]</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_with_address.jsonnet&#39;</span><span class="p">,</span>
+                  <span class="n">program_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="n">address</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">address</span></div>
 
 <span class="c1"># --------------------------------------------------------------------</span>
 <span class="c1"># These tests verify expected behavior for channel (not DE)</span>
