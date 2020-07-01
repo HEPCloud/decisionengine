@@ -393,56 +393,44 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         txt = '\nreaper:\n\tstate: {}\n\tretention_interval: {}\n'.format(state, interval)
         return txt
 
-def main_create_parser():
+def parse_program_options(args):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--port", default=None, type=int, choices=range(1, 65535), help="Override server port to this value")
+    parser.add_argument("--port", default=8888, type=int, choices=range(1, 65535), help="Override server port to this value")
+    options = parser.parse_args(args)
+    return {
+        'server_address': ['localhost', options.port] # Use Jsonnet-supported schema (i.e. not a tuple)
+    }
 
-    return parser
-
-def main(args_to_parse=None):
+def main(args=None):
     '''If you pass a list of args, they will be used instead of sys.argv'''
 
-    parser = main_create_parser()
-
-    if args_to_parse:
-        args = parser.parse_args(args_to_parse)
-    else:
-        args = parser.parse_args()
-
-    conf_manager = Conf_Manager.ConfigManager()
+    program_options = parse_program_options(args)
+    conf_manager = Conf_Manager.ConfigManager(program_options)
 
     try:
         conf_manager.load()
     except Exception as msg:
-        sys.stderr.write("Failed to load configuration {} {}".format(conf_manager.config_dir,
-                                                                     msg))
-        sys.exit(1)
+        sys.exit("Failed to load configuration {}\n{}".format(conf_manager.config_dir, msg))
 
     channels = conf_manager.get_channels()
-    require_loading_channels = os.getenv('DECISIONENGINE_NO_CHANNELS')
+    channels_required = not os.getenv('DECISIONENGINE_NO_CHANNELS')
 
-    if not require_loading_channels and not channels:
-        sys.stderr.write("No channels configured. {}".format(conf_manager.config_dir))
-        sys.exit(1)
+    if channels_required and not channels:
+        sys.exit("No channel configurations available in {}".format(conf_manager.config_dir))
 
     global_config = conf_manager.get_global_config()
-
-    if args.port:
-        server_address = ("localhost", args.port)
-    else:
-        server_address = global_config.get("server_address", ("localhost", 8888))
+    server_address = tuple(global_config.get('server_address'))
 
     try:
         server = DecisionEngine(conf_manager, server_address, RequestHandler)
         server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
-        if not require_loading_channels:
+        if channels_required:
             server.start_channels()
         server.serve_forever()
     except Exception as msg:
-        sys.stderr.write("Server Address:{}\n".format(server_address))
-        sys.stderr.write("Config Dir:{}\n".format(conf_manager.config_dir))
-        sys.stderr.write("Fatal Error: {}\n".format(msg))
-        sys.exit(1)
+        sys.exit("Server Address: {}\n".format(server_address) +
+                 "Config Dir: {}\n".format(conf_manager.config_dir) +
+                 "Fatal Error: {}\n".format(msg))
 
 
 if __name__ == "__main__":
