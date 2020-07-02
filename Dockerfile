@@ -5,6 +5,7 @@ RUN yum -y install https://repo.opensciencegrid.org/osg/3.5/osg-3.5-el7-release-
     && yum -y clean all
 RUN yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm \
     && yum -y clean all
+RUN yum -y install yum-conf-softwarecollections && yum -y clean all
 RUN yum -y install condor-python \
   python-pandas \
   gcc gcc-c++ libgcc \
