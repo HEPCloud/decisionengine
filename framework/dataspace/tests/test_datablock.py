@@ -18,8 +18,9 @@ def datasource(request, postgresql, data):
         for table, rows in data.items():
             for row in rows:
                 keys = ",".join(row.keys())
-                values = ",".join([f"'{value}'" for value in row.values()])
-                cursor.execute(f"INSERT INTO {table} ({keys}) VALUES ({values})")
+                values = ("%s," * len(row.values()))[:-1]
+                query = f"INSERT INTO {table} ({keys}) VALUES({values})"
+                cursor.execute(query, list(row.values()))
     postgresql.commit()
 
     return postgresql
