@@ -363,8 +363,11 @@ class DataBlock(object):
                                                        self.generation_id, key)
 
             value = ast.literal_eval(decompress(value_row['value'].tobytes()))
-        except KeyNotFoundError:
+        except KeyError:
             value = default
+
+        if not value:
+            raise KeyError
 
         if value.get('pickled'):
             return_value = zloads(value.get('value'))
