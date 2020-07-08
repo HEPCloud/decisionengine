@@ -39,31 +39,29 @@ import decisionengine.framework.taskmanager.TaskManager as TaskManager
 CONFIG_UPDATE_PERIOD = 10  # seconds
 FORMATTER = logging.Formatter(
     "%(asctime)s - %(name)s - %(module)s - %(process)d - %(threadName)s - %(levelname)s - %(message)s")
-LOG_LEVELS_DICT = {0: 'NOTSET', 10: 'DEBUG', 20: 'INFO', 30: 'WARNING', 40: 'ERROR', 50: 'CRITICAL'}
 
 class Worker(multiprocessing.Process):
 
-    def __init__(self, task_manager, config):
+    def __init__(self, task_manager, logger_config):
         super().__init__()
         self.task_manager = task_manager
-        self.logger = None
-        self.config = config
+        self.logger_config = logger_config
 
     def run(self):
-        self.logger = logging.getLogger()
+        logger = logging.getLogger()
         file_handler = logging.handlers.RotatingFileHandler(os.path.join(
                                                             os.path.dirname(
-                                                                self.config["logger"]["log_file"]),
+                                                                self.logger_config["log_file"]),
                                                             self.task_manager.name + ".log"),
-                                                            maxBytes=self.config["logger"].get("max_file_size",
-                                                                                               200 * 1000000),
-                                                            backupCount=self.config["logger"].get("max_backup_count",
-                                                                                                  6))
+                                                            maxBytes=self.logger_config.get("max_file_size",
+                                                                                            200 * 1000000),
+                                                            backupCount=self.logger_config.get("max_backup_count",
+                                                                                               6))
         file_handler.setFormatter(FORMATTER)
         self.logger.setLevel(logging.WARNING)
         self.logger.addHandler(file_handler)
-        channel_log_level = self.config["logger"].get("global_channel_log_level", "WARNING")
-        self.task_manager.set_loglevel(TaskManager.LOG_LEVELS_DICT[channel_log_level])
+        channel_log_level = self.loggger_config.get("global_channel_log_level", "WARNING")
+        self.task_manager.set_loglevel(channel_log_level)
         self.task_manager.run()
 
 
@@ -99,13 +97,11 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
 
     def _dispatch(self, method, params):
         try:
-            """
-            methods allowed to be executed by rpc
-            have rpc pre-pended
-            """
+            # methods allowed to be executed by rpc have 'rpc_'
+            # pre-pended
             func = getattr(self, "rpc_" + method)
         except AttributeError:
-            raise Exception('method "%s" is not supported' % method)
+            raise Exception(f'method "{method}" is not supported')
         else:
             return func(*params)
 
@@ -248,8 +244,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                         pass
                     txt += "\t\t\tconsumes : {}\n".format(consumes)
                     txt += "\t\t\tproduces : {}\n".format(produces)
-        txt += self.reaper_status()
-        return txt[:-1]
+        return txt + self.reaper_status()
 
     def rpc_stop(self):
         self.reaper_stop()
@@ -260,7 +255,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
     def rpc_start_channel(self, channel):
         self.reload_config()
         if channel in self.task_managers:
-            return "ERROR, channel {} is running".format(channel)
+            return f"ERROR, channel {channel} is running"
         self.start_channel(channel)
         return "OK"
 
@@ -274,10 +269,10 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                                                channel_config,
                                                self.config_manager.get_global_config())
         worker = Worker(task_manager,
-                        self.config_manager.get_global_config())
+                        self.config_manager.get_global_config()['logger'])
         self.task_managers[channel] = worker
         worker.start()
-        self.logger.info("Channel {} started".format(channel))
+        self.logger.info(f"Channel {channel} started")
 
     def rpc_start_channels(self):
         self.reload_config()
@@ -288,15 +283,13 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         channels = self.config_manager.get_channels()
         if not channels:
             raise RuntimeError("No channels configured")
-        """
-        start channels
-        """
+
+        # Start channels
         for ch in channels:
             try:
                 self.start_channel(ch)
             except Exception as e:
-                self.logger.error(
-                    "Channel {} failed to start : {}".format(ch, e))
+                self.logger.error(f"Channel {ch} failed to start : {e}")
 
     def rpc_stop_channel(self, channel):
         self.stop_channel(channel)
@@ -332,7 +325,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         self.stop_channels()
         self.reload_config()
         self.start_channels()
-        self.reaper_start(delay=self.global_config.get('dataspace', ('reaper_start_delay_seconds', 1818)))
+        self.reaper_start(delay=self.global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
 
     def rpc_reload_config(self):
         self.reload_config()
@@ -343,24 +336,19 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
 
     def rpc_get_log_level(self):
         engineloglevel = self.get_logger().getEffectiveLevel()
-        txt = "{}".format(LOG_LEVELS_DICT[engineloglevel])
-        return txt
+        return logging.getLevelName(engineloglevel)
 
     def rpc_get_channel_log_level(self, channel):
         worker = self.task_managers[channel]
-        loglevel = LOG_LEVELS_DICT[worker.task_manager.get_loglevel()]
-        txt = "{} ".format(loglevel)
-        return txt[:-1]
+        return logging.getLevelName(worker.task_manager.get_loglevel())
 
     def rpc_set_channel_log_level(self, channel, log_level):
         worker = self.task_managers[channel]
-        if worker.task_manager.get_loglevel() == TaskManager.LOG_LEVELS_DICT[log_level]:
-            txt = "Nothing to do. Current log level is : {} ".format(log_level)
-            return txt[:-1]
-        else:
-            worker.task_manager.set_loglevel(TaskManager.LOG_LEVELS_DICT[log_level])
-            txt = "Log level changed to : {} ".format(log_level)
-            return txt[:-1]
+        log_level_code = TaskManager.LOG_LEVELS_DICT[log_level]
+        if worker.task_manager.get_loglevel() == log_level_code:
+            return f"Nothing to do. Current log level is : {log_level}"
+        worker.task_manager.set_loglevel(log_level_code)
+        return f"Log level changed to : {log_level}"
 
     def rpc_reaper_start(self, delay=0):
         '''

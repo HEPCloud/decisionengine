@@ -8,12 +8,11 @@ import sys
 import decisionengine.framework.modules.de_logger as de_logger
 import decisionengine.framework.util.tsort as tsort
 
-MANDATORY_CHANNEL_KEYS = {"sources",
-                          'logicengines', "transforms", "publishers"}
-MANDATORY_MODULE_KEYS = {"module", "name", "parameters"}
+_MANDATORY_CHANNEL_KEYS = {'sources', 'logicengines', 'transforms', 'publishers'}
+_ALLOWED_CHANNEL_KEYS = _MANDATORY_CHANNEL_KEYS | {'task_manager'}
+_MANDATORY_MODULE_KEYS = {"module", "name", "parameters"}
 
-CONFIG_FILE_NAME = 'decision_engine.jsonnet'
-
+_CONFIG_FILE_NAME = 'decision_engine.jsonnet'
 
 def _convert_to_json(config_file):
     """
@@ -89,21 +88,21 @@ def _check_keys(channel_conf_dict):
     :type data: :obj:`dict`
     """
     channel_keys = set(channel_conf_dict.keys())
-    diff = MANDATORY_CHANNEL_KEYS - channel_keys
+    diff = _MANDATORY_CHANNEL_KEYS - channel_keys
     if diff:
         missing = list(diff)
-        raise RuntimeError(f"channel is missing one or more mandatory keys {missing}")
-    for name in MANDATORY_CHANNEL_KEYS:
+        raise RuntimeError(f"channel is missing one or more mandatory keys:\n{missing}")
+    for name in _MANDATORY_CHANNEL_KEYS:
         conf = channel_conf_dict[name]
         for module_name, module_conf in conf.items():
             try:
                 module_keys = set(module_conf.keys())
             except Exception as msg:
-                raise RuntimeError(f"{name} module {module_name} is not a dictionary, {msg}")
-            diff = MANDATORY_MODULE_KEYS - module_keys
+                raise RuntimeError(f"{name} module {module_name} is not a dictionary:\n{msg}")
+            diff = _MANDATORY_MODULE_KEYS - module_keys
             if diff:
                 missing_keys = str(list(diff))
-                raise RuntimeError(f"{name} module {module_name} is missing one or more mandatory keys {missing_keys} ")
+                raise RuntimeError(f"{name} module {module_name} is missing one or more mandatory keys:\n{missing_keys} ")
 
 def _validate_channel(channel):
     """
@@ -218,7 +217,7 @@ class ConfigManager():
 
     def load(self, config_file_name=None):
         if not config_file_name:
-            config_file_name = CONFIG_FILE_NAME
+            config_file_name = _CONFIG_FILE_NAME
         config_file = os.path.join(self.config_dir, config_file_name)
         if not os.path.isfile(config_file):
             raise Exception(f"Config file '{config_file}' not found")
@@ -260,7 +259,7 @@ class ConfigManager():
             try:
                 _validate_channel(self.channels[basename])
             except Exception as msg:
-                self.logger.error(f"{name} {msg}, REMOVING the channel")
+                self.logger.error(f"{name}\n{msg}\nREMOVING the channel")
                 del self.channels[basename]
                 continue
 
@@ -270,9 +269,8 @@ class ConfigManager():
         Factory method:  create instance of dynamically loaded module
         """
         my_module = importlib.import_module(module_name)
-        clazz = getattr(my_module, class_name)
-        instance = clazz(parameters)
-        return instance
+        class_type = getattr(my_module, class_name)
+        return class_type(parameters)
 
 
 if __name__ == "__main__":

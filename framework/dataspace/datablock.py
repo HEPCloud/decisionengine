@@ -16,10 +16,6 @@ from collections import UserDict
 # 5) get() needs to error in case of expired data
 ###############################################################################
 
-STATE_NEW = 'NEW'
-STATE_STEADY = 'STEADY'
-STATE_ERROR = 'ERROR'
-STATE_EXPIRED = 'EXPIRED'
 _ENCODING = 'latin1'
 
 
@@ -73,28 +69,7 @@ def decompress(zbytes):
         return zbytes.decode(_ENCODING)
 
 
-class KeyNotFoundError(Exception):
-    """
-    Errors due to invalid Metadata
-    """
-    pass
-
-
-class ExpiredDataError(Exception):
-    """
-    Errors due to invalid Metadata
-    """
-    pass
-
-
 class InvalidMetadataError(Exception):
-    """
-    Errors due to invalid Metadata
-    """
-    pass
-
-
-class InvalidHeaderError(Exception):
     """
     Errors due to invalid Metadata
     """
@@ -384,12 +359,11 @@ class DataBlock(object):
         """
         header_row = self.dataspace.get_header(self.sequence_id,
                                                self.generation_id, key)
-        header = Header(header_row[0], create_time=header_row[4],
-                        expiration_time=header_row[5],
-                        scheduled_create_time=header_row[6],
-                        creator=header_row[7],
-                        schema_id=header_row[8])
-        return header
+        return Header(header_row[0], create_time=header_row[4],
+                      expiration_time=header_row[5],
+                      scheduled_create_time=header_row[6],
+                      creator=header_row[7],
+                      schema_id=header_row[8])
 
     def get_metadata(self, key):
         """
@@ -400,11 +374,10 @@ class DataBlock(object):
         """
         metadata_row = self.dataspace.get_metadata(self.sequence_id,
                                                    self.generation_id, key)
-        metadata = Metadata(metadata_row[0], state=metadata_row[4],
-                            generation_id=metadata_row[2],
-                            generation_time=metadata_row[5],
-                            missed_update_count=metadata_row[6])
-        return metadata
+        return Metadata(metadata_row[0], state=metadata_row[4],
+                        generation_id=metadata_row[2],
+                        generation_time=metadata_row[5],
+                        missed_update_count=metadata_row[6])
 
     def duplicate(self):
         """
