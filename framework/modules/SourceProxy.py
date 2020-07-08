@@ -69,7 +69,9 @@ class SourceProxy(Source.Source):
           ....
           ]
         """
-        return list(map(lambda x: x[0] if isinstance(x, tuple) else x, self.data_keys))
+        # isinstance(x, tuple) is used by python based config file
+        # isinstance(x, list) is used by JSON based config file
+        return list(map(lambda x: x[0] if (isinstance(x, tuple) or isinstance(x, list)) else x, self.data_keys))
 
     def produces(self):
         """
@@ -81,7 +83,9 @@ class SourceProxy(Source.Source):
           data_keys[key1] = data_product_name
           ....
         """
-        return list(map(lambda x: x[1] if isinstance(x, tuple) else x, self.data_keys))
+        # isinstance(x, tuple) is used by python based config file
+        # isinstance(x, list) is used by JSON based config file
+        return list(map(lambda x: x[1] if (isinstance(x, tuple) or isinstance(x, list)) else x, self.data_keys))
 
 
     def _get_data(self, data_block, key):
@@ -136,7 +140,7 @@ class SourceProxy(Source.Source):
         while retry_cnt < self.retries:
             if len(filled_keys) != len(self.data_keys):
                 for k in self.data_keys:
-                    if isinstance(k, tuple):
+                    if isinstance(k, tuple) or isinstance(k, list):
                         k_in = k[0]
                         k_out = k[1]
                     else:
