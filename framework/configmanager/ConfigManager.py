@@ -239,8 +239,10 @@ class ConfigManager():
             name, path = entry.name, entry.path
             if not name.endswith((".conf", ".jsonnet")):
                 continue
+            # Remove extension
+            basename = os.path.splitext(name)[0]
             try:
-                self.channels[name] = _config_from_file(path)
+                self.channels[basename] = _config_from_file(path)
             except Exception as msg:
                 self.logger.error(f"Failed to open channel configuration file {path} "
                                   f"contains error\n-> {msg}\nSKIPPING channel")
@@ -250,10 +252,10 @@ class ConfigManager():
             # If keys are missing, the channel is removed and an error
             # message is logged.
             try:
-                _validate_channel(self.channels[name])
+                _validate_channel(self.channels[basename])
             except Exception as msg:
                 self.logger.error(f"{name} {msg}, REMOVING the channel")
-                del self.channels[name]
+                del self.channels[basename]
                 continue
 
     @staticmethod
