@@ -57,7 +57,7 @@ def _config_from_file(config_file):
     try:
         config_str = _jsonnet.evaluate_file(config_file)
         basename, ext = os.path.splitext(config_file)
-        if ext != 'jsonnet':
+        if ext != '.jsonnet':
             print(f"Please rename '{config_file}' to '{basename}.jsonnet'.",
                   file=sys.stderr)
     except Exception:
@@ -237,10 +237,9 @@ class ConfigManager():
     def _load_channels(self):
         for entry in os.scandir(self.channel_config_dir):
             name, path = entry.name, entry.path
-            if not name.endswith((".conf", ".jsonnet")):
+            basename, ext = os.path.splitext(name)
+            if ext not in {'.conf', '.jsonnet'}:
                 continue
-            # Remove extension
-            basename = os.path.splitext(name)[0]
             try:
                 self.channels[basename] = _config_from_file(path)
             except Exception as msg:

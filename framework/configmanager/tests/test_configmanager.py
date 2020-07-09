@@ -26,7 +26,7 @@ def load(monkeypatch):
 
 # --------------------------------------------------------------------
 # These tests demonstrate failure modes when reading a DE
-# applicaation configuration file.
+# application configuration file.
 def test_empty_config(load):
     with pytest.raises(RuntimeError) as e:
         load('empty.conf')
@@ -68,6 +68,12 @@ def test_minimal_jsonnet_wrong_extension(load, capsys):
     assert not stdout
     expected = r"Please rename '.*/minimal_jsonnet\.conf' to '.*/minimal_jsonnet\.jsonnet'"
     assert re.match(expected, stderr)
+
+def test_minimal_jsonnet_right_extension(load, capsys):
+    load('minimal.jsonnet')
+    stdout, stderr = capsys.readouterr()
+    assert not stdout
+    assert not stderr
 
 # --------------------------------------------------------------------
 # These tests verify that program options are correctly included
