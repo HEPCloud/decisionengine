@@ -54,13 +54,13 @@
                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_this_dir</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="p">))</span>
         <span class="n">manager</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="p">(</span><span class="n">program_options</span><span class="p">)</span>
         <span class="n">manager</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">manager</span>
     <span class="k">return</span> <span class="n">_call</span></div>
 
 
 <span class="c1"># --------------------------------------------------------------------</span>
 <span class="c1"># These tests demonstrate failure modes when reading a DE</span>
-<span class="c1"># applicaation configuration file.</span>
+<span class="c1"># application configuration file.</span>
 <div class="viewcode-block" id="test_empty_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_empty_config">[docs]</a><span class="k">def</span> <span class="nf">test_empty_config</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">load</span><span class="p">(</span><span class="s1">&#39;empty.conf&#39;</span><span class="p">)</span>
@@ -103,23 +103,29 @@
     <span class="n">expected</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Please rename &#39;.*/minimal_jsonnet\.conf&#39; to &#39;.*/minimal_jsonnet\.jsonnet&#39;&quot;</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">stderr</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="test_minimal_jsonnet_right_extension"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_minimal_jsonnet_right_extension">[docs]</a><span class="k">def</span> <span class="nf">test_minimal_jsonnet_right_extension</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">capsys</span><span class="p">):</span>
+    <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal.jsonnet&#39;</span><span class="p">)</span>
+    <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">capsys</span><span class="o">.</span><span class="n">readouterr</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">stdout</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">stderr</span></div>
+
 <span class="c1"># --------------------------------------------------------------------</span>
 <span class="c1"># These tests verify that program options are correctly included</span>
 <span class="c1"># as/override part of the final configuration.</span>
 <div class="viewcode-block" id="test_program_options_default"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_program_options_default">[docs]</a><span class="k">def</span> <span class="nf">test_program_options_default</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
     <span class="n">address</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">1234</span><span class="p">]</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal.jsonnet&#39;</span><span class="p">,</span>
-                  <span class="n">program_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="n">address</span><span class="p">})</span>
+                  <span class="n">program_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="n">address</span><span class="p">})</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">address</span></div>
 
 <div class="viewcode-block" id="test_program_options_update"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_program_options_update">[docs]</a><span class="k">def</span> <span class="nf">test_program_options_update</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
     <span class="c1"># Verify non-modified &#39;server_address&#39; value</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_with_address.jsonnet&#39;</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_with_address.jsonnet&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
     <span class="c1"># Override value with program option</span>
     <span class="n">address</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">1234</span><span class="p">]</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_with_address.jsonnet&#39;</span><span class="p">,</span>
-                  <span class="n">program_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="n">address</span><span class="p">})</span>
+                  <span class="n">program_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="n">address</span><span class="p">})</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">address</span></div>
 
 <span class="c1"># --------------------------------------------------------------------</span>
@@ -141,6 +147,12 @@
 
 <div class="viewcode-block" id="test_channel_no_modules"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_channel_no_modules">[docs]</a><span class="k">def</span> <span class="nf">test_channel_no_modules</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
     <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span> <span class="s1">&#39;channels/no_modules&#39;</span><span class="p">)</span></div>
+
+<span class="c1"># --------------------------------------------------------------------</span>
+<span class="c1"># Test channel names based on channel configuration file names</span>
+<div class="viewcode-block" id="test_channel_names"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.configmanager.tests.html#decisionengine.framework.configmanager.tests.test_configmanager.test_channel_names">[docs]</a><span class="k">def</span> <span class="nf">test_channel_names</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span> <span class="s1">&#39;channels/no_modules&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;no_modules&#39;</span><span class="p">]</span></div>
 </pre></div>
 
           </div>
@@ -208,7 +220,7 @@
       &copy;2020, Fermi Research Alliance, LLC..
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

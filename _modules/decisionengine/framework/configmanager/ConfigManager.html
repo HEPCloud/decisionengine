@@ -91,7 +91,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">config_str</span> <span class="o">=</span> <span class="n">_jsonnet</span><span class="o">.</span><span class="n">evaluate_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
         <span class="n">basename</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;jsonnet&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.jsonnet&#39;</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Please rename &#39;</span><span class="si">{config_file}</span><span class="s2">&#39; to &#39;</span><span class="si">{basename}</span><span class="s2">.jsonnet&#39;.&quot;</span><span class="p">,</span>
                   <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -271,10 +271,11 @@
 <div class="viewcode-block" id="ConfigManager._load_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager._load_channels">[docs]</a>    <span class="k">def</span> <span class="nf">_load_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">):</span>
             <span class="n">name</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">path</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.conf&quot;</span><span class="p">,</span> <span class="s2">&quot;.jsonnet&quot;</span><span class="p">)):</span>
+            <span class="n">basename</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;.conf&#39;</span><span class="p">,</span> <span class="s1">&#39;.jsonnet&#39;</span><span class="p">}:</span>
                 <span class="k">continue</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config_from_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">basename</span><span class="p">]</span> <span class="o">=</span> <span class="n">_config_from_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to open channel configuration file </span><span class="si">{path}</span><span class="s2"> &quot;</span>
                                   <span class="n">f</span><span class="s2">&quot;contains error</span><span class="se">\n</span><span class="s2">-&gt; </span><span class="si">{msg}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">)</span>
@@ -284,10 +285,10 @@
             <span class="c1"># If keys are missing, the channel is removed and an error</span>
             <span class="c1"># message is logged.</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">_validate_channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+                <span class="n">_validate_channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">basename</span><span class="p">])</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> </span><span class="si">{msg}</span><span class="s2">, REMOVING the channel&quot;</span><span class="p">)</span>
-                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">basename</span><span class="p">]</span>
                 <span class="k">continue</span></div>
 
 <div class="viewcode-block" id="ConfigManager.create"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.create">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -371,7 +372,7 @@
       &copy;2020, Fermi Research Alliance, LLC..
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
