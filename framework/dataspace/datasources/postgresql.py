@@ -32,9 +32,9 @@ def generate_insert_query(table_name, keys):
 
 
 SELECT_QUERY = """
-SELECT tm.taskmanager_id, foo.* FROM {} as foo, taskmanager tm
+SELECT tm.taskmanager_id, foo.* FROM {} foo, taskmanager tm
 WHERE tm.sequence_id = foo.taskmanager_id
-and foo.taskmanager_id=%s AND foo.generation_id=%s AND key=%s
+and foo.taskmanager_id=%s AND foo.generation_id=%s AND foo.key=%s
 """
 
 SELECT_LAST_GENERATION_ID_BY_NAME = """
