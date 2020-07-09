@@ -20,13 +20,13 @@ def load(monkeypatch):
                                os.path.join(_this_dir, relative_channel_config_dir))
         manager = ConfigManager.ConfigManager(program_options)
         manager.load(filename)
-        return manager.get_global_config()
+        return manager
     return _call
 
 
 # --------------------------------------------------------------------
 # These tests demonstrate failure modes when reading a DE
-# applicaation configuration file.
+# application configuration file.
 def test_empty_config(load):
     with pytest.raises(RuntimeError) as e:
         load('empty.conf')
@@ -69,23 +69,29 @@ def test_minimal_jsonnet_wrong_extension(load, capsys):
     expected = r"Please rename '.*/minimal_jsonnet\.conf' to '.*/minimal_jsonnet\.jsonnet'"
     assert re.match(expected, stderr)
 
+def test_minimal_jsonnet_right_extension(load, capsys):
+    load('minimal.jsonnet')
+    stdout, stderr = capsys.readouterr()
+    assert not stdout
+    assert not stderr
+
 # --------------------------------------------------------------------
 # These tests verify that program options are correctly included
 # as/override part of the final configuration.
 def test_program_options_default(load):
     address = ['localhost', 1234]
     config = load('minimal.jsonnet',
-                  program_options={'server_address': address})
+                  program_options={'server_address': address}).get_global_config()
     assert config.get('server_address') == address
 
 def test_program_options_update(load):
     # Verify non-modified 'server_address' value
-    config = load('minimal_with_address.jsonnet')
+    config = load('minimal_with_address.jsonnet').get_global_config()
     assert config.get('server_address') == ['localhost', 0]
     # Override value with program option
     address = ['localhost', 1234]
     config = load('minimal_with_address.jsonnet',
-                  program_options={'server_address': address})
+                  program_options={'server_address': address}).get_global_config()
     assert config.get('server_address') == address
 
 # --------------------------------------------------------------------
@@ -107,3 +113,9 @@ def test_channel_empty_dictionary(load, caplog):
 
 def test_channel_no_modules(load):
     load('minimal_python.conf', 'channels/no_modules')
+
+# --------------------------------------------------------------------
+# Test channel names based on channel configuration file names
+def test_channel_names(load):
+    manager = load('minimal_python.conf', 'channels/no_modules')
+    assert list(manager.get_channels().keys()) == ['no_modules']
