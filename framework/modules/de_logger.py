@@ -39,12 +39,13 @@ def set_logging(log_file_name=LOG_FILE, max_file_size=200 * MB, max_backup_count
     file_handler.setLevel(logging.INFO)
     logger.addHandler(file_handler)
 
-    debug_handler = logging.handlers.RotatingFileHandler("%s_debug" % (log_file_name,),
-                                                         maxBytes=max_file_size,
-                                                         backupCount=max_backup_count)
-    debug_handler.setFormatter(formatter)
-    debug_handler.setLevel(logging.DEBUG)
-    logger.addHandler(debug_handler)
+    if log_file_name != '/dev/null':
+        debug_handler = logging.handlers.RotatingFileHandler("%s_debug" % (log_file_name,),
+                                                             maxBytes=max_file_size,
+                                                             backupCount=max_backup_count)
+        debug_handler.setFormatter(formatter)
+        debug_handler.setLevel(logging.DEBUG)
+        logger.addHandler(debug_handler)
 
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
