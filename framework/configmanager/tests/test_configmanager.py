@@ -9,9 +9,14 @@ _this_dir = os.path.dirname(os.path.abspath(__file__))
 @pytest.fixture()
 def load(monkeypatch):
     def _call(filename,
+              relative_config_dir=None,
               relative_channel_config_dir=None,
               program_options=None):
-        monkeypatch.setenv('CONFIG_PATH', os.path.join(_this_dir, 'de'))
+        if relative_config_dir is None:
+            monkeypatch.setenv('CONFIG_PATH', os.path.join(_this_dir, 'de'))
+        else:
+            monkeypatch.setenv('CONFIG_PATH', os.path.join(_this_dir, relative_config_dir))
+
         if relative_channel_config_dir is None:
             monkeypatch.setenv('CHANNEL_CONFIG_PATH',
                                os.path.join(_this_dir, 'channels/no_config_files'))
@@ -55,6 +60,15 @@ def test_empty_dict_with_leading_comment(load):
 # These tests validate well-formed DE configurations, but they also
 # check that the appropriate warning messages are emitted regarding
 # Python support for a Jsonnet configuration system.
+def test_minimal_python_default(load, capsys):
+    load(None)
+    stdout, stderr = capsys.readouterr()
+    assert not stdout
+    expected = r"Please rename '.*/decision_engine\.conf' to '.*/decision_engine\.jsonnet'"
+    assert not re.search(expected, stderr, flags=re.DOTALL)
+    expected = "The supplied configuration.*has been converted to a valid JSON construct"
+    assert not re.search(expected, stderr, flags=re.DOTALL)
+
 def test_minimal_python(load, capsys):
     load('minimal_python.conf')
     stdout, stderr = capsys.readouterr()
@@ -98,24 +112,29 @@ def test_program_options_update(load):
 # These tests verify expected behavior for channel (not DE)
 # configurations.
 def test_channel_no_config_files(load):
-    load('minimal_python.conf', 'channels/no_config_files')
+    load('minimal_python.conf',
+         relative_channel_config_dir='channels/no_config_files')
 
 def test_channel_empty_config(load, capsys, caplog):
-    load('minimal_python.conf', 'channels/empty_config')
+    load('minimal_python.conf',
+         relative_channel_config_dir='channels/empty_config')
     stdout, stderr = capsys.readouterr()
     expected = "The supplied configuration.*has been converted to a valid JSON construct"
     assert re.search(expected, stderr, flags=re.DOTALL)
     assert re.search('Empty configuration file .*\\.jsonnet', caplog.text)
 
 def test_channel_empty_dictionary(load, caplog):
-    load('minimal_python.conf', 'channels/empty_dictionary')
+    load('minimal_python.conf',
+         relative_channel_config_dir='channels/empty_dictionary')
     assert re.search("channel is missing one or more mandatory keys", caplog.text)
 
 def test_channel_no_modules(load):
-    load('minimal_python.conf', 'channels/no_modules')
+    load('minimal_python.conf',
+         relative_channel_config_dir='channels/no_modules')
 
 # --------------------------------------------------------------------
 # Test channel names based on channel configuration file names
 def test_channel_names(load):
-    manager = load('minimal_python.conf', 'channels/no_modules')
+    manager = load('minimal_python.conf',
+                   relative_channel_config_dir='channels/no_modules')
     assert list(manager.get_channels().keys()) == ['no_modules']
