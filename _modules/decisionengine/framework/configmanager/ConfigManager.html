@@ -46,8 +46,8 @@
                           <span class="s1">&#39;logicengines&#39;</span><span class="p">,</span> <span class="s2">&quot;transforms&quot;</span><span class="p">,</span> <span class="s2">&quot;publishers&quot;</span><span class="p">}</span>
 <span class="n">MANDATORY_MODULE_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">}</span>
 
+<span class="n">CONFIG_FILE_NAME</span> <span class="o">=</span> <span class="s1">&#39;decision_engine.jsonnet&#39;</span>
 
-<span class="n">CONFIG_FILE_NAME</span> <span class="o">=</span> <span class="s2">&quot;decision_engine.conf&quot;</span>
 
 <div class="viewcode-block" id="_convert_to_json"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager._convert_to_json">[docs]</a><span class="k">def</span> <span class="nf">_convert_to_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -88,14 +88,19 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Empty configuration file </span><span class="si">{config_file}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">config_str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">basename</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">config_str</span> <span class="o">=</span> <span class="n">_jsonnet</span><span class="o">.</span><span class="n">evaluate_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
-        <span class="n">basename</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.jsonnet&#39;</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Please rename &#39;</span><span class="si">{config_file}</span><span class="s2">&#39; to &#39;</span><span class="si">{basename}</span><span class="s2">.jsonnet&#39;.&quot;</span><span class="p">,</span>
                   <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="n">config_str</span> <span class="o">=</span> <span class="n">_convert_to_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+        <span class="c1"># Conversion allowed only for files that do not yet have a</span>
+        <span class="c1"># &#39;.jsonnet&#39; extension.</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.jsonnet&#39;</span><span class="p">:</span>
+            <span class="n">config_str</span> <span class="o">=</span> <span class="n">_convert_to_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span>
 
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">config_str</span><span class="p">)</span></div>
 
@@ -235,7 +240,7 @@
                     <span class="k">pass</span>
         <span class="k">return</span> <span class="n">produces</span></div>
 
-<div class="viewcode-block" id="ConfigManager.reload"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file_name</span><span class="o">=</span><span class="n">CONFIG_FILE_NAME</span><span class="p">):</span>
+<div class="viewcode-block" id="ConfigManager.reload"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.reload">[docs]</a>    <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">old_global_config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">)</span>
         <span class="n">old_config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -245,7 +250,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">old_config</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span></div>
 
-<div class="viewcode-block" id="ConfigManager.load"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file_name</span><span class="o">=</span><span class="n">CONFIG_FILE_NAME</span><span class="p">):</span>
+<div class="viewcode-block" id="ConfigManager.load"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config_file_name</span><span class="p">:</span>
+            <span class="n">config_file_name</span> <span class="o">=</span> <span class="n">CONFIG_FILE_NAME</span>
         <span class="n">config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">config_file_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Config file &#39;</span><span class="si">{config_file}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
