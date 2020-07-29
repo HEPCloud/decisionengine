@@ -12,17 +12,9 @@ def create_parser():
 
     parser.add_argument(
         "--port",
+        metavar='<port number>',
         default="8888",
-        help="server port(8888)")
-
-    parser.add_argument(
-        "--stop-channel",
-        help="channel name")
-
-    parser.add_argument(
-        "--stop-channels",
-        action='store_true',
-        help="stop all channels")
+        help="Default port is 8888")
 
     parser.add_argument(
         "--start-channels",
@@ -30,13 +22,23 @@ def create_parser():
         help="start all channels")
 
     parser.add_argument(
+        "--stop-channels",
+        action='store_true',
+        help="stop all channels")
+
+    parser.add_argument(
         "--start-channel",
-        help="channel name")
+        metavar="<channel name>")
+
+    parser.add_argument(
+        "--stop-channel",
+        metavar="<channel name>")
 
     parser.add_argument(
         "--host",
+        metavar='<hostname>',
         default="localhost",
-        help="host name (localhost)")
+        help="Default hostname is 'localhost'")
 
     parser.add_argument(
         "--stop",
@@ -50,6 +52,7 @@ def create_parser():
 
     parser.add_argument(
         "--show-channel-config",
+        metavar="<channel name>",
         help="print channel configuration")
 
     parser.add_argument(
@@ -65,11 +68,11 @@ def create_parser():
     parser.add_argument(
         "--status",
         action='store_true',
-        help="print status server")
+        help="print server status")
 
     parser.add_argument(
         "--print-product",
-        help="product name")
+        metavar="<product name>")
 
     parser.add_argument(
         "--print-products",
@@ -78,7 +81,7 @@ def create_parser():
 
     parser.add_argument(
         "--query",
-        help="panda query, e.g. \" FigureOfMerit != inf \"")
+        help="panda query, e.g. \"FigureOfMerit != infs\"")
 
     parser.add_argument(
         "--columns",
@@ -91,12 +94,14 @@ def create_parser():
 
     parser.add_argument(
         "--get-channel-loglevel",
+        metavar='<channel name>',
         help="print channel log level")
 
     parser.add_argument(
         "--set-channel-loglevel",
         nargs=2,
-        help="<channel name> loglevel, (possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL)")
+        metavar=('<channel name>', '<log level>'),
+        help="Possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL")
 
     parser.add_argument(
         "--reaper-start",
@@ -105,9 +110,10 @@ def create_parser():
 
     parser.add_argument(
         "--reaper-start-delay-secs",
+        metavar='<number of seconds>',
         default="0",
         type=int,
-        help="Delay the database cleanup process start")
+        help="Delay the database cleanup process start time by the specified number of seconds.")
 
     parser.add_argument(
         "--reaper-stop",
@@ -195,12 +201,7 @@ def main(args_to_parse=None):
     '''If you pass a list of args, they will be used instead of sys.argv'''
 
     parser = create_parser()
-
-    if args_to_parse:
-        args = parser.parse_args(args_to_parse)
-    else:
-        args = parser.parse_args()
-
+    args = parser.parse_args(args_to_parse)
     socket = build_xmlrpc_connection(args.host, args.port)
 
     return execute_command_from_args(args, socket)
