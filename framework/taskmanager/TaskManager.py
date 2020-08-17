@@ -91,7 +91,7 @@ class TaskManager():
         self.name = name
         self.id = task_manager_id
         self.channel = Channel(channel_dict)
-        self.state = multiprocessing.Value('i', _State.BOOT.value)
+        self.state = multiprocessing.Value('i', self._State.BOOT.value)
         self.loglevel = multiprocessing.Value('i', logging.WARNING)
         self.decision_cycle_active = False
         self.lock = threading.Lock()
@@ -140,15 +140,15 @@ class TaskManager():
         # Wait until all sources run at least one time
         self.wait_for_all(done_events)
         logging.info('All sources finished')
-        if self.get_state() != _State.BOOT:
+        if self.get_state() != self._State.BOOT:
             logging.error(
                 f'Error occured during initial run of sources. Task Manager {self.name} exits')
             sys.exit(1)
 
         self.decision_cycle()
-        self.set_state(_State.STEADY)
+        self.set_state(self._State.STEADY)
 
-        while self.get_state() == _State.STEADY:
+        while self.get_state() == self._State.STEADY:
             try:
                 logging.setLevel(self.loglevel.value)
                 self.wait_for_any(done_events)
@@ -170,7 +170,7 @@ class TaskManager():
         # FIXME: Shouldn't the following message be logged only if the
         #        'break' in the exception handler above is reached?
         logging.error('Error occured. Task Manager %s exits with state %s',
-                      self.id, State(self.get_state()).name)
+                      self.id, self._State(self.get_state()).name)
 
     def set_state(self, state):
         with self.state.get_lock():
@@ -196,7 +196,7 @@ class TaskManager():
         offline and stop task manager
         """
 
-        self.set_state(State.OFFLINE)
+        self.set_state(self._State.OFFLINE)
         # invalidate data block
         # not implemented yet
         self.stop = True

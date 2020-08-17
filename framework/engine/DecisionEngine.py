@@ -18,17 +18,8 @@ import tabulate
 import time
 import uuid
 
-try:
-    import SocketServer
-except ImportError:
-    import socketserver as SocketServer
-    pass
-
-try:
-    import SimpleXMLRPCServer
-except ImportError:
-    import xmlrpc.server as SimpleXMLRPCServer
-    pass
+import socketserver
+import xmlrpc.server
 
 
 import decisionengine.framework.configmanager.ConfigManager as Conf_Manager
@@ -58,31 +49,25 @@ class Worker(multiprocessing.Process):
                                                             backupCount=self.logger_config.get("max_backup_count",
                                                                                                6))
         file_handler.setFormatter(FORMATTER)
-        self.logger.setLevel(logging.WARNING)
-        self.logger.addHandler(file_handler)
+        logger.setLevel(logging.WARNING)
+        logger.addHandler(file_handler)
         channel_log_level = self.loggger_config.get("global_channel_log_level", "WARNING")
         self.task_manager.set_loglevel(channel_log_level)
         self.task_manager.run()
 
 
-class RequestHandler(SimpleXMLRPCServer.SimpleXMLRPCRequestHandler):
+class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
 
-class RpcServer(SocketServer.ThreadingMixIn, SimpleXMLRPCServer.SimpleXMLRPCServer):
-    def __init__(self, server_address, RequestHandlerClass):
-        SimpleXMLRPCServer.SimpleXMLRPCServer.__init__(
-            self, server_address, requestHandler=RequestHandlerClass)
+class DecisionEngine(socketserver.ThreadingMixIn,
+                     xmlrpc.server.SimpleXMLRPCServer):
 
-
-class DecisionEngine(SocketServer.ThreadingMixIn,
-                     SimpleXMLRPCServer.SimpleXMLRPCServer):
-
-    def __init__(self, cfg, server_address, RequestHandlerClass):
-        SimpleXMLRPCServer.SimpleXMLRPCServer.__init__(self,
-                                                       server_address,
-                                                       logRequests=False,
-                                                       requestHandler=RequestHandlerClass)
+    def __init__(self, cfg, server_address):
+        xmlrpc.server.SimpleXMLRPCServer.__init__(self,
+                                                  server_address,
+                                                  logRequests=False,
+                                                  requestHandler=RequestHandler)
 
         self.logger = logging.getLogger("decision_engine")
         signal.signal(signal.SIGHUP, self.handle_sighup)
@@ -410,7 +395,7 @@ def main(args=None):
     server_address = tuple(global_config.get('server_address'))
 
     try:
-        server = DecisionEngine(conf_manager, server_address, RequestHandler)
+        server = DecisionEngine(conf_manager, server_address)
         server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
         if channels_required:
             server.start_channels()
