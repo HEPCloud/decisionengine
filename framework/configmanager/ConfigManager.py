@@ -12,8 +12,8 @@ MANDATORY_CHANNEL_KEYS = {"sources",
                           'logicengines', "transforms", "publishers"}
 MANDATORY_MODULE_KEYS = {"module", "name", "parameters"}
 
+CONFIG_FILE_NAME = 'decision_engine.jsonnet'
 
-CONFIG_FILE_NAME = "decision_engine.conf"
 
 def _convert_to_json(config_file):
     """
@@ -54,14 +54,19 @@ def _config_from_file(config_file):
         raise RuntimeError(f"Empty configuration file {config_file}")
 
     config_str = None
+    basename, ext = os.path.splitext(config_file)
     try:
         config_str = _jsonnet.evaluate_file(config_file)
-        basename, ext = os.path.splitext(config_file)
-        if ext != 'jsonnet':
+        if ext != '.jsonnet':
             print(f"Please rename '{config_file}' to '{basename}.jsonnet'.",
                   file=sys.stderr)
     except Exception:
-        config_str = _convert_to_json(config_file)
+        # Conversion allowed only for files that do not yet have a
+        # '.jsonnet' extension.
+        if ext != '.jsonnet':
+            config_str = _convert_to_json(config_file)
+        else:
+            raise
 
     return json.loads(config_str)
 
@@ -201,7 +206,7 @@ class ConfigManager():
                     pass
         return produces
 
-    def reload(self, config_file_name=CONFIG_FILE_NAME):
+    def reload(self, config_file_name=None):
         old_global_config = copy.deepcopy(self.global_config)
         old_config = copy.deepcopy(self.config)
         try:
@@ -211,7 +216,9 @@ class ConfigManager():
             self.config = copy.deepcopy(old_config)
             raise RuntimeError
 
-    def load(self, config_file_name=CONFIG_FILE_NAME):
+    def load(self, config_file_name=None):
+        if not config_file_name:
+            config_file_name = CONFIG_FILE_NAME
         config_file = os.path.join(self.config_dir, config_file_name)
         if not os.path.isfile(config_file):
             raise Exception(f"Config file '{config_file}' not found")
@@ -237,10 +244,11 @@ class ConfigManager():
     def _load_channels(self):
         for entry in os.scandir(self.channel_config_dir):
             name, path = entry.name, entry.path
-            if not name.endswith((".conf", ".jsonnet")):
+            basename, ext = os.path.splitext(name)
+            if ext not in {'.conf', '.jsonnet'}:
                 continue
             try:
-                self.channels[name] = _config_from_file(path)
+                self.channels[basename] = _config_from_file(path)
             except Exception as msg:
                 self.logger.error(f"Failed to open channel configuration file {path} "
                                   f"contains error\n-> {msg}\nSKIPPING channel")
@@ -250,10 +258,10 @@ class ConfigManager():
             # If keys are missing, the channel is removed and an error
             # message is logged.
             try:
-                _validate_channel(self.channels[name])
+                _validate_channel(self.channels[basename])
             except Exception as msg:
                 self.logger.error(f"{name} {msg}, REMOVING the channel")
-                del self.channels[name]
+                del self.channels[basename]
                 continue
 
     @staticmethod
