@@ -165,7 +165,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         width = max([len(x) for x in list(self.task_managers.keys())]) + 1
         txt = ""
         for ch, worker in list(self.task_managers.items()):
-            sname = TaskManager.STATE_NAMES[worker.task_manager.get_state()]
+            sname = worker.task_manager.get_state_name()
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
                                                                                       worker.task_manager.id,
                                                                                       sname,
@@ -201,7 +201,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         width = max([len(x) for x in list(self.task_managers.keys())]) + 1
         txt = ""
         for ch, worker in list(self.task_managers.items()):
-            sname = TaskManager.STATE_NAMES[worker.task_manager.get_state()]
+            sname = worker.task_manager.get_state_name()
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
                                                                                       worker.task_manager.id,
                                                                                       sname,

@@ -170,7 +170,7 @@ class TaskManager():
         # FIXME: Shouldn't the following message be logged only if the
         #        'break' in the exception handler above is reached?
         logging.error('Error occured. Task Manager %s exits with state %s',
-                      self.id, self._State(self.get_state()).name)
+                      self.id, self.get_state_name())
 
     def set_state(self, state):
         with self.state.get_lock():
@@ -179,6 +179,9 @@ class TaskManager():
     def get_state(self):
         with self.state.get_lock():
             return self.state.value
+
+    def get_state_name(self):
+        return self._State(self.get_state()).name
 
     def set_loglevel(self, log_level):
         """Assumes log_level is a string corresponding to the supported logging-module levels."""
