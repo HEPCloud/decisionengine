@@ -282,11 +282,11 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
     def stop_channel(self, channel):
         worker = self.task_managers[channel]
-        if worker.task_manager.get_state() not in (TaskManager.SHUTTINGDOWN,
-                                                   TaskManager.SHUTDOWN):
-            worker.task_manager.set_state(TaskManager.SHUTTINGDOWN)
+        if worker.task_manager.get_state() not in (TaskManager.State.SHUTTINGDOWN,
+                                                   TaskManager.State.SHUTDOWN):
+            worker.task_manager.set_state(TaskManager.State.SHUTTINGDOWN)
         for i in range(int(self.config_manager.config.get("shutdown_timeout", 10))):
-            if worker.task_manager.get_state() == TaskManager.SHUTDOWN:
+            if worker.task_manager.get_state() == TaskManager.State.SHUTDOWN:
                 break
             else:
                 time.sleep(1)
@@ -300,7 +300,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
     def stop_channels(self):
         for x in self.task_managers.items():
-            x[1].task_manager.set_state(TaskManager.SHUTTINGDOWN)
+            x[1].task_manager.set_state(TaskManager.State.SHUTTINGDOWN)
         channels = list(self.task_managers.keys())
         for ch in channels:
             self.stop_channel(ch)
@@ -328,11 +328,12 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return logging.getLevelName(worker.task_manager.get_loglevel())
 
     def rpc_set_channel_log_level(self, channel, log_level):
+        """Assumes log_level is a string corresponding to the supported logging-module levels."""
         worker = self.task_managers[channel]
-        log_level_code = TaskManager.LOG_LEVELS_DICT[log_level]
+        log_level_code = getattr(logging, log_level)
         if worker.task_manager.get_loglevel() == log_level_code:
             return f"Nothing to do. Current log level is : {log_level}"
-        worker.task_manager.set_loglevel(log_level_code)
+        worker.task_manager.set_loglevel(log_level)
         return f"Log level changed to : {log_level}"
 
     def rpc_reaper_start(self, delay=0):

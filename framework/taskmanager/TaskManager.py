@@ -60,17 +60,17 @@ class Channel():
         self.task_manager = channel_dict.get('task_manager', {})
 
 
+class State(enum.Enum):
+    BOOT = 0
+    STEADY = 1
+    OFFLINE = 2
+    SHUTTINGDOWN = 3
+    SHUTDOWN = 4
+
 class TaskManager():
     """
     Task Manager
     """
-
-    class _State(enum.Enum):
-        BOOT = 0
-        STEADY = 1
-        OFFLINE = 2
-        SHUTTINGDOWN = 3
-        SHUTDOWN = 4
 
     def __init__(self, name, task_manager_id, generation_id, channel_dict, global_config):
         """
@@ -91,7 +91,7 @@ class TaskManager():
         self.name = name
         self.id = task_manager_id
         self.channel = Channel(channel_dict)
-        self.state = multiprocessing.Value('i', self._State.BOOT.value)
+        self.state = multiprocessing.Value('i', State.BOOT.value)
         self.loglevel = multiprocessing.Value('i', logging.WARNING)
         self.decision_cycle_active = False
         self.lock = threading.Lock()
@@ -140,15 +140,15 @@ class TaskManager():
         # Wait until all sources run at least one time
         self.wait_for_all(done_events)
         logging.info('All sources finished')
-        if self.get_state() != self._State.BOOT:
+        if self.get_state() != State.BOOT:
             logging.error(
                 f'Error occured during initial run of sources. Task Manager {self.name} exits')
             sys.exit(1)
 
         self.decision_cycle()
-        self.set_state(self._State.STEADY)
+        self.set_state(State.STEADY)
 
-        while self.get_state() == self._State.STEADY:
+        while self.get_state() == State.STEADY:
             try:
                 logging.setLevel(self.loglevel.value)
                 self.wait_for_any(done_events)
@@ -181,7 +181,7 @@ class TaskManager():
             return self.state.value
 
     def get_state_name(self):
-        return self._State(self.get_state()).name
+        return State(self.get_state()).name
 
     def set_loglevel(self, log_level):
         """Assumes log_level is a string corresponding to the supported logging-module levels."""
@@ -199,7 +199,7 @@ class TaskManager():
         offline and stop task manager
         """
 
-        self.set_state(self._State.OFFLINE)
+        self.set_state(State.OFFLINE)
         # invalidate data block
         # not implemented yet
         self.stop = True
