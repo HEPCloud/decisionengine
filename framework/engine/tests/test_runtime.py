@@ -20,17 +20,19 @@ def get_random_port():
 # Insulate from parent environments
 multiprocessing.set_start_method('spawn')
 
+_HOME = '127.0.0.1'
+_LOG_LEVELS = ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
 class TestClientServerPython(unittest.TestCase):
-
     def setUp(self):
         self.port = str(get_random_port())
 
         os.environ['CONFIG_PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/../../tests/etc/decisionengine/'
-
         os.environ['DECISIONENGINE_NO_CHANNELS'] = "1"
 
-        self.server_proc = multiprocessing.Process(target=de_server.main, args=([('--port', self.port)]), name='de-server')
+        self.server_proc = multiprocessing.Process(target=de_server.main,
+                                                   args=([('--port', self.port)]),
+                                                   name='de-server')
         self.server_proc.start()
 
         time.sleep(1)
@@ -39,7 +41,7 @@ class TestClientServerPython(unittest.TestCase):
 
         time.sleep(1)
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as soc:
-            soc.connect(('127.0.0.1', int(self.port)))
+            soc.connect((_HOME, int(self.port)))
 
         if self.server_proc.exitcode:
             raise RuntimeError('DE Server terminated too early')
@@ -54,8 +56,7 @@ class TestClientServerPython(unittest.TestCase):
         del os.environ['DECISIONENGINE_NO_CHANNELS']
 
         try:
-            de_client.main(args_to_parse=['--host=127.0.0.1', '--port=' + self.port, '--stop'])
-            time.sleep(5)
+            self.de_client_request('--stop')
         except ConnectionRefusedError:
             # server already shutdown
             pass
@@ -63,42 +64,59 @@ class TestClientServerPython(unittest.TestCase):
         if self.server_proc.is_alive():
             self.server_proc.terminate()
 
+    def de_client_request(self, *args):
+        return de_client.main([f'--host={_HOME}', '--port', self.port, *args])
+
     def test_client_can_get_de_server_show_config(self):
-        output = de_client.main(['--host=127.0.0.1', '--port', self.port, '--show-config'])
+        output = self.de_client_request('--show-config')
         self.assertNotEqual('{}', output, msg="DE didn't share channel configs")
 
     def test_client_can_get_de_server_reload_config(self):
-        output = de_client.main(['--host=127.0.0.1', '--port', self.port, '--reload-config'])
+        output = self.de_client_request('--reload-config')
         self.assertEqual('OK', output, msg="DE didn't say OK")
 
     def test_client_can_get_de_server_reaper_status(self):
-        output = de_client.main(['--host=127.0.0.1', '--port', self.port, '--reaper-status'])
+        output = self.de_client_request('--reaper-status')
         self.assertIn('reaper:', output, msg="Couldn't find reaper section")
         self.assertIn('state:', output, msg="Couldn't find reaper state")
         self.assertIn('retention_interval:', output, msg="Couldn't find reaper interval")
 
     def test_client_can_get_de_server_reaper_stop(self):
-        output = de_client.main(['--host=127.0.0.1', '--port', self.port, '--reaper-stop'])
+        output = self.de_client_request('--reaper-stop')
         self.assertEqual('OK', output, msg="DE didn't say OK")
 
         # get status to be sure
-        output = de_client.main(['--host=127.0.0.1', '--port', self.port, '--reaper-status'])
+        output = self.de_client_request('--reaper-status')
         self.assertIn('reaper:', output, msg="Couldn't find reaper section")
         self.assertIn('state:', output, msg="Couldn't find reaper state")
         self.assertIn('State.STOPPED', output, msg="reaper state incorrect")
 
     def test_client_can_get_de_server_reaper_start_delay(self):
         # make sure the reaper is stopped first
-        de_client.main(['--host=127.0.0.1', '--port', self.port, '--reaper-stop'])
+        self.de_client_request('--reaper-stop')
 
-        output = de_client.main(['--host=127.0.0.1', '--port', self.port, '--reaper-start', '--reaper-start-delay-secs=90'])
+        output = self.de_client_request('--reaper-start', '--reaper-start-delay-secs=90')
         self.assertEqual('OK', output, msg="DE didn't say OK")
 
         # get status to be sure
-        output = de_client.main(['--host=127.0.0.1', '--port', self.port, '--reaper-status'])
+        output = self.de_client_request('--reaper-status')
         self.assertIn('reaper:', output, msg="Couldn't find reaper section")
         self.assertIn('state:', output, msg="Couldn't find reaper state")
         self.assertIn('State.STARTING', output, msg="reaper state incorrect")
+
+    def test_client_can_get_de_server_show_logger_level(self):
+        output = self.de_client_request('--print-engine-loglevel')
+        self.assertIn(output, _LOG_LEVELS, msg="DE didn't give a valid log level")
+
+    def test_client_can_get_de_server_show_channel_logger_level(self):
+        output = self.de_client_request('--get-channel-loglevel=UNITTEST')
+        self.assertIn(output, _LOG_LEVELS, msg="DE didn't get channel logger level")
+
+    def test_global_channel_log_level_in_config(self):
+        output = self.de_client_request('--show-de-config')
+        self.assertIn('global_channel_log_level',
+                      output,
+                      msg="Global channel log level not set in config file. Default value is INFO.")
 
 
 if __name__ == '__main__':
