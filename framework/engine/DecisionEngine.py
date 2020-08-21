@@ -18,17 +18,8 @@ import tabulate
 import time
 import uuid
 
-try:
-    import SocketServer
-except ImportError:
-    import socketserver as SocketServer
-    pass
-
-try:
-    import SimpleXMLRPCServer
-except ImportError:
-    import xmlrpc.server as SimpleXMLRPCServer
-    pass
+import socketserver
+import xmlrpc.server
 
 
 import decisionengine.framework.configmanager.ConfigManager as Conf_Manager
@@ -39,52 +30,44 @@ import decisionengine.framework.taskmanager.TaskManager as TaskManager
 CONFIG_UPDATE_PERIOD = 10  # seconds
 FORMATTER = logging.Formatter(
     "%(asctime)s - %(name)s - %(module)s - %(process)d - %(threadName)s - %(levelname)s - %(message)s")
-LOG_LEVELS_DICT = {0: 'NOTSET', 10: 'DEBUG', 20: 'INFO', 30: 'WARNING', 40: 'ERROR', 50: 'CRITICAL'}
 
 class Worker(multiprocessing.Process):
 
-    def __init__(self, task_manager, config):
+    def __init__(self, task_manager, logger_config):
         super().__init__()
         self.task_manager = task_manager
-        self.logger = None
-        self.config = config
+        self.logger_config = logger_config
 
     def run(self):
-        self.logger = logging.getLogger()
+        logger = logging.getLogger()
         file_handler = logging.handlers.RotatingFileHandler(os.path.join(
                                                             os.path.dirname(
-                                                                self.config["logger"]["log_file"]),
+                                                                self.logger_config["log_file"]),
                                                             self.task_manager.name + ".log"),
-                                                            maxBytes=self.config["logger"].get("max_file_size",
-                                                                                               200 * 1000000),
-                                                            backupCount=self.config["logger"].get("max_backup_count",
-                                                                                                  6))
+                                                            maxBytes=self.logger_config.get("max_file_size",
+                                                                                            200 * 1000000),
+                                                            backupCount=self.logger_config.get("max_backup_count",
+                                                                                               6))
         file_handler.setFormatter(FORMATTER)
-        self.logger.setLevel(logging.WARNING)
-        self.logger.addHandler(file_handler)
-        channel_log_level = self.config["logger"].get("global_channel_log_level", "WARNING")
-        self.task_manager.set_loglevel(TaskManager.LOG_LEVELS_DICT[channel_log_level])
+        logger.setLevel(logging.WARNING)
+        logger.addHandler(file_handler)
+        channel_log_level = self.loggger_config.get("global_channel_log_level", "WARNING")
+        self.task_manager.set_loglevel(channel_log_level)
         self.task_manager.run()
 
 
-class RequestHandler(SimpleXMLRPCServer.SimpleXMLRPCRequestHandler):
+class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
 
-class RpcServer(SocketServer.ThreadingMixIn, SimpleXMLRPCServer.SimpleXMLRPCServer):
-    def __init__(self, server_address, RequestHandlerClass):
-        SimpleXMLRPCServer.SimpleXMLRPCServer.__init__(
-            self, server_address, requestHandler=RequestHandlerClass)
+class DecisionEngine(socketserver.ThreadingMixIn,
+                     xmlrpc.server.SimpleXMLRPCServer):
 
-
-class DecisionEngine(SocketServer.ThreadingMixIn,
-                     SimpleXMLRPCServer.SimpleXMLRPCServer):
-
-    def __init__(self, cfg, server_address, RequestHandlerClass):
-        SimpleXMLRPCServer.SimpleXMLRPCServer.__init__(self,
-                                                       server_address,
-                                                       logRequests=False,
-                                                       requestHandler=RequestHandlerClass)
+    def __init__(self, cfg, server_address):
+        xmlrpc.server.SimpleXMLRPCServer.__init__(self,
+                                                  server_address,
+                                                  logRequests=False,
+                                                  requestHandler=RequestHandler)
 
         self.logger = logging.getLogger("decision_engine")
         signal.signal(signal.SIGHUP, self.handle_sighup)
@@ -99,13 +82,11 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
 
     def _dispatch(self, method, params):
         try:
-            """
-            methods allowed to be executed by rpc
-            have rpc pre-pended
-            """
+            # methods allowed to be executed by rpc have 'rpc_'
+            # pre-pended
             func = getattr(self, "rpc_" + method)
         except AttributeError:
-            raise Exception('method "%s" is not supported' % method)
+            raise Exception(f'method "{method}" is not supported')
         else:
             return func(*params)
 
@@ -184,7 +165,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         width = max([len(x) for x in list(self.task_managers.keys())]) + 1
         txt = ""
         for ch, worker in list(self.task_managers.items()):
-            sname = TaskManager.STATE_NAMES[worker.task_manager.get_state()]
+            sname = worker.task_manager.get_state_name()
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
                                                                                       worker.task_manager.id,
                                                                                       sname,
@@ -220,7 +201,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         width = max([len(x) for x in list(self.task_managers.keys())]) + 1
         txt = ""
         for ch, worker in list(self.task_managers.items()):
-            sname = TaskManager.STATE_NAMES[worker.task_manager.get_state()]
+            sname = worker.task_manager.get_state_name()
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
                                                                                       worker.task_manager.id,
                                                                                       sname,
@@ -248,8 +229,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                         pass
                     txt += "\t\t\tconsumes : {}\n".format(consumes)
                     txt += "\t\t\tproduces : {}\n".format(produces)
-        txt += self.reaper_status()
-        return txt[:-1]
+        return txt + self.reaper_status()
 
     def rpc_stop(self):
         self.reaper_stop()
@@ -260,7 +240,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
     def rpc_start_channel(self, channel):
         self.reload_config()
         if channel in self.task_managers:
-            return "ERROR, channel {} is running".format(channel)
+            return f"ERROR, channel {channel} is running"
         self.start_channel(channel)
         return "OK"
 
@@ -274,10 +254,10 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
                                                channel_config,
                                                self.config_manager.get_global_config())
         worker = Worker(task_manager,
-                        self.config_manager.get_global_config())
+                        self.config_manager.get_global_config()['logger'])
         self.task_managers[channel] = worker
         worker.start()
-        self.logger.info("Channel {} started".format(channel))
+        self.logger.info(f"Channel {channel} started")
 
     def rpc_start_channels(self):
         self.reload_config()
@@ -288,15 +268,13 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         channels = self.config_manager.get_channels()
         if not channels:
             raise RuntimeError("No channels configured")
-        """
-        start channels
-        """
+
+        # Start channels
         for ch in channels:
             try:
                 self.start_channel(ch)
             except Exception as e:
-                self.logger.error(
-                    "Channel {} failed to start : {}".format(ch, e))
+                self.logger.error(f"Channel {ch} failed to start : {e}")
 
     def rpc_stop_channel(self, channel):
         self.stop_channel(channel)
@@ -304,11 +282,11 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
 
     def stop_channel(self, channel):
         worker = self.task_managers[channel]
-        if worker.task_manager.get_state() not in (TaskManager.SHUTTINGDOWN,
-                                                   TaskManager.SHUTDOWN):
-            worker.task_manager.set_state(TaskManager.SHUTTINGDOWN)
+        if worker.task_manager.get_state() not in (TaskManager.State.SHUTTINGDOWN,
+                                                   TaskManager.State.SHUTDOWN):
+            worker.task_manager.set_state(TaskManager.State.SHUTTINGDOWN)
         for i in range(int(self.config_manager.config.get("shutdown_timeout", 10))):
-            if worker.task_manager.get_state() == TaskManager.SHUTDOWN:
+            if worker.task_manager.get_state() == TaskManager.State.SHUTDOWN:
                 break
             else:
                 time.sleep(1)
@@ -322,7 +300,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
 
     def stop_channels(self):
         for x in self.task_managers.items():
-            x[1].task_manager.set_state(TaskManager.SHUTTINGDOWN)
+            x[1].task_manager.set_state(TaskManager.State.SHUTTINGDOWN)
         channels = list(self.task_managers.keys())
         for ch in channels:
             self.stop_channel(ch)
@@ -332,7 +310,7 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
         self.stop_channels()
         self.reload_config()
         self.start_channels()
-        self.reaper_start(delay=self.global_config.get('dataspace', ('reaper_start_delay_seconds', 1818)))
+        self.reaper_start(delay=self.global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
 
     def rpc_reload_config(self):
         self.reload_config()
@@ -343,24 +321,20 @@ class DecisionEngine(SocketServer.ThreadingMixIn,
 
     def rpc_get_log_level(self):
         engineloglevel = self.get_logger().getEffectiveLevel()
-        txt = "{}".format(LOG_LEVELS_DICT[engineloglevel])
-        return txt
+        return logging.getLevelName(engineloglevel)
 
     def rpc_get_channel_log_level(self, channel):
         worker = self.task_managers[channel]
-        loglevel = LOG_LEVELS_DICT[worker.task_manager.get_loglevel()]
-        txt = "{} ".format(loglevel)
-        return txt[:-1]
+        return logging.getLevelName(worker.task_manager.get_loglevel())
 
     def rpc_set_channel_log_level(self, channel, log_level):
+        """Assumes log_level is a string corresponding to the supported logging-module levels."""
         worker = self.task_managers[channel]
-        if worker.task_manager.get_loglevel() == TaskManager.LOG_LEVELS_DICT[log_level]:
-            txt = "Nothing to do. Current log level is : {} ".format(log_level)
-            return txt[:-1]
-        else:
-            worker.task_manager.set_loglevel(TaskManager.LOG_LEVELS_DICT[log_level])
-            txt = "Log level changed to : {} ".format(log_level)
-            return txt[:-1]
+        log_level_code = getattr(logging, log_level)
+        if worker.task_manager.get_loglevel() == log_level_code:
+            return f"Nothing to do. Current log level is : {log_level}"
+        worker.task_manager.set_loglevel(log_level)
+        return f"Log level changed to : {log_level}"
 
     def rpc_reaper_start(self, delay=0):
         '''
@@ -422,7 +396,7 @@ def main(args=None):
     server_address = tuple(global_config.get('server_address'))
 
     try:
-        server = DecisionEngine(conf_manager, server_address, RequestHandler)
+        server = DecisionEngine(conf_manager, server_address)
         server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
         if channels_required:
             server.start_channels()
