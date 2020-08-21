@@ -46,7 +46,7 @@ The following environment variable points to decision engine configuration file:
 if this environment variable is not defined the <code class="docutils literal notranslate"><span class="pre">DE-Config.py</span></code> file from the <a href="#id1"><span class="problematic" id="id2">``</span></a>../tests/etc/` directory will be used.</p>
 <dl class="py class">
 <dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine">
-<em class="property">class </em><code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">DecisionEngine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cfg</span></em>, <em class="sig-param"><span class="n">server_address</span></em>, <em class="sig-param"><span class="n">RequestHandlerClass</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">DecisionEngine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cfg</span></em>, <em class="sig-param"><span class="n">server_address</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">socketserver.ThreadingMixIn</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">xmlrpc.server.SimpleXMLRPCServer</span></code></p>
 <dl class="py method">
 <dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine._dispatch">
@@ -143,7 +143,8 @@ Default 0 seconds delay.
 <dl class="py method">
 <dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_set_channel_log_level">
 <code class="sig-name descname">rpc_set_channel_log_level</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">log_level</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine.rpc_set_channel_log_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_set_channel_log_level" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Assumes log_level is a string corresponding to the supported logging-module levels.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_show_config">
@@ -221,14 +222,8 @@ Default 0 seconds delay.
 </dd></dl>
 
 <dl class="py class">
-<dt id="decisionengine.framework.engine.DecisionEngine.RpcServer">
-<em class="property">class </em><code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">RpcServer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">server_address</span></em>, <em class="sig-param"><span class="n">RequestHandlerClass</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#RpcServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.RpcServer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">socketserver.ThreadingMixIn</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">xmlrpc.server.SimpleXMLRPCServer</span></code></p>
-</dd></dl>
-
-<dl class="py class">
 <dt id="decisionengine.framework.engine.DecisionEngine.Worker">
-<em class="property">class </em><code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">Worker</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_manager</span></em>, <em class="sig-param"><span class="n">config</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#Worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.Worker" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">Worker</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_manager</span></em>, <em class="sig-param"><span class="n">logger_config</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#Worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.Worker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.context.Process</span></code></p>
 <dl class="py method">
 <dt id="decisionengine.framework.engine.DecisionEngine.Worker.run">

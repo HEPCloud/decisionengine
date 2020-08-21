@@ -42,12 +42,11 @@
 <span class="kn">import</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="k">as</span> <span class="nn">de_logger</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.util.tsort</span> <span class="k">as</span> <span class="nn">tsort</span>
 
-<span class="n">MANDATORY_CHANNEL_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sources&quot;</span><span class="p">,</span>
-                          <span class="s1">&#39;logicengines&#39;</span><span class="p">,</span> <span class="s2">&quot;transforms&quot;</span><span class="p">,</span> <span class="s2">&quot;publishers&quot;</span><span class="p">}</span>
-<span class="n">MANDATORY_MODULE_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">}</span>
+<span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sources&#39;</span><span class="p">,</span> <span class="s1">&#39;logicengines&#39;</span><span class="p">,</span> <span class="s1">&#39;transforms&#39;</span><span class="p">,</span> <span class="s1">&#39;publishers&#39;</span><span class="p">}</span>
+<span class="n">_ALLOWED_CHANNEL_KEYS</span> <span class="o">=</span> <span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">|</span> <span class="p">{</span><span class="s1">&#39;task_manager&#39;</span><span class="p">}</span>
+<span class="n">_MANDATORY_MODULE_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">}</span>
 
-<span class="n">CONFIG_FILE_NAME</span> <span class="o">=</span> <span class="s1">&#39;decision_engine.jsonnet&#39;</span>
-
+<span class="n">_CONFIG_FILE_NAME</span> <span class="o">=</span> <span class="s1">&#39;decision_engine.jsonnet&#39;</span>
 
 <div class="viewcode-block" id="_convert_to_json"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager._convert_to_json">[docs]</a><span class="k">def</span> <span class="nf">_convert_to_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -123,21 +122,21 @@
 <span class="sd">    :type data: :obj:`dict`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">channel_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">channel_conf_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-    <span class="n">diff</span> <span class="o">=</span> <span class="n">MANDATORY_CHANNEL_KEYS</span> <span class="o">-</span> <span class="n">channel_keys</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">-</span> <span class="n">channel_keys</span>
     <span class="k">if</span> <span class="n">diff</span><span class="p">:</span>
         <span class="n">missing</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;channel is missing one or more mandatory keys </span><span class="si">{missing}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">MANDATORY_CHANNEL_KEYS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;channel is missing one or more mandatory keys:</span><span class="se">\n</span><span class="si">{missing}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_MANDATORY_CHANNEL_KEYS</span><span class="p">:</span>
         <span class="n">conf</span> <span class="o">=</span> <span class="n">channel_conf_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">module_conf</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">module_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">module_conf</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> module </span><span class="si">{module_name}</span><span class="s2"> is not a dictionary, </span><span class="si">{msg}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">diff</span> <span class="o">=</span> <span class="n">MANDATORY_MODULE_KEYS</span> <span class="o">-</span> <span class="n">module_keys</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> module </span><span class="si">{module_name}</span><span class="s2"> is not a dictionary:</span><span class="se">\n</span><span class="si">{msg}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">_MANDATORY_MODULE_KEYS</span> <span class="o">-</span> <span class="n">module_keys</span>
             <span class="k">if</span> <span class="n">diff</span><span class="p">:</span>
                 <span class="n">missing_keys</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> module </span><span class="si">{module_name}</span><span class="s2"> is missing one or more mandatory keys </span><span class="si">{missing_keys}</span><span class="s2"> &quot;</span><span class="p">)</span></div>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> module </span><span class="si">{module_name}</span><span class="s2"> is missing one or more mandatory keys:</span><span class="se">\n</span><span class="si">{missing_keys}</span><span class="s2"> &quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="_validate_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager._validate_channel">[docs]</a><span class="k">def</span> <span class="nf">_validate_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -252,7 +251,7 @@
 
 <div class="viewcode-block" id="ConfigManager.load"><a class="viewcode-back" href="../../../../code/decisionengine.framework.configmanager.html#decisionengine.framework.configmanager.ConfigManager.ConfigManager.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">config_file_name</span><span class="p">:</span>
-            <span class="n">config_file_name</span> <span class="o">=</span> <span class="n">CONFIG_FILE_NAME</span>
+            <span class="n">config_file_name</span> <span class="o">=</span> <span class="n">_CONFIG_FILE_NAME</span>
         <span class="n">config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">config_file_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Config file &#39;</span><span class="si">{config_file}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
@@ -294,7 +293,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">_validate_channel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">basename</span><span class="p">])</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="s2"> </span><span class="si">{msg}</span><span class="s2">, REMOVING the channel&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{name}</span><span class="se">\n</span><span class="si">{msg}</span><span class="se">\n</span><span class="s2">REMOVING the channel&quot;</span><span class="p">)</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">basename</span><span class="p">]</span>
                 <span class="k">continue</span></div>
 
@@ -304,9 +303,8 @@
 <span class="sd">        Factory method:  create instance of dynamically loaded module</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">my_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
-        <span class="n">clazz</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
-        <span class="n">instance</span> <span class="o">=</span> <span class="n">clazz</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">instance</span></div></div>
+        <span class="n">class_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">class_type</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span></div></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

@@ -155,10 +155,9 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DATABLOCK </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
                         <span class="c1"># This is a valid datablock</span>
                         <span class="k">break</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">retry_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
-                        <span class="c1"># retry in 1/3 of configured TO</span>
-                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span> <span class="o">//</span> <span class="mi">3</span><span class="p">)</span>
+                    <span class="n">retry_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="c1"># retry in 1/3 of configured TO</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span> <span class="o">//</span> <span class="mi">3</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">retry_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span><span class="p">)</span>
@@ -189,10 +188,9 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;KEYERROR </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ke</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filled_keys</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">):</span>
                 <span class="k">break</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># expected data is not ready yet</span>
-                <span class="n">retry_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span><span class="p">)</span>
+            <span class="c1"># expected data is not ready yet</span>
+            <span class="n">retry_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">retry_cnt</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">filled_keys</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not get all data. Expected </span><span class="si">%s</span><span class="s1"> Filled </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>

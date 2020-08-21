@@ -50,10 +50,6 @@
 <span class="c1"># 5) get() needs to error in case of expired data</span>
 <span class="c1">###############################################################################</span>
 
-<span class="n">STATE_NEW</span> <span class="o">=</span> <span class="s1">&#39;NEW&#39;</span>
-<span class="n">STATE_STEADY</span> <span class="o">=</span> <span class="s1">&#39;STEADY&#39;</span>
-<span class="n">STATE_ERROR</span> <span class="o">=</span> <span class="s1">&#39;ERROR&#39;</span>
-<span class="n">STATE_EXPIRED</span> <span class="o">=</span> <span class="s1">&#39;EXPIRED&#39;</span>
 <span class="n">_ENCODING</span> <span class="o">=</span> <span class="s1">&#39;latin1&#39;</span>
 
 
@@ -107,28 +103,7 @@
         <span class="k">return</span> <span class="n">zbytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">_ENCODING</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="KeyNotFoundError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.KeyNotFoundError">[docs]</a><span class="k">class</span> <span class="nc">KeyNotFoundError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Errors due to invalid Metadata</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="ExpiredDataError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.ExpiredDataError">[docs]</a><span class="k">class</span> <span class="nc">ExpiredDataError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Errors due to invalid Metadata</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
-
-
 <div class="viewcode-block" id="InvalidMetadataError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.InvalidMetadataError">[docs]</a><span class="k">class</span> <span class="nc">InvalidMetadataError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Errors due to invalid Metadata</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="InvalidHeaderError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.InvalidHeaderError">[docs]</a><span class="k">class</span> <span class="nc">InvalidHeaderError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Errors due to invalid Metadata</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -418,12 +393,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">header_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
                                                <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">header_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">create_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
-                        <span class="n">expiration_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
-                        <span class="n">scheduled_create_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
-                        <span class="n">creator</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
-                        <span class="n">schema_id</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">8</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">header</span></div>
+        <span class="k">return</span> <span class="n">Header</span><span class="p">(</span><span class="n">header_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">create_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+                      <span class="n">expiration_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                      <span class="n">scheduled_create_time</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span>
+                      <span class="n">creator</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                      <span class="n">schema_id</span><span class="o">=</span><span class="n">header_row</span><span class="p">[</span><span class="mi">8</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="DataBlock.get_metadata"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.get_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -434,11 +408,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">metadata_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
                                                    <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-        <span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
-                            <span class="n">generation_id</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                            <span class="n">generation_time</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
-                            <span class="n">missed_update_count</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">metadata</span></div>
+        <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+                        <span class="n">generation_id</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                        <span class="n">generation_time</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                        <span class="n">missed_update_count</span><span class="o">=</span><span class="n">metadata_row</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="DataBlock.duplicate"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

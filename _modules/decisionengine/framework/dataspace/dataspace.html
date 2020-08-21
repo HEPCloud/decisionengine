@@ -86,7 +86,7 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="DataSourceLoader"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSourceLoader">[docs]</a><span class="nd">@six</span><span class="o">.</span><span class="n">add_metaclass</span><span class="p">(</span><span class="n">Singleton</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">DataSourceLoader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">DataSourceLoader</span><span class="p">():</span>
 
     <span class="n">_ds</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -100,7 +100,7 @@
         <span class="k">return</span> <span class="n">ds</span></div></div>
 
 
-<div class="viewcode-block" id="DataSpace"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace">[docs]</a><span class="k">class</span> <span class="nc">DataSpace</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="DataSpace"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace">[docs]</a><span class="k">class</span> <span class="nc">DataSpace</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    DataSpace class is collection of datablocks and provides interface</span>
 <span class="sd">    to the database used to store the actual data</span>
@@ -126,7 +126,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;module&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Invalid dataspace configuration: </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">DataSourceLoader</span><span class="p">()</span><span class="o">.</span><span class="n">create_datasource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_module</span><span class="p">,</span>
                                                                <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_name</span><span class="p">,</span>
@@ -204,7 +204,7 @@
 <span class="n">State</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">(</span><span class="s2">&quot;State&quot;</span><span class="p">,</span> <span class="s2">&quot;IDLE STARTING RUNNING SLEEPING STOPPING STOPPED ERROR&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Reaper"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.Reaper">[docs]</a><span class="k">class</span> <span class="nc">Reaper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Reaper"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.Reaper">[docs]</a><span class="k">class</span> <span class="nc">Reaper</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reaper provides functionality of periodic deletion</span>
 <span class="sd">    of data older than retention_interval in days</span>
@@ -230,7 +230,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For safety the data retention interval has to be greater than </span><span class="si">{}</span><span class="s2"> days&quot;</span><span class="o">.</span>
                                  <span class="nb">format</span><span class="p">(</span><span class="n">MIN_RETENTION_INTERVAL_DAYS</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Invalid dataspace configuration: </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">DataSourceLoader</span><span class="p">()</span><span class="o">.</span><span class="n">create_datasource</span><span class="p">(</span><span class="n">db_driver_module</span><span class="p">,</span>
                                                                <span class="n">db_driver_name</span><span class="p">,</span>
