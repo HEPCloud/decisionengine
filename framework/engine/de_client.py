@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-try:
-    import xmlrpclib
-except ImportError:
-    import xmlrpc.client as xmlrpclib
+import xmlrpc.client
 import pprint
 
 def create_parser():
@@ -128,10 +125,7 @@ def create_parser():
     return parser
 
 def build_xmlrpc_connection(host, port):
-    con_string = "http://{}:{}".format(host, port)
-    s = xmlrpclib.ServerProxy(con_string, allow_none=True)
-
-    return s
+    return xmlrpc.client.ServerProxy(f"http://{host}:{port}", allow_none=True)
 
 def execute_command_from_args(argsparsed, xmlrpcsocket):
     '''argsparsed should be from create_parser in this file'''
@@ -203,7 +197,6 @@ def main(args_to_parse=None):
     parser = create_parser()
     args = parser.parse_args(args_to_parse)
     socket = build_xmlrpc_connection(args.host, args.port)
-
     return execute_command_from_args(args, socket)
 
 

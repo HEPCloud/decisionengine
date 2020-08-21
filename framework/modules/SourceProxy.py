@@ -121,10 +121,9 @@ class SourceProxy(Source.Source):
                         self.logger.debug("DATABLOCK %s", data_block)
                         # This is a valid datablock
                         break
-                    else:
-                        retry_cnt += 1
-                        # retry in 1/3 of configured TO
-                        time.sleep(self.retry_to // 3)
+                    retry_cnt += 1
+                    # retry in 1/3 of configured TO
+                    time.sleep(self.retry_to // 3)
                 else:
                     retry_cnt += 1
                     time.sleep(self.retry_to)
@@ -155,10 +154,9 @@ class SourceProxy(Source.Source):
                             self.logger.debug("KEYERROR %s", ke)
             if len(filled_keys) == len(self.data_keys):
                 break
-            else:
-                # expected data is not ready yet
-                retry_cnt += 1
-                time.sleep(self.retry_to)
+            # expected data is not ready yet
+            retry_cnt += 1
+            time.sleep(self.retry_to)
 
         if retry_cnt == self.retries and len(filled_keys) != len(self.data_keys):
             raise RuntimeError('Could not get all data. Expected %s Filled %s' % (

@@ -52,7 +52,7 @@ class Singleton(type):
         return cls._instances[cls]
 
 @six.add_metaclass(Singleton)
-class DataSourceLoader(object):
+class DataSourceLoader():
 
     _ds = None
 
@@ -66,7 +66,7 @@ class DataSourceLoader(object):
         return ds
 
 
-class DataSpace(object):
+class DataSpace():
     """
     DataSpace class is collection of datablocks and provides interface
     to the database used to store the actual data
@@ -92,7 +92,7 @@ class DataSpace(object):
             self._db_driver_module = config['dataspace']['datasource']['module']
             self._db_driver_config = config['dataspace']['datasource']['config']
         except KeyError as e:
-            raise DataSpaceConfigurationError('Invalid dataspace configuration: {}'.format(e))
+            raise DataSpaceConfigurationError(f'Invalid dataspace configuration: {e}')
 
         self.datasource = DataSourceLoader().create_datasource(self._db_driver_module,
                                                                self._db_driver_name,
@@ -170,7 +170,7 @@ MIN_RETENTION_INTERVAL_DAYS = 7
 State = enum.Enum("State", "IDLE STARTING RUNNING SLEEPING STOPPING STOPPED ERROR")
 
 
-class Reaper(object):
+class Reaper():
     """
     Reaper provides functionality of periodic deletion
     of data older than retention_interval in days
@@ -196,7 +196,7 @@ class Reaper(object):
                 raise ValueError("For safety the data retention interval has to be greater than {} days".
                                  format(MIN_RETENTION_INTERVAL_DAYS))
         except KeyError as e:
-            raise DataSpaceConfigurationError('Invalid dataspace configuration: {}'.format(e))
+            raise DataSpaceConfigurationError(f'Invalid dataspace configuration: {e}')
 
         self.datasource = DataSourceLoader().create_datasource(db_driver_module,
                                                                db_driver_name,
