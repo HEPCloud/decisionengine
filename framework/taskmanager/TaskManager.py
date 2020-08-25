@@ -28,9 +28,9 @@ class Worker():
         :type conf_dict: :obj:`dict`
         :arg conf_dict: configuration dictionary describing the worker
         """
-        self.worker = ConfigManager.create(conf_dict['module'],
-                                           conf_dict['name'],
-                                           conf_dict['parameters'])
+        self.worker = ConfigManager.ConfigManager.create(conf_dict['module'],
+                                                         conf_dict['name'],
+                                                         conf_dict['parameters'])
         self.module = conf_dict['module']
         self.name = self.worker.__class__.__name__
         self.schedule = conf_dict.get('schedule', _DEFAULT_SCHEDULE)
