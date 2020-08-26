@@ -62,9 +62,9 @@
 <span class="sd">        :type conf_dict: :obj:`dict`</span>
 <span class="sd">        :arg conf_dict: configuration dictionary describing the worker</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">],</span>
-                                           <span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
-                                           <span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">],</span>
+                                                         <span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+                                                         <span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">=</span> <span class="n">conf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;schedule&#39;</span><span class="p">,</span> <span class="n">_DEFAULT_SCHEDULE</span><span class="p">)</span>
