@@ -42,7 +42,7 @@ pipeline {
                     }
                     post {
                         always {
-                            archiveArtifacts artifacts: "pep8.master.log,pylint.master.log,results.master.log,mail.results"
+                            archiveArtifacts artifacts: "pep8.*.log,pylint.*.log,results.*.log,mail.results"
                             echo "cleanup docker image ${pylintStageDockerImage}"
                             sh "docker rmi ${pylintStageDockerImage}"
                         }
