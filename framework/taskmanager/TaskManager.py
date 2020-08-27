@@ -319,7 +319,7 @@ class TaskManager():
             event_list.append(source.data_updated)
             thread = threading.Thread(target=self.run_source,
                                       name=source.name,
-                                      args=(source))
+                                      args=(source,))
             # Cannot catch exception from function called in separate thread
             thread.start()
         return event_list
