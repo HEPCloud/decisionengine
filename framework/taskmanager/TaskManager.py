@@ -165,7 +165,7 @@ class TaskManager():
             except Exception as e:
                 logging.getLogger().exception(f'Exception in the task manager main loop {e}')
                 logging.getLogger().error('Error occured. Task Manager %s exits with state %s',
-                                  self.id, self.get_state_name())
+                                          self.id, self.get_state_name())
                 break
             time.sleep(1)
 
@@ -361,7 +361,7 @@ class TaskManager():
         consume_keys = transform.worker.consumes()
 
         logging.getLogger().info('transform: %s expected keys: %s provided keys: %s',
-                     transform.name, consume_keys, list(data_block.keys()))
+                                 transform.name, consume_keys, list(data_block.keys()))
         loop_counter = 0
         while True:
             # Check if data is ready
@@ -389,7 +389,7 @@ class TaskManager():
             loop_counter += 1
             if loop_counter == data_to:
                 logging.getLogger().info(f'transform {transform.name} did not get consumes data'
-                             f'in {data_to} seconds. Exiting')
+                                         f'in {data_to} seconds. Exiting')
                 break
         transform.data_updated.set()
 
@@ -405,17 +405,17 @@ class TaskManager():
             return
         for le in self.channel.le_s:
             logging.getLogger().info('run logic engine %s',
-                         self.channel.le_s[le].name)
+                                     self.channel.le_s[le].name)
             logging.getLogger().debug('run logic engine %s %s',
-                          self.channel.le_s[le].name, data_block)
+                                      self.channel.le_s[le].name, data_block)
             rc = self.channel.le_s[le].worker.evaluate(data_block)
             le_list.append(rc)
             logging.getLogger().info('run logic engine %s done',
-                         self.channel.le_s[le].name)
+                                     self.channel.le_s[le].name)
             logging.getLogger().info('logic engine %s generated newfacts: %s',
-                         self.channel.le_s[le].name, rc['newfacts'].to_dict(orient='records'))
+                                     self.channel.le_s[le].name, rc['newfacts'].to_dict(orient='records'))
             logging.getLogger().info('logic engine %s generated actions: %s',
-                         self.channel.le_s[le].name, rc['actions'])
+                                     self.channel.le_s[le].name, rc['actions'])
 
         # Add new facts to the datablock
         # Add empty dataframe if nothing is available
