@@ -37,7 +37,6 @@ class Worker():
         self.run_counter = 0
         self.data_updated = threading.Event()
         self.stop_running = threading.Event()
-        self.logger = logging.getLogger()
 
 def _make_workers_for(configs):
     return {name: Worker(e) for name, e in configs.items()}
@@ -105,7 +104,7 @@ class TaskManager():
         :type events_done: :obj:`list`
         :arg events_done: list of events to wait for
         """
-        self.logger.info('Waiting for all tasks to run')
+        logging.getLoggerO().info('Waiting for all tasks to run')
         while not all([e.isSet() for e in events_done]):
             time.sleep(1)
             if self.stop:
@@ -134,15 +133,15 @@ class TaskManager():
         """
         Task Manager main loop
         """
-        self.logger.setLevel(self.loglevel.value)
-        self.logger.info(f'Starting Task Manager {self.id}')
+        logging.getLogger().setLevel(self.loglevel.value)
+        logging.getLogger().info(f'Starting Task Manager {self.id}')
         done_events = self.start_sources(self.data_block_t0)
         # This is a boot phase
         # Wait until all sources run at least one time
         self.wait_for_all(done_events)
-        self.logger.info('All sources finished')
+        logging.getLogger().info('All sources finished')
         if self.get_state() != State.BOOT:
-            self.logger.error(
+            logging.getLogger().error(
                 f'Error occured during initial run of sources. Task Manager {self.name} exits')
             sys.exit(1)
 
@@ -151,11 +150,11 @@ class TaskManager():
 
         while self.get_state() == State.STEADY:
             try:
-                self.logger.setLevel(self.loglevel.value)
+                logging.getLogger().setLevel(self.loglevel.value)
                 self.wait_for_any(done_events)
                 self.decision_cycle()
                 if self.stop:
-                    self.logger.info(f'Task Manager {self.id} received stop signal and exits')
+                    logging.getLogger().info(f'Task Manager {self.id} received stop signal and exits')
                     for source in self.channel.sources.values():
                         source.stop_running.set()
                         time.sleep(5)
@@ -164,8 +163,8 @@ class TaskManager():
                         time.sleep(5)
                     break
             except Exception as e:
-                self.logger.exception(f'Exception in the task manager main loop {e}')
-                self.logger.error('Error occured. Task Manager %s exits with state %s',
+                logging.getLogger().exception(f'Exception in the task manager main loop {e}')
+                logging.getLogger().error('Error occured. Task Manager %s exits with state %s',
                                   self.id, self.get_state_name())
                 break
             time.sleep(1)
@@ -216,9 +215,9 @@ class TaskManager():
         """
 
         if not isinstance(data, dict):
-            self.logger.error(f'data_block put expecting {dict} type, got {type(data)}')
+            logging.getLogger().error(f'data_block put expecting {dict} type, got {type(data)}')
             return
-        self.logger.debug(f'data_block_put {data}')
+        logging.getLogger().debug(f'data_block_put {data}')
         with data_block.lock:
             metadata = datablock.Metadata(data_block.taskmanager_id,
                                           state='END_CYCLE',
@@ -236,7 +235,7 @@ class TaskManager():
 
         with self.lock:
             data_block = self.data_block_t0.duplicate()
-            self.logger.debug(f'Duplicated block {data_block}')
+            logging.getLogger().debug(f'Duplicated block {data_block}')
         return data_block
 
     def decision_cycle(self):
@@ -248,21 +247,21 @@ class TaskManager():
         try:
             self.run_transforms(data_block_t1)
         except Exception:
-            self.logger.exception('error in decision cycle(transforms) ')
+            logging.getLogger().exception('error in decision cycle(transforms) ')
 
         actions_facts = []
         try:
             actions_facts = self.run_logic_engine(data_block_t1)
-            self.logger.info('ran all logic engines')
+            logging.getLogger().info('ran all logic engines')
         except Exception as e:
-            self.logger.exception(f'error in decision cycle(logic engine) {e}')
+            logging.getLogger().exception(f'error in decision cycle(logic engine) {e}')
 
         for a_f in actions_facts:
             try:
                 self.run_publishers(
                     a_f['actions'], a_f['newfacts'], data_block_t1)
             except Exception as e:
-                self.logger.exception(f'error in decision cycle(publishers) {e}')
+                logging.getLogger().exception(f'error in decision cycle(publishers) {e}')
 
     def run_source(self, src):
         """
@@ -275,34 +274,34 @@ class TaskManager():
 
         while True:
             try:
-                self.logger.info(f'Src {src.name} calling acquire')
+                logging.getLogger().info(f'Src {src.name} calling acquire')
                 data = src.worker.acquire()
-                self.logger.info(f'Src {src.name} acquire retuned')
-                self.logger.info(f'Src {src.name} filling header')
+                logging.getLogger().info(f'Src {src.name} acquire retuned')
+                logging.getLogger().info(f'Src {src.name} filling header')
                 if data:
                     t = time.time()
                     header = datablock.Header(self.data_block_t0.taskmanager_id,
                                               create_time=t, creator=src.module)
-                    self.logger.info(f'Src {src.name} header done')
+                    logging.getLogger().info(f'Src {src.name} header done')
                     self.data_block_put(data, header, self.data_block_t0)
-                    self.logger.info(f'Src {src.name} data block put done')
+                    logging.getLogger().info(f'Src {src.name} data block put done')
                 else:
-                    self.logger.warning(f'Src {src.name} acquire retuned no data')
+                    logging.getLogger().warning(f'Src {src.name} acquire retuned no data')
                 src.run_counter += 1
                 src.data_updated.set()
-                self.logger.info(f'Src {src.name} {src.module} finished cycle')
+                logging.getLogger().info(f'Src {src.name} {src.module} finished cycle')
             except Exception as e:
-                self.logger.exception(f'Exception running source {src.name} : {e}')
+                logging.getLogger().exception(f'Exception running source {src.name} : {e}')
                 self._take_offline(self.data_block_t0)
             if src.schedule > 0:
                 s = src.stop_running.wait(src.schedule)
                 if s:
-                    self.logger.info(f'received stop_running signal for {src.name}')
+                    logging.getLogger().info(f'received stop_running signal for {src.name}')
                     break
             else:
-                self.logger.info(f'source {src.name} runs only once')
+                logging.getLogger().info(f'source {src.name} runs only once')
                 break
-        self.logger.info(f'stopped {src.name}')
+        logging.getLogger().info(f'stopped {src.name}')
 
     def start_sources(self, data_block=None):
         """
@@ -314,7 +313,7 @@ class TaskManager():
 
         event_list = []
         for key, source in self.channel.sources.items():
-            self.logger.info(f'starting loop for {key}')
+            logging.getLogger().info(f'starting loop for {key}')
             event_list.append(source.data_updated)
             thread = threading.Thread(target=self.run_source,
                                       name=source.name,
@@ -332,13 +331,13 @@ class TaskManager():
         :arg data_block: data block
 
         """
-        self.logger.info('run_transforms')
-        self.logger.debug(f'run_transforms: data block {data_block}')
+        logging.getLogger().info('run_transforms')
+        logging.getLogger().debug(f'run_transforms: data block {data_block}')
         if not data_block:
             return
         event_list = []
         for key, transform in self.channel.transforms.items():
-            self.logger.info(f'starting transform {key}')
+            logging.getLogger().info(f'starting transform {key}')
             event_list.append(transform.data_updated)
             thread = threading.Thread(target=self.run_transform,
                                       name=transform.name,
@@ -347,7 +346,7 @@ class TaskManager():
             thread.start()
 
         self.wait_for_all(event_list)
-        self.logger.info('all transforms finished')
+        logging.getLogger().info('all transforms finished')
 
     def run_transform(self, transform, data_block):
         """
@@ -361,35 +360,35 @@ class TaskManager():
         data_to = self.channel.task_manager.get('data_TO', _TRANSFORMS_TO)
         consume_keys = transform.worker.consumes()
 
-        self.logger.info('transform: %s expected keys: %s provided keys: %s',
+        logging.getLogger().info('transform: %s expected keys: %s provided keys: %s',
                      transform.name, consume_keys, list(data_block.keys()))
         loop_counter = 0
         while True:
             # Check if data is ready
             if set(consume_keys) <= set(data_block.keys()):
                 # data is ready -  may run transform()
-                self.logger.info('run transform %s', transform.name)
+                logging.getLogger().info('run transform %s', transform.name)
                 try:
                     with data_block.lock:
                         data = transform.worker.transform(data_block)
-                    self.logger.debug(f'transform returned {data}')
+                    logging.getLogger().debug(f'transform returned {data}')
                     t = time.time()
                     header = datablock.Header(data_block.taskmanager_id,
                                               create_time=t,
                                               creator=transform.name)
                     self.data_block_put(data, header, data_block)
-                    self.logger.info('transform put data')
+                    logging.getLogger().info('transform put data')
                 except Exception as e:
-                    self.logger.exception(f'exception from transform {transform.name} : {e}')
+                    logging.getLogger().exception(f'exception from transform {transform.name} : {e}')
                     self._take_offline(data_block)
                 break
             s = transform.stop_running.wait(1)
             if s:
-                self.logger.info(f'received stop_running signal for {transform.name}')
+                logging.getLogger().info(f'received stop_running signal for {transform.name}')
                 break
             loop_counter += 1
             if loop_counter == data_to:
-                self.logger.info(f'transform {transform.name} did not get consumes data'
+                logging.getLogger().info(f'transform {transform.name} did not get consumes data'
                              f'in {data_to} seconds. Exiting')
                 break
         transform.data_updated.set()
@@ -405,17 +404,17 @@ class TaskManager():
         if not data_block:
             return
         for le in self.channel.le_s:
-            self.logger.info('run logic engine %s',
+            logging.getLogger().info('run logic engine %s',
                          self.channel.le_s[le].name)
-            self.logger.debug('run logic engine %s %s',
+            logging.getLogger().debug('run logic engine %s %s',
                           self.channel.le_s[le].name, data_block)
             rc = self.channel.le_s[le].worker.evaluate(data_block)
             le_list.append(rc)
-            self.logger.info('run logic engine %s done',
+            logging.getLogger().info('run logic engine %s done',
                          self.channel.le_s[le].name)
-            self.logger.info('logic engine %s generated newfacts: %s',
+            logging.getLogger().info('logic engine %s generated newfacts: %s',
                          self.channel.le_s[le].name, rc['newfacts'].to_dict(orient='records'))
-            self.logger.info('logic engine %s generated actions: %s',
+            logging.getLogger().info('logic engine %s generated actions: %s',
                          self.channel.le_s[le].name, rc['actions'])
 
         # Add new facts to the datablock
@@ -424,7 +423,7 @@ class TaskManager():
             all_facts = pandas.concat([i['newfacts']
                                        for i in le_list], ignore_index=True)
         else:
-            self.logger.info('Logic engine(s) did not return any new facts')
+            logging.getLogger().info('Logic engine(s) did not return any new facts')
             all_facts = pandas.DataFrame()
         data = {'de_logicengine_facts': all_facts}
         t = time.time()
@@ -448,6 +447,6 @@ class TaskManager():
             for action in action_list:
                 publisher = self.channel.publishers[action]
                 name = publisher.name
-                self.logger.info(f'run publisher {name}')
-                self.logger.debug(f'run publisher {name} {data_block}')
+                logging.getLogger().info(f'run publisher {name}')
+                logging.getLogger().debug(f'run publisher {name} {data_block}')
                 publisher.worker.publish(data_block)
