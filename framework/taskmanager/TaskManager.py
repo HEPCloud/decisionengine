@@ -104,7 +104,7 @@ class TaskManager():
         :type events_done: :obj:`list`
         :arg events_done: list of events to wait for
         """
-        logging.getLoggerO().info('Waiting for all tasks to run')
+        logging.getLogger().info('Waiting for all tasks to run')
         while not all([e.isSet() for e in events_done]):
             time.sleep(1)
             if self.stop:
