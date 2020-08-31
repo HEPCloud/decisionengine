@@ -116,7 +116,11 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def rpc_print_product(self, product, columns=None, query=None):
         found = False
         txt = "Product {}: ".format(product)
-        for ch, worker in list(self.task_managers.items()):
+        for ch, worker in self.task_managers.items():
+            if not worker:
+                txt += f"Channel {ch} is in ERROR state\n"
+                continue
+
             channel_config = self.config_manager.get_channels()[ch]
             produces = self.config_manager.get_produces(channel_config)
             r = [x for x in list(produces.items()) if product in x[1]]
@@ -164,7 +168,11 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def rpc_print_products(self):
         width = max([len(x) for x in list(self.task_managers.keys())]) + 1
         txt = ""
-        for ch, worker in list(self.task_managers.items()):
+        for ch, worker in self.task_managers.items():
+            if not worker:
+                txt += f"Channel {ch} is in ERROR state\n"
+                continue
+
             sname = worker.task_manager.get_state_name()
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
                                                                                       worker.task_manager.id,
@@ -200,7 +208,11 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def rpc_status(self):
         width = max([len(x) for x in list(self.task_managers.keys())]) + 1
         txt = ""
-        for ch, worker in list(self.task_managers.items()):
+        for ch, worker in self.task_managers.items():
+            if not worker:
+                txt += f"Channel {ch} is in ERROR state\n"
+                continue
+
             sname = worker.task_manager.get_state_name()
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
                                                                                       worker.task_manager.id,
@@ -366,6 +378,21 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         state = self.reaper.get_state()
         txt = '\nreaper:\n\tstate: {}\n\tretention_interval: {}\n'.format(state, interval)
         return txt
+
+    def _disable_channels_with_terminated_processes(self):
+        channels_to_remove = []
+        for channel, process in self.task_managers.items():
+            if process and not process.is_alive():
+                channels_to_remove.append(channel)
+        for channel in channels_to_remove:
+            self.task_managers[channel] = None
+
+    # The 'service_actions' method here overrides the socketserver
+    # base class' implementation.  It is called during the
+    # 'serve_forever' call for each iteration of the server-request
+    # loop, which is typically executed once every 0.5 seconds.
+    def service_actions(self):
+        self._disable_channels_with_terminated_processes()
 
 def parse_program_options(args):
     parser = argparse.ArgumentParser()
