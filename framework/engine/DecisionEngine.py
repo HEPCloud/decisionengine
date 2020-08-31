@@ -31,6 +31,12 @@ CONFIG_UPDATE_PERIOD = 10  # seconds
 FORMATTER = logging.Formatter(
     "%(asctime)s - %(name)s - %(module)s - %(process)d - %(threadName)s - %(levelname)s - %(message)s")
 
+def _channel_preamble(name):
+    header = f'Channel: {name}'
+    rule = '=' * len(header)
+    return '\n' + rule + '\n' + header + '\n' + rule + '\n\n'
+
+
 class Worker(multiprocessing.Process):
 
     def __init__(self, task_manager, logger_config):
@@ -92,6 +98,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
     def rpc_show_config(self, channel):
         """
+        Show the configuration for a channel.
 
         :type channel: string
         """
@@ -99,19 +106,19 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         channels = self.config_manager.get_channels()
         if channel == 'all':
             for ch in channels:
-                txt += "Channel: {} ".format(ch)
-                txt += "Config: {} ".format(channels[ch])
-        else:
-            txt += "Channel: {} ".format(channel)
-            txt += "Config: {} ".format(channels[channel])
-        return txt[:-1]
+                txt += _channel_preamble(ch)
+                txt += self.config_manager.print_channel_config(ch)
+            return txt
+
+        if channel not in channels:
+            return f"There is no active channel named {channel}."
+
+        txt += _channel_preamble(channel)
+        txt += self.config_manager.print_channel_config(channel)
+        return txt
 
     def rpc_show_de_config(self):
-        config = self.config_manager.get_global_config()
-        txt = ""
-        for k in config:
-            txt += "{}".format(config[k])
-        return txt[:-1]
+        return self.config_manager.print_global_config()
 
     def rpc_print_product(self, product, columns=None, query=None):
         found = False

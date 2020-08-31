@@ -138,3 +138,5 @@ def test_channel_names(load):
     manager = load('minimal_python.conf',
                    relative_channel_config_dir='channels/no_modules')
     assert list(manager.get_channels().keys()) == ['no_modules']
+    manager.print_global_config()
+    manager.print_channel_config('no_modules')
