@@ -396,7 +396,12 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
 def parse_program_options(args):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--port", default=8888, type=int, choices=range(1, 65535), help="Override server port to this value")
+    parser.add_argument("--port",
+                        default=8888,
+                        type=int,
+                        choices=range(1, 65535),
+                        metavar="<port number>",
+                        help="Default port number is 8888; allowed values are in the half-open interval [1, 65535).")
     options = parser.parse_args(args)
     return {
         'server_address': ['localhost', options.port] # Use Jsonnet-supported schema (i.e. not a tuple)
