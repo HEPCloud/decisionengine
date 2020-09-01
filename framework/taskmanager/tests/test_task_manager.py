@@ -43,7 +43,7 @@ def channel_config(name):
 def task_manager_for(name):
     return TaskManager(name, 1, channel_config(name), _global_config)
 
-class RunChannel():
+class RunChannel:
     def __init__(self, name):
         self._tm = task_manager_for(name)
         self._process = multiprocessing.Process(target=self._tm.run)

@@ -171,7 +171,7 @@ class TaskManager():
                     for source in self.channel.sources.values():
                         source.stop_running.set()
                         time.sleep(5)
-                    for transform in self.channel.transforms:
+                    for transform in self.channel.transforms.values():
                         transform.stop_running.set()
                         time.sleep(5)
                     break
@@ -261,6 +261,9 @@ class TaskManager():
             self.run_transforms(data_block_t1)
         except Exception:
             logging.getLogger().exception('error in decision cycle(transforms) ')
+            # We do not call '_take_offline' here because it has
+            # already been called in the run_transform code on
+            # operating on a separate thread.
 
         actions_facts = []
         try:
@@ -268,6 +271,7 @@ class TaskManager():
             logging.getLogger().info('ran all logic engines')
         except Exception as e:
             logging.getLogger().exception(f'error in decision cycle(logic engine) {e}')
+            self._take_offline(data_block_t1)
 
         for a_f in actions_facts:
             try:
@@ -275,6 +279,8 @@ class TaskManager():
                     a_f['actions'], a_f['newfacts'], data_block_t1)
             except Exception as e:
                 logging.getLogger().exception(f'error in decision cycle(publishers) {e}')
+                self._take_offline(data_block_t1)
+
 
     def run_source(self, src):
         """
