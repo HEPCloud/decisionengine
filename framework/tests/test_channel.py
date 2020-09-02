@@ -44,7 +44,7 @@ class Worker(multiprocessing.Process):
         conf_manager = ConfigManager()
         conf_manager.load()
         #
-        # Override config for testibg
+        # Override config for testing
         #
         conf_manager.global_config['server_address'] = ['localhost', self.port]
         conf_manager.global_config['dataspace']['datasource']['config']['port'] \
