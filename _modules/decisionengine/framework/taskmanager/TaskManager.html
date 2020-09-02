@@ -206,14 +206,14 @@
 
 <div class="viewcode-block" id="TaskManager.set_state"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">state</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span></div>
 
 <div class="viewcode-block" id="TaskManager.get_state"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span></div>
+            <span class="k">return</span> <span class="n">State</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskManager.get_state_name"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_state_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">State</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">())</span><span class="o">.</span><span class="n">name</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span><span class="o">.</span><span class="n">name</span></div>
 
 <div class="viewcode-block" id="TaskManager.set_loglevel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.set_loglevel">[docs]</a>    <span class="k">def</span> <span class="nf">set_loglevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Assumes log_level is a string corresponding to the supported logging-module levels.&quot;&quot;&quot;</span>
