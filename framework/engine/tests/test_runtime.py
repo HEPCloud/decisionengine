@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import socket
 import multiprocessing
@@ -9,13 +7,7 @@ import unittest
 
 import decisionengine.framework.engine.DecisionEngine as de_server
 import decisionengine.framework.engine.de_client as de_client
-
-def get_random_port():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(('', 0))
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        return s.getsockname()[1]
-
+from decisionengine.framework.util.sockets import get_random_port
 
 # Insulate from parent environments
 multiprocessing.set_start_method('spawn')
