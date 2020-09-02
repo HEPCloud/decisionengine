@@ -1,10 +1,10 @@
 {
   'logger' : {
-    'log_file': '/dev/null',
+    'log_file': '/tmp/decisionengine.log',
     'max_file_size': 200*1000000,
     'max_backup_count': 6,
     'log_level': "WARNING",
-    'global_channel_log_level':"WARNING",
+    'global_channel_log_level':"DEBUG",
   },
 
   'server_address' : ["localhost",8888],

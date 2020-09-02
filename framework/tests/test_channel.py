@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import pytest_postgresql
 import psycopg2
 import multiprocessing
@@ -77,7 +75,7 @@ class TestChannel(unittest.TestCase):
         self.worker  = Worker(self.datasource.info.dsn_parameters,
                               self.port)
         self.worker.start()
-        time.sleep(1)
+        time.sleep(5)
 
     def tearDown(self):
         try:
@@ -92,8 +90,9 @@ class TestChannel(unittest.TestCase):
     def de_client_request(self, *args):
         return de_client.main(['--host=localhost', '--port', str(self.port), *args])
 
-    def test_client_can_get_de_server_show_config(self):
-        output = self.de_client_request('--show-config')
+    def test_client_can_get_de_server_status(self):
+        output = self.de_client_request('--status')
+        print(output)
         self.assertNotEqual('{}', output, msg="DE didn't share channel configs")
 
         
