@@ -37,7 +37,6 @@ class Worker(multiprocessing.Process):
         super().__init__()
         self.db_parameters = db_parameters
         self.port = port
-        print(port)
 
     def run(self):
         os.environ["CONFIG_PATH"] = _CONFIG_PATH

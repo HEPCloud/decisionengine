@@ -10,7 +10,6 @@ class TransformNOP(Transform.Transform):
 
     def __init__(self, config):
         super().__init__(config)
-        pass
 
     def transform(self, data_block):
         df_in = data_block[CONSUMES[0]]
