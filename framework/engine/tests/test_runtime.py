@@ -9,9 +9,6 @@ import decisionengine.framework.engine.DecisionEngine as de_server
 import decisionengine.framework.engine.de_client as de_client
 from decisionengine.framework.util.sockets import get_random_port
 
-# Insulate from parent environments
-multiprocessing.set_start_method('spawn')
-
 _HOME = '127.0.0.1'
 _LOG_LEVELS = ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 
