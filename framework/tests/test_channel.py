@@ -1,6 +1,5 @@
 import multiprocessing
 import os
-import socket
 import time
 import unittest
 
@@ -10,17 +9,11 @@ from pytest_postgresql import factories
 import decisionengine.framework.engine.de_client as de_client
 from decisionengine.framework.configmanager.ConfigManager import ConfigManager
 from decisionengine.framework.engine.DecisionEngine import DecisionEngine
+from decisionengine.framework.util.sockets import get_random_port
 
 _CWD  =  os.path.dirname(os.path.abspath(__file__))
 _DDL_FILE = "../dataspace/datasources/postgresql.sql"
 _CONFIG_PATH = os.path.join(_CWD, "etc/decisionengine")
-
-def get_random_port():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(('', 0))
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        return s.getsockname()[1]
-
 
 postgresql_my_proc = factories.postgresql_proc(port=None)
 postgresql = factories.postgresql("postgresql_my_proc",
@@ -85,7 +78,7 @@ class TestChannel(unittest.TestCase):
 
     def tearDown(self):
         try:
-            self.de_client_request('--stop')
+            self.de_client_request("--stop")
         except ConnectionRefusedError:
             # server already shutdown
             pass
@@ -94,16 +87,16 @@ class TestChannel(unittest.TestCase):
             self.worker.terminate()
 
     def de_client_request(self, *args):
-        return de_client.main(['--host=localhost',
-                               '--port',
+        return de_client.main(["--host=localhost",
+                               "--port",
                                str(self.port),
                                *args])
 
     def test_client_can_get_de_server_status(self):
-        output = self.de_client_request('--status')
-        self.assertNotEqual('{}',
-                            output,
-                            msg="DE didn't share channel configs")
+        output = self.de_client_request("--status")
+        self.assertIn("STEADY",
+                      output,
+                      msg="Channel not in STEADY state")
 
 
 if __name__ == "__main__":
