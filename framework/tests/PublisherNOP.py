@@ -9,7 +9,7 @@ class PublisherNOP(Publisher.Publisher):
         super().__init__(config)
 
     def publish(self, data_block=None):
-        df_in = data_block[CONSUMES[0]] # nopep8
+        df_in = data_block[CONSUMES[0]] # noqa
 
     def consumes(self, name_list=None):
         return CONSUMES
