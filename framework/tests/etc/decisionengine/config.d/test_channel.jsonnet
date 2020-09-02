@@ -18,20 +18,9 @@
      },
    },
 
-   "publishers": {
-     "publisher1": {
-       "module": "decisionengine.framework.modules.PublisherNOP",
-       "name" : "PublisherNOP",
-       "parameters": { },
-       "schedule": 5,
-     },
-   },
+  'logicengines': {
+  },
 
-  "logicengines" : {
-      "logicengine1" : {
-          "module" : "framework.logicengine.LogicEngine",
-          "name" : "LogicEngine",
-          "parameters" : { }
-       }
-   }
+  'publishers': {
+  }
 }

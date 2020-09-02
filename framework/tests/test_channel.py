@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import pytest_postgresql
 import psycopg2
 import multiprocessing
@@ -8,7 +10,7 @@ import time
 import socket 
 
 from decisionengine.framework.engine.DecisionEngine import DecisionEngine
-import decisionengine.framework.engine.de_client 
+import decisionengine.framework.engine.de_client as de_client
 from  decisionengine.framework.configmanager.ConfigManager import ConfigManager
 
 _CWD  =  os.path.dirname(os.path.abspath(__file__))
@@ -44,6 +46,7 @@ class Worker(multiprocessing.Process):
         super().__init__()
         self.db_parameters = db_parameters
         self.port = port 
+        print(port)
 
     def run(self):
         os.environ['CONFIG_PATH'] = _CONFIG_PATH        
@@ -66,23 +69,33 @@ class Worker(multiprocessing.Process):
 
 
 @pytest.mark.usefixtures("fixtures")
-class TestDatablock(unittest.TestCase):
+class TestChannel(unittest.TestCase):
 
     def setUp(self):
         self.port = get_random_port()
+        #self.port = 8888
         self.worker  = Worker(self.datasource.info.dsn_parameters,
                               self.port)
         self.worker.start()
-
-    def testSome(self):
-        con = psycopg2.connect(self.datasource.dsn)
-        cursor = con.cursor()
-        cursor.execute("select * from dataproduct")
-        res = cursor.fetchall()
-        print(res)
+        time.sleep(1)
 
     def tearDown(self):
-        self.worker.join()
+        try:
+            self.de_client_request('--stop')
+        except ConnectionRefusedError:
+            # server already shutdown
+            pass
+
+        if self.worker.is_alive():
+            self.worker.terminate()
+
+    def de_client_request(self, *args):
+        return de_client.main(['--host=localhost', '--port', str(self.port), *args])
+
+    def test_client_can_get_de_server_show_config(self):
+        output = self.de_client_request('--show-config')
+        self.assertNotEqual('{}', output, msg="DE didn't share channel configs")
+
         
 if __name__ == "__main__":
     unittest.main()
