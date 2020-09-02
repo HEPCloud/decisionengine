@@ -4,7 +4,7 @@
     'max_file_size': 200*1000000,
     'max_backup_count': 6,
     'log_level': "WARNING",
-    'global_channel_log_level':"DEBUG",
+    'global_channel_log_level':"WARNING",
   },
 
   'server_address' : ["localhost",8888],
