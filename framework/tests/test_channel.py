@@ -81,9 +81,9 @@ class TestChannel(unittest.TestCase):
         except ConnectionRefusedError:
             # server already shutdown
             pass
-
-        if self.worker.is_alive():
-            self.worker.terminate()
+        finally:
+            if self.worker.is_alive():
+                self.worker.terminate()
 
     def de_client_request(self, *args):
         return de_client.main(["--host=localhost",
