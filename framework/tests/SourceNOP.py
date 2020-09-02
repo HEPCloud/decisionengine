@@ -14,5 +14,4 @@ class SourceNOP(Source.Source):
         return PRODUCES
 
     def acquire(self):
-        return { PRODUCES[0] : pd.DataFrame([{ 'key1' : 'value', 'key2' : 0.1 }, ])}
-
+        return {PRODUCES[0]: pd.DataFrame([{'key1': 'value', 'key2': 0.1}, ])}

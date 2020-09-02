@@ -11,7 +11,7 @@ from decisionengine.framework.configmanager.ConfigManager import ConfigManager
 from decisionengine.framework.engine.DecisionEngine import DecisionEngine
 from decisionengine.framework.util.sockets import get_random_port
 
-_CWD  =  os.path.dirname(os.path.abspath(__file__))
+_CWD = os.path.dirname(os.path.abspath(__file__))
 _DDL_FILE = "../dataspace/datasources/postgresql.sql"
 _CONFIG_PATH = os.path.join(_CWD, "etc/decisionengine")
 
@@ -67,8 +67,8 @@ class TestChannel(unittest.TestCase):
 
     def setUp(self):
         self.port = get_random_port()
-        self.worker  = Worker(self.datasource.info.dsn_parameters,
-                              self.port)
+        self.worker = Worker(self.datasource.info.dsn_parameters,
+                             self.port)
         self.worker.start()
         #
         # config used by this test uses 1 second schedule, run few cycles
@@ -100,4 +100,3 @@ class TestChannel(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
