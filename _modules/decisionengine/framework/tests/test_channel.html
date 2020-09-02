@@ -115,9 +115,9 @@
         <span class="k">except</span> <span class="ne">ConnectionRefusedError</span><span class="p">:</span>
             <span class="c1"># server already shutdown</span>
             <span class="k">pass</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestChannel.de_client_request"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.de_client_request">[docs]</a>    <span class="k">def</span> <span class="nf">de_client_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s2">&quot;--host=localhost&quot;</span><span class="p">,</span>
