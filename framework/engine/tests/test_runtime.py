@@ -37,7 +37,7 @@ class TestClientServerPython(unittest.TestCase):
         except ConnectionRefusedError:
             pass
         finally:
-            if cls.worker.is_alive():
+            if cls.server_proc.is_alive():
                 cls.server_proc.terminate()
 
     def test_client_can_get_de_server_show_config(self):
