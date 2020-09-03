@@ -322,7 +322,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.stop_channels()
         self.reload_config()
         self.start_channels()
-        self.reaper_start(delay=self.global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
+        self.reaper_start(delay=self.config_manager.get_global_config()['dataspace'].get('reaper_start_delay_seconds', 1818))
 
     def rpc_reload_config(self):
         self.reload_config()
