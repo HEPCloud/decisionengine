@@ -1,6 +1,6 @@
+import multiprocessing
 import os
 import socket
-import multiprocessing
 import time
 
 import unittest
@@ -9,52 +9,31 @@ import decisionengine.framework.engine.DecisionEngine as de_server
 import decisionengine.framework.engine.de_client as de_client
 from decisionengine.framework.util.sockets import get_random_port
 
+# Insulate from parent environments
+
 _HOME = '127.0.0.1'
 _LOG_LEVELS = ['NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+_PORT = str(get_random_port())
+
 
 class TestClientServerPython(unittest.TestCase):
-    def setUp(self):
-        self.port = str(get_random_port())
 
+    @classmethod
+    def setUpClass(cls):
         os.environ['CONFIG_PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/../../tests/etc/decisionengine/'
         os.environ['DECISIONENGINE_NO_CHANNELS'] = "1"
-
-        self.server_proc = multiprocessing.Process(target=de_server.main,
-                                                   args=([('--port', self.port)]),
-                                                   name='de-server')
-        self.server_proc.start()
-
+        cls.server_proc = multiprocessing.Process(target=de_server.main,
+                                                  args=([('--port', _PORT)]),
+                                                  name='de-server')
+        cls.server_proc.start()
         time.sleep(1)
-        if not self.server_proc.is_alive():
-            raise RuntimeError('Unable to start test DE Server')
 
-        time.sleep(1)
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as soc:
-            soc.connect((_HOME, int(self.port)))
-
-        if self.server_proc.exitcode:
-            raise RuntimeError('DE Server terminated too early')
-
-        if len(multiprocessing.active_children()) < 1:
-            raise RuntimeError('DE Server child process not found')
-
-        elif len(multiprocessing.active_children()) > 1:
-            raise RuntimeError('DE Server old child process not terminated')
-
-    def tearDown(self):
-        del os.environ['DECISIONENGINE_NO_CHANNELS']
-
-        try:
-            self.de_client_request('--stop')
-        except ConnectionRefusedError:
-            # server already shutdown
-            pass
-
-        if self.server_proc.is_alive():
-            self.server_proc.terminate()
+    @classmethod
+    def tearDownClass(cls):
+        cls.server_proc.terminate()
 
     def de_client_request(self, *args):
-        return de_client.main([f'--host={_HOME}', '--port', self.port, *args])
+        return de_client.main([f'--host={_HOME}', '--port', _PORT, *args])
 
     def test_client_can_get_de_server_show_config(self):
         output = self.de_client_request('--show-config')
