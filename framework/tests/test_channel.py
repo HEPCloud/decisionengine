@@ -66,8 +66,7 @@ class Worker(multiprocessing.Process):
 class TestChannel(unittest.TestCase):
 
     def setUp(self):
-        #self.port = get_random_port()
-        self.port = 9999
+        self.port = get_random_port()
         self.worker = Worker(self.datasource.info.dsn_parameters,
                              self.port)
         self.worker.start()
@@ -77,14 +76,15 @@ class TestChannel(unittest.TestCase):
         time.sleep(5)
 
     def tearDown(self):
-        try:
-            self.de_client_request("--stop")
-        except ConnectionRefusedError:
-            # server already shutdown
-            pass
-        finally:
-            if self.worker.is_alive():
-                self.worker.terminate()
+        if self.worker.is_alive():
+            self.worker.terminate()
+
+#        try:
+#            self.de_client_request("--stop")
+#        except ConnectionRefusedError:
+#            # server already shutdown
+#            pass
+#        finally:
 
     def de_client_request(self, *args):
         return de_client.main(["--host=localhost",
