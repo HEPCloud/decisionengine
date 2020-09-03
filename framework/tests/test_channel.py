@@ -66,7 +66,8 @@ class Worker(multiprocessing.Process):
 class TestChannel(unittest.TestCase):
 
     def setUp(self):
-        self.port = get_random_port()
+        #self.port = get_random_port()
+        self.port = 9999
         self.worker = Worker(self.datasource.info.dsn_parameters,
                              self.port)
         self.worker.start()
