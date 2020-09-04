@@ -161,8 +161,8 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                                                                tablefmt='psql'))
             except Exception as e:
                 txt += "\t\t{}\n".format(e)
-            if not found:
-                txt += "Not Found\n"
+        if not found:
+            txt += "Not produced by any module\n"
         return txt[:-1]
 
     def rpc_print_products(self):
