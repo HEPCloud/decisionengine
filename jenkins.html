@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Decisionengine CI with Jenkins pipeline &#8212; decisionengine 1.1.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="decisionengine-ci-with-jenkins-pipeline">
+<h1>Decisionengine CI with Jenkins pipeline<a class="headerlink" href="#decisionengine-ci-with-jenkins-pipeline" title="Permalink to this headline">¶</a></h1>
+<p>Jenkins dashboard with Decisionengine framework CI results is available
+<a class="reference external" href="https://buildmaster.fnal.gov/buildmaster/view/CI/job/decisionengine_pipeline/">here</a>.</p>
+<p>A CI build is triggered any time a PR is created/closed or a commit is made to an existing PR.
+There are also nightly CI builds to test <em>master</em> branch.</p>
+<p>The Jenkins pipeline runs <em>pylint</em> and <em>unit_tests</em> test suites alongside the <em>rpmbuild</em> stage.</p>
+<p>The Jenkins dashboard looks like this:</p>
+<a class="reference internal image-reference" href="_images/DE_pipeline_dashboard.png"><img alt="_images/DE_pipeline_dashboard.png" src="_images/DE_pipeline_dashboard.png" style="width: 1005.6px; height: 917.6px;" /></a>
+<div class="line-block">
+<div class="line">On the bottom left side there is the list of recent CI builds that are named after the PR or the branch tested.</div>
+<div class="line">On the bottom right side the dashboard shows for each CI build detailed status for each test suite.</div>
+</div>
+<p>Hovering the mouse over the <em>status box</em> for each CI build stage, a tool-tip with a button to access log details shows up.</p>
+<p>Next to the build number the symbol <img alt="download_icon" src="_images/DE_pipeline_download_icon.png" /> gives access to a menu with the list of artifacts stored for that build.
+Those artifacts include logs and the tarball with RPMs.</p>
+<p>From the panel on the left side it is possible to access the PR on GitHub by clicking on the PR icon that looks like this <img alt="PR_icon" src="_images/DE_pipeline_PR_icon.png" />.</p>
+<p>On occasion it could be useful to trigger a manual CI build to test a branch on the official DE GitHub repository or on the user fork.
+For this purpose, on the top left panel the user can click on the <img alt="Build with Parameters" src="_images/DE_pipeline_build_button.png" /> button, and this panel shows up</p>
+<img alt="_images/DE_pipeline_build_params.png" src="_images/DE_pipeline_build_params.png" />
+<p>the user can modify the <em>DE_REPO</em> parameter to point to his/her fork, and the <em>BRANCH</em> parameter to point to the desired branch to test.
+When ready, by clicking on the <em>Build</em> button the CI build will start.</p>
+<p>The <a class="reference external" href="https://github.com/HEPCloud/decisionengine/blob/master/.Jenkinsfile/">pipeline configuration</a> is part of the decisionengine repo.</p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">decisionengine</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="release_notes/release_notes_1.3.html">Release 1.3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes/release_notes_1.2.html">Release 1.2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="unittest.html">Decisionengine framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Fermi Research Alliance, LLC..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/jenkins.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
