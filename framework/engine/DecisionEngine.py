@@ -402,9 +402,13 @@ def parse_program_options(args):
         'server_address': ['localhost', options.port] # Use Jsonnet-supported schema (i.e. not a tuple)
     }
 
-def main(args=None):
-    '''If you pass a list of args, they will be used instead of sys.argv'''
-
+def _get_de_conf_manager(args=None):
+    '''
+    If args is a list, it will be used instead of sys.argv
+    If args is not an instance of 'list', sys.argv will be parsed
+    '''
+    if not isinstance(args, list):
+        args = sys.argv
     program_options = parse_program_options(args)
     conf_manager = Conf_Manager.ConfigManager(program_options)
 
@@ -419,8 +423,13 @@ def main(args=None):
     if channels_required and not channels:
         sys.exit("No channel configurations available in {}".format(conf_manager.config_dir))
 
+    return conf_manager
+
+def _start_de_server(conf_manager):
+    '''start the DE server with the passed config manager'''
     global_config = conf_manager.get_global_config()
     server_address = tuple(global_config.get('server_address'))
+    channels_required = not os.getenv('DECISIONENGINE_NO_CHANNELS')
 
     try:
         server = DecisionEngine(conf_manager, server_address)
@@ -432,6 +441,11 @@ def main(args=None):
         sys.exit("Server Address: {}\n".format(server_address) +
                  "Config Dir: {}\n".format(conf_manager.config_dir) +
                  "Fatal Error: {}\n".format(msg))
+
+def main(args=None):
+    '''If you pass a list of args, they will be used instead of sys.argv'''
+    conf_manager = _get_de_conf_manager(args)
+    _start_de_server(conf_manager)
 
 
 if __name__ == "__main__":
