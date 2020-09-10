@@ -404,11 +404,9 @@ def parse_program_options(args):
 
 def _get_de_conf_manager(args=None):
     '''
-    If args is a list, it will be used instead of sys.argv
-    If args is not an instance of 'list', sys.argv will be parsed
+    If args is None, sys.argv will be used instead
+    If args is a list, it will be used instead of sys.argv (for unit testing)
     '''
-    if not isinstance(args, list):
-        args = sys.argv
     program_options = parse_program_options(args)
     conf_manager = Conf_Manager.ConfigManager(program_options)
 
