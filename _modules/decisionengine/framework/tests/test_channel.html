@@ -41,13 +41,17 @@
 <span class="kn">from</span> <span class="nn">pytest_postgresql</span> <span class="k">import</span> <span class="n">factories</span>
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.engine.de_client</span> <span class="k">as</span> <span class="nn">de_client</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.configmanager.ConfigManager</span> <span class="k">import</span> <span class="n">ConfigManager</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="k">import</span> <span class="n">DecisionEngine</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="k">import</span> <span class="n">_get_de_conf_manager</span><span class="p">,</span> <span class="n">_start_de_server</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.sockets</span> <span class="k">import</span> <span class="n">get_random_port</span>
 
 <span class="n">_CWD</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 <span class="n">_DDL_FILE</span> <span class="o">=</span> <span class="s2">&quot;../dataspace/datasources/postgresql.sql&quot;</span>
 <span class="n">_CONFIG_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_CWD</span><span class="p">,</span> <span class="s2">&quot;etc/decisionengine&quot;</span><span class="p">)</span>
+<span class="n">_LOG_LEVELS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NOTSET&#39;</span><span class="p">,</span> <span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;CRITICAL&#39;</span><span class="p">]</span>
+<span class="c1"># Not all test hosts are IPv6, generally IPv4 works fine</span>
+<span class="c1">#  some test hosts use IPv6 for localhost by default, even when not configured!</span>
+<span class="c1">#  Python XML RPC Socket server is IPv4 only right now.</span>
+<span class="n">_HOST</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span>
 
 <span class="n">postgresql_my_proc</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql_proc</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="n">postgresql</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql</span><span class="p">(</span><span class="s2">&quot;postgresql_my_proc&quot;</span><span class="p">,</span>
@@ -74,12 +78,12 @@
 
 <div class="viewcode-block" id="Worker.run"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.Worker.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CONFIG_PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_CONFIG_PATH</span>
-        <span class="n">conf_manager</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">()</span>
-        <span class="n">conf_manager</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="n">conf_manager</span> <span class="o">=</span> <span class="n">_get_de_conf_manager</span><span class="p">([])</span>
+
         <span class="c1">#</span>
         <span class="c1"># Override config for testing</span>
         <span class="c1">#</span>
-        <span class="n">conf_manager</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;server_address&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">]</span>
+        <span class="n">conf_manager</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;server_address&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">_HOST</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">]</span>
         <span class="n">conf_manager</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> \
             <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_parameters</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
         <span class="n">conf_manager</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;user&#39;</span><span class="p">]</span> \
@@ -87,13 +91,7 @@
         <span class="n">conf_manager</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;database&#39;</span><span class="p">]</span> \
             <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_parameters</span><span class="p">[</span><span class="s1">&#39;dbname&#39;</span><span class="p">]</span>
 
-        <span class="n">global_config</span> <span class="o">=</span> <span class="n">conf_manager</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
-        <span class="n">server_address</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">))</span>
-        <span class="n">server</span> <span class="o">=</span> <span class="n">DecisionEngine</span><span class="p">(</span><span class="n">conf_manager</span><span class="p">,</span> <span class="n">server_address</span><span class="p">)</span>
-        <span class="n">server</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">]</span><span class="o">.</span>
-                            <span class="n">get</span><span class="p">(</span><span class="s1">&#39;reaper_start_delay_seconds&#39;</span><span class="p">,</span> <span class="mi">1818</span><span class="p">))</span>
-        <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
-        <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span></div></div>
+        <span class="n">_start_de_server</span><span class="p">(</span><span class="n">conf_manager</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="TestChannel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;fixtures&quot;</span><span class="p">)</span>
@@ -105,9 +103,9 @@
                              <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="c1">#</span>
-        <span class="c1"># config used by this test uses 1 second schedule, run few cycles</span>
+        <span class="c1"># config used by this test uses 1 second schedule, make sure one completes</span>
         <span class="c1">#</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span></div>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestChannel.tearDown"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -120,16 +118,68 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestChannel.de_client_request"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.de_client_request">[docs]</a>    <span class="k">def</span> <span class="nf">de_client_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s2">&quot;--host=localhost&quot;</span><span class="p">,</span>
+        <span class="k">return</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s2">&quot;--host&quot;</span><span class="p">,</span>
+                               <span class="n">_HOST</span><span class="p">,</span>
                                <span class="s2">&quot;--port&quot;</span><span class="p">,</span>
                                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">),</span>
                                <span class="o">*</span><span class="n">args</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="TestChannel.test_client_can_get_de_server_status"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.test_client_can_get_de_server_status">[docs]</a>    <span class="k">def</span> <span class="nf">test_client_can_get_de_server_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># make sure channels have a chance to get into state</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;STEADY&quot;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s2">&quot;STEADY&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Channel not in STEADY state&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestChannel.test_client_can_get_de_server_show_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.test_client_can_get_de_server_show_config">[docs]</a>    <span class="k">def</span> <span class="nf">test_client_can_get_de_server_show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--show-config&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;DE didn&#39;t share channel configs&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestChannel.test_client_can_get_de_server_reload_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.test_client_can_get_de_server_reload_config">[docs]</a>    <span class="k">def</span> <span class="nf">test_client_can_get_de_server_reload_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--reload-config&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;OK&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;DE didn&#39;t say OK&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestChannel.test_client_can_get_de_server_reaper_status"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.test_client_can_get_de_server_reaper_status">[docs]</a>    <span class="k">def</span> <span class="nf">test_client_can_get_de_server_reaper_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--reaper-status&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;reaper:&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Couldn&#39;t find reaper section&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;state:&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Couldn&#39;t find reaper state&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;retention_interval:&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Couldn&#39;t find reaper interval&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestChannel.test_client_can_get_de_server_reaper_stop"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.test_client_can_get_de_server_reaper_stop">[docs]</a>    <span class="k">def</span> <span class="nf">test_client_can_get_de_server_reaper_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--reaper-stop&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;OK&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;DE didn&#39;t say OK&quot;</span><span class="p">)</span>
+
+        <span class="c1"># get status to be sure</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--reaper-status&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;reaper:&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Couldn&#39;t find reaper section&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;state:&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Couldn&#39;t find reaper state&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;State.STOPPED&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;reaper state incorrect&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestChannel.test_client_can_get_de_server_reaper_start_delay"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.test_client_can_get_de_server_reaper_start_delay">[docs]</a>    <span class="k">def</span> <span class="nf">test_client_can_get_de_server_reaper_start_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># make sure the reaper is stopped first</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--reaper-stop&#39;</span><span class="p">)</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--reaper-start&#39;</span><span class="p">,</span> <span class="s1">&#39;--reaper-start-delay-secs=90&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;OK&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;DE didn&#39;t say OK&quot;</span><span class="p">)</span>
+
+        <span class="c1"># get status to be sure</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--reaper-status&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;reaper:&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Couldn&#39;t find reaper section&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;state:&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Couldn&#39;t find reaper state&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;State.STARTING&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;reaper state incorrect&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestChannel.test_client_can_get_de_server_show_logger_level"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.test_client_can_get_de_server_show_logger_level">[docs]</a>    <span class="k">def</span> <span class="nf">test_client_can_get_de_server_show_logger_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--print-engine-loglevel&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">_LOG_LEVELS</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;DE didn&#39;t give a valid log level&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestChannel.test_client_can_get_de_server_show_channel_logger_level"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.test_client_can_get_de_server_show_channel_logger_level">[docs]</a>    <span class="k">def</span> <span class="nf">test_client_can_get_de_server_show_channel_logger_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--get-channel-loglevel=UNITTEST&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">_LOG_LEVELS</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;DE didn&#39;t get channel logger level&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestChannel.test_global_channel_log_level_in_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_channel.TestChannel.test_global_channel_log_level_in_config">[docs]</a>    <span class="k">def</span> <span class="nf">test_global_channel_log_level_in_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--show-de-config&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;global_channel_log_level&#39;</span><span class="p">,</span>
                       <span class="n">output</span><span class="p">,</span>
-                      <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Channel not in STEADY state&quot;</span><span class="p">)</span></div></div>
+                      <span class="n">msg</span><span class="o">=</span><span class="s2">&quot;Global channel log level not set in config file. Default value is INFO.&quot;</span><span class="p">)</span></div></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

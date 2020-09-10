@@ -436,9 +436,13 @@
         <span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">port</span><span class="p">]</span> <span class="c1"># Use Jsonnet-supported schema (i.e. not a tuple)</span>
     <span class="p">}</span></div>
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;If you pass a list of args, they will be used instead of sys.argv&#39;&#39;&#39;</span>
-
+<div class="viewcode-block" id="_get_de_conf_manager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._get_de_conf_manager">[docs]</a><span class="k">def</span> <span class="nf">_get_de_conf_manager</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    If args is a list, it will be used instead of sys.argv</span>
+<span class="sd">    If args is not an instance of &#39;list&#39;, sys.argv will be parsed</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span>
     <span class="n">program_options</span> <span class="o">=</span> <span class="n">parse_program_options</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="n">conf_manager</span> <span class="o">=</span> <span class="n">Conf_Manager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="p">(</span><span class="n">program_options</span><span class="p">)</span>
 
@@ -453,8 +457,13 @@
     <span class="k">if</span> <span class="n">channels_required</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">channels</span><span class="p">:</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;No channel configurations available in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">conf_manager</span><span class="o">.</span><span class="n">config_dir</span><span class="p">))</span>
 
+    <span class="k">return</span> <span class="n">conf_manager</span></div>
+
+<div class="viewcode-block" id="_start_de_server"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._start_de_server">[docs]</a><span class="k">def</span> <span class="nf">_start_de_server</span><span class="p">(</span><span class="n">conf_manager</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;start the DE server with the passed config manager&#39;&#39;&#39;</span>
     <span class="n">global_config</span> <span class="o">=</span> <span class="n">conf_manager</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
     <span class="n">server_address</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">))</span>
+    <span class="n">channels_required</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DECISIONENGINE_NO_CHANNELS&#39;</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">server</span> <span class="o">=</span> <span class="n">DecisionEngine</span><span class="p">(</span><span class="n">conf_manager</span><span class="p">,</span> <span class="n">server_address</span><span class="p">)</span>
@@ -466,6 +475,11 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;Server Address: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">server_address</span><span class="p">)</span> <span class="o">+</span>
                  <span class="s2">&quot;Config Dir: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">conf_manager</span><span class="o">.</span><span class="n">config_dir</span><span class="p">)</span> <span class="o">+</span>
                  <span class="s2">&quot;Fatal Error: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;If you pass a list of args, they will be used instead of sys.argv&#39;&#39;&#39;</span>
+    <span class="n">conf_manager</span> <span class="o">=</span> <span class="n">_get_de_conf_manager</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">_start_de_server</span><span class="p">(</span><span class="n">conf_manager</span><span class="p">)</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
