@@ -438,11 +438,9 @@
 
 <div class="viewcode-block" id="_get_de_conf_manager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._get_de_conf_manager">[docs]</a><span class="k">def</span> <span class="nf">_get_de_conf_manager</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    If args is a list, it will be used instead of sys.argv</span>
-<span class="sd">    If args is not an instance of &#39;list&#39;, sys.argv will be parsed</span>
+<span class="sd">    If args is None, sys.argv will be used instead</span>
+<span class="sd">    If args is a list, it will be used instead of sys.argv (for unit testing)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span>
     <span class="n">program_options</span> <span class="o">=</span> <span class="n">parse_program_options</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="n">conf_manager</span> <span class="o">=</span> <span class="n">Conf_Manager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="p">(</span><span class="n">program_options</span><span class="p">)</span>
 
