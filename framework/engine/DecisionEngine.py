@@ -394,7 +394,8 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def service_actions(self):
         self._disable_channels_with_terminated_processes()
 
-def parse_program_options(args):
+def parse_program_options(args=None):
+    ''' If args is a list, it will be used instead of sys.argv '''
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", default=8888, type=int, choices=range(1, 65535), help="Override server port to this value")
     options = parser.parse_args(args)
