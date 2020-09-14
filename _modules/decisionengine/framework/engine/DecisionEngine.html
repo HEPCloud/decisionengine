@@ -65,6 +65,12 @@
 <span class="n">FORMATTER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
     <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(module)s</span><span class="s2"> - </span><span class="si">%(process)d</span><span class="s2"> - </span><span class="si">%(threadName)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
 
+<div class="viewcode-block" id="_channel_preamble"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._channel_preamble">[docs]</a><span class="k">def</span> <span class="nf">_channel_preamble</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Channel: </span><span class="si">{name}</span><span class="s1">&#39;</span>
+    <span class="n">rule</span> <span class="o">=</span> <span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">rule</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">header</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">rule</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span></div>
+
+
 <div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_manager</span><span class="p">,</span> <span class="n">logger_config</span><span class="p">):</span>
@@ -126,6 +132,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_show_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_show_config">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show the configuration for a channel.</span>
 
 <span class="sd">        :type channel: string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -133,19 +140,19 @@
         <span class="n">channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_manager</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">channel</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
-                <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;Channel: </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
-                <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;Config: </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channels</span><span class="p">[</span><span class="n">ch</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;Channel: </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-            <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;Config: </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channels</span><span class="p">[</span><span class="n">channel</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">txt</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+                <span class="n">txt</span> <span class="o">+=</span> <span class="n">_channel_preamble</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+                <span class="n">txt</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_manager</span><span class="o">.</span><span class="n">print_channel_config</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">txt</span>
+
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;There is no active channel named </span><span class="si">{channel}</span><span class="s2">.&quot;</span>
+
+        <span class="n">txt</span> <span class="o">+=</span> <span class="n">_channel_preamble</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+        <span class="n">txt</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_manager</span><span class="o">.</span><span class="n">print_channel_config</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">txt</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_show_de_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_show_de_config">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_show_de_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_manager</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
-        <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-            <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">txt</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_manager</span><span class="o">.</span><span class="n">print_global_config</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_print_product"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_print_product">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_print_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
@@ -431,7 +438,12 @@
 <div class="viewcode-block" id="parse_program_options"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.parse_program_options">[docs]</a><span class="k">def</span> <span class="nf">parse_program_options</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; If args is a list, it will be used instead of sys.argv &#39;&#39;&#39;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--port&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">8888</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">65535</span><span class="p">),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Override server port to this value&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--port&quot;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="mi">8888</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                        <span class="n">choices</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">65535</span><span class="p">),</span>
+                        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;port number&gt;&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Default port number is 8888; allowed values are in the half-open interval [1, 65535).&quot;</span><span class="p">)</span>
     <span class="n">options</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">port</span><span class="p">]</span> <span class="c1"># Use Jsonnet-supported schema (i.e. not a tuple)</span>
