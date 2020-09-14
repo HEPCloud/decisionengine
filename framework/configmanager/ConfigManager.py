@@ -240,6 +240,12 @@ class ConfigManager():
     def get_global_config(self):
         return self.global_config
 
+    def print_channel_config(self, channel):
+        return json.dumps(self.channels[channel], sort_keys=True, indent=2)
+
+    def print_global_config(self):
+        return json.dumps(self.get_global_config(), sort_keys=True, indent=2)
+
     def _load_channels(self):
         for entry in os.scandir(self.channel_config_dir):
             name, path = entry.name, entry.path
