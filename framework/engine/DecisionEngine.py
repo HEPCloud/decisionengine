@@ -173,7 +173,11 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return txt[:-1]
 
     def rpc_print_products(self):
-        width = max([len(x) for x in list(self.task_managers.keys())]) + 1
+        channel_keys = self.task_managers.keys()
+        if not channel_keys:
+            return "No channels are currently active.\n"
+
+        width = max([len(x) for x in channel_keys]) + 1
         txt = ""
         for ch, worker in self.task_managers.items():
             if not worker:
@@ -213,8 +217,12 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return txt[:-1]
 
     def rpc_status(self):
-        width = max([len(x) for x in list(self.task_managers.keys())]) + 1
+        channel_keys = self.task_managers.keys()
+        if not channel_keys:
+            return "No channels are currently active.\n" + self.reaper_status()
+
         txt = ""
+        width = max([len(x) for x in channel_keys]) + 1
         for ch, worker in self.task_managers.items():
             if not worker:
                 txt += f"Channel {ch} is in ERROR state\n"
@@ -284,12 +292,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return "OK"
 
     def start_channels(self):
-        channels = self.config_manager.get_channels()
-        if not channels:
-            raise RuntimeError("No channels configured")
-
-        # Start channels
-        for ch in channels:
+        for ch in self.config_manager.get_channels():
             try:
                 self.start_channel(ch)
             except Exception as e:
@@ -428,11 +431,8 @@ def _get_de_conf_manager(args=None):
     except Exception as msg:
         sys.exit("Failed to load configuration {}\n{}".format(conf_manager.config_dir, msg))
 
-    channels = conf_manager.get_channels()
-    channels_required = not os.getenv('DECISIONENGINE_NO_CHANNELS')
-
-    if channels_required and not channels:
-        sys.exit("No channel configurations available in {}".format(conf_manager.config_dir))
+    if not conf_manager.get_channels():
+        logging.info("No channel configurations available in {}".format(conf_manager.config_dir))
 
     return conf_manager
 
@@ -440,13 +440,11 @@ def _start_de_server(conf_manager):
     '''start the DE server with the passed config manager'''
     global_config = conf_manager.get_global_config()
     server_address = tuple(global_config.get('server_address'))
-    channels_required = not os.getenv('DECISIONENGINE_NO_CHANNELS')
 
     try:
         server = DecisionEngine(conf_manager, server_address)
         server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
-        if channels_required:
-            server.start_channels()
+        server.start_channels()
         server.serve_forever()
     except Exception as msg:
         sys.exit("Server Address: {}\n".format(server_address) +
