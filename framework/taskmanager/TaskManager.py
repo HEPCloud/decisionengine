@@ -104,6 +104,10 @@ class TaskManager():
         self.decision_cycle_active = False
         self.lock = threading.Lock()
         self.stop = False  # stop running all loops when this is True
+        # The rest of this function will go away once the source-proxy
+        # has been reimplemented.
+        for src_worker in self.channel.sources.values():
+            src_worker.worker.post_create(global_config)
 
     def wait_for_all(self, events_done):
         """
