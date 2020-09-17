@@ -88,13 +88,11 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
     def _dispatch(self, method, params):
         try:
-            # methods allowed to be executed by rpc have 'rpc_'
-            # pre-pended
+            # methods allowed to be executed by rpc have 'rpc_' pre-pended
             func = getattr(self, "rpc_" + method)
         except AttributeError:
             raise Exception(f'method "{method}" is not supported')
-        else:
-            return func(*params)
+        return func(*params)
 
     def rpc_show_config(self, channel):
         """

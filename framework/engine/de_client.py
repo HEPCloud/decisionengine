@@ -5,18 +5,21 @@ import xmlrpc.client
 
 def create_parser():
     parser = argparse.ArgumentParser()
-
     parser.add_argument(
         "--port",
         metavar='<port number>',
         default="8888",
         help="Default port is 8888")
-
     parser.add_argument(
         "--host",
         metavar='<hostname>',
         default="localhost",
         help="Default hostname is 'localhost'")
+    parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        help="Include exception message in printout if server is inaccessible")
+
 
     server = parser.add_argument_group("Decision Engine server options")
     server.add_argument(
@@ -173,9 +176,12 @@ def main(args_to_parse=None):
     de_socket = xmlrpc.client.ServerProxy(url, allow_none=True)
     try:
         return execute_command_from_args(args, de_socket)
-    except Exception:
-        return f"An error occurred while trying to access a DE server at '{url}'\n" + \
+    except Exception as e:
+        msg = f"An error occurred while trying to access a DE server at '{url}'\n" + \
             "Please ensure that the host and port names correspond to a running DE instance."
+        if args.verbose:
+            msg += f'\n{e}'
+        return msg
 
 
 if __name__ == "__main__":
