@@ -8,6 +8,7 @@
   },
 
   'server_address' : ["localhost",8888],
+  'shutdown_timeout' : 10,
 
   'dataspace': {
     'reaper_start_delay_seconds': 1818,
