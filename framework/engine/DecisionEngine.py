@@ -307,7 +307,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         if worker.task_manager.get_state() not in (TaskManager.State.SHUTTINGDOWN,
                                                    TaskManager.State.SHUTDOWN):
             worker.task_manager.set_state(TaskManager.State.SHUTTINGDOWN)
-        for i in range(int(self.config_manager.config.get("shutdown_timeout", 10))):
+        for i in range(int(self.config_manager.get_global_config().get("shutdown_timeout", 10))):
             if worker.task_manager.get_state() == TaskManager.State.SHUTDOWN:
                 break
             else:
