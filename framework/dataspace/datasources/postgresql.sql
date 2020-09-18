@@ -1,3 +1,4 @@
+DROP INDEX IF EXISTS i_taskmanager_datestamp;
 DROP TABLE IF EXISTS taskmanager;
 CREATE TABLE taskmanager (
    sequence_id BIGSERIAL,
@@ -11,6 +12,7 @@ ALTER TABLE ONLY taskmanager
 
 CREATE INDEX i_taskmanager_datestamp ON taskmanager(datestamp);
 
+DROP INDEX IF EXISTS i_header_taskmanager_id;
 DROP TABLE IF EXISTS header;
 CREATE TABLE header (
     taskmanager_id BIGINT,
@@ -36,6 +38,7 @@ CREATE TABLE schema (
     schema BYTEA
     );
 
+DROP INDEX IF EXISTS i_metadata_taskmanager_id;
 DROP TABLE IF EXISTS metadata;
 CREATE TABLE metadata (
     taskmanager_id BIGINT,
@@ -53,6 +56,7 @@ ALTER TABLE ONLY metadata
 
 CREATE INDEX i_metadata_taskmanager_id ON metadata(taskmanager_id);
 
+DROP INDEX IF EXISTS i_dataproduct_taskmanager_id;
 DROP TABLE IF EXISTS dataproduct;
 CREATE TABLE dataproduct (
     taskmanager_id BIGINT,
@@ -68,6 +72,7 @@ ALTER TABLE ONLY dataproduct
 
 CREATE INDEX i_dataproduct_taskmanager_id ON dataproduct(taskmanager_id);
 
+DROP FUNCTION IF EXISTS f_id2sequence;
 CREATE FUNCTION f_id2sequence(character varying) RETURNS BIGINT
     LANGUAGE sql
     AS $_$
@@ -75,12 +80,14 @@ CREATE FUNCTION f_id2sequence(character varying) RETURNS BIGINT
             $_$;
 
 
+DROP FUNCTION IF EXISTS f_get_current_task_sequence;
 CREATE FUNCTION f_get_current_task_sequence(character varying) RETURNS BIGINT
     LANGUAGE sql
     AS $_$
                 SELECT max(sequence_id) FROM taskmanager WHERE name = $1;
             $_$;
 
+DROP FUNCTION IF EXISTS f_get_current_task_id;
 CREATE FUNCTION f_get_current_task_id(character varying) RETURNS CHARACTER VARYING
     LANGUAGE sql
     AS $_$
