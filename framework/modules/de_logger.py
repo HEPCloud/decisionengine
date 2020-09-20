@@ -12,7 +12,7 @@ def set_logging(log_level,
                 rotation_time_unit,
                 rotation_interval,
                 max_backup_count,
-                max_file_size=200 * MB
+                max_file_size=200 * MB,
                 log_file_name='/tmp/decision_engine_logs/decision_engine_log'):
     """
 
@@ -23,7 +23,7 @@ def set_logging(log_level,
     :type rotation_time_unit: :obj:`str`
     :arg rotation_time_unit: unit of time for file rotation
     :type rotation_interval: :obj:`int`
-    :arg rotation_interval: time in rotation_time_units between file rotations 
+    :arg rotation_interval: time in rotation_time_units between file rotations
     :type log_file_name: :obj:`str`
     :arg log_file_name: log file name
     :type  max_file_size: :obj:`int`
@@ -44,31 +44,31 @@ def set_logging(log_level,
         "%(asctime)s - %(name)s - %(module)s - %(threadName)s - %(levelname)s - %(message)s")
 
     if file_rotate_by == "size":
-      file_handler = logging.handlers.RotatingFileHandler(log_file_name,
-                                                          maxBytes=max_file_size,
-                                                          backupCount=max_backup_count)
+        file_handler = logging.handlers.RotatingFileHandler(log_file_name,
+                                                            maxBytes=max_file_size,
+                                                            backupCount=max_backup_count)
     else:
-      file_handler = logging.handlers.TimedRotatingFileHandler(log_file_name,
-                                                               when=rotation_time_unit,
-                                                               interval=rotation_interval)
+        file_handler = logging.handlers.TimedRotatingFileHandler(log_file_name,
+                                                                 when=rotation_time_unit,
+                                                                 interval=rotation_interval)
 
     file_handler.setFormatter(formatter)
     file_handler.setLevel(logging.INFO)
     logger.addHandler(file_handler)
 
     if log_file_name != '/dev/null':
-      if file_rotate_by == "size":
-        debug_handler = logging.handlers.RotatingFileHandler("%s_debug" % (log_file_name,),
-                                                             maxBytes=max_file_size,
-                                                             backupCount=max_backup_count)
-      else:
-        debug_handler = logging.handlers.TimedRotatingFileHandler(log_file_name,
-                                                                 when=rotation_time_unit,
-                                                                 interval=rotation_interval)
+        if file_rotate_by == "size":
+            debug_handler = logging.handlers.RotatingFileHandler("%s_debug" % (log_file_name,),
+                                                                 maxBytes=max_file_size,
+                                                                 backupCount=max_backup_count)
+        else:
+            debug_handler = logging.handlers.TimedRotatingFileHandler(log_file_name,
+                                                                      when=rotation_time_unit,
+                                                                      interval=rotation_interval)
 
-      debug_handler.setFormatter(formatter)
-      debug_handler.setLevel(logging.DEBUG)
-      logger.addHandler(debug_handler)
+        debug_handler.setFormatter(formatter)
+        debug_handler.setLevel(logging.DEBUG)
+        logger.addHandler(debug_handler)
 
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
@@ -115,5 +115,5 @@ if __name__ == '__main__':
                 max_file_size=10000
                 log_file_name='%s/de_log/decision_engine_log0' % (os.environ.get('HOME'))
     my_logger.info("THIS IS INFO")
-    my_logger.error("THIS IS ERROR")
+    my_logger.info("THIS IS INFO")
     my_logger.debug("THIS IS DEBUG")
