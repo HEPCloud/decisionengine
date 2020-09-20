@@ -74,10 +74,13 @@ def _make_logger(global_config):
         raise RuntimeError("No logger configuration has been specified.")
     try:
         logger_config = global_config['logger']
-        de_logger.set_logging(log_file_name=logger_config['log_file'],
+        de_logger.set_logging(log_level=logger_config.get('log_level', 'INFO'),
+                              file_rotate_by=logger_config.get('file_rotate_by',"size"),
+                              rotation_time_unit=logger_config.get('rotation_time_unit','D'),
+                              rotation_interval=logger_config.get('rotation_time_interval',1),
+                              max_backup_count=logger_config.get('max_backup_count',6),
                               max_file_size=logger_config['max_file_size'],
-                              max_backup_count=logger_config['max_backup_count'],
-                              log_level=logger_config.get('log_level', 'WARNING'))
+                              log_file_name=logger_config['log_file'])
         return de_logger.get_logger()
     except Exception as msg:
         raise RuntimeError(f"Failed to create log: {msg}")
