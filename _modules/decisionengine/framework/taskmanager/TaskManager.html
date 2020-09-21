@@ -36,6 +36,7 @@
 <span class="sd">Task Manager</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -45,11 +46,17 @@
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace</span> <span class="k">import</span> <span class="n">dataspace</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace</span> <span class="k">import</span> <span class="n">datablock</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.configmanager</span> <span class="k">import</span> <span class="n">ConfigManager</span>
 
 <span class="n">_TRANSFORMS_TO</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># 5 minutes</span>
 <span class="n">_DEFAULT_SCHEDULE</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># &quot;&quot;</span>
 
+<div class="viewcode-block" id="_create_worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager._create_worker">[docs]</a><span class="k">def</span> <span class="nf">_create_worker</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create instance of dynamically loaded module</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">my_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+    <span class="n">class_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">class_type</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -62,9 +69,10 @@
 <span class="sd">        :type conf_dict: :obj:`dict`</span>
 <span class="sd">        :arg conf_dict: configuration dictionary describing the worker</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">],</span>
-                                                         <span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
-                                                         <span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="n">_create_worker</span><span class="p">(</span><span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">],</span>
+                                     <span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+                                     <span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">=</span> <span class="n">conf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;schedule&#39;</span><span class="p">,</span> <span class="n">_DEFAULT_SCHEDULE</span><span class="p">)</span>

@@ -39,18 +39,21 @@
 
 <div class="viewcode-block" id="create_parser"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.de_client.create_parser">[docs]</a><span class="k">def</span> <span class="nf">create_parser</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
-
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--port&quot;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;port number&gt;&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;8888&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Default port is 8888&quot;</span><span class="p">)</span>
-
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--host&quot;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&lt;hostname&gt;&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Default hostname is &#39;localhost&#39;&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;--verbose&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Include exception message in printout if server is inaccessible&quot;</span><span class="p">)</span>
+
 
     <span class="n">server</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Decision Engine server options&quot;</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -207,9 +210,12 @@
     <span class="n">de_socket</span> <span class="o">=</span> <span class="n">xmlrpc</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">execute_command_from_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">de_socket</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;An error occurred while trying to access a DE server at &#39;</span><span class="si">{url}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
-            <span class="s2">&quot;Please ensure that the host and port names correspond to a running DE instance.&quot;</span></div>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;An error occurred while trying to access a DE server at &#39;</span><span class="si">{url}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
+            <span class="s2">&quot;Please ensure that the host and port names correspond to a running DE instance.&quot;</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="n">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="si">{e}</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="n">msg</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
