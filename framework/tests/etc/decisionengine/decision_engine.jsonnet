@@ -3,7 +3,10 @@
     'log_file': '/tmp/decisionengine.log',
     'max_file_size': 200*1000000,
     'max_backup_count': 6,
-    'log_level': "WARNING",
+    'rotation_time_unit':'D',
+    'rotation_time_interval':1,
+    'file_rotate_by':"size",
+    'log_level': "INFO",
     'global_channel_log_level':"WARNING",
   },
 
