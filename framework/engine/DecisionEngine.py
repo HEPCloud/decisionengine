@@ -51,7 +51,7 @@ class Worker(multiprocessing.Process):
         if logger_rotate_by == "size":
             file_handler = logging.handlers.RotatingFileHandler(os.path.join(
                                                                 os.path.dirname(
-                                                                  self.logger_config["log_file"]),
+                                                                    self.logger_config["log_file"]),
                                                                 self.task_manager.name + ".log"),
                                                                 maxBytes=self.logger_config.get("max_file_size",
                                                                 200 * 1000000),
@@ -60,7 +60,7 @@ class Worker(multiprocessing.Process):
         else:
             file_handler = logging.handlers.TimedRotatingFileHandler(os.path.join(
                                                                      os.path.dirname(
-                                                                       self.logger_config["log_file"]),
+                                                                         self.logger_config["log_file"]),
                                                                      self.task_manager.name + ".log"),
                                                                      when=self.logger_config.get("rotation_time_unit", 'D'),
                                                                      interval=self.logger_config.get("rotation_time_interval", '1'))
