@@ -112,7 +112,7 @@ if __name__ == '__main__':
                 'D',
                 1,
                 max_backup_count=5,
-                max_file_size=10000
+                max_file_size=10000,
                 log_file_name='%s/de_log/decision_engine_log0' % (os.environ.get('HOME'))
     my_logger.info("THIS IS INFO")
     my_logger.info("THIS IS INFO")
