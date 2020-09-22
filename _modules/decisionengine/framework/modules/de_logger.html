@@ -39,13 +39,25 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">logging.handlers</span>
 
-<span class="n">LOG_FILE</span> <span class="o">=</span> <span class="s1">&#39;/tmp/decision_engine_logs/decision_engine_log&#39;</span>
 <span class="n">MB</span> <span class="o">=</span> <span class="mi">1000000</span>
-<span class="n">ROTATE_AFTER</span> <span class="o">=</span> <span class="mi">6</span>
 
-<div class="viewcode-block" id="set_logging"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.de_logger.set_logging">[docs]</a><span class="k">def</span> <span class="nf">set_logging</span><span class="p">(</span><span class="n">log_file_name</span><span class="o">=</span><span class="n">LOG_FILE</span><span class="p">,</span> <span class="n">max_file_size</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">MB</span><span class="p">,</span> <span class="n">max_backup_count</span><span class="o">=</span><span class="n">ROTATE_AFTER</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="set_logging"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.de_logger.set_logging">[docs]</a><span class="k">def</span> <span class="nf">set_logging</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span>
+                <span class="n">file_rotate_by</span><span class="p">,</span>
+                <span class="n">rotation_time_unit</span><span class="p">,</span>
+                <span class="n">rotation_interval</span><span class="p">,</span>
+                <span class="n">max_backup_count</span><span class="p">,</span>
+                <span class="n">max_file_size</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">MB</span><span class="p">,</span>
+                <span class="n">log_file_name</span><span class="o">=</span><span class="s1">&#39;/tmp/decision_engine_logs/decision_engine_log&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="sd">    :type log_level: :obj:`str`</span>
+<span class="sd">    :arg log_level: log level</span>
+<span class="sd">    :type file_rotate_by: :obj: `str`</span>
+<span class="sd">    :arg file_rotate_by: files rotation by size or by time</span>
+<span class="sd">    :type rotation_time_unit: :obj:`str`</span>
+<span class="sd">    :arg rotation_time_unit: unit of time for file rotation</span>
+<span class="sd">    :type rotation_interval: :obj:`int`</span>
+<span class="sd">    :arg rotation_interval: time in rotation_time_units between file rotations</span>
 <span class="sd">    :type log_file_name: :obj:`str`</span>
 <span class="sd">    :arg log_file_name: log file name</span>
 <span class="sd">    :type  max_file_size: :obj:`int`</span>
@@ -65,17 +77,29 @@
     <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
         <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(module)s</span><span class="s2"> - </span><span class="si">%(threadName)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">,</span>
-                                                        <span class="n">maxBytes</span><span class="o">=</span><span class="n">max_file_size</span><span class="p">,</span>
-                                                        <span class="n">backupCount</span><span class="o">=</span><span class="n">max_backup_count</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">file_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span>
+        <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">,</span>
+                                                            <span class="n">maxBytes</span><span class="o">=</span><span class="n">max_file_size</span><span class="p">,</span>
+                                                            <span class="n">backupCount</span><span class="o">=</span><span class="n">max_backup_count</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">TimedRotatingFileHandler</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">,</span>
+                                                                 <span class="n">when</span><span class="o">=</span><span class="n">rotation_time_unit</span><span class="p">,</span>
+                                                                 <span class="n">interval</span><span class="o">=</span><span class="n">rotation_interval</span><span class="p">)</span>
+
     <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
     <span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">log_file_name</span> <span class="o">!=</span> <span class="s1">&#39;/dev/null&#39;</span><span class="p">:</span>
-        <span class="n">debug_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_debug&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">log_file_name</span><span class="p">,),</span>
-                                                             <span class="n">maxBytes</span><span class="o">=</span><span class="n">max_file_size</span><span class="p">,</span>
-                                                             <span class="n">backupCount</span><span class="o">=</span><span class="n">max_backup_count</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span>
+            <span class="n">debug_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_debug&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">log_file_name</span><span class="p">,),</span>
+                                                                 <span class="n">maxBytes</span><span class="o">=</span><span class="n">max_file_size</span><span class="p">,</span>
+                                                                 <span class="n">backupCount</span><span class="o">=</span><span class="n">max_backup_count</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">debug_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">TimedRotatingFileHandler</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">,</span>
+                                                                      <span class="n">when</span><span class="o">=</span><span class="n">rotation_time_unit</span><span class="p">,</span>
+                                                                      <span class="n">interval</span><span class="o">=</span><span class="n">rotation_interval</span><span class="p">)</span>
+
         <span class="n">debug_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
         <span class="n">debug_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">debug_handler</span><span class="p">)</span>
@@ -117,12 +141,15 @@
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">my_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;decision_engine&quot;</span><span class="p">)</span>
-    <span class="n">set_logging</span><span class="p">(</span><span class="n">log_file_name</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/de_log/decision_engine_log0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)),</span>
-                <span class="n">max_file_size</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span>
+    <span class="n">set_logging</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">,</span>
+                <span class="s1">&#39;D&#39;</span><span class="p">,</span>
+                <span class="mi">1</span><span class="p">,</span>
                 <span class="n">max_backup_count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-                <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
+                <span class="n">max_file_size</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span>
+                <span class="n">log_file_name</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/de_log/decision_engine_log0&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)))</span>
     <span class="n">my_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;THIS IS INFO&quot;</span><span class="p">)</span>
-    <span class="n">my_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;THIS IS ERROR&quot;</span><span class="p">)</span>
+    <span class="n">my_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;THIS IS INFO&quot;</span><span class="p">)</span>
     <span class="n">my_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;THIS IS DEBUG&quot;</span><span class="p">)</span>
 </pre></div>
 
