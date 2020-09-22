@@ -271,17 +271,3 @@ class ConfigManager():
                 self.logger.error(f"{name}\n{msg}\nREMOVING the channel")
                 del self.channels[basename]
                 continue
-
-    @staticmethod
-    def create(module_name, class_name, parameters):
-        """
-        Factory method:  create instance of dynamically loaded module
-        """
-        my_module = importlib.import_module(module_name)
-        class_type = getattr(my_module, class_name)
-        return class_type(parameters)
-
-
-if __name__ == "__main__":
-    c = ConfigManager()
-    c.load()

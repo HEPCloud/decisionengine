@@ -52,12 +52,11 @@ class Worker(multiprocessing.Process):
         # Override config for testing
         #
         conf_manager.global_config['server_address'] = [_HOST, self.port]
-        conf_manager.global_config['dataspace']['datasource']['config']['port'] \
-            = self.db_parameters['port']
-        conf_manager.global_config['dataspace']['datasource']['config']['user'] \
-            = self.db_parameters['user']
-        conf_manager.global_config['dataspace']['datasource']['config']['database'] \
-            = self.db_parameters['dbname']
+        conf_manager.global_config['dataspace']['datasource']['config'].update(
+            port=self.db_parameters['port'],
+            user=self.db_parameters['user'],
+            database=self.db_parameters['dbname']
+        )
 
         _start_de_server(conf_manager)
 

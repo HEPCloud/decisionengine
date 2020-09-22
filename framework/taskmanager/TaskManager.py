@@ -2,6 +2,7 @@
 Task Manager
 """
 import enum
+import importlib
 import threading
 import logging
 import time
@@ -11,11 +12,17 @@ import pandas
 
 from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
-from decisionengine.framework.configmanager import ConfigManager
 
 _TRANSFORMS_TO = 300 # 5 minutes
 _DEFAULT_SCHEDULE = 300 # ""
 
+def _create_worker(module_name, class_name, parameters):
+    """
+    Create instance of dynamically loaded module
+    """
+    my_module = importlib.import_module(module_name)
+    class_type = getattr(my_module, class_name)
+    return class_type(parameters)
 
 class Worker():
     """
@@ -28,9 +35,10 @@ class Worker():
         :type conf_dict: :obj:`dict`
         :arg conf_dict: configuration dictionary describing the worker
         """
-        self.worker = ConfigManager.ConfigManager.create(conf_dict['module'],
-                                                         conf_dict['name'],
-                                                         conf_dict['parameters'])
+
+        self.worker = _create_worker(conf_dict['module'],
+                                     conf_dict['name'],
+                                     conf_dict['parameters'])
         self.module = conf_dict['module']
         self.name = self.worker.__class__.__name__
         self.schedule = conf_dict.get('schedule', _DEFAULT_SCHEDULE)
