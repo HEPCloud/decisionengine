@@ -164,15 +164,10 @@ usermod --append --groups  %{de_group}  %{de_user} >/dev/null
 # $1 = 1 - Installation
 # $1 = 2 - Upgrade
 /sbin/chkconfig --add decision-engine
-if [ ! -e /usr/bin/de-client ]; then
-   ln -s %{python3_sitelib}/decisionengine/framework/engine/de_client.py /usr/bin/de-client
-fi
-if [ ! -e /usr/bin/de-reaper ]; then
-   ln -s %{python3_sitelib}/decisionengine/bin/reaper.py /usr/bin/de-reaper
-fi
-if [ ! -e /usr/sbin/decisionengine ]; then
-   ln -s %{python3_sitelib}/decisionengine/framework/engine/DecisionEngine.py /usr/sbin/decisionengine
-fi
+rm -f /usr/bin/de-client /usr/bin/de-reaper /usr/sbin/decisionengine
+ln -s %{python3_sitelib}/decisionengine/framework/engine/de_client.py /usr/bin/de-client
+ln -s %{python3_sitelib}/decisionengine/bin/reaper.py /usr/bin/de-reaper
+ln -s %{python3_sitelib}/decisionengine/framework/engine/DecisionEngine.py /usr/sbin/decisionengine
 
 # Change the ownership of log and lock dir if they already exist
 if [ -d %{de_logdir} ]; then
