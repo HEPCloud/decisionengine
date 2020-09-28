@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>decisionengine.framework.config.policies &#8212; decisionengine 1.1.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for decisionengine.framework.config.policies</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Decision-engine default configuration policies.</span>
+
+<span class="sd">For the decision-engine process, the configuration policies are:</span>
+
+<span class="sd">- The global configuration file must be named &#39;decision_engine.jsonnet&#39;</span>
+<span class="sd">  and it must reside in (a) a directory that can be accessed through</span>
+<span class="sd">  the &#39;CONFIG_PATH&#39; environment variable, or (b) the /etc/decisionengine</span>
+<span class="sd">  directory.</span>
+
+<span class="sd">- All channel configurations must reside in (a) a directory accessible</span>
+<span class="sd">  through the &#39;CHANNEL_CONFIG_PATH&#39; environment variable, or (b) a</span>
+<span class="sd">  &#39;config.d&#39; subdirectory of the /etc/decisionengine directory.</span>
+
+<span class="sd">The utilities provided in this module provide simple means of</span>
+<span class="sd">accessing the configuration artifacts according to the policies listed</span>
+<span class="sd">above.  Please consult the documentation for each function below for</span>
+<span class="sd">more detailed information.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">GLOBAL_CONFIG_FILENAME</span> <span class="o">=</span> <span class="s1">&#39;decision_engine.jsonnet&#39;</span>
+
+<div class="viewcode-block" id="global_config_dir"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.policies.global_config_dir">[docs]</a><span class="k">def</span> <span class="nf">global_config_dir</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Retrieve global configuration dir as string.</span>
+
+<span class="sd">    This is the directory that houses the &#39;decision_engine.jsonnet&#39;</span>
+<span class="sd">    global configuration file.</span>
+
+<span class="sd">    This function checks that the &#39;CONFIG_PATH&#39; variable has been set</span>
+<span class="sd">    or will use /etc/decisionengine otherwise.  If the path exists as</span>
+<span class="sd">    a directory, then the directory path is returned as a string;</span>
+<span class="sd">    otherwise an exception is raised.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">global_config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;CONFIG_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;/etc/decisionengine&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">global_config_dir</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Config dir &#39;</span><span class="si">{global_config_dir}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">global_config_dir</span></div>
+
+<div class="viewcode-block" id="channel_config_dir"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.policies.channel_config_dir">[docs]</a><span class="k">def</span> <span class="nf">channel_config_dir</span><span class="p">(</span><span class="n">parent_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Retrieve the channel configuration directory as a string.</span>
+
+<span class="sd">    This directory contains all channel configuration files.  This function assumes that</span>
+<span class="sd">    the directory can be accessed by using the &#39;CHANNEL_CONFIG_PATH&#39; environment variable.</span>
+<span class="sd">    If that variable has not been set, then the value of &#39;parent_dir&#39; is prepended to</span>
+<span class="sd">    &#39;config.d&#39;, which is then assumed to be the full path to the channel-configuration</span>
+<span class="sd">    directory.</span>
+
+<span class="sd">    If the &#39;parent_dir&#39; argument is not provided, the global configuration directory is</span>
+<span class="sd">    used as the parent (see documentation for &#39;global_config_dir()&#39;).</span>
+
+<span class="sd">    If the final path for the channel configuration directory does not</span>
+<span class="sd">    correspond to a directory, an exception is raised.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">parent_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">parent_dir</span> <span class="o">=</span> <span class="n">global_config_dir</span><span class="p">()</span>
+    <span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;CHANNEL_CONFIG_PATH&quot;</span><span class="p">,</span>
+                                   <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">,</span> <span class="s2">&quot;config.d&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">channel_config_dir</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Channel config dir &#39;</span><span class="si">{channel_config_dir}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">channel_config_dir</span></div>
+
+<div class="viewcode-block" id="global_config_file"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.policies.global_config_file">[docs]</a><span class="k">def</span> <span class="nf">global_config_file</span><span class="p">(</span><span class="n">global_config_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Retrieve the path (as a string) corresponding to the global configuration.</span>
+
+<span class="sd">    If supplied, the &#39;global_config_dir&#39; is assumed to be the full path</span>
+<span class="sd">    corresponding to a directory containing the &#39;decision_engine.jsonnet&#39;</span>
+<span class="sd">    file.   If not provided, the global configuration directory is determined</span>
+<span class="sd">    based on the behavior of the &#39;global_config_dir()&#39; function.</span>
+
+<span class="sd">    An exception is raised if no &#39;decision_engine.jsonnet&#39; file is found.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">global_config_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">global_config_dir</span> <span class="o">=</span> <span class="n">global_config_dir</span><span class="p">()</span>
+    <span class="n">config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">global_config_dir</span><span class="p">,</span> <span class="n">GLOBAL_CONFIG_FILENAME</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Config file &#39;</span><span class="si">{config_file}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">config_file</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">decisionengine</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.3.html">Release 1.3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.2.html">Release 1.2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html">Decisionengine framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Fermi Research Alliance, LLC..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

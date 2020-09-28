@@ -46,7 +46,7 @@ The following environment variable points to decision engine configuration file:
 if this environment variable is not defined the <code class="docutils literal notranslate"><span class="pre">DE-Config.py</span></code> file from the <a href="#id1"><span class="problematic" id="id2">``</span></a>../tests/etc/` directory will be used.</p>
 <dl class="py class">
 <dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine">
-<em class="property">class </em><code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">DecisionEngine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cfg</span></em>, <em class="sig-param"><span class="n">server_address</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">DecisionEngine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_config</span></em>, <em class="sig-param"><span class="n">channel_config_loader</span></em>, <em class="sig-param"><span class="n">server_address</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">socketserver.ThreadingMixIn</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">xmlrpc.server.SimpleXMLRPCServer</span></code></p>
 <dl class="py method">
 <dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine._disable_channels_with_terminated_processes">
@@ -98,11 +98,6 @@ not be called.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine.reload_config">
-<code class="sig-name descname">reload_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine.reload_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine.reload_config" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_get_channel_log_level">
 <code class="sig-name descname">rpc_get_channel_log_level</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine.rpc_get_channel_log_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_get_channel_log_level" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -141,11 +136,6 @@ Default 0 seconds delay.
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_reload_config">
-<code class="sig-name descname">rpc_reload_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine.rpc_reload_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_reload_config" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_set_channel_log_level">
 <code class="sig-name descname">rpc_set_channel_log_level</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">log_level</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine.rpc_set_channel_log_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_set_channel_log_level" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assumes log_level is a string corresponding to the supported logging-module levels.</p>
@@ -166,7 +156,7 @@ Default 0 seconds delay.
 
 <dl class="py method">
 <dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channel">
-<code class="sig-name descname">rpc_start_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine.rpc_start_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">rpc_start_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine.rpc_start_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channel" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -204,7 +194,7 @@ needs to be run during the loop.</p>
 
 <dl class="py method">
 <dt id="decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channel">
-<code class="sig-name descname">start_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine.start_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">start_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel_name</span></em>, <em class="sig-param"><span class="n">channel_config</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#DecisionEngine.start_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channel" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -254,21 +244,25 @@ needs to be run during the loop.</p>
 
 <dl class="py function">
 <dt id="decisionengine.framework.engine.DecisionEngine._get_de_conf_manager">
-<code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">_get_de_conf_manager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#_get_de_conf_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine._get_de_conf_manager" title="Permalink to this definition">¶</a></dt>
-<dd><p>If args is None, sys.argv will be used instead
-If args is a list, it will be used instead of sys.argv (for unit testing)</p>
-</dd></dl>
+<code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">_get_de_conf_manager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_config_dir</span></em>, <em class="sig-param"><span class="n">channel_config_dir</span></em>, <em class="sig-param"><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#_get_de_conf_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine._get_de_conf_manager" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="decisionengine.framework.engine.DecisionEngine._get_global_config">
+<code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">_get_global_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span></em>, <em class="sig-param"><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#_get_global_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine._get_global_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt id="decisionengine.framework.engine.DecisionEngine._start_de_server">
-<code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">_start_de_server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">conf_manager</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#_start_de_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine._start_de_server" title="Permalink to this definition">¶</a></dt>
-<dd><p>start the DE server with the passed config manager</p>
+<code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">_start_de_server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_config</span></em>, <em class="sig-param"><span class="n">channel_config_loader</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#_start_de_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine._start_de_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>start the DE server with the passed global configuration and config manager</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="decisionengine.framework.engine.DecisionEngine.main">
 <code class="sig-prename descclassname">decisionengine.framework.engine.DecisionEngine.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/DecisionEngine.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.engine.DecisionEngine.main" title="Permalink to this definition">¶</a></dt>
-<dd><p>If you pass a list of args, they will be used instead of sys.argv</p>
+<dd><p>If args is None, sys.argv will be used instead
+If args is a list, it will be used instead of sys.argv (for unit testing)</p>
 </dd></dl>
 
 <dl class="py function">

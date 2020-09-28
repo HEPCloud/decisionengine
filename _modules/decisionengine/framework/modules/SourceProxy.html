@@ -41,7 +41,6 @@
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
-<span class="kn">import</span> <span class="nn">decisionengine.framework.configmanager.ConfigManager</span> <span class="k">as</span> <span class="nn">configmanager</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="k">as</span> <span class="nn">datablock</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="k">import</span> <span class="n">Source</span>
@@ -84,10 +83,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retries&#39;</span><span class="p">,</span> <span class="n">RETRIES</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retry_timeout&#39;</span><span class="p">,</span> <span class="n">RETRY_TO</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
-        <span class="n">config_manager</span> <span class="o">=</span> <span class="n">configmanager</span><span class="o">.</span><span class="n">ConfigManager</span><span class="p">()</span>
-        <span class="n">config_manager</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-        <span class="n">global_config</span> <span class="o">=</span> <span class="n">config_manager</span><span class="o">.</span><span class="n">get_global_config</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SourceProxy.post_create"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.SourceProxy.post_create">[docs]</a>    <span class="k">def</span> <span class="nf">post_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SourceProxy.consumes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.SourceProxy.consumes">[docs]</a>    <span class="k">def</span> <span class="nf">consumes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
