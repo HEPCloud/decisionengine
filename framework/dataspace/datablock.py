@@ -334,10 +334,9 @@ class DataBlock(object):
         """
 
         try:
-            value_row = self.dataspace.get_dataproduct(self.sequence_id,
-                                                       self.generation_id, key)
-
-            value = ast.literal_eval(decompress(value_row['value'].tobytes()))
+            value = self.dataspace.get_dataproduct(self.sequence_id,
+                                                   self.generation_id, key)
+            value = ast.literal_eval(decompress(value))
         except KeyError:
             value = default
 

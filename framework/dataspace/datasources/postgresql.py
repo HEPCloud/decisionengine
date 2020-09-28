@@ -238,7 +238,8 @@ class Postgresql(ds.DataSource):
     def get_dataproduct(self, taskmanager_id, generation_id, key):
         q = SELECT_QUERY.format(ds.DataSource.dataproduct_table)
         try:
-            return self._select_dictresult(q, (taskmanager_id, generation_id, key))[0]
+            value_row = self._select_dictresult(q, (taskmanager_id, generation_id, key))[0]
+            return value_row['value'].tobytes()
         except IndexError:
             raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
                 taskmanager_id, generation_id, key))
