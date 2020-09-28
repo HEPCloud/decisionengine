@@ -1,6 +1,10 @@
 import time
 
-import DBUtils.PooledDB
+try:
+    import dbutils.pooled_db as pooled_db
+except ModuleNotFoundError:
+    import DBUtils.PooledDB as pooled_db
+
 import psycopg2
 import psycopg2.extras
 
@@ -105,8 +109,8 @@ class Postgresql(ds.DataSource):
 
     def __init__(self, config_dict):
         super().__init__(config_dict)
-        self.connection_pool = DBUtils.PooledDB.PooledDB(psycopg2,
-                                                         **config_dict)
+        self.connection_pool = pooled_db.PooledDB(psycopg2,
+                                                  **config_dict)
         self.retries = MAX_NUMBER_OF_RETRIES
         self.timeout = TIME_TO_SLEEP
 
