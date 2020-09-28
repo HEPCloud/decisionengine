@@ -2,30 +2,33 @@ import os
 import pytest
 import re
 
-from decisionengine.framework.configmanager import ConfigManager
+from decisionengine.framework.config.ChannelConfigHandler import ChannelConfigHandler
+from decisionengine.framework.config.ValidConfig import ValidConfig
 
 _this_dir = os.path.dirname(os.path.abspath(__file__))
+_global_config_dir = os.path.join(_this_dir, 'de')
+
+def _global_config_file(relative_filename):
+    return os.path.join(_global_config_dir, relative_filename)
+
+def _channel_config_dir(relative_dir):
+    return os.path.join(_this_dir, relative_dir)
 
 @pytest.fixture()
-def load(monkeypatch):
-    def _call(filename,
-              relative_config_dir=None,
-              relative_channel_config_dir=None,
-              program_options=None):
-        if relative_config_dir is None:
-            monkeypatch.setenv('CONFIG_PATH', os.path.join(_this_dir, 'de'))
-        else:
-            monkeypatch.setenv('CONFIG_PATH', os.path.join(_this_dir, relative_config_dir))
-
+def load():
+    def _call(relative_filename,
+              relative_channel_config_dir=None):
+        channel_config_dir = None
         if relative_channel_config_dir is None:
-            monkeypatch.setenv('CHANNEL_CONFIG_PATH',
-                               os.path.join(_this_dir, 'channels/no_config_files'))
+            channel_config_dir = _channel_config_dir('channels/no_config_files')
         else:
-            monkeypatch.setenv('CHANNEL_CONFIG_PATH',
-                               os.path.join(_this_dir, relative_channel_config_dir))
-        manager = ConfigManager.ConfigManager(program_options)
-        manager.load(filename)
-        return manager
+            channel_config_dir = _channel_config_dir(relative_channel_config_dir)
+
+        filename = _global_config_file(relative_filename)
+        global_config = ValidConfig(filename)
+        handler = ChannelConfigHandler(global_config, channel_config_dir)
+        handler.load_all_channels()
+        return handler
     return _call
 
 
@@ -60,15 +63,6 @@ def test_empty_dict_with_leading_comment(load):
 # These tests validate well-formed DE configurations, but they also
 # check that the appropriate warning messages are emitted regarding
 # Python support for a Jsonnet configuration system.
-def test_minimal_python_default(load, capsys):
-    load(None)
-    stdout, stderr = capsys.readouterr()
-    assert not stdout
-    expected = r"Please rename '.*/decision_engine\.conf' to '.*/decision_engine\.jsonnet'"
-    assert not re.search(expected, stderr, flags=re.DOTALL)
-    expected = "The supplied configuration.*has been converted to a valid JSON construct"
-    assert not re.search(expected, stderr, flags=re.DOTALL)
-
 def test_minimal_python(load, capsys):
     load('minimal_python.conf')
     stdout, stderr = capsys.readouterr()
@@ -88,25 +82,6 @@ def test_minimal_jsonnet_right_extension(load, capsys):
     stdout, stderr = capsys.readouterr()
     assert not stdout
     assert not stderr
-
-# --------------------------------------------------------------------
-# These tests verify that program options are correctly included
-# as/override part of the final configuration.
-def test_program_options_default(load):
-    address = ['localhost', 1234]
-    config = load('minimal.jsonnet',
-                  program_options={'server_address': address}).get_global_config()
-    assert config.get('server_address') == address
-
-def test_program_options_update(load):
-    # Verify non-modified 'server_address' value
-    config = load('minimal_with_address.jsonnet').get_global_config()
-    assert config.get('server_address') == ['localhost', 0]
-    # Override value with program option
-    address = ['localhost', 1234]
-    config = load('minimal_with_address.jsonnet',
-                  program_options={'server_address': address}).get_global_config()
-    assert config.get('server_address') == address
 
 # --------------------------------------------------------------------
 # These tests verify expected behavior for channel (not DE)
@@ -135,8 +110,23 @@ def test_channel_no_modules(load):
 # --------------------------------------------------------------------
 # Test channel names based on channel configuration file names
 def test_channel_names(load):
-    manager = load('minimal_python.conf',
+    handler = load('minimal_python.conf',
                    relative_channel_config_dir='channels/no_modules')
-    assert list(manager.get_channels().keys()) == ['no_modules']
-    manager.print_global_config()
-    manager.print_channel_config('no_modules')
+    assert list(handler.get_channels().keys()) == ['no_modules']
+    handler.print_channel_config('no_modules')
+
+# --------------------------------------------------------------------
+def test_channel_loading(caplog):
+    filename = _global_config_file('minimal.jsonnet')
+    global_config = ValidConfig(filename)
+    channel_config_dir = _channel_config_dir('channels/no_modules')
+    handler = ChannelConfigHandler(global_config, channel_config_dir)
+
+    success, result = handler.load_channel('no_modules')
+    assert success and isinstance(result, ValidConfig)
+    success, result = handler.load_channel('non_existent')
+    assert not success and isinstance(result, str)
+
+    assert len(handler.get_channels()) == 1
+    handler.load_all_channels()
+    assert 'All channel configurations have been removed and are being reloaded.' in caplog.text

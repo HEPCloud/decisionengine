@@ -35,10 +35,6 @@ def create_parser():
         action='store_true',
         help="print server configuration")
     server.add_argument(
-        "--reload-config",
-        action="store_true",
-        help="reload configuration")
-    server.add_argument(
         "--print-engine-loglevel",
         action='store_true',
         help="print engine log level")
@@ -121,8 +117,6 @@ def execute_command_from_args(argsparsed, de_socket):
         return de_socket.status()
     if argsparsed.show_de_config:
         return de_socket.show_de_config()
-    if argsparsed.reload_config:
-        return de_socket.reload_config()
     if argsparsed.stop:
         return de_socket.stop()
     if argsparsed.print_engine_loglevel:

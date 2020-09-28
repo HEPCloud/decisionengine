@@ -1,73 +1,24 @@
-import copy
+'''
+Manager of channel configurations.
+
+The ChannelConfigHandler manages only channel configurations and not
+the global decision-engine configuration.  It is responsible for
+loading channel configuration files and validating that the channels
+have the correct configuration artifacts and inter-module product
+dependencies.
+'''
+
 import importlib
 import os
-import _jsonnet
-import json
-import sys
 
+from decisionengine.framework.config import ValidConfig
 import decisionengine.framework.modules.de_logger as de_logger
+import decisionengine.framework.util.fs as fs
 import decisionengine.framework.util.tsort as tsort
 
 _MANDATORY_CHANNEL_KEYS = {'sources', 'logicengines', 'transforms', 'publishers'}
 _ALLOWED_CHANNEL_KEYS = _MANDATORY_CHANNEL_KEYS | {'task_manager'}
 _MANDATORY_MODULE_KEYS = {"module", "name", "parameters"}
-
-_CONFIG_FILE_NAME = 'decision_engine.jsonnet'
-
-def _convert_to_json(config_file):
-    """
-    Attempt to convert JSON non-compliant configuration into a compliant one.
-
-    This is a temporary facility to aid the migration of Python-based
-    configurations to Jsonnet-based ones.  Python dictionaries that
-    are similar in structure to JSON documents are generally trivially
-    convertible.
-    """
-    global_config = None
-    try:
-        with open(config_file) as f:
-            try:
-                global_config = eval(f.read())
-            except Exception as msg:
-                raise RuntimeError(f"Configuration file {config_file} contains errors:\n{msg}\n"
-                                   "The supplied configuration must be a valid Jsonnet/JSON document.")
-    except Exception as msg:
-        raise RuntimeError(f"Failed to read configuration file {config_file}\n{msg}")
-
-    if not isinstance(global_config, dict):
-        raise RuntimeError("The supplied configuration must be a valid Jsonnet/JSON document.")
-
-    json_config = None
-    try:
-        json_config = json.dumps(global_config)
-    except Exception:
-        raise RuntimeError("The supplied configuration is not convertible to a Jsonnet/JSON document.")
-
-    print(f"The supplied configuration file {config_file} is not a valid Jsonnet/JSON document.\n"
-          "It has been converted to a valid JSON construct, but it should be fixed.",
-          file=sys.stderr)
-    return json_config
-
-def _config_from_file(config_file):
-    if os.path.getsize(config_file) == 0:
-        raise RuntimeError(f"Empty configuration file {config_file}")
-
-    config_str = None
-    basename, ext = os.path.splitext(config_file)
-    try:
-        config_str = _jsonnet.evaluate_file(config_file)
-        if ext != '.jsonnet':
-            print(f"Please rename '{config_file}' to '{basename}.jsonnet'.",
-                  file=sys.stderr)
-    except Exception:
-        # Conversion allowed only for files that do not yet have a
-        # '.jsonnet' extension.
-        if ext != '.jsonnet':
-            config_str = _convert_to_json(config_file)
-        else:
-            raise
-
-    return json.loads(config_str)
 
 def _make_logger(global_config):
     if 'logger' not in global_config:
@@ -107,7 +58,7 @@ def _check_keys(channel_conf_dict):
                 missing_keys = str(list(diff))
                 raise RuntimeError(f"{name} module {module_name} is missing one or more mandatory keys:\n{missing_keys} ")
 
-def _validate_channel(channel):
+def _validate(channel):
     """
     Validate channels
     :type channel: :obj:`dict`
@@ -178,22 +129,12 @@ def _validate_channel(channel):
         raise RuntimeError(f"cyclic dependency detected for modules {list(cyclic_modules)}")
 
 
-class ConfigManager():
+class ChannelConfigHandler():
 
-    def __init__(self, program_options=None):
-        self.config_dir = os.getenv("CONFIG_PATH", "/etc/decisionengine")
-        if not os.path.isdir(self.config_dir):
-            raise Exception(f"Config dir '{self.config_dir}' not found")
-        self.channel_config_dir = os.getenv("CHANNEL_CONFIG_PATH",
-                                            os.path.join(self.config_dir, "config.d"))
-        if not os.path.isdir(self.channel_config_dir):
-            raise Exception(f"Channel config dir '{self.channel_config_dir}' not found")
-        self.program_options = program_options
-        self.global_config = None
+    def __init__(self, global_config, channel_config_dir):
+        self.channel_config_dir = channel_config_dir
         self.channels = {}
-        self.config = {}
-        self.logger = None
-        self.last_update_time = 0.0
+        self.logger = _make_logger(global_config)
 
     def get_produces(self, channel_config):
         produces = {}
@@ -208,66 +149,62 @@ class ConfigManager():
                     pass
         return produces
 
-    def reload(self, config_file_name=None):
-        old_global_config = copy.deepcopy(self.global_config)
-        old_config = copy.deepcopy(self.config)
-        try:
-            self.load(config_file_name)
-        except Exception:
-            self.global_config = copy.deepcopy(old_global_config)
-            self.config = copy.deepcopy(old_config)
-            raise RuntimeError
-
-    def load(self, config_file_name=None):
-        if not config_file_name:
-            config_file_name = _CONFIG_FILE_NAME
-        config_file = os.path.join(self.config_dir, config_file_name)
-        if not os.path.isfile(config_file):
-            raise Exception(f"Config file '{config_file}' not found")
-        self.last_update_time = os.stat(config_file).st_mtime
-        self.global_config = _config_from_file(config_file)
-        # If present, the configuration as specified via program
-        # options takes precedence.
-        if self.program_options:
-            self.global_config.update(self.program_options)
-        if not self.logger:
-            self.logger = _make_logger(self.global_config)
-        self._load_channels()
-
-    def is_updated(self):
-        return
-
     def get_channels(self):
         return self.channels
 
-    def get_global_config(self):
-        return self.global_config
-
     def print_channel_config(self, channel):
-        return json.dumps(self.channels[channel], sort_keys=True, indent=2)
+        return self.channels[channel].dump()
 
-    def print_global_config(self):
-        return json.dumps(self.get_global_config(), sort_keys=True, indent=2)
+    def _load_channel(self, channel_name, path):
+        channel_config = None
+        try:
+            channel_config = ValidConfig.ValidConfig(path)
+        except Exception as msg:
+            return (False,
+                    f"Failed to open channel configuration file {path} "
+                    f"contains error\n-> {msg}\nSKIPPING channel")
 
-    def _load_channels(self):
-        for entry in os.scandir(self.channel_config_dir):
-            name, path = entry.name, entry.path
-            basename, ext = os.path.splitext(name)
-            if ext not in {'.conf', '.jsonnet'}:
-                continue
-            try:
-                self.channels[basename] = _config_from_file(path)
-            except Exception as msg:
-                self.logger.error(f"Failed to open channel configuration file {path} "
-                                  f"contains error\n-> {msg}\nSKIPPING channel")
+        try:
+            _validate(channel_config)
+        except Exception as msg:
+            return (False,
+                    f"The channel configuration file {path} contains a "
+                    f"validation error\n{msg}\nSKIPPING channel")
+
+        self.channels[channel_name] = channel_config
+        return (True, channel_config)
+
+    def load_channel(self, channel_name):
+        '''
+        Load a single configuration for a channel with the supplied name.
+
+        The behavior is to read a configuration file whose path is:
+
+          <cached channel config. dir>/{channel_name}.jsonnet
+
+        where the cached channel-configuration directory was stored whenever the
+        ChannelConfigHandler object was created, and {channel_name} is the value
+        of the supplied method argument.
+        '''
+        path = os.path.join(self.channel_config_dir, channel_name) + '.jsonnet'
+        return self._load_channel(channel_name, path)
+
+    def load_all_channels(self):
+        '''
+        Load all channel configurations inside the stored channel-configuration directory.
+
+        Any cached configurations will be dropped prior to reloading.
+        '''
+        if self.channels:
+            self.channels = {}
+            self.logger.info("All channel configurations have been removed and are being reloaded.")
+
+        files = fs.files_with_extensions(self.channel_config_dir, '.conf', '.jsonnet')
+        for channel_name, full_path in files:
+            # Load only the channels that are not already in memory
+            if channel_name in self.channels:
                 continue
 
-            # Verify channel configuration contains necessary keys.
-            # If keys are missing, the channel is removed and an error
-            # message is logged.
-            try:
-                _validate_channel(self.channels[basename])
-            except Exception as msg:
-                self.logger.error(f"{name}\n{msg}\nREMOVING the channel")
-                del self.channels[basename]
-                continue
+            success, result = self._load_channel(channel_name, full_path)
+            if not success:
+                self.logger.error(result)

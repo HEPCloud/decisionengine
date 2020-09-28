@@ -7,7 +7,6 @@ import time
 
 import pandas as pd
 
-import decisionengine.framework.configmanager.ConfigManager as configmanager
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 from decisionengine.framework.modules import Source
@@ -50,9 +49,8 @@ class SourceProxy(Source.Source):
         self.retries = args[0].get('retries', RETRIES)
         self.retry_to = args[0].get('retry_timeout', RETRY_TO)
         self.logger = logging.getLogger()
-        config_manager = configmanager.ConfigManager()
-        config_manager.load()
-        global_config = config_manager.get_global_config()
+
+    def post_create(self, global_config):
         self.dataspace = dataspace.DataSpace(global_config)
 
     def consumes(self):
