@@ -10,13 +10,14 @@ def files_with_extensions(dir_path, *extensions):
     p = Path(dir_path)
     files = []
     if len(extensions) == 0:
-        extensions = ['']
-
-    for ext in list(extensions):
-        files += p.glob('*' + ext)
+        extensions = ('')
 
     name_to_path = []
-    for file in files:
-        channel_name = os.path.splitext(file.name)[0]
-        name_to_path.append([channel_name, str(file)])
+    for entry in p.iterdir():
+        if not entry.is_file():
+            continue
+        if not entry.name.endswith(extensions):
+            continue
+        channel_name = os.path.splitext(entry.name)[0]
+        name_to_path.append([channel_name, str(entry)])
     return name_to_path
