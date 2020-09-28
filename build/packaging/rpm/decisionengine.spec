@@ -112,6 +112,10 @@ install -m 0644 build/packaging/rpm/decisionengine.service $RPM_BUILD_ROOT%{syst
 install -m 0644 build/packaging/rpm/decisionengine_initd_template $RPM_BUILD_ROOT%{_initrddir}/decision-engine
 install -m 0755 build/packaging/rpm/decisionengine_initd_template $RPM_BUILD_ROOT%{_sbindir}/decision-engine
 
+ln -sf %{python3_sitelib}/decisionengine/framework/engine/de_client.py $RPM_BUILD_ROOT%{_bindir}/de-client
+ln -sf %{python3_sitelib}/decisionengine/bin/reaper.py $RPM_BUILD_ROOT%{_bindir}/de-reaper
+ln -sf %{python3_sitelib}/decisionengine/framework/engine/DecisionEngine.py $RPM_BUILD_ROOT%{_sbindir}/decisionengine
+
 # BUILDING testcase RPM: Uncomment following 1 line
 #install -m 0644 framework/tests/etc/decisionengine/config.d/channelA.conf $RPM_BUILD_ROOT%{de_channel_confdir}
 
@@ -133,6 +137,10 @@ rm -Rf $RPM_BUILD_ROOT%{python3_sitelib}/decisionengine/testcases
 %{systemddir}/decision-engine.service
 %{_initrddir}/decision-engine
 %{_sbindir}/decision-engine
+%{_sbindir}/decisionengine
+%{_bindir}/de-client
+%{_bindir}/de-reaper
+
 %attr(-, %{de_user}, %{de_group}) %{de_logdir}
 %attr(-, %{de_user}, %{de_group}) %{de_lockdir}
 %config(noreplace) %{de_confdir}/decision_engine.conf
@@ -164,15 +172,6 @@ usermod --append --groups  %{de_group}  %{de_user} >/dev/null
 # $1 = 1 - Installation
 # $1 = 2 - Upgrade
 /sbin/chkconfig --add decision-engine
-if [ ! -e /usr/bin/de-client ]; then
-   ln -s %{python3_sitelib}/decisionengine/framework/engine/de_client.py /usr/bin/de-client
-fi
-if [ ! -e /usr/bin/de-reaper ]; then
-   ln -s %{python3_sitelib}/decisionengine/bin/reaper.py /usr/bin/de-reaper
-fi
-if [ ! -e /usr/sbin/decisionengine ]; then
-   ln -s %{python3_sitelib}/decisionengine/framework/engine/DecisionEngine.py /usr/sbin/decisionengine
-fi
 
 # Change the ownership of log and lock dir if they already exist
 if [ -d %{de_logdir} ]; then
@@ -189,7 +188,6 @@ fi
 
 if [ "$1" = "0" ] ; then
     /sbin/chkconfig --del decision-engine
-    rm -f  /usr/bin/de-client /usr/bin/de-reaper /usr/sbin/decisionengine
 fi
 
 
