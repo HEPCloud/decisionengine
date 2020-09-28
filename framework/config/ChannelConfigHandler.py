@@ -1,3 +1,13 @@
+'''
+Manager of channel configurations.
+
+The ChannelConfigHandler manages only channel configurations and not
+the global decision-engine configuration.  It is responsible for
+loading channel configuration files and validating that the channels
+have the correct configuration artifacts and inter-module product
+dependencies.
+'''
+
 import importlib
 import os
 
@@ -165,11 +175,27 @@ class ChannelConfigHandler():
         return (True, channel_config)
 
     def load_channel(self, channel_name):
+        '''
+        Load a single configuration for a channel with the supplied name.
+
+        The behavior is to read a configuration file whose path is:
+
+          <cached channel config. dir>/{channel_name}.jsonnet
+
+        where the cached channel-configuration directory was stored whenever the
+        ChannelConfigHandler object was created, and {channel_name} is the value
+        of the supplied method argument.
+        '''
         path = os.path.join(self.channel_config_dir, channel_name) + '.jsonnet'
         return self._load_channel(channel_name, path)
 
-    def load_all_channels(self, reset=False):
-        if reset:
+    def load_all_channels(self):
+        '''
+        Load all channel configurations inside the stored channel-configuration directory.
+
+        Any cached configurations will be dropped prior to reloading.
+        '''
+        if self.channels:
             self.channels = {}
             self.logger.info("All channel configurations have been removed and are being reloaded.")
 

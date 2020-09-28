@@ -128,5 +128,5 @@ def test_channel_loading(caplog):
     assert not success and isinstance(result, str)
 
     assert len(handler.get_channels()) == 1
-    handler.load_all_channels(reset=True)
+    handler.load_all_channels()
     assert 'All channel configurations have been removed and are being reloaded.' in caplog.text

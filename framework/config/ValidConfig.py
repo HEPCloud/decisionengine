@@ -1,3 +1,16 @@
+'''
+ValidConfig represents a valid JSON document.
+
+The decision engine requires each of its configuration files to be
+valid JSON.  This is achieved by either supplying a valid Jsonnet or
+JSON document upfront, or by providing a Python dictionary that can be
+trivially converted to a JSON document.
+
+Vetting of a file for JSON validity happens upon construction of a
+'ValidConfig' object.  A fully constructed 'ValidConfig' object thus
+corresponds to a valid JSON document.
+'''
+
 from collections import UserDict
 import os
 import _jsonnet
@@ -60,8 +73,15 @@ def _config_from_file(config_file):
     return json.loads(config_str)
 
 class ValidConfig(UserDict):
+    '''
+    ValidConfig represents a valid JSON configuration in the form of a dictionary.
+
+    In addition to the normal dictionary operations, users my call 'dump()' to print
+    out in a string form the JSON configuration.
+    '''
     def __init__(self, filename):
         super().__init__(_config_from_file(filename))
 
     def dump(self):
+        'Print dictionary data to a valid JSON string.'
         return json.dumps(self.data, sort_keys=True, indent=2)

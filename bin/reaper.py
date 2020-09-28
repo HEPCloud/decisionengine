@@ -12,7 +12,7 @@ Can be used in a cron job.
 import os
 import pwd
 import sys
-from decisionengine.framework.config import Policies, ValidConfig
+from decisionengine.framework.config import policies, ValidConfig
 import decisionengine.framework.dataspace.dataspace as dataspace
 
 if __name__ == "__main__":
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     if username not in ['root', 'decisionengine']:
         sys.exit(f"User '{username}' is not allowed to run this script.")
 
-    config_file = Policies.default_global_config_filename()
+    config_file = policies.global_config_filename()
     global_config = ValidConfig.ValidConfig(config_file)
     reaper = dataspace.Reaper(global_config)
     reaper.reap()

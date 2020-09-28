@@ -20,7 +20,7 @@ import uuid
 import socketserver
 import xmlrpc.server
 
-from decisionengine.framework.config import ChannelConfigHandler, ValidConfig, Policies
+from decisionengine.framework.config import ChannelConfigHandler, ValidConfig, policies
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
@@ -287,7 +287,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.logger.info(f"Channel {channel_name} started")
 
     def start_channels(self):
-        self.channel_config_loader.load_all_channels(reset=True)
+        self.channel_config_loader.load_all_channels()
         for name, config in self.channel_config_loader.get_channels().items():
             try:
                 self.start_channel(name, config)
@@ -405,10 +405,10 @@ def parse_program_options(args=None):
                         metavar="<port number>",
                         help="Default port number is 8888; allowed values are in the half-open interval [1, 65535).")
     parser.add_argument("--config",
-                        default=Policies.DEFAULT_GLOBAL_CONFIG_FILENAME,
+                        default=policies.GLOBAL_CONFIG_FILENAME,
                         metavar="<filename>",
-                        help=f"Configuration file for initializing server; default behavior is to choose " +
-                        f"'{Policies.DEFAULT_GLOBAL_CONFIG_FILENAME}' located in the CONFIG_PATH directory.")
+                        help="Configuration file for initializing server; default behavior is to choose " +
+                        f"'{policies.GLOBAL_CONFIG_FILENAME}' located in the CONFIG_PATH directory.")
     return parser.parse_args(args)
 
 def _get_global_config(config_file, options):
@@ -452,9 +452,9 @@ def main(args=None):
     If args is a list, it will be used instead of sys.argv (for unit testing)
     '''
     options = parse_program_options(args)
-    global_config_dir = Policies.default_global_config_dir()
+    global_config_dir = policies.global_config_dir()
     global_config, channel_config_loader = _get_de_conf_manager(global_config_dir,
-                                                                Policies.default_channel_config_dir(),
+                                                                policies.channel_config_dir(),
                                                                 options)
     try:
         _start_de_server(global_config, channel_config_loader)
