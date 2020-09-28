@@ -368,10 +368,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">value_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_dataproduct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
-                                                       <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-
-            <span class="n">value</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">decompress</span><span class="p">(</span><span class="n">value_row</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()))</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_dataproduct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">decompress</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">default</span>
 
