@@ -27,13 +27,11 @@ def run(task_manager):
 
 def test_task_manager_construction(config):
     global_config, channel_configs = config
-    task_manager_id = str(uuid.uuid4()).upper()
     generation_id = 1
     assert len(channel_configs) == 1
     channel_name = list(channel_configs.keys())[0]
     assert channel_name == 'test_channel'
     task_manager = TaskManager(channel_name,
-                               task_manager_id,
                                generation_id,
                                channel_configs[channel_name],
                                global_config)

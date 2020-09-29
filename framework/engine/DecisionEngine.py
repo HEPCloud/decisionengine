@@ -15,7 +15,6 @@ import multiprocessing
 import pandas as pd
 import os
 import tabulate
-import uuid
 
 import socketserver
 import xmlrpc.server
@@ -282,9 +281,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
     def start_channel(self, channel_name, channel_config):
         generation_id = 1
-        taskmanager_id = str(uuid.uuid4()).upper()
         task_manager = TaskManager.TaskManager(channel_name,
-                                               taskmanager_id,
                                                generation_id,
                                                channel_config,
                                                self.global_config)

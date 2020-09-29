@@ -9,6 +9,7 @@ import time
 import sys
 import multiprocessing
 import pandas
+import uuid
 
 from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
@@ -80,7 +81,7 @@ class TaskManager():
     Task Manager
     """
 
-    def __init__(self, name, task_manager_id, generation_id, channel_dict, global_config):
+    def __init__(self, name, generation_id, channel_dict, global_config):
         """
         :type task_manager_id: :obj:`int`
         :arg task_manager_id: Task Manager id provided by caller
@@ -91,13 +92,13 @@ class TaskManager():
         :type global_config: :obj:`dict`
         :arg global_config: global configuration
          """
+        self.id = str(uuid.uuid4()).upper()
         self.dataspace = dataspace.DataSpace(global_config)
         self.data_block_t0 = datablock.DataBlock(self.dataspace,
                                                  name,
-                                                 task_manager_id,
+                                                 self.id,
                                                  generation_id)  # my current data block
         self.name = name
-        self.id = task_manager_id
         self.channel = Channel(channel_dict)
         self.state = multiprocessing.Value('i', State.BOOT.value)
         self.loglevel = multiprocessing.Value('i', logging.WARNING)
