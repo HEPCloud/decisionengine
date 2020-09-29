@@ -102,9 +102,8 @@ class SourceProxy(Source.Source):
         """
         Overrides Source class method
         """
-        retry_cnt = 0
         data_block = None
-        while retry_cnt < self.retries:
+        for _ in range(self.retries):
             try:
                 tm = self.dataspace.get_taskmanager(self.source_channel)
                 self.logger.debug('task manager %s', tm)
@@ -119,22 +118,18 @@ class SourceProxy(Source.Source):
                         self.logger.debug("DATABLOCK %s", data_block)
                         # This is a valid datablock
                         break
-                    retry_cnt += 1
-                    # retry in 1/3 of configured TO
-                    time.sleep(self.retry_to // 3)
-                else:
-                    retry_cnt += 1
-                    time.sleep(self.retry_to)
             except Exception as detail:
                 self.logger.error(
                     'Error getting datablock for %s %s', self.source_channel, detail)
 
+            time.sleep(self.retry_to)
+
         if not data_block:
             raise RuntimeError('Could not get data.')
+
         rc = {}
-        retry_cnt = 0
         filled_keys = []
-        while retry_cnt < self.retries:
+        for _ in range(self.retries):
             if len(filled_keys) != len(self.data_keys):
                 for k in self.data_keys:
                     if isinstance(k, tuple) or isinstance(k, list):
@@ -153,10 +148,9 @@ class SourceProxy(Source.Source):
             if len(filled_keys) == len(self.data_keys):
                 break
             # expected data is not ready yet
-            retry_cnt += 1
             time.sleep(self.retry_to)
 
-        if retry_cnt == self.retries and len(filled_keys) != len(self.data_keys):
+        if len(filled_keys) != len(self.data_keys):
             raise RuntimeError('Could not get all data. Expected %s Filled %s' % (
                 self.data_keys, filled_keys))
         return rc
