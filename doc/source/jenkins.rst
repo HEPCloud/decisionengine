@@ -37,7 +37,12 @@ For this purpose, on the top left panel the user can click on the |Build with Pa
 
 .. image:: jenkins_pic/DE_pipeline_build_params.png
 
-the user can modify the *DE_REPO* parameter to point to his/her fork, and the *BRANCH* parameter to point to the desired branch to test.
-When ready, by clicking on the *Build* button the CI build will start.
+the user can modify these parameters to customize what code to test with the CI build.
+
+| The *DE_REPO* parameter can point to the user fork or to the main repository.
+| The *BRANCH* parameter can point to the desired branch to test.
+| The *PYTEST_TIMEOUT* parameter is the timeout in seconds for *unit_tests*.
+
+When ready, by clicking on the *Build* button, the CI build will start.
 
 The `pipeline configuration <https://github.com/HEPCloud/decisionengine/blob/master/.Jenkinsfile/>`_ is part of the decisionengine repo.
