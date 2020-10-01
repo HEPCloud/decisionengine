@@ -69,12 +69,26 @@
     <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">rule</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">header</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">rule</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span></div>
 
 
+<div class="viewcode-block" id="WorkerInErrorState"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.WorkerInErrorState">[docs]</a><span class="k">class</span> <span class="nc">WorkerInErrorState</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_manager_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_manager_Id</span> <span class="o">=</span> <span class="n">task_manager_id</span>
+
+<div class="viewcode-block" id="WorkerInErrorState.get_state_name"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.WorkerInErrorState.get_state_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;ERROR&quot;</span></div>
+
+<div class="viewcode-block" id="WorkerInErrorState.is_alive"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.WorkerInErrorState.is_alive">[docs]</a>    <span class="k">def</span> <span class="nf">is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span></div></div>
+
 <div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_manager</span><span class="p">,</span> <span class="n">logger_config</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span> <span class="o">=</span> <span class="n">task_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_manager_id</span> <span class="o">=</span> <span class="n">task_manager</span><span class="o">.</span><span class="n">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span> <span class="o">=</span> <span class="n">logger_config</span>
+
+<div class="viewcode-block" id="Worker.get_state_name"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.Worker.get_state_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">get_state_name</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Worker.run"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.Worker.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
@@ -222,14 +236,13 @@
         <span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">channel_keys</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">ch</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
                 <span class="n">txt</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot;Channel </span><span class="si">{ch}</span><span class="s2"> is in ERROR state</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="k">continue</span>
 
-            <span class="n">sname</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">get_state_name</span><span class="p">()</span>
             <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;channel: {:&lt;</span><span class="si">{width}</span><span class="s2">}, id = {:&lt;</span><span class="si">{width}</span><span class="s2">}, state = </span><span class="si">{:&lt;10}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span>
-                                                                                      <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                                                                                      <span class="n">sname</span><span class="p">,</span>
+                                                                                      <span class="n">worker</span><span class="o">.</span><span class="n">task_manager_id</span><span class="p">,</span>
+                                                                                      <span class="n">worker</span><span class="o">.</span><span class="n">get_state_name</span><span class="p">(),</span>
                                                                                       <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
             <span class="n">tm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
             <span class="n">data_block</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="p">,</span>
@@ -266,14 +279,9 @@
         <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">channel_keys</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">ch</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="p">:</span>
-                <span class="n">txt</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot;Channel </span><span class="si">{ch}</span><span class="s2"> is in ERROR state</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="k">continue</span>
-
-            <span class="n">sname</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">get_state_name</span><span class="p">()</span>
             <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;channel: {:&lt;</span><span class="si">{width}</span><span class="s2">}, id = {:&lt;</span><span class="si">{width}</span><span class="s2">}, state = </span><span class="si">{:&lt;10}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span>
-                                                                                      <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                                                                                      <span class="n">sname</span><span class="p">,</span>
+                                                                                      <span class="n">worker</span><span class="o">.</span><span class="n">task_manager_id</span><span class="p">,</span>
+                                                                                      <span class="n">worker</span><span class="o">.</span><span class="n">get_state_name</span><span class="p">(),</span>
                                                                                       <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
             <span class="n">channel_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()[</span><span class="n">ch</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;sources&quot;</span><span class="p">,</span>
@@ -314,8 +322,7 @@
                                                <span class="n">generation_id</span><span class="p">,</span>
                                                <span class="n">channel_config</span><span class="p">,</span>
                                                <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">)</span>
-        <span class="n">worker</span> <span class="o">=</span> <span class="n">Worker</span><span class="p">(</span><span class="n">task_manager</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">])</span>
+        <span class="n">worker</span> <span class="o">=</span> <span class="n">Worker</span><span class="p">(</span><span class="n">task_manager</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">worker</span>
         <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Channel </span><span class="si">{channel_name}</span><span class="s2"> started&quot;</span><span class="p">)</span></div>
@@ -343,14 +350,20 @@
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_stop_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop_channel">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_stop_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;No channel found with the name </span><span class="si">{channel}</span><span class="s2">.&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.stop_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.stop_channel">[docs]</a>    <span class="k">def</span> <span class="nf">stop_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
         <span class="n">worker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
-        <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">TaskManager</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="p">)</span>
-        <span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shutdown_timeout&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span></div>
+        <span class="k">if</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">TaskManager</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="p">)</span>
+            <span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shutdown_timeout&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.stop_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.stop_channels">[docs]</a>    <span class="k">def</span> <span class="nf">stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">channel_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">:</span>
@@ -371,12 +384,23 @@
         <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">engineloglevel</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_get_channel_log_level"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_get_channel_log_level">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_get_channel_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;No channel found with the name </span><span class="si">{channel}</span><span class="s2">.&quot;</span>
+
         <span class="n">worker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;Channel </span><span class="si">{channel}</span><span class="s2"> is in ERROR state.&quot;</span>
         <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">get_loglevel</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_set_channel_log_level"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_set_channel_log_level">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_set_channel_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Assumes log_level is a string corresponding to the supported logging-module levels.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;No channel found with the name </span><span class="si">{channel}</span><span class="s2">.&quot;</span>
+
         <span class="n">worker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;Channel </span><span class="si">{channel}</span><span class="s2"> is in ERROR state.&quot;</span>
+
         <span class="n">log_level_code</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">log_level</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">get_loglevel</span><span class="p">()</span> <span class="o">==</span> <span class="n">log_level_code</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;Nothing to do. Current log level is : </span><span class="si">{log_level}</span><span class="s2">&quot;</span>
@@ -415,12 +439,10 @@
         <span class="k">return</span> <span class="n">txt</span></div>
 
 <div class="viewcode-block" id="DecisionEngine._disable_channels_with_terminated_processes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._disable_channels_with_terminated_processes">[docs]</a>    <span class="k">def</span> <span class="nf">_disable_channels_with_terminated_processes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">channels_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">channel</span><span class="p">,</span> <span class="n">process</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">process</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                <span class="n">channels_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels_to_remove</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+            <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">WorkerInErrorState</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">task_manager_id</span><span class="p">)</span></div>
 
     <span class="c1"># The &#39;service_actions&#39; method here overrides the socketserver</span>
     <span class="c1"># base class&#39; implementation.  It is called during the</span>
