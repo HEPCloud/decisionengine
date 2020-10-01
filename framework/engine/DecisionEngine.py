@@ -280,8 +280,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                                                generation_id,
                                                channel_config,
                                                self.global_config)
-        worker = Worker(task_manager,
-                        self.global_config['logger'])
+        worker = Worker(task_manager, self.global_config['logger'])
         self.task_managers[channel_name] = worker
         worker.start()
         self.logger.info(f"Channel {channel_name} started")
@@ -309,14 +308,18 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return "OK"
 
     def rpc_stop_channel(self, channel):
-        self.stop_channel(channel)
-        return "OK"
+        return self.stop_channel(channel)
 
     def stop_channel(self, channel):
+        if channel not in self.task_managers:
+            return f"No channel found with the name {channel}."
+
         worker = self.task_managers[channel]
-        worker.task_manager.set_state(TaskManager.State.SHUTTINGDOWN)
-        worker.join(self.global_config.get("shutdown_timeout", 10))
+        if worker:
+            worker.task_manager.set_state(TaskManager.State.SHUTTINGDOWN)
+            worker.join(self.global_config.get("shutdown_timeout", 10))
         del self.task_managers[channel]
+        return "OK"
 
     def stop_channels(self):
         for channel_name in self.task_managers:
@@ -337,12 +340,23 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return logging.getLevelName(engineloglevel)
 
     def rpc_get_channel_log_level(self, channel):
+        if channel not in self.task_managers:
+            return f"No channel found with the name {channel}."
+
         worker = self.task_managers[channel]
+        if not worker:
+            return f"Channel {channel} is in ERROR state."
         return logging.getLevelName(worker.task_manager.get_loglevel())
 
     def rpc_set_channel_log_level(self, channel, log_level):
         """Assumes log_level is a string corresponding to the supported logging-module levels."""
+        if channel not in self.task_managers:
+            return f"No channel found with the name {channel}."
+
         worker = self.task_managers[channel]
+        if not worker:
+            return f"Channel {channel} is in ERROR state."
+
         log_level_code = getattr(logging, log_level)
         if worker.task_manager.get_loglevel() == log_level_code:
             return f"Nothing to do. Current log level is : {log_level}"
