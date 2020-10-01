@@ -170,9 +170,14 @@ def main(args_to_parse=None):
     de_socket = xmlrpc.client.ServerProxy(url, allow_none=True)
     try:
         return execute_command_from_args(args, de_socket)
-    except Exception as e:
+    except OSError as e:
         msg = f"An error occurred while trying to access a DE server at '{url}'\n" + \
             "Please ensure that the host and port names correspond to a running DE instance."
+        if args.verbose:
+            msg += f'\n{e}'
+        return msg
+    except Exception as e:
+        msg = f"An error occurred while trying to access a DE server at '{url}'."
         if args.verbose:
             msg += f'\n{e}'
         return msg

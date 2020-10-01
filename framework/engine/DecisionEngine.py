@@ -35,12 +35,26 @@ def _channel_preamble(name):
     return '\n' + rule + '\n' + header + '\n' + rule + '\n\n'
 
 
+class WorkerInErrorState():
+    def __init__(self, task_manager_id):
+        self.task_manager_Id = task_manager_id
+
+    def get_state_name(self):
+        return "ERROR"
+
+    def is_alive(self):
+        return False
+
 class Worker(multiprocessing.Process):
 
     def __init__(self, task_manager, logger_config):
         super().__init__()
         self.task_manager = task_manager
+        self.task_manager_id = task_manager.id
         self.logger_config = logger_config
+
+    def get_state_name(self):
+        return self.task_manager.get_state_name()
 
     def run(self):
         logger = logging.getLogger()
@@ -188,14 +202,13 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         width = max([len(x) for x in channel_keys]) + 1
         txt = ""
         for ch, worker in self.task_managers.items():
-            if not worker:
+            if not worker.is_alive():
                 txt += f"Channel {ch} is in ERROR state\n"
                 continue
 
-            sname = worker.task_manager.get_state_name()
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
-                                                                                      worker.task_manager.id,
-                                                                                      sname,
+                                                                                      worker.task_manager_id,
+                                                                                      worker.get_state_name(),
                                                                                       width=width)
             tm = self.dataspace.get_taskmanager(ch)
             data_block = datablock.DataBlock(self.dataspace,
@@ -232,14 +245,9 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         txt = ""
         width = max([len(x) for x in channel_keys]) + 1
         for ch, worker in self.task_managers.items():
-            if not worker:
-                txt += f"Channel {ch} is in ERROR state\n"
-                continue
-
-            sname = worker.task_manager.get_state_name()
             txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
-                                                                                      worker.task_manager.id,
-                                                                                      sname,
+                                                                                      worker.task_manager_id,
+                                                                                      worker.get_state_name(),
                                                                                       width=width)
             channel_config = self.channel_config_loader.get_channels()[ch]
             for i in ("sources",
@@ -308,18 +316,20 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return "OK"
 
     def rpc_stop_channel(self, channel):
-        return self.stop_channel(channel)
+        if not self.stop_channel(channel):
+            return f"No channel found with the name {channel}."
+        return "OK"
 
     def stop_channel(self, channel):
         if channel not in self.task_managers:
-            return f"No channel found with the name {channel}."
+            return False
 
         worker = self.task_managers[channel]
-        if worker:
+        if worker.is_alive():
             worker.task_manager.set_state(TaskManager.State.SHUTTINGDOWN)
             worker.join(self.global_config.get("shutdown_timeout", 10))
         del self.task_managers[channel]
-        return "OK"
+        return True
 
     def stop_channels(self):
         for channel_name in self.task_managers:
@@ -344,7 +354,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             return f"No channel found with the name {channel}."
 
         worker = self.task_managers[channel]
-        if not worker:
+        if not worker.is_alive():
             return f"Channel {channel} is in ERROR state."
         return logging.getLevelName(worker.task_manager.get_loglevel())
 
@@ -354,7 +364,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             return f"No channel found with the name {channel}."
 
         worker = self.task_managers[channel]
-        if not worker:
+        if not worker.is_alive():
             return f"Channel {channel} is in ERROR state."
 
         log_level_code = getattr(logging, log_level)
@@ -395,12 +405,10 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return txt
 
     def _disable_channels_with_terminated_processes(self):
-        channels_to_remove = []
         for channel, process in self.task_managers.items():
-            if process and not process.is_alive():
-                channels_to_remove.append(channel)
-        for channel in channels_to_remove:
-            self.task_managers[channel] = None
+            if process.is_alive():
+                continue
+            self.task_managers[channel] = WorkerInErrorState(process.task_manager_id)
 
     # The 'service_actions' method here overrides the socketserver
     # base class' implementation.  It is called during the
