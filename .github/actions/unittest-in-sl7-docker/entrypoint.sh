@@ -15,8 +15,8 @@ export PYTHONPATH=$PWD:$PYTHONPATH
 source venv/bin/activate
 export PATH=$PATH:/usr/pgsql-11/bin
 which pytest
-LC_ALL="en_US.UTF-8"
-LC_CTYPE="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
 pytest -v --tb=native decisionengine >  ./pytest.log 2>&1
 status=$?
 cat ./pytest.log
