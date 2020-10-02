@@ -329,6 +329,11 @@
 
 <div class="viewcode-block" id="DecisionEngine.start_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channels">[docs]</a>    <span class="k">def</span> <span class="nf">start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">load_all_channels</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_channels</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No channel configurations available in &quot;</span> <span class="o">+</span>
+                             <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.channel_config_loader.channel_config_dir}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">start_channel</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
@@ -486,9 +491,6 @@
 
     <span class="n">global_config</span> <span class="o">=</span> <span class="n">_get_global_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
     <span class="n">conf_manager</span> <span class="o">=</span> <span class="n">ChannelConfigHandler</span><span class="o">.</span><span class="n">ChannelConfigHandler</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_dir</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">conf_manager</span><span class="o">.</span><span class="n">get_channels</span><span class="p">():</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No channel configurations available in </span><span class="si">{channel_config_dir}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">conf_manager</span><span class="p">)</span></div>
 
