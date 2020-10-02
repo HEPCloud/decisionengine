@@ -32,129 +32,71 @@
           <div class="body" role="main">
             
   <h1>Source code for decisionengine.framework.tests.test_start_with_no_channels</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span></span><span class="sd">&#39;&#39;&#39;Fixture based DE Server tests of the server without channels, then with them&#39;&#39;&#39;</span>
+<span class="c1"># pylint: disable=redefined-outer-name</span>
+
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">shutil</span> <span class="k">import</span> <span class="n">copy</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">unittest</span>
 
 <span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">from</span> <span class="nn">pytest_postgresql</span> <span class="k">import</span> <span class="n">factories</span>
 
-<span class="kn">import</span> <span class="nn">decisionengine.framework.engine.de_client</span> <span class="k">as</span> <span class="nn">de_client</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="k">import</span> <span class="n">_get_de_conf_manager</span><span class="p">,</span> <span class="n">_start_de_server</span><span class="p">,</span> <span class="n">parse_program_options</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.util.sockets</span> <span class="k">import</span> <span class="n">get_random_port</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="k">import</span> <span class="n">DE_DB_HOST</span><span class="p">,</span> <span class="n">DE_DB_USER</span><span class="p">,</span> <span class="n">DE_DB_PASS</span><span class="p">,</span> <span class="n">DE_DB_NAME</span><span class="p">,</span> <span class="n">DE_SCHEMA</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="k">import</span> <span class="n">DE_DB</span><span class="p">,</span> <span class="n">DE_HOST</span><span class="p">,</span> <span class="n">PG_PROG</span><span class="p">,</span> <span class="n">DEServer</span><span class="p">,</span> <span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">TEST_CHANNEL_CONFIG_PATH</span>
 
-<span class="n">_CWD</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
-<span class="n">_DDL_FILE</span> <span class="o">=</span> <span class="s2">&quot;../dataspace/datasources/postgresql.sql&quot;</span>
-<span class="n">_CONFIG_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_CWD</span><span class="p">,</span> <span class="s2">&quot;etc/decisionengine&quot;</span><span class="p">)</span>
-<span class="n">_CHANNEL_CONFIG_DIR</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span>
+<span class="n">EMPTY_DIR</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span>
 
-<span class="c1"># Not all test hosts are IPv6, generally IPv4 works fine some test</span>
-<span class="c1"># hosts use IPv6 for localhost by default, even when not configured!</span>
-<span class="c1"># Python XML RPC Socket server is IPv4 only right now.</span>
-<span class="n">_HOST</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span>
+<span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">EMPTY_DIR</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="c1"># pylint: disable=invalid-name</span>
 
-<span class="n">postgresql_my_proc</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql_proc</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-<span class="n">postgresql</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql</span><span class="p">(</span><span class="s2">&quot;postgresql_my_proc&quot;</span><span class="p">,</span>
-                                  <span class="n">db_name</span><span class="o">=</span><span class="s2">&quot;decisionengine&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="cleanup_tmpdir"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_no_channels.cleanup_tmpdir">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">autouse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cleanup_tmpdir</span><span class="p">():</span>
+    <span class="c1"># Code to run before each test</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">EMPTY_DIR</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">EMPTY_DIR</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">EMPTY_DIR</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-<div class="viewcode-block" id="datasource"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_no_channels.datasource">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">datasource</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">postgresql</span><span class="p">):</span>
-    <span class="k">with</span> <span class="n">postgresql</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
-        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_CWD</span><span class="p">,</span> <span class="n">_DDL_FILE</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-    <span class="n">postgresql</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">postgresql</span></div>
+    <span class="c1"># test runs under &#39;yield&#39; here</span>
+    <span class="k">yield</span></div>
 
-<div class="viewcode-block" id="fixtures"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_no_channels.fixtures">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">fixtures</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">datasource</span><span class="p">):</span>
-    <span class="n">request</span><span class="o">.</span><span class="n">cls</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">datasource</span></div>
+    <span class="c1"># Code to run after each test</span>
+    <span class="c1">#pass</span>
 
-
-<div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_no_channels.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_parameters</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_parameters</span> <span class="o">=</span> <span class="n">db_parameters</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
-
-<div class="viewcode-block" id="Worker.run"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_no_channels.Worker.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">global_config</span><span class="p">,</span> <span class="n">conf_manager</span> <span class="o">=</span> <span class="n">_get_de_conf_manager</span><span class="p">(</span><span class="n">_CONFIG_PATH</span><span class="p">,</span>
-                                                           <span class="n">_CHANNEL_CONFIG_DIR</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                                           <span class="n">parse_program_options</span><span class="p">([]))</span>
-
-        <span class="c1"># Override config for testing</span>
-        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;server_address&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">_HOST</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">]</span>
-        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_parameters</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
-            <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_parameters</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">],</span>
-            <span class="n">database</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_parameters</span><span class="p">[</span><span class="s1">&#39;dbname&#39;</span><span class="p">]</span>
-        <span class="p">)</span>
-
-        <span class="n">_start_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">conf_manager</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="TestChannel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_no_channels.TestChannel">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;fixtures&quot;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">TestChannel</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
-
-<div class="viewcode-block" id="TestChannel.setUp"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_no_channels.TestChannel.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">get_random_port</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="n">Worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dsn_parameters</span><span class="p">,</span>
-                             <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TestChannel.tearDown"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_no_channels.TestChannel.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s2">&quot;--stop&quot;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ConnectionRefusedError</span><span class="p">:</span>
-            <span class="c1"># server already shutdown</span>
-            <span class="k">pass</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="TestChannel.de_client_request"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_no_channels.TestChannel.de_client_request">[docs]</a>    <span class="k">def</span> <span class="nf">de_client_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s2">&quot;--host&quot;</span><span class="p">,</span>
-                               <span class="n">_HOST</span><span class="p">,</span>
-                               <span class="s2">&quot;--port&quot;</span><span class="p">,</span>
-                               <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">),</span>
-                               <span class="o">*</span><span class="n">args</span><span class="p">])</span></div>
-
+<div class="viewcode-block" id="test_start_from_nothing"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_no_channels.test_start_from_nothing">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_start_from_nothing</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Because pytest will reorder the tests based on the method name,</span>
     <span class="c1"># we implement the whole &#39;workflow&#39; as one unit test.</span>
-<div class="viewcode-block" id="TestChannel.test_start_from_nothing"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_no_channels.TestChannel.test_start_from_nothing">[docs]</a>    <span class="k">def</span> <span class="nf">test_start_from_nothing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Verify that nothing is active</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="s2">&quot;No channels are currently active&quot;</span> <span class="ow">in</span> <span class="n">output</span>
 
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s2">&quot;--print-products&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="s2">&quot;No channels are currently active&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="c1"># Verify that nothing is active</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s2">&quot;No channels are currently active&quot;</span> <span class="ow">in</span> <span class="n">output</span>
 
-        <span class="c1"># Add channel config to directory</span>
-        <span class="n">channel_config</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_CWD</span><span class="p">,</span> <span class="s1">&#39;etc/decisionengine/config.d/test_channel.jsonnet&#39;</span><span class="p">)</span>
-        <span class="n">new_config_path</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">channel_config</span><span class="p">,</span> <span class="n">_CHANNEL_CONFIG_DIR</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">new_config_path</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--print-products&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s2">&quot;No channels are currently active&quot;</span> <span class="ow">in</span> <span class="n">output</span>
 
-        <span class="c1"># Activate channel and check for steady state</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--start-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;OK&#39;</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;test_channel.*state = STEADY&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+    <span class="c1"># Add channel config to directory</span>
+    <span class="n">channel_config</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_CHANNEL_CONFIG_PATH</span><span class="p">,</span> <span class="s1">&#39;test_channel.jsonnet&#39;</span><span class="p">)</span> <span class="c1"># noqa: F405</span>
+    <span class="n">new_config_path</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">channel_config</span><span class="p">,</span> <span class="n">EMPTY_DIR</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">new_config_path</span><span class="p">)</span>
 
-        <span class="c1"># Take channel offline</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--stop-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;OK&#39;</span>
+    <span class="c1"># Activate channel and check for steady state</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--start-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;OK&#39;</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;test_channel.*state = STEADY&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
-        <span class="c1"># Verify no channels are active</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de_client_request</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="s2">&quot;No channels are currently active&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="c1"># Take channel offline</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--stop-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;OK&#39;</span>
 
-        <span class="c1"># Verify that the relevant configuration file still exists.</span>
-        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">new_config_path</span><span class="p">)</span></div></div>
+    <span class="c1"># Verify no channels are active</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s2">&quot;No channels are currently active&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+
+    <span class="c1"># Verify that the relevant configuration file still exists.</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">new_config_path</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

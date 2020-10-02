@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>decisionengine.framework.engine.tests.fixtures &#8212; decisionengine 1.1.1 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for decisionengine.framework.engine.tests.fixtures</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;pytest defaults&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">psycopg2</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_postgresql.factories</span> <span class="k">import</span> <span class="n">DatabaseJanitor</span>
+
+<span class="kn">import</span> <span class="nn">decisionengine.framework.engine.de_client</span> <span class="k">as</span> <span class="nn">de_client</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.tests.fixtures</span> <span class="k">import</span> <span class="n">DE_DB_HOST</span><span class="p">,</span> <span class="n">DE_DB_USER</span><span class="p">,</span> <span class="n">DE_DB_PASS</span><span class="p">,</span> <span class="n">DE_DB_NAME</span><span class="p">,</span> <span class="n">DE_SCHEMA</span><span class="p">,</span> <span class="n">PG_PROG</span><span class="p">,</span> <span class="n">DE_DB</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="k">import</span> <span class="n">_get_de_conf_manager</span><span class="p">,</span> <span class="n">_start_de_server</span><span class="p">,</span> <span class="n">parse_program_options</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.util.sockets</span> <span class="k">import</span> <span class="n">get_random_port</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DE_DB_HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_DB_USER&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_DB_PASS&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_DB_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_SCHEMA&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;PG_PROG&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_DB&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;DEServer&#39;</span><span class="p">]</span>
+
+<span class="c1"># Not all test hosts are IPv6, generally IPv4 works fine</span>
+<span class="c1">#  some test hosts use IPv6 for localhost by default, even when not configured!</span>
+<span class="c1">#  Python XML RPC Socket server is IPv4 only right now.</span>
+<span class="n">DE_HOST</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span>
+
+<span class="k">class</span> <span class="nc">DETestWorker</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;A DE Server process with our test config&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf_path</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">server_address</span><span class="p">,</span> <span class="n">db_info</span><span class="p">,</span> <span class="n">conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">channel_conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;format of args should match what you set in conf_mamanger&#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_info</span> <span class="o">=</span> <span class="n">db_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conf_path</span> <span class="o">=</span> <span class="n">conf_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_conf_path</span> <span class="o">=</span> <span class="n">channel_conf_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span> <span class="o">=</span> <span class="n">server_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conf_override</span> <span class="o">=</span> <span class="n">conf_override</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_conf_override</span> <span class="o">=</span> <span class="n">channel_conf_override</span>
+
+        <span class="c1"># these options should let you pass in a dict</span>
+        <span class="c1"># to force any specific settings within the global or channel config</span>
+        <span class="c1"># if someone actually needs this feature set, we&#39;ll write the code</span>
+        <span class="k">if</span> <span class="n">conf_override</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;No one wrote that code yet&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channel_conf_override</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;No one wrote that code yet&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">global_config</span><span class="p">,</span> <span class="n">conf_manager</span> <span class="o">=</span> <span class="n">_get_de_conf_manager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">parse_program_options</span><span class="p">([]))</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># Override config for testing</span>
+        <span class="c1">#</span>
+        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;shutdown_timeout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;server_address&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span>
+        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span>
+        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
+        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;user&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span>
+        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;password&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;database&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;dbname&#39;</span><span class="p">]</span>
+
+        <span class="n">_start_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">conf_manager</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">de_client_run_cli</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Run the DE Client CLI with these args</span>
+<span class="sd">        The DE Server host/port are automatically set for you</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s2">&quot;--host&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                               <span class="s2">&quot;--port&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                               <span class="o">*</span><span class="n">args</span><span class="p">])</span>
+
+
+<span class="c1"># pylint: disable=invalid-name</span>
+<div class="viewcode-block" id="DEServer"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.fixtures.DEServer">[docs]</a><span class="k">def</span> <span class="nf">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">channel_conf_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">channel_conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">host</span><span class="o">=</span><span class="n">DE_HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">pg_prog_name</span><span class="o">=</span><span class="s1">&#39;PG_PROG&#39;</span><span class="p">,</span> <span class="n">pg_db_conn_name</span><span class="o">=</span><span class="s1">&#39;DE_DB&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;A DE Server using our private database&#39;&#39;&#39;</span>
+
+    <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;function&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">de_server_factory</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        actually make the fixture</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">port</span><span class="p">:</span>
+            <span class="n">host_port</span> <span class="o">=</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">host_port</span> <span class="o">=</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">get_random_port</span><span class="p">())</span>
+
+        <span class="n">db_info</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">proc_fixture</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span><span class="n">pg_prog_name</span><span class="p">)</span>
+        <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">host</span>
+        <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">port</span>
+        <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">user</span>
+        <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">password</span>
+
+        <span class="n">conn_fixture</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span><span class="n">pg_db_conn_name</span><span class="p">)</span>
+        <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;dbname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">get_dsn_parameters</span><span class="p">()[</span><span class="s1">&#39;dbname&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_private&#39;</span>
+
+        <span class="c1"># for reasons I&#39;ve yet to determine</span>
+        <span class="c1">#  the schema isn&#39;t populated by the DE_DB fixture here...</span>
+        <span class="c1">#  but the tablespace is locked by the fixture...</span>
+        <span class="c1">#  so we just do it manually for now in a slightly different DB</span>
+
+        <span class="c1"># DatabaseJanitor will create and drop the tablespace for us</span>
+        <span class="k">with</span> <span class="n">DatabaseJanitor</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">],</span> <span class="n">password</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span>
+                             <span class="n">host</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">],</span> <span class="n">port</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
+                             <span class="n">db_name</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;dbname&#39;</span><span class="p">],</span> <span class="n">version</span><span class="o">=</span><span class="n">conn_fixture</span><span class="o">.</span><span class="n">server_version</span><span class="p">):</span>
+
+            <span class="k">with</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_info</span><span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">DE_SCHEMA</span><span class="p">:</span> <span class="c1"># noqa: F405</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">_fd</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+                            <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_fd</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+            <span class="n">server_proc</span> <span class="o">=</span> <span class="n">DETestWorker</span><span class="p">(</span><span class="n">conf_path</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">host_port</span><span class="p">,</span> <span class="n">db_info</span><span class="p">,</span> <span class="n">conf_override</span><span class="p">,</span> <span class="n">channel_conf_override</span><span class="p">)</span>
+            <span class="n">server_proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+            <span class="c1"># give the startup a moment for self tests</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not start PrivateDEServer fixture&#39;</span><span class="p">)</span>
+
+            <span class="k">yield</span> <span class="n">server_proc</span>
+
+            <span class="k">if</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="n">server_proc</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--stop&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># it may take a moment for --stop to finish</span>
+                <span class="n">server_proc</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">de_server_factory</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../../index.html">decisionengine</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.3.html">Release 1.3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.2.html">Release 1.2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../unittest.html">Decisionengine framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Fermi Research Alliance, LLC..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

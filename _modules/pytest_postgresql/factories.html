@@ -1,0 +1,388 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytest_postgresql.factories &#8212; decisionengine 1.1.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pytest_postgresql.factories</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (C) 2013-2020 by Clearcode &lt;http://clearcode.cc&gt;</span>
+<span class="c1"># and associates (see AUTHORS).</span>
+
+<span class="c1"># This file is part of pytest-postgresql.</span>
+
+<span class="c1"># pytest-dbfixtures is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU Lesser General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+
+<span class="c1"># pytest-dbfixtures is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU Lesser General Public License for more details.</span>
+
+<span class="c1"># You should have received a copy of the GNU Lesser General Public License</span>
+<span class="c1"># along with pytest-dbfixtures.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&quot;&quot;&quot;Fixture factories for postgresql fixtures.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="k">import</span> <span class="n">gettempdir</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">_pytest.fixtures</span> <span class="k">import</span> <span class="n">FixtureRequest</span>
+<span class="kn">from</span> <span class="nn">_pytest.tmpdir</span> <span class="k">import</span> <span class="n">TempdirFactory</span>
+
+<span class="kn">from</span> <span class="nn">pytest_postgresql.compat</span> <span class="k">import</span> <span class="n">psycopg2</span><span class="p">,</span> <span class="n">connection</span>
+<span class="kn">from</span> <span class="nn">pytest_postgresql.executor_noop</span> <span class="k">import</span> <span class="n">NoopExecutor</span>
+<span class="kn">from</span> <span class="nn">pytest_postgresql.janitor</span> <span class="k">import</span> <span class="n">DatabaseJanitor</span>
+<span class="kn">from</span> <span class="nn">pytest_postgresql.executor</span> <span class="k">import</span> <span class="n">PostgreSQLExecutor</span>
+<span class="kn">from</span> <span class="nn">pytest_postgresql.port</span> <span class="k">import</span> <span class="n">get_port</span>
+
+
+<span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">FixtureRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a dictionary with config options.&quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;exec&#39;</span><span class="p">,</span> <span class="s1">&#39;host&#39;</span><span class="p">,</span> <span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;options&#39;</span><span class="p">,</span> <span class="s1">&#39;startparams&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;logsprefix&#39;</span><span class="p">,</span> <span class="s1">&#39;unixsocketdir&#39;</span><span class="p">,</span> <span class="s1">&#39;dbname&#39;</span><span class="p">,</span> <span class="s1">&#39;load&#39;</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+        <span class="n">option_name</span> <span class="o">=</span> <span class="s1">&#39;postgresql_&#39;</span> <span class="o">+</span> <span class="n">option</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getoption</span><span class="p">(</span><span class="n">option_name</span><span class="p">)</span> <span class="ow">or</span> \
+            <span class="n">request</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getini</span><span class="p">(</span><span class="n">option_name</span><span class="p">)</span>
+        <span class="n">config</span><span class="p">[</span><span class="n">option</span><span class="p">]</span> <span class="o">=</span> <span class="n">conf</span>
+    <span class="k">return</span> <span class="n">config</span>
+
+
+<span class="k">def</span> <span class="nf">init_postgresql_database</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create database in postgresql.</span>
+
+<span class="sd">    :param str user: postgresql username</span>
+<span class="sd">    :param str host: postgresql host</span>
+<span class="sd">    :param str port: postgresql port</span>
+<span class="sd">    :param str db_name: database name</span>
+<span class="sd">    :param str password: optional postgresql password</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s1">&#39;init_postgresql_database is deprecated, &#39;</span>
+        <span class="s1">&#39;use DatabaseJanitor.init instead.&#39;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span>
+    <span class="p">)</span>
+    <span class="n">DatabaseJanitor</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">drop_postgresql_database</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Drop databse in postgresql.</span>
+
+<span class="sd">    :param str user: postgresql username</span>
+<span class="sd">    :param str host: postgresql host</span>
+<span class="sd">    :param str port: postgresql port</span>
+<span class="sd">    :param str db_name: database name</span>
+<span class="sd">    :param packaging.version.Version version: postgresql version number</span>
+<span class="sd">    :param str password: optional postgresql password</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="s1">&#39;drop_postgresql_database is deprecated, &#39;</span>
+        <span class="s1">&#39;use DatabaseJanitor.drop instead.&#39;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span>
+    <span class="p">)</span>
+    <span class="n">DatabaseJanitor</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">postgresql_proc</span><span class="p">(</span>
+        <span class="n">executable</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">options</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">startparams</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">unixsocketdir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">logs_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">FixtureRequest</span><span class="p">,</span> <span class="n">TempdirFactory</span><span class="p">],</span> <span class="n">PostgreSQLExecutor</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Postgresql process factory.</span>
+
+<span class="sd">    :param str executable: path to postgresql_ctl</span>
+<span class="sd">    :param str host: hostname</span>
+<span class="sd">    :param str|int|tuple|set|list port:</span>
+<span class="sd">        exact port (e.g. &#39;8000&#39;, 8000)</span>
+<span class="sd">        randomly selected port (None) - any random available port</span>
+<span class="sd">        -1 - command line or pytest.ini configured port</span>
+<span class="sd">        [(2000,3000)] or (2000,3000) - random available port from a given range</span>
+<span class="sd">        [{4002,4003}] or {4002,4003} - random of 4002 or 4003 ports</span>
+<span class="sd">        [(2000,3000), {4002,4003}] - random of given range and set</span>
+<span class="sd">    :param str user: postgresql username</span>
+<span class="sd">    :param str options: Postgresql connection options</span>
+<span class="sd">    :param str startparams: postgresql starting parameters</span>
+<span class="sd">    :param str unixsocketdir: directory to create postgresql&#39;s unixsockets</span>
+<span class="sd">    :param str logs_prefix: prefix for log filename</span>
+<span class="sd">    :rtype: func</span>
+<span class="sd">    :returns: function which makes a postgresql process</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;session&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">postgresql_proc_fixture</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">:</span> <span class="n">FixtureRequest</span><span class="p">,</span> <span class="n">tmpdir_factory</span><span class="p">:</span> <span class="n">TempdirFactory</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PostgreSQLExecutor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process fixture for PostgreSQL.</span>
+
+<span class="sd">        :param FixtureRequest request: fixture request object</span>
+<span class="sd">        :rtype: pytest_dbfixtures.executors.TCPExecutor</span>
+<span class="sd">        :returns: tcp executor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">postgresql_ctl</span> <span class="o">=</span> <span class="n">executable</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;exec&#39;</span><span class="p">]</span>
+        <span class="c1"># check if that executable exists, as it&#39;s no on system PATH</span>
+        <span class="c1"># only replace if executable isn&#39;t passed manually</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">postgresql_ctl</span><span class="p">)</span> <span class="ow">and</span> <span class="n">executable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pg_bindir</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span>
+                <span class="p">[</span><span class="s1">&#39;pg_config&#39;</span><span class="p">,</span> <span class="s1">&#39;--bindir&#39;</span><span class="p">],</span> <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">postgresql_ctl</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pg_bindir</span><span class="p">,</span> <span class="s1">&#39;pg_ctl&#39;</span><span class="p">)</span>
+        <span class="n">pg_port</span> <span class="o">=</span> <span class="n">get_port</span><span class="p">(</span><span class="n">port</span><span class="p">)</span> <span class="ow">or</span> <span class="n">get_port</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">])</span>
+        <span class="n">datadir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">gettempdir</span><span class="p">(),</span> <span class="s1">&#39;postgresqldata.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pg_port</span><span class="p">))</span>
+        <span class="n">logfile_path</span> <span class="o">=</span> <span class="n">tmpdir_factory</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">{prefix}</span><span class="s1">postgresql.</span><span class="si">{port}</span><span class="s1">.log&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">prefix</span><span class="o">=</span><span class="n">logs_prefix</span><span class="p">,</span>
+                <span class="n">port</span><span class="o">=</span><span class="n">pg_port</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;FreeBSD&#39;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="p">(</span><span class="n">datadir</span> <span class="o">/</span> <span class="s1">&#39;pg_hba.conf&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">conf_file</span><span class="p">:</span>
+                <span class="n">conf_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;host all all 0.0.0.0/0 trust</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">postgresql_executor</span> <span class="o">=</span> <span class="n">PostgreSQLExecutor</span><span class="p">(</span>
+            <span class="n">executable</span><span class="o">=</span><span class="n">postgresql_ctl</span><span class="p">,</span>
+            <span class="n">host</span><span class="o">=</span><span class="n">host</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">],</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">pg_port</span><span class="p">,</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">user</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">],</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">password</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">options</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">],</span>
+            <span class="n">datadir</span><span class="o">=</span><span class="n">datadir</span><span class="p">,</span>
+            <span class="n">unixsocketdir</span><span class="o">=</span><span class="n">unixsocketdir</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;unixsocketdir&#39;</span><span class="p">],</span>
+            <span class="n">logfile</span><span class="o">=</span><span class="n">logfile_path</span><span class="p">,</span>
+            <span class="n">startparams</span><span class="o">=</span><span class="n">startparams</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;startparams&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="c1"># start server</span>
+        <span class="k">with</span> <span class="n">postgresql_executor</span><span class="p">:</span>
+            <span class="n">postgresql_executor</span><span class="o">.</span><span class="n">wait_for_postgres</span><span class="p">()</span>
+
+            <span class="k">yield</span> <span class="n">postgresql_executor</span>
+
+    <span class="k">return</span> <span class="n">postgresql_proc_fixture</span>
+
+
+<span class="k">def</span> <span class="nf">postgresql_noproc</span><span class="p">(</span>
+        <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">options</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">FixtureRequest</span><span class="p">],</span> <span class="n">NoopExecutor</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Postgresql noprocess factory.</span>
+
+<span class="sd">    :param host: hostname</span>
+<span class="sd">    :param port: exact port (e.g. &#39;8000&#39;, 8000)</span>
+<span class="sd">    :param user: postgresql username</span>
+<span class="sd">    :param password: postgresql password</span>
+<span class="sd">    :param options: Postgresql connection options</span>
+<span class="sd">    :returns: function which makes a postgresql process</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;session&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">postgresql_noproc_fixture</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">FixtureRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoopExecutor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Noop Process fixture for PostgreSQL.</span>
+
+<span class="sd">        :param FixtureRequest request: fixture request object</span>
+<span class="sd">        :returns: tcp executor-like object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">pg_host</span> <span class="o">=</span> <span class="n">host</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span>
+        <span class="n">pg_port</span> <span class="o">=</span> <span class="n">port</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="mi">5432</span>
+        <span class="n">pg_user</span> <span class="o">=</span> <span class="n">user</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span>
+        <span class="n">pg_password</span> <span class="o">=</span> <span class="n">password</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+        <span class="n">pg_options</span> <span class="o">=</span> <span class="n">options</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">]</span>
+
+        <span class="n">noop_exec</span> <span class="o">=</span> <span class="n">NoopExecutor</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="n">pg_host</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">pg_port</span><span class="p">,</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">pg_user</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">pg_password</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">pg_options</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">yield</span> <span class="n">noop_exec</span>
+
+    <span class="k">return</span> <span class="n">postgresql_noproc_fixture</span>
+
+
+<span class="k">def</span> <span class="nf">postgresql</span><span class="p">(</span>
+        <span class="n">process_fixture_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">FixtureRequest</span><span class="p">],</span> <span class="n">connection</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return connection fixture factory for PostgreSQL.</span>
+
+<span class="sd">    :param process_fixture_name: name of the process fixture</span>
+<span class="sd">    :param db_name: database name</span>
+<span class="sd">    :param load: SQL to automatically load into our test database</span>
+<span class="sd">    :returns: function which makes a connection to postgresql</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+    <span class="k">def</span> <span class="nf">postgresql_factory</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">FixtureRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">connection</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fixture factory for PostgreSQL.</span>
+
+<span class="sd">        :param FixtureRequest request: fixture request object</span>
+<span class="sd">        :returns: postgresql client</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">psycopg2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s1">&#39;No module named psycopg2. Please install either &#39;</span>
+                <span class="s1">&#39;psycopg2 or psycopg2-binary package for CPython &#39;</span>
+                <span class="s1">&#39;or psycopg2cffi for Pypy.&#39;</span>
+            <span class="p">)</span>
+        <span class="n">proc_fixture</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PostgreSQLExecutor</span><span class="p">,</span> <span class="n">NoopExecutor</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span>
+            <span class="n">process_fixture_name</span><span class="p">)</span>
+
+        <span class="n">pg_host</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">host</span>
+        <span class="n">pg_port</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">port</span>
+        <span class="n">pg_user</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">user</span>
+        <span class="n">pg_password</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">password</span>
+        <span class="n">pg_options</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">options</span>
+        <span class="n">pg_db</span> <span class="o">=</span> <span class="n">db_name</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dbname&#39;</span><span class="p">]</span>
+        <span class="n">pg_load</span> <span class="o">=</span> <span class="n">load</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;load&#39;</span><span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">DatabaseJanitor</span><span class="p">(</span>
+                <span class="n">pg_user</span><span class="p">,</span> <span class="n">pg_host</span><span class="p">,</span> <span class="n">pg_port</span><span class="p">,</span> <span class="n">pg_db</span><span class="p">,</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                <span class="n">pg_password</span>
+        <span class="p">):</span>
+            <span class="n">db_connection</span><span class="p">:</span> <span class="n">connection</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="n">dbname</span><span class="o">=</span><span class="n">pg_db</span><span class="p">,</span>
+                <span class="n">user</span><span class="o">=</span><span class="n">pg_user</span><span class="p">,</span>
+                <span class="n">password</span><span class="o">=</span><span class="n">pg_password</span><span class="p">,</span>
+                <span class="n">host</span><span class="o">=</span><span class="n">pg_host</span><span class="p">,</span>
+                <span class="n">port</span><span class="o">=</span><span class="n">pg_port</span><span class="p">,</span>
+                <span class="n">options</span><span class="o">=</span><span class="n">pg_options</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">pg_load</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">pg_load</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">_fd</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+                            <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_fd</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="k">yield</span> <span class="n">db_connection</span>
+            <span class="n">db_connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">postgresql_factory</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;postgresql&#39;</span><span class="p">,</span> <span class="s1">&#39;postgresql_proc&#39;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">decisionengine</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes/release_notes_1.3.html">Release 1.3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes/release_notes_1.2.html">Release 1.2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../unittest.html">Decisionengine framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Fermi Research Alliance, LLC..
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
