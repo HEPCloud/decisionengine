@@ -295,6 +295,11 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
     def start_channels(self):
         self.channel_config_loader.load_all_channels()
+
+        if not self.channel_config_loader.get_channels():
+            self.logger.info("No channel configurations available in " +
+                             f"{self.channel_config_loader.channel_config_dir}")
+
         for name, config in self.channel_config_loader.get_channels().items():
             try:
                 self.start_channel(name, config)
@@ -452,9 +457,6 @@ def _get_de_conf_manager(global_config_dir, channel_config_dir, options):
 
     global_config = _get_global_config(config_file, options)
     conf_manager = ChannelConfigHandler.ChannelConfigHandler(global_config, channel_config_dir)
-
-    if not conf_manager.get_channels():
-        logging.info(f"No channel configurations available in {channel_config_dir}")
 
     return (global_config, conf_manager)
 
