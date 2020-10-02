@@ -37,7 +37,7 @@ def _channel_preamble(name):
 
 class WorkerInErrorState():
     def __init__(self, task_manager_id):
-        self.task_manager_Id = task_manager_id
+        self.task_manager_id = task_manager_id
 
     def get_state_name(self):
         return "ERROR"
