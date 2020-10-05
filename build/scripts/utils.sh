@@ -28,18 +28,8 @@ setup_python_venv() {
     source $VENV/bin/activate
     export PYTHONPATH="$PWD:$PYTHONPATH"
 
-    # Install dependancies first so we don't get uncompatible ones
-    # Following RPMs need to be installed on the machine:
-    pip_packages="argparse WebOb astroid pylint pycodestyle unittest2 coverage sphinx tabulate DBUtils psycopg2-binary pytest mock pandas ipython pytest-postgresql>=2.5.0 jsonnet pytest-timeout"
-    for package in $pip_packages; do
-        echo "Installing $package ..."
-        status="DONE"
-        pip install --quiet $package
-        if [ $? -ne 0 ]; then
-            status="FAILED"
-        fi
-        echo "Installing $package ... $status"
-    done
+    # install required packages
+    pip install -q -r ${DECISIONENGINE_SRC}/requirements.txt
 
     # Need this because some strange control sequences when using default TERM=xterm
     export TERM="linux"
