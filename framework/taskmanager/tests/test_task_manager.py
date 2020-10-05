@@ -1,40 +1,17 @@
-from collections import UserDict
-import mock
 import os
 import multiprocessing
-import pytest
-import threading
 import time
 
 from decisionengine.framework.config.ValidConfig import ValidConfig
 import decisionengine.framework.config.policies as policies
+from decisionengine.framework.dataspace.datasources.tests.fixtures import mock_data_block # pylint: disable=unused-import
 from decisionengine.framework.taskmanager.TaskManager import TaskManager, State
-import decisionengine.framework.dataspace.datablock
 
 _CWD = os.path.dirname(os.path.abspath(__file__))
 _CONFIG_PATH = os.path.join(_CWD, "../../tests/etc/decisionengine")
 _CHANNEL_CONFIG_DIR = os.path.join(_CWD, 'channels')
 
 _global_config = ValidConfig(policies.global_config_file(_CONFIG_PATH))
-
-class MockDataBlock(UserDict):
-    def __init__(self, products={}):
-        self.lock = threading.Lock()
-        self.taskmanager_id = None
-        self.generation_id = 1
-        self.data = products
-
-    def duplicate(self):
-        return MockDataBlock(self.data)
-
-    def put(self, key, product, header, metadata=None):
-        self.data[key] = product
-
-@pytest.fixture
-def mock_data_block():
-    with mock.patch('decisionengine.framework.dataspace.datablock.DataBlock') as mock_data_block:
-        mock_data_block.return_value = MockDataBlock()
-        yield
 
 
 def channel_config(name):
@@ -56,6 +33,7 @@ class RunChannel:
         self._process.join()
         if type:
             return False
+
 
 def test_task_manager_construction(mock_data_block):
     task_manager = task_manager_for('test_channel')
