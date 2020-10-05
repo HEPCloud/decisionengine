@@ -80,5 +80,10 @@ cd /tmp
 git clone https://github.com/HEPCloud/decisionengine.git
 </pre>
 
+* For running tests, make sure you have `C.UTF-8` locale defined
+<pre>
+sudo localedef -v -c -i en_US -f UTF-8 C.UTF-8
+</pre>
+
 * Build RPMs
 <pre>/tmp/decisionengine/build/packaging/rpm/package.sh /tmp/decisionengine</pre>
