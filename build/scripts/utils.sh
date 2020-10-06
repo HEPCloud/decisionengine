@@ -29,7 +29,7 @@ setup_python_venv() {
     export PYTHONPATH="$PWD:$PYTHONPATH"
 
     # install required packages
-    pip install -q -r ${DECISIONENGINE_SRC}/requirements.txt
+    pip install -q -r decisionengine/requirements.txt
 
     # Need this because some strange control sequences when using default TERM=xterm
     export TERM="linux"
