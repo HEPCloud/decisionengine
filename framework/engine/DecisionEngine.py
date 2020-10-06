@@ -28,13 +28,14 @@ CONFIG_UPDATE_PERIOD = 10  # seconds
 FORMATTER = logging.Formatter(
     "%(asctime)s - %(name)s - %(module)s - %(process)d - %(threadName)s - %(levelname)s - %(message)s")
 
+
 def _channel_preamble(name):
     header = f'Channel: {name}'
     rule = '=' * len(header)
     return '\n' + rule + '\n' + header + '\n' + rule + '\n\n'
 
 
-class WorkerInErrorState():
+class WorkerInErrorState:
     def __init__(self, task_manager_id):
         self.task_manager_id = task_manager_id
 
@@ -43,6 +44,7 @@ class WorkerInErrorState():
 
     def is_alive(self):
         return False
+
 
 class Worker(multiprocessing.Process):
 
@@ -419,6 +421,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def service_actions(self):
         self._disable_channels_with_terminated_processes()
 
+
 def parse_program_options(args=None):
     ''' If args is a list, it will be used instead of sys.argv '''
     parser = argparse.ArgumentParser()
@@ -435,6 +438,7 @@ def parse_program_options(args=None):
                         f"'{policies.GLOBAL_CONFIG_FILENAME}' located in the CONFIG_PATH directory.")
     return parser.parse_args(args)
 
+
 def _get_global_config(config_file, options):
     global_config = None
     try:
@@ -443,9 +447,10 @@ def _get_global_config(config_file, options):
         sys.exit(f"Failed to load configuration {config_file}\n{msg}")
 
     global_config.update({
-        'server_address': ['localhost', options.port] # Use Jsonnet-supported schema (i.e. not a tuple)
+        'server_address': ['localhost', options.port]  # Use Jsonnet-supported schema (i.e. not a tuple)
     })
     return global_config
+
 
 def _get_de_conf_manager(global_config_dir, channel_config_dir, options):
     config_file = os.path.join(global_config_dir, options.config)
@@ -457,6 +462,7 @@ def _get_de_conf_manager(global_config_dir, channel_config_dir, options):
 
     return (global_config, conf_manager)
 
+
 def _start_de_server(global_config, channel_config_loader):
     '''start the DE server with the passed global configuration and config manager'''
     server_address = tuple(global_config.get('server_address'))
@@ -466,6 +472,7 @@ def _start_de_server(global_config, channel_config_loader):
     server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
     server.start_channels()
     server.serve_forever()
+
 
 def main(args=None):
     '''

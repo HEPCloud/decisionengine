@@ -1,11 +1,11 @@
 '''pytest fixtures/constants'''
+import os
+import threading
+from collections import UserDict
+
 import mock
 import pytest
 from pytest_postgresql import factories
-
-from collections import UserDict
-import os
-import threading
 
 DE_DB_HOST = '127.0.0.1'
 DE_DB_USER = 'postgres'
@@ -21,6 +21,21 @@ DE_DB = factories.postgresql('PG_PROG', db_name=DE_DB_NAME, load=DE_SCHEMA)
 
 @pytest.fixture
 def mock_data_block():
+    '''
+    This fixture replaces the standard datablock implementation.
+
+    The current DataBlock implementation does not own any data
+    products but forwards them immediately to a backend datasource.
+    The only implemented datasource requires Postgres, which is
+    overkill when needing to test simple data-product communication
+    between modules.
+
+    This mock datablock class directly owns the data products, thus
+    avoiding the need for a datasource backend.  It is anticipated
+    that a future design of the DataBlock will own the data products,
+    thus making this mock class unnecessary.
+    '''
+
     class MockDataBlock(UserDict):
         def __init__(self, products={}):
             self.lock = threading.Lock()

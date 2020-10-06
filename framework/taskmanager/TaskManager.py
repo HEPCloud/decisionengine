@@ -14,8 +14,9 @@ import uuid
 from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
 
-_TRANSFORMS_TO = 300 # 5 minutes
-_DEFAULT_SCHEDULE = 300 # ""
+_TRANSFORMS_TO = 300  # 5 minutes
+_DEFAULT_SCHEDULE = 300  # ""
+
 
 def _create_worker(module_name, class_name, parameters):
     """
@@ -25,7 +26,8 @@ def _create_worker(module_name, class_name, parameters):
     class_type = getattr(my_module, class_name)
     return class_type(parameters)
 
-class Worker():
+
+class Worker:
     """
     Provides interface to loadable modules an events to sycronise
     execution
@@ -47,10 +49,12 @@ class Worker():
         self.data_updated = threading.Event()
         self.stop_running = threading.Event()
 
+
 def _make_workers_for(configs):
     return {name: Worker(e) for name, e in configs.items()}
 
-class Channel():
+
+class Channel:
     """
     Decision Channel.
     Instantiates workers according to channel configuration
@@ -76,15 +80,16 @@ class State(enum.Enum):
     SHUTTINGDOWN = 3
     SHUTDOWN = 4
 
-class TaskManager():
+
+class TaskManager:
     """
     Task Manager
     """
 
     def __init__(self, name, generation_id, channel_dict, global_config):
         """
-        :type task_manager_id: :obj:`int`
-        :arg task_manager_id: Task Manager id provided by caller
+        :type name: :obj:`str`
+        :arg name: Name of channel corresponding to this task manager
         :type generation_id: :obj:`int`
         :arg generation_id: Task Manager generation id provided by caller
         :type channel_dict: :obj:`dict`
@@ -181,7 +186,6 @@ class TaskManager():
                                           self.id, self.get_state_name())
                 break
             time.sleep(1)
-
 
     def set_state(self, state):
         with self.state.get_lock():
@@ -280,7 +284,6 @@ class TaskManager():
             except Exception as e:
                 logging.getLogger().exception(f'error in decision cycle(publishers) {e}')
                 self._take_offline(data_block_t1)
-
 
     def run_source(self, src):
         """
