@@ -4,7 +4,7 @@ import time
 
 from decisionengine.framework.config.ValidConfig import ValidConfig
 import decisionengine.framework.config.policies as policies
-from decisionengine.framework.dataspace.datasources.tests.fixtures import mock_data_block # pylint: disable=unused-import
+from decisionengine.framework.dataspace.datasources.tests.fixtures import mock_data_block # noqa: F401
 from decisionengine.framework.taskmanager.TaskManager import TaskManager, State
 
 _CWD = os.path.dirname(os.path.abspath(__file__))
@@ -35,18 +35,18 @@ class RunChannel:
             return False
 
 
-def test_task_manager_construction(mock_data_block):
+def test_task_manager_construction(mock_data_block): # noqa: F811
     task_manager = task_manager_for('test_channel')
     assert task_manager.get_state() == State.BOOT
 
-def test_take_task_manager_offline(mock_data_block):
+def test_take_task_manager_offline(mock_data_block): # noqa: F811
     with RunChannel('test_channel') as task_manager:
         time.sleep(2)
         assert task_manager.get_state() == State.STEADY
         task_manager._take_offline(None)
         assert task_manager.get_state() == State.OFFLINE
 
-def test_failing_publisher(mock_data_block):
+def test_failing_publisher(mock_data_block): # noqa: F811
     with RunChannel('failing_publisher') as task_manager:
         time.sleep(2)
         assert task_manager.get_state() == State.OFFLINE
