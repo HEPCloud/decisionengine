@@ -43,12 +43,14 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">pandas</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace</span> <span class="k">import</span> <span class="n">dataspace</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace</span> <span class="k">import</span> <span class="n">datablock</span>
 
-<span class="n">_TRANSFORMS_TO</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># 5 minutes</span>
-<span class="n">_DEFAULT_SCHEDULE</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># &quot;&quot;</span>
+<span class="n">_TRANSFORMS_TO</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes</span>
+<span class="n">_DEFAULT_SCHEDULE</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># &quot;&quot;</span>
+
 
 <div class="viewcode-block" id="_create_worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager._create_worker">[docs]</a><span class="k">def</span> <span class="nf">_create_worker</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -58,7 +60,8 @@
     <span class="n">class_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">class_type</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">():</span>
+
+<div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides interface to loadable modules an events to sycronise</span>
 <span class="sd">    execution</span>
@@ -80,10 +83,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data_updated</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_running</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span></div>
 
+
 <div class="viewcode-block" id="_make_workers_for"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager._make_workers_for">[docs]</a><span class="k">def</span> <span class="nf">_make_workers_for</span><span class="p">(</span><span class="n">configs</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">Worker</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">configs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
-<div class="viewcode-block" id="Channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.Channel">[docs]</a><span class="k">class</span> <span class="nc">Channel</span><span class="p">():</span>
+
+<div class="viewcode-block" id="Channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.Channel">[docs]</a><span class="k">class</span> <span class="nc">Channel</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decision Channel.</span>
 <span class="sd">    Instantiates workers according to channel configuration</span>
@@ -109,15 +114,16 @@
     <span class="n">SHUTTINGDOWN</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="n">SHUTDOWN</span> <span class="o">=</span> <span class="mi">4</span></div>
 
-<div class="viewcode-block" id="TaskManager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager">[docs]</a><span class="k">class</span> <span class="nc">TaskManager</span><span class="p">():</span>
+
+<div class="viewcode-block" id="TaskManager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager">[docs]</a><span class="k">class</span> <span class="nc">TaskManager</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Task Manager</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">task_manager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">channel_dict</span><span class="p">,</span> <span class="n">global_config</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">channel_dict</span><span class="p">,</span> <span class="n">global_config</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :type task_manager_id: :obj:`int`</span>
-<span class="sd">        :arg task_manager_id: Task Manager id provided by caller</span>
+<span class="sd">        :type name: :obj:`str`</span>
+<span class="sd">        :arg name: Name of channel corresponding to this task manager</span>
 <span class="sd">        :type generation_id: :obj:`int`</span>
 <span class="sd">        :arg generation_id: Task Manager generation id provided by caller</span>
 <span class="sd">        :type channel_dict: :obj:`dict`</span>
@@ -125,13 +131,13 @@
 <span class="sd">        :type global_config: :obj:`dict`</span>
 <span class="sd">        :arg global_config: global configuration</span>
 <span class="sd">         &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="p">,</span>
                                                  <span class="n">name</span><span class="p">,</span>
-                                                 <span class="n">task_manager_id</span><span class="p">,</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                                                  <span class="n">generation_id</span><span class="p">)</span>  <span class="c1"># my current data block</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">task_manager_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">Channel</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
@@ -204,7 +210,7 @@
                     <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                         <span class="n">source</span><span class="o">.</span><span class="n">stop_running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
                         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">transform</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">transforms</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">transform</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                         <span class="n">transform</span><span class="o">.</span><span class="n">stop_running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
                         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
                     <span class="k">break</span>
@@ -214,7 +220,6 @@
                                           <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state_name</span><span class="p">())</span>
                 <span class="k">break</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
-
 
 <div class="viewcode-block" id="TaskManager.set_state"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.set_state">[docs]</a>    <span class="k">def</span> <span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
@@ -294,6 +299,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">run_transforms</span><span class="p">(</span><span class="n">data_block_t1</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;error in decision cycle(transforms) &#39;</span><span class="p">)</span>
+            <span class="c1"># We do not call &#39;_take_offline&#39; here because it has</span>
+            <span class="c1"># already been called in the run_transform code on</span>
+            <span class="c1"># operating on a separate thread.</span>
 
         <span class="n">actions_facts</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">try</span><span class="p">:</span>
@@ -301,13 +309,15 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;ran all logic engines&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;error in decision cycle(logic engine) </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_take_offline</span><span class="p">(</span><span class="n">data_block_t1</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">a_f</span> <span class="ow">in</span> <span class="n">actions_facts</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">run_publishers</span><span class="p">(</span>
                     <span class="n">a_f</span><span class="p">[</span><span class="s1">&#39;actions&#39;</span><span class="p">],</span> <span class="n">a_f</span><span class="p">[</span><span class="s1">&#39;newfacts&#39;</span><span class="p">],</span> <span class="n">data_block_t1</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;error in decision cycle(publishers) </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+                <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;error in decision cycle(publishers) </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_take_offline</span><span class="p">(</span><span class="n">data_block_t1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskManager.run_source"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_source">[docs]</a>    <span class="k">def</span> <span class="nf">run_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

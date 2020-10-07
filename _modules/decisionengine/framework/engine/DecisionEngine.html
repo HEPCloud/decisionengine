@@ -49,7 +49,6 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tabulate</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
 
 <span class="kn">import</span> <span class="nn">socketserver</span>
 <span class="kn">import</span> <span class="nn">xmlrpc.server</span>
@@ -63,13 +62,14 @@
 <span class="n">FORMATTER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
     <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(module)s</span><span class="s2"> - </span><span class="si">%(process)d</span><span class="s2"> - </span><span class="si">%(threadName)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
 
+
 <div class="viewcode-block" id="_channel_preamble"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._channel_preamble">[docs]</a><span class="k">def</span> <span class="nf">_channel_preamble</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="n">header</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Channel: </span><span class="si">{name}</span><span class="s1">&#39;</span>
     <span class="n">rule</span> <span class="o">=</span> <span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
     <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">rule</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">header</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">rule</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span></div>
 
 
-<div class="viewcode-block" id="WorkerInErrorState"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.WorkerInErrorState">[docs]</a><span class="k">class</span> <span class="nc">WorkerInErrorState</span><span class="p">():</span>
+<div class="viewcode-block" id="WorkerInErrorState"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.WorkerInErrorState">[docs]</a><span class="k">class</span> <span class="nc">WorkerInErrorState</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_manager_id</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager_id</span> <span class="o">=</span> <span class="n">task_manager_id</span>
 
@@ -78,6 +78,7 @@
 
 <div class="viewcode-block" id="WorkerInErrorState.is_alive"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.WorkerInErrorState.is_alive">[docs]</a>    <span class="k">def</span> <span class="nf">is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div></div>
+
 
 <div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
 
@@ -316,9 +317,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.start_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channel">[docs]</a>    <span class="k">def</span> <span class="nf">start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
         <span class="n">generation_id</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">taskmanager_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
         <span class="n">task_manager</span> <span class="o">=</span> <span class="n">TaskManager</span><span class="o">.</span><span class="n">TaskManager</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span>
-                                               <span class="n">taskmanager_id</span><span class="p">,</span>
                                                <span class="n">generation_id</span><span class="p">,</span>
                                                <span class="n">channel_config</span><span class="p">,</span>
                                                <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">)</span>
@@ -456,6 +455,7 @@
 <div class="viewcode-block" id="DecisionEngine.service_actions"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.service_actions">[docs]</a>    <span class="k">def</span> <span class="nf">service_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_disable_channels_with_terminated_processes</span><span class="p">()</span></div></div>
 
+
 <div class="viewcode-block" id="parse_program_options"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.parse_program_options">[docs]</a><span class="k">def</span> <span class="nf">parse_program_options</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; If args is a list, it will be used instead of sys.argv &#39;&#39;&#39;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
@@ -472,6 +472,7 @@
                         <span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{policies.GLOBAL_CONFIG_FILENAME}</span><span class="s2">&#39; located in the CONFIG_PATH directory.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="_get_global_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._get_global_config">[docs]</a><span class="k">def</span> <span class="nf">_get_global_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
     <span class="n">global_config</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
@@ -480,9 +481,10 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Failed to load configuration </span><span class="si">{config_file}</span><span class="se">\n</span><span class="si">{msg}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">global_config</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
-        <span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">port</span><span class="p">]</span> <span class="c1"># Use Jsonnet-supported schema (i.e. not a tuple)</span>
+        <span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">port</span><span class="p">]</span>  <span class="c1"># Use Jsonnet-supported schema (i.e. not a tuple)</span>
     <span class="p">})</span>
     <span class="k">return</span> <span class="n">global_config</span></div>
+
 
 <div class="viewcode-block" id="_get_de_conf_manager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._get_de_conf_manager">[docs]</a><span class="k">def</span> <span class="nf">_get_de_conf_manager</span><span class="p">(</span><span class="n">global_config_dir</span><span class="p">,</span> <span class="n">channel_config_dir</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
     <span class="n">config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">global_config_dir</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
@@ -494,6 +496,7 @@
 
     <span class="k">return</span> <span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">conf_manager</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="_start_de_server"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._start_de_server">[docs]</a><span class="k">def</span> <span class="nf">_start_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;start the DE server with the passed global configuration and config manager&#39;&#39;&#39;</span>
     <span class="n">server_address</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">))</span>
@@ -503,6 +506,7 @@
     <span class="n">server</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reaper_start_delay_seconds&#39;</span><span class="p">,</span> <span class="mi">1818</span><span class="p">))</span>
     <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
     <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span></div>
+
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>

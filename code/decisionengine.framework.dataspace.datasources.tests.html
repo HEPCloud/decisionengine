@@ -41,6 +41,21 @@
 <div class="section" id="module-decisionengine.framework.dataspace.datasources.tests.fixtures">
 <span id="decisionengine-framework-dataspace-datasources-tests-fixtures-module"></span><h2>decisionengine.framework.dataspace.datasources.tests.fixtures module<a class="headerlink" href="#module-decisionengine.framework.dataspace.datasources.tests.fixtures" title="Permalink to this headline">¶</a></h2>
 <p>pytest fixtures/constants</p>
+<dl class="py function">
+<dt id="decisionengine.framework.dataspace.datasources.tests.fixtures.mock_data_block">
+<code class="sig-prename descclassname">decisionengine.framework.dataspace.datasources.tests.fixtures.</code><code class="sig-name descname">mock_data_block</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/fixtures.html#mock_data_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.fixtures.mock_data_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>This fixture replaces the standard datablock implementation.</p>
+<p>The current DataBlock implementation does not own any data
+products but forwards them immediately to a backend datasource.
+The only implemented datasource requires Postgres, which is
+overkill when needing to test simple data-product communication
+between modules.</p>
+<p>This mock datablock class directly owns the data products, thus
+avoiding the need for a datasource backend.  It is anticipated
+that a future design of the DataBlock will own the data products,
+thus making this mock class unnecessary.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-decisionengine.framework.dataspace.datasources.tests.test_postgresql">
 <span id="decisionengine-framework-dataspace-datasources-tests-test-postgresql-module"></span><h2>decisionengine.framework.dataspace.datasources.tests.test_postgresql module<a class="headerlink" href="#module-decisionengine.framework.dataspace.datasources.tests.test_postgresql" title="Permalink to this headline">¶</a></h2>
