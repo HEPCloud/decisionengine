@@ -9,12 +9,14 @@ import time
 import sys
 import multiprocessing
 import pandas
+import uuid
 
 from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
 
-_TRANSFORMS_TO = 300 # 5 minutes
-_DEFAULT_SCHEDULE = 300 # ""
+_TRANSFORMS_TO = 300  # 5 minutes
+_DEFAULT_SCHEDULE = 300  # ""
+
 
 def _create_worker(module_name, class_name, parameters):
     """
@@ -24,7 +26,8 @@ def _create_worker(module_name, class_name, parameters):
     class_type = getattr(my_module, class_name)
     return class_type(parameters)
 
-class Worker():
+
+class Worker:
     """
     Provides interface to loadable modules an events to sycronise
     execution
@@ -46,10 +49,12 @@ class Worker():
         self.data_updated = threading.Event()
         self.stop_running = threading.Event()
 
+
 def _make_workers_for(configs):
     return {name: Worker(e) for name, e in configs.items()}
 
-class Channel():
+
+class Channel:
     """
     Decision Channel.
     Instantiates workers according to channel configuration
@@ -75,15 +80,16 @@ class State(enum.Enum):
     SHUTTINGDOWN = 3
     SHUTDOWN = 4
 
-class TaskManager():
+
+class TaskManager:
     """
     Task Manager
     """
 
-    def __init__(self, name, task_manager_id, generation_id, channel_dict, global_config):
+    def __init__(self, name, generation_id, channel_dict, global_config):
         """
-        :type task_manager_id: :obj:`int`
-        :arg task_manager_id: Task Manager id provided by caller
+        :type name: :obj:`str`
+        :arg name: Name of channel corresponding to this task manager
         :type generation_id: :obj:`int`
         :arg generation_id: Task Manager generation id provided by caller
         :type channel_dict: :obj:`dict`
@@ -91,13 +97,13 @@ class TaskManager():
         :type global_config: :obj:`dict`
         :arg global_config: global configuration
          """
+        self.id = str(uuid.uuid4()).upper()
         self.dataspace = dataspace.DataSpace(global_config)
         self.data_block_t0 = datablock.DataBlock(self.dataspace,
                                                  name,
-                                                 task_manager_id,
+                                                 self.id,
                                                  generation_id)  # my current data block
         self.name = name
-        self.id = task_manager_id
         self.channel = Channel(channel_dict)
         self.state = multiprocessing.Value('i', State.BOOT.value)
         self.loglevel = multiprocessing.Value('i', logging.WARNING)
@@ -170,7 +176,7 @@ class TaskManager():
                     for source in self.channel.sources.values():
                         source.stop_running.set()
                         time.sleep(5)
-                    for transform in self.channel.transforms:
+                    for transform in self.channel.transforms.values():
                         transform.stop_running.set()
                         time.sleep(5)
                     break
@@ -180,7 +186,6 @@ class TaskManager():
                                           self.id, self.get_state_name())
                 break
             time.sleep(1)
-
 
     def set_state(self, state):
         with self.state.get_lock():
@@ -260,6 +265,9 @@ class TaskManager():
             self.run_transforms(data_block_t1)
         except Exception:
             logging.getLogger().exception('error in decision cycle(transforms) ')
+            # We do not call '_take_offline' here because it has
+            # already been called in the run_transform code on
+            # operating on a separate thread.
 
         actions_facts = []
         try:
@@ -267,6 +275,7 @@ class TaskManager():
             logging.getLogger().info('ran all logic engines')
         except Exception as e:
             logging.getLogger().exception(f'error in decision cycle(logic engine) {e}')
+            self._take_offline(data_block_t1)
 
         for a_f in actions_facts:
             try:
@@ -274,6 +283,7 @@ class TaskManager():
                     a_f['actions'], a_f['newfacts'], data_block_t1)
             except Exception as e:
                 logging.getLogger().exception(f'error in decision cycle(publishers) {e}')
+                self._take_offline(data_block_t1)
 
     def run_source(self, src):
         """
