@@ -19,12 +19,23 @@ more detailed information.
 '''
 
 import os
+import pathlib
 
 GLOBAL_CONFIG_FILENAME = 'decision_engine.jsonnet'
 
+
+def valid_dir(path, scope):
+    '''
+    Throws if the supplied path object is not a directory, otherwise returns the path object.
+    '''
+    if not path.is_dir():
+        raise RuntimeError(f"{scope} configuration directory '{path}' not found")
+    return path
+
+
 def global_config_dir():
     '''
-    Retrieve global configuration dir as string.
+    Retrieve global configuration dir as pathlib.Path object.
 
     This is the directory that houses the 'decision_engine.jsonnet'
     global configuration file.
@@ -34,50 +45,61 @@ def global_config_dir():
     a directory, then the directory path is returned as a string;
     otherwise an exception is raised.
     '''
-    global_config_dir = os.getenv("CONFIG_PATH", "/etc/decisionengine")
-    if not os.path.isdir(global_config_dir):
-        raise Exception(f"Config dir '{global_config_dir}' not found")
-    return global_config_dir
+    global_config_dir = pathlib.Path(os.getenv("CONFIG_PATH", "/etc/decisionengine"))
+    return valid_dir(global_config_dir, 'Global')
+
 
 def channel_config_dir(parent_dir=None):
     '''
-    Retrieve the channel configuration directory as a string.
+    Retrieve the channel configuration directory as a pathlib.Path object.
 
-    This directory contains all channel configuration files.  This function assumes that
-    the directory can be accessed by using the 'CHANNEL_CONFIG_PATH' environment variable.
-    If that variable has not been set, then the value of 'parent_dir' is prepended to
-    'config.d', which is then assumed to be the full path to the channel-configuration
-    directory.
+    This function returns a path object according to the following
+    precedence rules:
 
-    If the 'parent_dir' argument is not provided, the global configuration directory is
-    used as the parent (see documentation for 'global_config_dir()').
+    1. If the 'parent_dir' argument is provided, the returned path
+       object will correspond to '{parent_dir}/config.d'.
+    2. If the 'CHANNEL_CONFIG_PATH' environment variable has been set,
+       the returned path object will correspond to
+       ${CHANNEL_CONFIG_PATH}.
+    3. If neither 1 or 2 apply, the returned path object corresponds
+       to '{global_config_dir()}/config.d' (see documentation for
+       'global_config_dir()').
 
-    If the final path for the channel configuration directory does not
-    correspond to a directory, an exception is raised.
+    Regardless of the precedence rule used, the returned path object
+    must be a valid directory or an exception will be raised--i.e. if
+    the 'parent_dir' argument is supplied, and the resulting path
+    object is not a valid directory, the function will exit with an
+    exception and not attempt rule 2 or 3.
     '''
-    if parent_dir is None:
-        parent_dir = global_config_dir()
-    channel_config_dir = os.getenv("CHANNEL_CONFIG_PATH",
-                                   os.path.join(parent_dir, "config.d"))
-    if not os.path.isdir(channel_config_dir):
-        raise Exception(f"Channel config dir '{channel_config_dir}' not found")
+    if parent_dir:
+        channel_config_dir = pathlib.Path(parent_dir, 'config.d')
+        return valid_dir(channel_config_dir, 'Channel')
 
-    return channel_config_dir
+    env_value = os.getenv('CHANNEL_CONFIG_PATH')
+    if env_value:
+        channel_config_dir = pathlib.Path(env_value)
+        return valid_dir(channel_config_dir, 'Channel')
 
-def global_config_file(global_config_dir=None):
+    channel_config_dir = global_config_dir().joinpath('config.d')
+    return valid_dir(channel_config_dir, 'Channel')
+
+
+def global_config_file(parent_dir=None):
     '''
-    Retrieve the path (as a string) corresponding to the global configuration.
+    Return the pathlib.Path object corresponding to the global configuration.
 
-    If supplied, the 'global_config_dir' is assumed to be the full path
-    corresponding to a directory containing the 'decision_engine.jsonnet'
-    file.   If not provided, the global configuration directory is determined
-    based on the behavior of the 'global_config_dir()' function.
+    If supplied, the 'parent_dir' is assumed to be the full path
+    corresponding to a directory containing the
+    'decision_engine.jsonnet' file.  If not provided, the global
+    configuration directory is determined based on the behavior of the
+    'global_config_dir()' function.
 
     An exception is raised if no 'decision_engine.jsonnet' file is found.
     '''
-    if global_config_dir is None:
-        global_config_dir = global_config_dir()
-    config_file = os.path.join(global_config_dir, GLOBAL_CONFIG_FILENAME)
-    if not os.path.isfile(config_file):
-        raise Exception(f"Config file '{config_file}' not found")
-    return config_file
+    if parent_dir:
+        path = pathlib.Path(parent_dir, GLOBAL_CONFIG_FILENAME)
+    else:
+        path = global_config_dir().joinpath(GLOBAL_CONFIG_FILENAME)
+    if not path.is_file():
+        raise RuntimeError(f"Global configuration file '{path}' not found")
+    return path
