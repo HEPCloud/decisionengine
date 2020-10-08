@@ -46,7 +46,12 @@ def test_task_manager_construction(mock_data_block):  # noqa: F811
 def test_take_task_manager_offline(mock_data_block):  # noqa: F811
     with RunChannel('test_channel') as task_manager:
         time.sleep(2)
-        assert task_manager.get_state() == State.STEADY
+        task_state = task_manager.get_state()
+        if task_state != State.STEADY:
+            time.sleep(2)  # extra sleep if test host is overloaded
+            task_state = task_manager.get_state()
+        assert task_state == State.STEADY
+
         task_manager._take_offline(None)
         assert task_manager.get_state() == State.OFFLINE
 
@@ -54,4 +59,8 @@ def test_take_task_manager_offline(mock_data_block):  # noqa: F811
 def test_failing_publisher(mock_data_block):  # noqa: F811
     with RunChannel('failing_publisher') as task_manager:
         time.sleep(2)
+        task_state = task_manager.get_state()
+        if task_state != State.OFFLINE:
+            time.sleep(2)  # extra sleep if test host is overloaded
+            task_state = task_manager.get_state()
         assert task_manager.get_state() == State.OFFLINE
