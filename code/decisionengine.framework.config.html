@@ -42,6 +42,7 @@
 <li class="toctree-l1"><a class="reference internal" href="decisionengine.framework.config.tests.html">decisionengine.framework.config.tests package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.config.tests.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.config.tests.html#module-decisionengine.framework.config.tests.test_config">decisionengine.framework.config.tests.test_config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.config.tests.html#module-decisionengine.framework.config.tests.test_policies">decisionengine.framework.config.tests.test_policies module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.config.tests.html#module-decisionengine.framework.config.tests">Module contents</a></li>
 </ul>
 </li>
@@ -206,22 +207,30 @@ more detailed information.</p>
 <dl class="py function">
 <dt id="decisionengine.framework.config.policies.channel_config_dir">
 <code class="sig-prename descclassname">decisionengine.framework.config.policies.</code><code class="sig-name descname">channel_config_dir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/config/policies.html#channel_config_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.config.policies.channel_config_dir" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the channel configuration directory as a string.</p>
-<p>This directory contains all channel configuration files.  This function assumes that
-the directory can be accessed by using the ‘CHANNEL_CONFIG_PATH’ environment variable.
-If that variable has not been set, then the value of ‘parent_dir’ is prepended to
-‘config.d’, which is then assumed to be the full path to the channel-configuration
-directory.</p>
-<p>If the ‘parent_dir’ argument is not provided, the global configuration directory is
-used as the parent (see documentation for ‘global_config_dir()’).</p>
-<p>If the final path for the channel configuration directory does not
-correspond to a directory, an exception is raised.</p>
+<dd><p>Retrieve the channel configuration directory as a pathlib.Path object.</p>
+<p>This function returns a path object according to the following
+precedence rules:</p>
+<ol class="arabic simple">
+<li><p>If the ‘parent_dir’ argument is provided, the returned path
+object will correspond to ‘{parent_dir}/config.d’.</p></li>
+<li><p>If the ‘CHANNEL_CONFIG_PATH’ environment variable has been set,
+the returned path object will correspond to
+${CHANNEL_CONFIG_PATH}.</p></li>
+<li><p>If neither 1 or 2 apply, the returned path object corresponds
+to ‘{global_config_dir()}/config.d’ (see documentation for
+‘global_config_dir()’).</p></li>
+</ol>
+<p>Regardless of the precedence rule used, the returned path object
+must be a valid directory or an exception will be raised–i.e. if
+the ‘parent_dir’ argument is supplied, and the resulting path
+object is not a valid directory, the function will exit with an
+exception and not attempt rule 2 or 3.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="decisionengine.framework.config.policies.global_config_dir">
 <code class="sig-prename descclassname">decisionengine.framework.config.policies.</code><code class="sig-name descname">global_config_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/config/policies.html#global_config_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.config.policies.global_config_dir" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve global configuration dir as string.</p>
+<dd><p>Retrieve global configuration dir as pathlib.Path object.</p>
 <p>This is the directory that houses the ‘decision_engine.jsonnet’
 global configuration file.</p>
 <p>This function checks that the ‘CONFIG_PATH’ variable has been set
@@ -232,13 +241,20 @@ otherwise an exception is raised.</p>
 
 <dl class="py function">
 <dt id="decisionengine.framework.config.policies.global_config_file">
-<code class="sig-prename descclassname">decisionengine.framework.config.policies.</code><code class="sig-name descname">global_config_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">global_config_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/config/policies.html#global_config_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.config.policies.global_config_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the path (as a string) corresponding to the global configuration.</p>
-<p>If supplied, the ‘global_config_dir’ is assumed to be the full path
-corresponding to a directory containing the ‘decision_engine.jsonnet’
-file.   If not provided, the global configuration directory is determined
-based on the behavior of the ‘global_config_dir()’ function.</p>
+<code class="sig-prename descclassname">decisionengine.framework.config.policies.</code><code class="sig-name descname">global_config_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/config/policies.html#global_config_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.config.policies.global_config_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the pathlib.Path object corresponding to the global configuration.</p>
+<p>If supplied, the ‘parent_dir’ is assumed to be the full path
+corresponding to a directory containing the
+‘decision_engine.jsonnet’ file.  If not provided, the global
+configuration directory is determined based on the behavior of the
+‘global_config_dir()’ function.</p>
 <p>An exception is raised if no ‘decision_engine.jsonnet’ file is found.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="decisionengine.framework.config.policies.valid_dir">
+<code class="sig-prename descclassname">decisionengine.framework.config.policies.</code><code class="sig-name descname">valid_dir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">scope</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/config/policies.html#valid_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#decisionengine.framework.config.policies.valid_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Throws if the supplied path object is not a directory, otherwise returns the path object.</p>
 </dd></dl>
 
 </div>
