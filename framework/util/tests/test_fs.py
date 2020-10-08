@@ -13,7 +13,7 @@ def test_nonempty_directory():
     a = Path(dir.name, 'a.txt')
     a.touch()
     files = fs.files_with_extensions(dir.name)
-    assert files == [['a', str(a)]]
+    assert files == (['a', str(a)])
 
 def test_nonempty_directory_with_extensions():
     dir = tempfile.TemporaryDirectory()
@@ -25,7 +25,7 @@ def test_nonempty_directory_with_extensions():
     c.touch()
 
     files = fs.files_with_extensions(dir.name, '.jsonnet')
-    assert files == [['b', str(b)]]
+    assert files == (['b', str(b)])
 
     files = fs.files_with_extensions(dir.name, '.jsonnet', '.conf')
-    assert files == [['b', str(b)], ['c', str(c)]]
+    assert files == (['b', str(b)], ['c', str(c)])
