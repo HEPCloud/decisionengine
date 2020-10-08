@@ -33,5 +33,13 @@ RUN yum -y install \
   postgresql11-server \
   postgresql11-devel \
   python36-pip \
+  python36-m2crypto \
+  python-rrdtool \
+  osg-wn-client \
+  vo-client \
+  voms-clients-cpp \
+  python36-ldap3 \
+  python36-jwt \
+  PyYAML \
   && yum -y clean all
 ENTRYPOINT ["/bin/bash"]
