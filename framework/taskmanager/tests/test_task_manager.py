@@ -33,9 +33,10 @@ class RunChannel:
         return self._tm
 
     def __exit__(self, type, value, traceback):
-        self._process.join()
         if type:
+            self._process.terminate()
             return False
+        self._process.join()
 
 
 def test_task_manager_construction(mock_data_block):  # noqa: F811
