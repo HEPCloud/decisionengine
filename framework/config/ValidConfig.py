@@ -58,7 +58,7 @@ def _config_from_file(config_file):
     config_str = None
     basename, ext = os.path.splitext(config_file)
     try:
-        config_str = _jsonnet.evaluate_file(config_file)
+        config_str = _jsonnet.evaluate_file(str(config_file))
         if ext != '.jsonnet':
             print(f"Please rename '{config_file}' to '{basename}.jsonnet'.",
                   file=sys.stderr)
