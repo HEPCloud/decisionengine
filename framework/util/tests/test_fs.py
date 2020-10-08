@@ -1,31 +1,31 @@
+import tempfile
+from pathlib import Path
+
 from decisionengine.framework.util import fs
 
-from pathlib import Path
-import tempfile
-
 def test_empty_directory():
-    dir = tempfile.TemporaryDirectory()
-    files = fs.files_with_extensions(dir.name)
+    mydir = tempfile.TemporaryDirectory()
+    files = fs.files_with_extensions(mydir.name)
     assert len(files) == 0
 
 def test_nonempty_directory():
-    dir = tempfile.TemporaryDirectory()
-    a = Path(dir.name, 'a.txt')
-    a.touch()
-    files = fs.files_with_extensions(dir.name)
-    assert files == (['a', str(a)])
+    mydir = tempfile.TemporaryDirectory()
+    __a = Path(mydir.name, 'a.txt')
+    __a.touch()
+    files = fs.files_with_extensions(mydir.name)
+    assert files == (['a', str(__a)], )
 
 def test_nonempty_directory_with_extensions():
-    dir = tempfile.TemporaryDirectory()
-    a = Path(dir.name, 'a.txt')
-    b = Path(dir.name, 'b.jsonnet')
-    c = Path(dir.name, 'c.conf')
-    a.touch()
-    b.touch()
-    c.touch()
+    mydir = tempfile.TemporaryDirectory()
+    __a = Path(mydir.name, 'a.txt')
+    __b = Path(mydir.name, 'b.jsonnet')
+    __c = Path(mydir.name, 'c.conf')
+    __a.touch()
+    __b.touch()
+    __c.touch()
 
-    files = fs.files_with_extensions(dir.name, '.jsonnet')
-    assert files == (['b', str(b)])
+    files = fs.files_with_extensions(mydir.name, '.jsonnet')
+    assert files == (['b', str(__b)], )
 
-    files = fs.files_with_extensions(dir.name, '.jsonnet', '.conf')
-    assert files == (['b', str(b)], ['c', str(c)])
+    files = fs.files_with_extensions(mydir.name, '.jsonnet', '.conf')
+    assert files == (['b', str(__b)], ['c', str(__c)])
