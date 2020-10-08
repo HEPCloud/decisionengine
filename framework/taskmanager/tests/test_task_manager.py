@@ -1,6 +1,5 @@
 import multiprocessing
 import os
-import time
 
 import decisionengine.framework.config.policies as policies
 from decisionengine.framework.config.ValidConfig import ValidConfig
@@ -46,20 +45,14 @@ def test_task_manager_construction(mock_data_block):  # noqa: F811
 
 def test_take_task_manager_offline(mock_data_block):  # noqa: F811
     with RunChannel('test_channel') as task_manager:
-        time.sleep(2)
-        task_state = task_manager.get_state()
-        if task_state != State.STEADY:
-            time.sleep(2)  # extra sleep if test host is overloaded
-            task_state = task_manager.get_state()
-        assert task_state == State.STEADY
+        while task_manager.get_state() != State.STEADY:
+            pass
         task_manager._take_offline(None)
         assert task_manager.get_state() == State.OFFLINE
 
 
 def test_failing_publisher(mock_data_block):  # noqa: F811
     with RunChannel('failing_publisher') as task_manager:
-        task_state = task_manager.get_state()
-        if task_state != State.OFFLINE:
-            time.sleep(5)  # extra sleep if test host is overloaded
-            task_state = task_manager.get_state()
+        while task_manager.get_state() != State.OFFLINE:
+            pass
         assert task_manager.get_state() == State.OFFLINE

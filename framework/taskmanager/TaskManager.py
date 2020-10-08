@@ -79,6 +79,19 @@ class State(enum.Enum):
     OFFLINE = 2
     SHUTTINGDOWN = 3
     SHUTDOWN = 4
+    ERROR = 5
+
+
+def should_stop(state):
+    return state > State.STEADY.value
+
+
+def allowed_state(value):
+    try:
+        State[value]
+        return True
+    except Exception:
+        return False
 
 
 class TaskManager:
@@ -109,7 +122,6 @@ class TaskManager:
         self.loglevel = multiprocessing.Value('i', logging.WARNING)
         self.decision_cycle_active = False
         self.lock = threading.Lock()
-        self.stop = False  # stop running all loops when this is True
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
         for src_worker in self.channel.sources.values():
@@ -123,9 +135,9 @@ class TaskManager:
         :arg events_done: list of events to wait for
         """
         logging.getLogger().info('Waiting for all tasks to run')
-        while not all([e.isSet() for e in events_done]):
+        while not all([e.is_set() for e in events_done]):
             time.sleep(1)
-            if self.stop:
+            if should_stop(self.get_state_value()):
                 break
 
         for e in events_done:
@@ -138,13 +150,13 @@ class TaskManager:
         :type events_done: :obj:`list`
         :arg events_done: list of events to wait for
         """
-        while not any([e.isSet() for e in events_done]):
+        while not any([e.is_set() for e in events_done]):
             time.sleep(1)
-            if self.stop:
+            if should_stop(self.get_state_value()):
                 break
 
         for e in events_done:
-            if e.isSet():
+            if e.is_set():
                 e.clear()
 
     def run(self):
@@ -166,12 +178,12 @@ class TaskManager:
         self.decision_cycle()
         self.set_state(State.STEADY)
 
-        while self.get_state() == State.STEADY:
+        while not should_stop(self.get_state_value()):
             try:
                 logging.getLogger().setLevel(self.loglevel.value)
                 self.wait_for_any(done_events)
                 self.decision_cycle()
-                if self.stop:
+                if should_stop(self.get_state_value()):
                     logging.getLogger().info(f'Task Manager {self.id} received stop signal and exits')
                     for source in self.channel.sources.values():
                         source.stop_running.set()
@@ -191,9 +203,12 @@ class TaskManager:
         with self.state.get_lock():
             self.state.value = state.value
 
-    def get_state(self):
+    def get_state_value(self):
         with self.state.get_lock():
-            return State(self.state.value)
+            return self.state.value
+
+    def get_state(self):
+        return State(self.get_state_value())
 
     def get_state_name(self):
         return self.get_state().name
@@ -213,11 +228,9 @@ class TaskManager:
         """
         offline and stop task manager
         """
-
         self.set_state(State.OFFLINE)
         # invalidate data block
         # not implemented yet
-        self.stop = True
 
     def data_block_put(self, data, header, data_block):
         """
@@ -295,7 +308,7 @@ class TaskManager:
         """
 
         # If task manager is in offline state, do not keep executing sources.
-        while self.get_state() != State.OFFLINE:
+        while not should_stop(self.get_state_value()):
             try:
                 logging.getLogger().info(f'Src {src.name} calling acquire')
                 data = src.worker.acquire()
@@ -386,7 +399,7 @@ class TaskManager:
         logging.getLogger().info('transform: %s expected keys: %s provided keys: %s',
                                  transform.name, consume_keys, list(data_block.keys()))
         loop_counter = 0
-        while self.get_state() != State.OFFLINE:
+        while not should_stop(self.get_state_value()):
             # Check if data is ready
             if set(consume_keys) <= set(data_block.keys()):
                 # data is ready -  may run transform()
@@ -453,7 +466,6 @@ class TaskManager:
         header = datablock.Header(data_block.taskmanager_id,
                                   create_time=t, creator='logicengine')
         self.data_block_put(data, header, data_block)
-
         return le_list
 
     def run_publishers(self, actions, facts, data_block=None):
