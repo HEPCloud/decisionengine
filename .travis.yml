@@ -10,12 +10,16 @@ python:
   - "3.6"
   - "3.8"
   - "pypy3"
+  - "nightly"
 
 jobs:
   allow_failures:
     # These don't need to work, but be nice if they did
+    #
     # https://svn.boost.org/trac10/ticket/4125 / https://github.com/boostorg/python/pull/291
     - python: "pypy3"
+    # Latest python tested for future planning purposes
+    - python: "nightly"
 
   fast_finish: true
 
