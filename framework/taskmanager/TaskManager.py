@@ -294,7 +294,8 @@ class TaskManager:
         :arg src: source Worker
         """
 
-        while True:
+        # If task manager is in offline state, do not keep executing sources.
+        while self.get_state() != State.OFFLINE:
             try:
                 logging.getLogger().info(f'Src {src.name} calling acquire')
                 data = src.worker.acquire()
@@ -385,7 +386,7 @@ class TaskManager:
         logging.getLogger().info('transform: %s expected keys: %s provided keys: %s',
                                  transform.name, consume_keys, list(data_block.keys()))
         loop_counter = 0
-        while True:
+        while self.get_state() != State.OFFLINE:
             # Check if data is ready
             if set(consume_keys) <= set(data_block.keys()):
                 # data is ready -  may run transform()
