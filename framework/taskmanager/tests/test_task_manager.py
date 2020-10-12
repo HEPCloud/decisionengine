@@ -1,6 +1,8 @@
 import multiprocessing
 import os
 
+import pytest
+
 import decisionengine.framework.config.policies as policies
 from decisionengine.framework.config.ValidConfig import ValidConfig
 from decisionengine.framework.dataspace.datasources.tests.fixtures import mock_data_block  # noqa: F401
@@ -38,11 +40,13 @@ class RunChannel:
         self._process.join()
 
 
+@pytest.mark.usefixtures("mock_data_block")
 def test_task_manager_construction(mock_data_block):  # noqa: F811
     task_manager = task_manager_for('test_channel')
     assert task_manager.get_state() == State.BOOT
 
 
+@pytest.mark.usefixtures("mock_data_block")
 def test_take_task_manager_offline(mock_data_block):  # noqa: F811
     with RunChannel('test_channel') as task_manager:
         while task_manager.get_state() != State.STEADY:
@@ -51,6 +55,7 @@ def test_take_task_manager_offline(mock_data_block):  # noqa: F811
         assert task_manager.get_state() == State.OFFLINE
 
 
+@pytest.mark.usefixtures("mock_data_block")
 def test_failing_publisher(mock_data_block):  # noqa: F811
     with RunChannel('failing_publisher') as task_manager:
         while task_manager.get_state() != State.OFFLINE:
