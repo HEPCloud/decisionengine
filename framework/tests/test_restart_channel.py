@@ -46,6 +46,10 @@ def deserver_mock_data_block(mock_data_block):  # noqa: F811
 def test_restart_channel(deserver_mock_data_block):
     # Verify that nothing is active
     output = de_client_request("--status")
+    if not re.search('test_channel.*state = STEADY', output):
+        # wait just a bit longer in case the test server is over loaded
+        time.sleep(2)
+        output = de_client_request("--status")
     assert re.search('test_channel.*state = STEADY', output)
 
     # Take channel offline
