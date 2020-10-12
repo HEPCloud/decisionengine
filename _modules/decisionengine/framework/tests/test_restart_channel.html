@@ -80,6 +80,10 @@
 <div class="viewcode-block" id="test_restart_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_restart_channel.test_restart_channel">[docs]</a><span class="k">def</span> <span class="nf">test_restart_channel</span><span class="p">(</span><span class="n">deserver_mock_data_block</span><span class="p">):</span>
     <span class="c1"># Verify that nothing is active</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">de_client_request</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;test_channel.*state = STEADY&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+        <span class="c1"># wait just a bit longer in case the test server is over loaded</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">de_client_request</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;test_channel.*state = STEADY&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
     <span class="c1"># Take channel offline</span>
