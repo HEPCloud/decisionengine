@@ -1,6 +1,5 @@
 '''pytest defaults'''
-import multiprocessing
-import time
+import threading
 
 import psycopg2
 import pytest
@@ -9,53 +8,43 @@ from pytest_postgresql.factories import DatabaseJanitor
 import decisionengine.framework.engine.de_client as de_client
 
 from decisionengine.framework.dataspace.datasources.tests.fixtures import DE_DB_HOST, DE_DB_USER, DE_DB_PASS, DE_DB_NAME, DE_SCHEMA, PG_PROG, DE_DB
-from decisionengine.framework.engine.DecisionEngine import _get_de_conf_manager, _start_de_server, parse_program_options
+from decisionengine.framework.engine.DecisionEngine import _get_de_conf_manager, _create_de_server, parse_program_options
 from decisionengine.framework.util.sockets import get_random_port
+from decisionengine.framework.taskmanager.TaskManager import State
 
 __all__ = ['DE_DB_HOST', 'DE_DB_USER', 'DE_DB_PASS', 'DE_DB_NAME', 'DE_SCHEMA',
            'PG_PROG', 'DE_DB', 'DE_HOST', 'DEServer']
 
-# Not all test hosts are IPv6, generally IPv4 works fine
-#  some test hosts use IPv6 for localhost by default, even when not configured!
-#  Python XML RPC Socket server is IPv4 only right now.
+# Not all test hosts are IPv6, generally IPv4 works fine some test
+# hosts use IPv6 for localhost by default, even when not configured!
+# Python XML RPC Socket server is IPv4 only right now.
 DE_HOST = '127.0.0.1'
 
-class DETestWorker(multiprocessing.Process):
+class DETestWorker(threading.Thread):
     '''A DE Server process with our test config'''
 
     def __init__(self, conf_path, channel_conf_path, server_address, db_info, conf_override=None, channel_conf_override=None):
         '''format of args should match what you set in conf_mamanger'''
         super().__init__()
         self.db_info = db_info
-        self.conf_path = conf_path
-        self.channel_conf_path = channel_conf_path
         self.server_address = server_address
-        self.conf_override = conf_override
-        self.channel_conf_override = channel_conf_override
 
-        # these options should let you pass in a dict
-        # to force any specific settings within the global or channel config
-        # if someone actually needs this feature set, we'll write the code
-        if conf_override:
-            raise NotImplementedError('No one wrote that code yet')
-        if channel_conf_override:
-            raise NotImplementedError('No one wrote that code yet')
+        global_config, channel_config_loader = _get_de_conf_manager(conf_path, channel_conf_path, parse_program_options([]))
 
-    def run(self):
-        global_config, conf_manager = _get_de_conf_manager(self.conf_path, self.channel_conf_path, parse_program_options([]))
+        # Override global configuration for testing
+        db_info['database'] = db_info.pop('dbname')  # Replace key to conform with datasource config. specification
 
-        #
-        # Override config for testing
-        #
         global_config['shutdown_timeout'] = 1
         global_config['server_address'] = self.server_address
-        global_config['dataspace']['datasource']['config']['host'] = self.db_info['host']
-        global_config['dataspace']['datasource']['config']['port'] = self.db_info['port']
-        global_config['dataspace']['datasource']['config']['user'] = self.db_info['user']
-        global_config['dataspace']['datasource']['config']['password'] = self.db_info['password']
-        global_config['dataspace']['datasource']['config']['database'] = self.db_info['dbname']
+        global_config['dataspace']['datasource']['config'] = db_info
 
-        _start_de_server(global_config, conf_manager)
+        self.de_server = _create_de_server(global_config, channel_config_loader)
+        self.reaper_start_delay_seconds = global_config['dataspace'].get('reaper_start_delay_seconds', 1818)
+
+    def run(self):
+        self.de_server.reaper_start(delay=self.reaper_start_delay_seconds)
+        self.de_server.start_channels()
+        self.de_server.serve_forever()
 
     def de_client_run_cli(self, *args):
         '''
@@ -107,15 +96,13 @@ def DEServer(conf_path=None, conf_override=None,
 
             with psycopg2.connect(**db_info) as connection:
                 for filename in DE_SCHEMA: # noqa: F405
-                    with open(filename, 'r') as _fd:
-                        with connection.cursor() as cur:
-                            cur.execute(_fd.read())
+                    with open(filename, 'r') as _fd, \
+                         connection.cursor() as cur:
+                        cur.execute(_fd.read())
 
             server_proc = DETestWorker(conf_path, channel_conf_path, host_port, db_info, conf_override, channel_conf_override)
             server_proc.start()
-
-            # give the startup a moment for self tests
-            time.sleep(1)
+            server_proc.de_server.block_while(State.BOOT)
 
             if not server_proc.is_alive():
                 raise RuntimeError('Could not start PrivateDEServer fixture')
@@ -123,10 +110,8 @@ def DEServer(conf_path=None, conf_override=None,
             yield server_proc
 
             if server_proc.is_alive():
-                server_proc.de_client_run_cli('--stop')
+                server_proc.de_server.rpc_stop()
 
-            if server_proc.is_alive():
-                time.sleep(1) # it may take a moment for --stop to finish
-                server_proc.terminate()
+            server_proc.join()
 
     return de_server_factory

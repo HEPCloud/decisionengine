@@ -1,4 +1,4 @@
-import multiprocessing
+import threading
 import os
 
 import pytest
@@ -27,7 +27,7 @@ def task_manager_for(name):
 class RunChannel:
     def __init__(self, name):
         self._tm = task_manager_for(name)
-        self._process = multiprocessing.Process(target=self._tm.run)
+        self._process = threading.Thread(target=self._tm.run)
 
     def __enter__(self):
         self._process.start()
@@ -57,7 +57,6 @@ def test_take_task_manager_offline(mock_data_block):  # noqa: F811
 
 @pytest.mark.usefixtures("mock_data_block")
 def test_failing_publisher(mock_data_block):  # noqa: F811
-    with RunChannel('failing_publisher') as task_manager:
-        while task_manager.get_state() != State.OFFLINE:
-            pass
-        assert task_manager.get_state() == State.OFFLINE
+    task_manager = task_manager_for('failing_publisher')
+    task_manager.run()
+    assert task_manager.get_state() == State.OFFLINE

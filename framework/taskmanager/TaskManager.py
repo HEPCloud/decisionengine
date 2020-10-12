@@ -6,7 +6,6 @@ import importlib
 import threading
 import logging
 import time
-import sys
 import multiprocessing
 import pandas
 import uuid
@@ -120,7 +119,6 @@ class TaskManager:
         self.channel = Channel(channel_dict)
         self.state = multiprocessing.Value('i', State.BOOT.value)
         self.loglevel = multiprocessing.Value('i', logging.WARNING)
-        self.decision_cycle_active = False
         self.lock = threading.Lock()
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
@@ -165,15 +163,17 @@ class TaskManager:
         """
         logging.getLogger().setLevel(self.loglevel.value)
         logging.getLogger().info(f'Starting Task Manager {self.id}')
-        done_events = self.start_sources(self.data_block_t0)
+        done_events, source_threads = self.start_sources(self.data_block_t0)
         # This is a boot phase
         # Wait until all sources run at least one time
         self.wait_for_all(done_events)
         logging.getLogger().info('All sources finished')
         if self.get_state() != State.BOOT:
+            for thread in source_threads:
+                thread.join()
             logging.getLogger().error(
                 f'Error occured during initial run of sources. Task Manager {self.name} exits')
-            sys.exit(1)
+            return
 
         self.decision_cycle()
         self.set_state(State.STEADY)
@@ -198,6 +198,8 @@ class TaskManager:
                                           self.id, self.get_state_name())
                 break
             time.sleep(1)
+        for thread in source_threads:
+            thread.join()
 
     def set_state(self, state):
         with self.state.get_lock():
@@ -348,15 +350,17 @@ class TaskManager:
         """
 
         event_list = []
+        source_threads = []
         for key, source in self.channel.sources.items():
             logging.getLogger().info(f'starting loop for {key}')
             event_list.append(source.data_updated)
             thread = threading.Thread(target=self.run_source,
                                       name=source.name,
                                       args=(source,))
+            source_threads.append(thread)
             # Cannot catch exception from function called in separate thread
             thread.start()
-        return event_list
+        return (event_list, source_threads)
 
     def run_transforms(self, data_block=None):
         """
@@ -372,16 +376,20 @@ class TaskManager:
         if not data_block:
             return
         event_list = []
+        threads = []
         for key, transform in self.channel.transforms.items():
             logging.getLogger().info(f'starting transform {key}')
             event_list.append(transform.data_updated)
             thread = threading.Thread(target=self.run_transform,
                                       name=transform.name,
                                       args=(transform, data_block))
+            threads.append(thread)
             # Cannot catch exception from function called in separate thread
             thread.start()
 
         self.wait_for_all(event_list)
+        for thread in threads:
+            thread.join()
         logging.getLogger().info('all transforms finished')
 
     def run_transform(self, transform, data_block):

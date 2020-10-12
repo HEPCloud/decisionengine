@@ -302,9 +302,9 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return txt + self.reaper_status()
 
     def rpc_stop(self):
-        self.reaper_stop()
-        self.stop_channels()
         self.shutdown()
+        self.stop_channels()
+        self.reaper_stop()
         return "OK"
 
     def start_channel(self, channel_name, channel_config):
