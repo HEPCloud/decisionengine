@@ -26,14 +26,11 @@ class DETestWorker(threading.Thread):
     def __init__(self, conf_path, channel_conf_path, server_address, db_info, conf_override=None, channel_conf_override=None):
         '''format of args should match what you set in conf_mamanger'''
         super().__init__()
-        self.db_info = db_info
         self.server_address = server_address
 
         global_config, channel_config_loader = _get_de_conf_manager(conf_path, channel_conf_path, parse_program_options([]))
 
         # Override global configuration for testing
-        db_info['database'] = db_info.pop('dbname')  # Replace key to conform with datasource config. specification
-
         global_config['shutdown_timeout'] = 1
         global_config['server_address'] = self.server_address
         global_config['dataspace']['datasource']['config'] = db_info
@@ -82,7 +79,7 @@ def DEServer(conf_path=None, conf_override=None,
         db_info['password'] = proc_fixture.password
 
         conn_fixture = request.getfixturevalue(pg_db_conn_name)
-        db_info['dbname'] = conn_fixture.get_dsn_parameters()['dbname'] + '_private'
+        db_info['database'] = conn_fixture.get_dsn_parameters()['dbname'] + '_private'
 
         # for reasons I've yet to determine
         #  the schema isn't populated by the DE_DB fixture here...
@@ -92,8 +89,8 @@ def DEServer(conf_path=None, conf_override=None,
         # DatabaseJanitor will create and drop the tablespace for us
         with DatabaseJanitor(user=db_info['user'], password=db_info['password'],
                              host=db_info['host'], port=db_info['port'],
-                             db_name=db_info['dbname'], version=conn_fixture.server_version):
-
+                             db_name=db_info['database'],
+                             version=conn_fixture.server_version):
             with psycopg2.connect(**db_info) as connection:
                 for filename in DE_SCHEMA: # noqa: F405
                     with open(filename, 'r') as _fd, \
