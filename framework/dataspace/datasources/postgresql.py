@@ -1,6 +1,10 @@
 import time
 
-import DBUtils.PooledDB
+try:
+    import dbutils.pooled_db as pooled_db
+except ModuleNotFoundError:
+    import DBUtils.PooledDB as pooled_db
+
 import psycopg2
 import psycopg2.extras
 
@@ -32,9 +36,9 @@ def generate_insert_query(table_name, keys):
 
 
 SELECT_QUERY = """
-SELECT tm.taskmanager_id, foo.* FROM {} as foo, taskmanager tm
+SELECT tm.taskmanager_id, foo.* FROM {} foo, taskmanager tm
 WHERE tm.sequence_id = foo.taskmanager_id
-and foo.taskmanager_id=%s AND foo.generation_id=%s AND key=%s
+and foo.taskmanager_id=%s AND foo.generation_id=%s AND foo.key=%s
 """
 
 SELECT_LAST_GENERATION_ID_BY_NAME = """
@@ -105,8 +109,8 @@ class Postgresql(ds.DataSource):
 
     def __init__(self, config_dict):
         super().__init__(config_dict)
-        self.connection_pool = DBUtils.PooledDB.PooledDB(psycopg2,
-                                                         **config_dict)
+        self.connection_pool = pooled_db.PooledDB(psycopg2,
+                                                  **config_dict)
         self.retries = MAX_NUMBER_OF_RETRIES
         self.timeout = TIME_TO_SLEEP
 
@@ -238,7 +242,8 @@ class Postgresql(ds.DataSource):
     def get_dataproduct(self, taskmanager_id, generation_id, key):
         q = SELECT_QUERY.format(ds.DataSource.dataproduct_table)
         try:
-            return self._select_dictresult(q, (taskmanager_id, generation_id, key))[0]
+            value_row = self._select_dictresult(q, (taskmanager_id, generation_id, key))[0]
+            return value_row['value'].tobytes()
         except IndexError:
             raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
                 taskmanager_id, generation_id, key))

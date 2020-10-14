@@ -7,7 +7,6 @@ import time
 
 import pandas as pd
 
-import decisionengine.framework.configmanager.ConfigManager as configmanager
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 from decisionengine.framework.modules import Source
@@ -50,9 +49,8 @@ class SourceProxy(Source.Source):
         self.retries = args[0].get('retries', RETRIES)
         self.retry_to = args[0].get('retry_timeout', RETRY_TO)
         self.logger = logging.getLogger()
-        config_manager = configmanager.ConfigManager()
-        config_manager.load()
-        global_config = config_manager.get_global_config()
+
+    def post_create(self, global_config):
         self.dataspace = dataspace.DataSpace(global_config)
 
     def consumes(self):
@@ -69,7 +67,9 @@ class SourceProxy(Source.Source):
           ....
           ]
         """
-        return list(map(lambda x: x[0] if isinstance(x, tuple) else x, self.data_keys))
+        # isinstance(x, tuple) is used by python based config file
+        # isinstance(x, list) is used by JSON based config file
+        return list(map(lambda x: x[0] if (isinstance(x, tuple) or isinstance(x, list)) else x, self.data_keys))
 
     def produces(self):
         """
@@ -81,7 +81,9 @@ class SourceProxy(Source.Source):
           data_keys[key1] = data_product_name
           ....
         """
-        return list(map(lambda x: x[1] if isinstance(x, tuple) else x, self.data_keys))
+        # isinstance(x, tuple) is used by python based config file
+        # isinstance(x, list) is used by JSON based config file
+        return list(map(lambda x: x[1] if (isinstance(x, tuple) or isinstance(x, list)) else x, self.data_keys))
 
 
     def _get_data(self, data_block, key):
@@ -100,9 +102,8 @@ class SourceProxy(Source.Source):
         """
         Overrides Source class method
         """
-        retry_cnt = 0
         data_block = None
-        while retry_cnt < self.retries:
+        for _ in range(self.retries):
             try:
                 tm = self.dataspace.get_taskmanager(self.source_channel)
                 self.logger.debug('task manager %s', tm)
@@ -117,26 +118,21 @@ class SourceProxy(Source.Source):
                         self.logger.debug("DATABLOCK %s", data_block)
                         # This is a valid datablock
                         break
-                    else:
-                        retry_cnt += 1
-                        # retry in 1/3 of configured TO
-                        time.sleep(self.retry_to // 3)
-                else:
-                    retry_cnt += 1
-                    time.sleep(self.retry_to)
             except Exception as detail:
                 self.logger.error(
                     'Error getting datablock for %s %s', self.source_channel, detail)
 
+            time.sleep(self.retry_to)
+
         if not data_block:
             raise RuntimeError('Could not get data.')
+
         rc = {}
-        retry_cnt = 0
         filled_keys = []
-        while retry_cnt < self.retries:
+        for _ in range(self.retries):
             if len(filled_keys) != len(self.data_keys):
                 for k in self.data_keys:
-                    if isinstance(k, tuple):
+                    if isinstance(k, tuple) or isinstance(k, list):
                         k_in = k[0]
                         k_out = k[1]
                     else:
@@ -151,12 +147,10 @@ class SourceProxy(Source.Source):
                             self.logger.debug("KEYERROR %s", ke)
             if len(filled_keys) == len(self.data_keys):
                 break
-            else:
-                # expected data is not ready yet
-                retry_cnt += 1
-                time.sleep(self.retry_to)
+            # expected data is not ready yet
+            time.sleep(self.retry_to)
 
-        if retry_cnt == self.retries and len(filled_keys) != len(self.data_keys):
+        if len(filled_keys) != len(self.data_keys):
             raise RuntimeError('Could not get all data. Expected %s Filled %s' % (
                 self.data_keys, filled_keys))
         return rc

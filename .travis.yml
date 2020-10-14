@@ -7,7 +7,6 @@ branches:
 
 # What versions of python do we test with
 python:
-  - "2.7"
   - "3.6"
   - "3.8"
   - "pypy3"
@@ -15,7 +14,6 @@ python:
 jobs:
   allow_failures:
     # These don't need to work, but be nice if they did
-    - python: "2.7"
     # https://svn.boost.org/trac10/ticket/4125 / https://github.com/boostorg/python/pull/291
     - python: "pypy3"
 
@@ -92,6 +90,6 @@ install:
 # command to run tests
 script:
   - cd ${TRAVIS_BUILD_DIR}
-  - coverage run -m pytest -v -l --tb=native ${TRAVIS_BUILD_DIR}/../
-
+  - coverage run -p -m pytest -v -l --durations=0 --tb=native ${TRAVIS_BUILD_DIR}/../
+  - coverage combine
   - coveralls

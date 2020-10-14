@@ -14,12 +14,33 @@ pipeline {
                         script {
                             // DOCKER_IMAGE is defined through Jenkins project
                             pylintStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                            // Set custom Build Name
+                            if (params.GITHUB_PR_NUMBER) {
+                                if (params.GITHUB_PR_STATE == 'CLOSED') {
+                                    currentBuild.displayName="${BUILD_NUMBER}#PR#${GITHUB_PR_NUMBER}#CLOSED"
+                                } else {
+                                    currentBuild.displayName="${BUILD_NUMBER}#PR#${GITHUB_PR_NUMBER}"
+                                }
+                            } else {
+                                currentBuild.displayName="${BUILD_NUMBER}#${BRANCH}"
+                            }
                         }
                         echo "cleanup workspace"
                         sh 'for f in $(ls -A); do rm -rf ${f}; done'
                         // DE_REPO is defined through Jenkins project
                         echo "clone decisionengine code from ${DE_REPO}"
-                        sh "git clone ${DE_REPO}"
+                        sh '''
+                            git clone ${DE_REPO}
+                            cd decisionengine
+                            echo "checkout ${BRANCH} branch"
+                            git checkout ${BRANCH}
+                            echo GITHUB_PR_NUMBER: ${GITHUB_PR_NUMBER} - GITHUB_PR_STATE: ${GITHUB_PR_STATE}
+                            if [[ -n ${GITHUB_PR_NUMBER} && ${GITHUB_PR_STATE} == OPEN ]]; then
+                                git fetch origin pull/${GITHUB_PR_NUMBER}/merge:merge${GITHUB_PR_NUMBER}
+                                git checkout merge${GITHUB_PR_NUMBER}
+                            fi
+                            cd ..
+                        '''
                         echo "prepare docker image ${pylintStageDockerImage}"
                         sh "docker build -t ${pylintStageDockerImage} -f decisionengine/.github/actions/pylint-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/pylint-in-sl7-docker/"
                         echo "Run ${STAGE_NAME} tests"
@@ -27,7 +48,7 @@ pipeline {
                     }
                     post {
                         always {
-                            archiveArtifacts artifacts: "pep8.master.log,pylint.master.log,results.master.log,mail.results"
+                            archiveArtifacts artifacts: "pep8.*.log,pylint.*.log,results.*.log,mail.results"
                             echo "cleanup docker image ${pylintStageDockerImage}"
                             sh "docker rmi ${pylintStageDockerImage}"
                         }
@@ -49,11 +70,22 @@ pipeline {
                         sh 'for f in $(ls -A); do rm -rf ${f}; done'
                         // DE_REPO is defined through Jenkins project
                         echo "clone decisionengine code from ${DE_REPO}"
-                        sh "git clone ${DE_REPO}"
+                        sh '''
+                            git clone ${DE_REPO}
+                            cd decisionengine
+                            echo "checkout ${BRANCH} branch"
+                            git checkout ${BRANCH}
+                            echo GITHUB_PR_NUMBER: ${GITHUB_PR_NUMBER} - GITHUB_PR_STATE: ${GITHUB_PR_STATE}
+                            if [[ -n ${GITHUB_PR_NUMBER} && ${GITHUB_PR_STATE} == OPEN ]]; then
+                                git fetch origin pull/${GITHUB_PR_NUMBER}/merge:merge${GITHUB_PR_NUMBER}
+                                git checkout merge${GITHUB_PR_NUMBER}
+                            fi
+                            cd ..
+                        '''
                         echo "prepare docker image ${unit_testsStageDockerImage}"
                         sh "docker build -t ${unit_testsStageDockerImage} -f decisionengine/.github/actions/unittest-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/unittest-in-sl7-docker"
                         echo "Run ${STAGE_NAME} tests"
-                        sh "docker run --rm -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE} ${unit_testsStageDockerImage}"
+                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE} ${unit_testsStageDockerImage}"
                     }
                     post {
                         always {
@@ -79,7 +111,18 @@ pipeline {
                         sh 'for f in $(ls -A); do rm -rf ${f}; done'
                         // DE_REPO is defined through Jenkins project
                         echo "clone decisionengine code from ${DE_REPO}"
-                        sh "git clone ${DE_REPO}"
+                        sh '''
+                            git clone ${DE_REPO}
+                            cd decisionengine
+                            echo "checkout ${BRANCH} branch"
+                            git checkout ${BRANCH}
+                            echo GITHUB_PR_NUMBER: ${GITHUB_PR_NUMBER} - GITHUB_PR_STATE: ${GITHUB_PR_STATE}
+                            if [[ -n ${GITHUB_PR_NUMBER} && ${GITHUB_PR_STATE} == OPEN ]]; then
+                                git fetch origin pull/${GITHUB_PR_NUMBER}/merge:merge${GITHUB_PR_NUMBER}
+                                git checkout merge${GITHUB_PR_NUMBER}
+                            fi
+                            cd ..
+                        '''
                         echo "prepare docker image ${rpmbuildStageDockerImage}"
                         sh "docker build -t ${rpmbuildStageDockerImage} -f decisionengine/.github/actions/rpmbuild-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/rpmbuild-in-sl7-docker"
                         echo "Run ${STAGE_NAME} tests"
