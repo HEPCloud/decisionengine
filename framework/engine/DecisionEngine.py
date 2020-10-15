@@ -22,6 +22,7 @@ import xmlrpc.server
 from decisionengine.framework.config import ChannelConfigHandler, ValidConfig, policies
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
+import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
 
 CONFIG_UPDATE_PERIOD = 10  # seconds
@@ -39,11 +40,8 @@ class WorkerInErrorState:
     def __init__(self, task_manager_id):
         self.task_manager_id = task_manager_id
 
-    def get_state(self):
-        return TaskManager.State.ERROR
-
     def get_state_name(self):
-        return self.get_state().name
+        return 'ERROR'
 
     def is_alive(self):
         return False
@@ -57,8 +55,11 @@ class Worker(multiprocessing.Process):
         self.task_manager_id = task_manager.id
         self.logger_config = logger_config
 
-    def get_state(self):
-        return self.task_manager.get_state()
+    def wait_until(self, state):
+        return self.task_manager.state.wait_until(state)
+
+    def wait_while(self, state):
+        return self.task_manager.state.wait_while(state)
 
     def get_state_name(self):
         return self.task_manager.get_state_name()
@@ -126,23 +127,26 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return func(*params)
 
     def block_until(self, state):
-        assert isinstance(state, TaskManager.State)
         if not self.task_managers:
             self.logger.info('No active task managers.')
-        while all(tm.get_state() != state for tm in self.task_managers.values()):
-            pass
+        for tm in self.task_managers.values():
+            if tm.is_alive():
+                tm.wait_until(state)
 
     def block_while(self, state):
-        assert isinstance(state, TaskManager.State)
         if not self.task_managers:
             self.logger.info('No active task managers.')
-        while any(tm.get_state() == state for tm in self.task_managers.values()):
-            pass
+        for tm in self.task_managers.values():
+            if tm.is_alive():
+                tm.wait_while(state)
 
     def rpc_block_while(self, state_str):
-        if not TaskManager.allowed_state(state_str):
+        allowed_state = None
+        try:
+            allowed_state = ProcessingState.State[state_str]
+        except Exception:
             return f'{state_str} is not a valid task manager state.'
-        self.block_while(TaskManager.State[state_str])
+        self.block_while(allowed_state)
         return f'No channels in {state_str} state.'
 
     def rpc_show_config(self, channel):
@@ -357,7 +361,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
         worker = self.task_managers[channel]
         if worker.is_alive():
-            worker.task_manager._take_offline(None)
+            worker.task_manager.take_offline(None)
             worker.join(self.global_config.get("shutdown_timeout", 10))
         return True
 
