@@ -3,6 +3,7 @@
 import argparse
 import xmlrpc.client
 
+
 def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -19,7 +20,6 @@ def create_parser():
         '-v', '--verbose',
         action='store_true',
         help="Include exception message in printout if server is inaccessible")
-
 
     server = parser.add_argument_group("Decision Engine server options")
     server.add_argument(
@@ -38,6 +38,9 @@ def create_parser():
         "--print-engine-loglevel",
         action='store_true',
         help="print engine log level")
+    server.add_argument(
+        "--block-while",
+        metavar='<state>')
 
     channels = parser.add_argument_group("Channel-specific options")
     channels.add_argument(
@@ -109,6 +112,7 @@ def create_parser():
 
     return parser
 
+
 def execute_command_from_args(argsparsed, de_socket):
     '''argsparsed should be from create_parser in this file'''
 
@@ -121,6 +125,8 @@ def execute_command_from_args(argsparsed, de_socket):
         return de_socket.stop()
     if argsparsed.print_engine_loglevel:
         return de_socket.get_log_level()
+    if argsparsed.block_while:
+        return de_socket.block_while(argsparsed.block_while)
 
     # Channel-specific options
     if argsparsed.stop_channel:
@@ -160,6 +166,7 @@ def execute_command_from_args(argsparsed, de_socket):
         return de_socket.reaper_start(argsparsed.reaper_start_delay_secs)
     if argsparsed.reaper_status:
         return de_socket.reaper_status()
+
 
 def main(args_to_parse=None):
     '''If you pass a list of args, they will be used instead of sys.argv'''

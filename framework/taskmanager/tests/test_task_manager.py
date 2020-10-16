@@ -1,6 +1,7 @@
-import multiprocessing
+import threading
 import os
-import time
+
+import pytest
 
 import decisionengine.framework.config.policies as policies
 from decisionengine.framework.config.ValidConfig import ValidConfig
@@ -26,40 +27,34 @@ def task_manager_for(name):
 class RunChannel:
     def __init__(self, name):
         self._tm = task_manager_for(name)
-        self._process = multiprocessing.Process(target=self._tm.run)
+        self._thread = threading.Thread(target=self._tm.run)
 
     def __enter__(self):
-        self._process.start()
+        self._thread.start()
         return self._tm
 
     def __exit__(self, type, value, traceback):
         if type:
-            self._process.terminate()
             return False
-        self._process.join()
+        self._thread.join()
 
 
+@pytest.mark.usefixtures("mock_data_block")
 def test_task_manager_construction(mock_data_block):  # noqa: F811
     task_manager = task_manager_for('test_channel')
-    assert task_manager.get_state() == State.BOOT
+    assert task_manager.state.has_value(State.BOOT)
 
 
+@pytest.mark.usefixtures("mock_data_block")
 def test_take_task_manager_offline(mock_data_block):  # noqa: F811
     with RunChannel('test_channel') as task_manager:
-        time.sleep(2)
-        task_state = task_manager.get_state()
-        if task_state != State.STEADY:
-            time.sleep(2)  # extra sleep if test host is overloaded
-            task_state = task_manager.get_state()
-        assert task_state == State.STEADY
-        task_manager._take_offline(None)
-        assert task_manager.get_state() == State.OFFLINE
+        task_manager.state.wait_until(State.STEADY)
+        task_manager.take_offline(None)
+        assert task_manager.state.has_value(State.OFFLINE)
 
 
+@pytest.mark.usefixtures("mock_data_block")
 def test_failing_publisher(mock_data_block):  # noqa: F811
-    with RunChannel('failing_publisher') as task_manager:
-        task_state = task_manager.get_state()
-        if task_state != State.OFFLINE:
-            time.sleep(5)  # extra sleep if test host is overloaded
-            task_state = task_manager.get_state()
-        assert task_manager.get_state() == State.OFFLINE
+    task_manager = task_manager_for('failing_publisher')
+    task_manager.run()
+    assert task_manager.state.has_value(State.OFFLINE)

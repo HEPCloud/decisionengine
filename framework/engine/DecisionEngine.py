@@ -22,6 +22,7 @@ import xmlrpc.server
 from decisionengine.framework.config import ChannelConfigHandler, ValidConfig, policies
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
+import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
 
 CONFIG_UPDATE_PERIOD = 10  # seconds
@@ -40,7 +41,7 @@ class WorkerInErrorState:
         self.task_manager_id = task_manager_id
 
     def get_state_name(self):
-        return "ERROR"
+        return 'ERROR'
 
     def is_alive(self):
         return False
@@ -53,6 +54,12 @@ class Worker(multiprocessing.Process):
         self.task_manager = task_manager
         self.task_manager_id = task_manager.id
         self.logger_config = logger_config
+
+    def wait_until(self, state):
+        return self.task_manager.state.wait_until(state)
+
+    def wait_while(self, state):
+        return self.task_manager.state.wait_while(state)
 
     def get_state_name(self):
         return self.task_manager.get_state_name()
@@ -118,6 +125,29 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         except AttributeError:
             raise Exception(f'method "{method}" is not supported')
         return func(*params)
+
+    def block_until(self, state):
+        if not self.task_managers:
+            self.logger.info('No active task managers.')
+        for tm in self.task_managers.values():
+            if tm.is_alive():
+                tm.wait_until(state)
+
+    def block_while(self, state):
+        if not self.task_managers:
+            self.logger.info('No active task managers.')
+        for tm in self.task_managers.values():
+            if tm.is_alive():
+                tm.wait_while(state)
+
+    def rpc_block_while(self, state_str):
+        allowed_state = None
+        try:
+            allowed_state = ProcessingState.State[state_str]
+        except Exception:
+            return f'{state_str} is not a valid task manager state.'
+        self.block_while(allowed_state)
+        return f'No channels in {state_str} state.'
 
     def rpc_show_config(self, channel):
         """
@@ -276,9 +306,9 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return txt + self.reaper_status()
 
     def rpc_stop(self):
-        self.reaper_stop()
-        self.stop_channels()
         self.shutdown()
+        self.stop_channels()
+        self.reaper_stop()
         return "OK"
 
     def start_channel(self, channel_name, channel_config):
@@ -322,6 +352,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def rpc_stop_channel(self, channel):
         if not self.stop_channel(channel):
             return f"No channel found with the name {channel}."
+        del self.task_managers[channel]
         return "OK"
 
     def stop_channel(self, channel):
@@ -330,14 +361,14 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
         worker = self.task_managers[channel]
         if worker.is_alive():
-            worker.task_manager.set_state(TaskManager.State.SHUTTINGDOWN)
+            worker.task_manager.take_offline(None)
             worker.join(self.global_config.get("shutdown_timeout", 10))
-        del self.task_managers[channel]
         return True
 
     def stop_channels(self):
         for channel_name in self.task_managers:
             self.stop_channel(channel_name)
+        self.task_managers.clear()
 
     def rpc_stop_channels(self):
         self.stop_channels()
@@ -463,12 +494,15 @@ def _get_de_conf_manager(global_config_dir, channel_config_dir, options):
     return (global_config, conf_manager)
 
 
-def _start_de_server(global_config, channel_config_loader):
-    '''start the DE server with the passed global configuration and config manager'''
+def _create_de_server(global_config, channel_config_loader):
+    '''Create the DE server with the passed global configuration and config manager'''
     server_address = tuple(global_config.get('server_address'))
-    server = DecisionEngine(global_config,
-                            channel_config_loader,
-                            server_address)
+    return DecisionEngine(global_config, channel_config_loader, server_address)
+
+
+def _start_de_server(global_config, channel_config_loader):
+    '''Create and start the DE server with the passed global configuration and config manager'''
+    server = _create_de_server(global_config, channel_config_loader)
     server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
     server.start_channels()
     server.serve_forever()
