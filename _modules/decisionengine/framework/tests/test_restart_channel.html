@@ -32,19 +32,17 @@
           <div class="body" role="main">
             
   <h1>Source code for decisionengine.framework.tests.test_restart_channel</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">multiprocessing</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">import</span> <span class="nn">decisionengine.framework.engine.de_client</span> <span class="k">as</span> <span class="nn">de_client</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.tests.fixtures</span> <span class="k">import</span> <span class="n">mock_data_block</span>  <span class="c1"># noqa: F401</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="k">import</span> <span class="n">_get_de_conf_manager</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="k">import</span> <span class="n">_start_de_server</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="k">import</span> <span class="n">_create_de_server</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="k">import</span> <span class="n">parse_program_options</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.TaskManager</span> <span class="k">import</span> <span class="n">State</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.sockets</span> <span class="k">import</span> <span class="n">get_random_port</span>
 
 <span class="n">_this_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
@@ -54,48 +52,35 @@
 <span class="n">_port</span> <span class="o">=</span> <span class="n">get_random_port</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="run_server"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_restart_channel.run_server">[docs]</a><span class="k">def</span> <span class="nf">run_server</span><span class="p">():</span>
+<div class="viewcode-block" id="deserver_mock_data_block"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_restart_channel.deserver_mock_data_block">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">deserver_mock_data_block</span><span class="p">(</span><span class="n">mock_data_block</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_handler</span> <span class="o">=</span> <span class="n">_get_de_conf_manager</span><span class="p">(</span><span class="n">_CONFIG_PATH</span><span class="p">,</span>
                                                                  <span class="n">_CHANNEL_CONFIG_PATH</span><span class="p">,</span>
                                                                  <span class="n">parse_program_options</span><span class="p">([</span><span class="n">f</span><span class="s1">&#39;--port=</span><span class="si">{_port}</span><span class="s1">&#39;</span><span class="p">]))</span>
-    <span class="n">_start_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_handler</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="de_client_request"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_restart_channel.de_client_request">[docs]</a><span class="k">def</span> <span class="nf">de_client_request</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="n">f</span><span class="s2">&quot;--port=</span><span class="si">{_port}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">])</span></div>
-
-
-<div class="viewcode-block" id="deserver_mock_data_block"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_restart_channel.deserver_mock_data_block">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">deserver_mock_data_block</span><span class="p">(</span><span class="n">mock_data_block</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
-    <span class="n">worker</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">run_server</span><span class="p">)</span>
-    <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Make sure channels have enough time to start</span>
-    <span class="k">yield</span>
-    <span class="n">de_client_request</span><span class="p">(</span><span class="s2">&quot;--stop&quot;</span><span class="p">)</span>
-    <span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">_create_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_handler</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">server</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span></div>
 
 
 <span class="c1"># Because pytest will reorder the tests based on the method name,</span>
 <span class="c1"># we implement the whole &#39;workflow&#39; as one unit test.</span>
 <div class="viewcode-block" id="test_restart_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_restart_channel.test_restart_channel">[docs]</a><span class="k">def</span> <span class="nf">test_restart_channel</span><span class="p">(</span><span class="n">deserver_mock_data_block</span><span class="p">):</span>
     <span class="c1"># Verify that nothing is active</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">de_client_request</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;test_channel.*state = STEADY&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
-        <span class="c1"># wait just a bit longer in case the test server is over loaded</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="n">de_client_request</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_mock_data_block</span><span class="o">.</span><span class="n">rpc_status</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;test_channel.*state = STEADY&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
     <span class="c1"># Take channel offline</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--stop-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_mock_data_block</span><span class="o">.</span><span class="n">rpc_stop_channel</span><span class="p">(</span><span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;OK&#39;</span>
 
     <span class="c1"># Verify no channels are active</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">de_client_request</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_mock_data_block</span><span class="o">.</span><span class="n">rpc_status</span><span class="p">()</span>
     <span class="k">assert</span> <span class="s2">&quot;No channels are currently active&quot;</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="c1"># Take channel offline</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">de_client_request</span><span class="p">(</span><span class="s1">&#39;--start-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_mock_data_block</span><span class="o">.</span><span class="n">rpc_start_channel</span><span class="p">(</span><span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;OK&#39;</span></div>
 </pre></div>
 

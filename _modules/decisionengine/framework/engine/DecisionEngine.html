@@ -56,6 +56,7 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.config</span> <span class="k">import</span> <span class="n">ChannelConfigHandler</span><span class="p">,</span> <span class="n">ValidConfig</span><span class="p">,</span> <span class="n">policies</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="k">as</span> <span class="nn">datablock</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
+<span class="kn">import</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="k">as</span> <span class="nn">ProcessingState</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.taskmanager.TaskManager</span> <span class="k">as</span> <span class="nn">TaskManager</span>
 
 <span class="n">CONFIG_UPDATE_PERIOD</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># seconds</span>
@@ -74,7 +75,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager_id</span> <span class="o">=</span> <span class="n">task_manager_id</span>
 
 <div class="viewcode-block" id="WorkerInErrorState.get_state_name"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.WorkerInErrorState.get_state_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;ERROR&quot;</span></div>
+        <span class="k">return</span> <span class="s1">&#39;ERROR&#39;</span></div>
 
 <div class="viewcode-block" id="WorkerInErrorState.is_alive"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.WorkerInErrorState.is_alive">[docs]</a>    <span class="k">def</span> <span class="nf">is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div></div>
@@ -87,6 +88,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span> <span class="o">=</span> <span class="n">task_manager</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager_id</span> <span class="o">=</span> <span class="n">task_manager</span><span class="o">.</span><span class="n">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span> <span class="o">=</span> <span class="n">logger_config</span>
+
+<div class="viewcode-block" id="Worker.wait_until"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.Worker.wait_until">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_until</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Worker.wait_while"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.Worker.wait_while">[docs]</a>    <span class="k">def</span> <span class="nf">wait_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Worker.get_state_name"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.Worker.get_state_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">get_state_name</span><span class="p">()</span></div>
@@ -152,6 +159,29 @@
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;method &quot;</span><span class="si">{method}</span><span class="s1">&quot; is not supported&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DecisionEngine.block_until"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.block_until">[docs]</a>    <span class="k">def</span> <span class="nf">block_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No active task managers.&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">tm</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="n">tm</span><span class="o">.</span><span class="n">wait_until</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DecisionEngine.block_while"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.block_while">[docs]</a>    <span class="k">def</span> <span class="nf">block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No active task managers.&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">tm</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="n">tm</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DecisionEngine.rpc_block_while"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_block_while">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_str</span><span class="p">):</span>
+        <span class="n">allowed_state</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">allowed_state</span> <span class="o">=</span> <span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="p">[</span><span class="n">state_str</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{state_str}</span><span class="s1"> is not a valid task manager state.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">allowed_state</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;No channels in </span><span class="si">{state_str}</span><span class="s1"> state.&#39;</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_show_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_show_config">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -310,9 +340,9 @@
         <span class="k">return</span> <span class="n">txt</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper_status</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_stop"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper_stop</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reaper_stop</span><span class="p">()</span>
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.start_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channel">[docs]</a>    <span class="k">def</span> <span class="nf">start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
@@ -356,6 +386,7 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_stop_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop_channel">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_stop_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;No channel found with the name </span><span class="si">{channel}</span><span class="s2">.&quot;</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.stop_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.stop_channel">[docs]</a>    <span class="k">def</span> <span class="nf">stop_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
@@ -364,14 +395,14 @@
 
         <span class="n">worker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-            <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">TaskManager</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="p">)</span>
+            <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">take_offline</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
             <span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shutdown_timeout&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.stop_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.stop_channels">[docs]</a>    <span class="k">def</span> <span class="nf">stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">channel_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_managers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_stop_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop_channels">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
@@ -497,12 +528,15 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">conf_manager</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="_start_de_server"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._start_de_server">[docs]</a><span class="k">def</span> <span class="nf">_start_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;start the DE server with the passed global configuration and config manager&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="_create_de_server"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._create_de_server">[docs]</a><span class="k">def</span> <span class="nf">_create_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Create the DE server with the passed global configuration and config manager&#39;&#39;&#39;</span>
     <span class="n">server_address</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">))</span>
-    <span class="n">server</span> <span class="o">=</span> <span class="n">DecisionEngine</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span>
-                            <span class="n">channel_config_loader</span><span class="p">,</span>
-                            <span class="n">server_address</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DecisionEngine</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">,</span> <span class="n">server_address</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_start_de_server"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._start_de_server">[docs]</a><span class="k">def</span> <span class="nf">_start_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Create and start the DE server with the passed global configuration and config manager&#39;&#39;&#39;</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">_create_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reaper_start_delay_seconds&#39;</span><span class="p">,</span> <span class="mi">1818</span><span class="p">))</span>
     <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
     <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span></div>
