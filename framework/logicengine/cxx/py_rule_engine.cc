@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "ErrorHandler/ma_rule_engine.h"
+#include "RuleEngine.h"
 
 using namespace std;
 using namespace boost::python;
@@ -53,7 +53,7 @@ struct RuleEngine {
   }
 
 private:
-  novadaq::errorhandler::ma_rule_engine engine;
+  logic_engine::RuleEngine engine;
 };
 
 BOOST_PYTHON_MODULE(RE)
