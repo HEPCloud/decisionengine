@@ -11,6 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import sphinx_rtd_theme
 import sys
 import time
 
@@ -34,7 +35,6 @@ release = '1.1.1'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-import sphinx-rtd-theme
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
