@@ -29,7 +29,6 @@ add_library(LogicEngine SHARED
     ma_boolean_andexpr.cpp
     ma_boolean_cond.cpp
     ma_boolean_expr.cpp
-    Fact.cpp
     ma_parse.cpp
     Rule.cpp
     RuleEngine.cpp

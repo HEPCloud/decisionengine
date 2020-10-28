@@ -4,7 +4,6 @@
 #include "ma_types.h"
 
 #include <algorithm>
-#include <list>
 #include <map>
 #include <vector>
 
@@ -12,8 +11,11 @@ namespace logic_engine {
 
   class Fact {
   public:
-
-    void set_value(bool val);
+    void
+    set_value(bool const value)
+    {
+      value_ = value;
+    }
 
     bool
     value() const
@@ -47,7 +49,7 @@ namespace logic_engine {
   };
 
   using Facts = std::vector<Fact*>;
-  typedef std::map<string_t, Fact> fact_map_t;
+  using fact_map_t = std::map<string_t, Fact>;
 
 } // end of namespace logic_engine
 

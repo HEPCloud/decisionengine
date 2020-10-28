@@ -7,22 +7,22 @@
 #include "RuleEngine.h"
 
 using namespace std;
-using namespace boost::python;
+namespace bp = boost::python;
 
 struct RuleEngine {
-  RuleEngine(boost::python::dict const& facts, boost::python::dict const& rules)
+  RuleEngine(bp::dict const& facts, bp::dict const& rules)
     : engine{facts, rules}
   {}
 
-  boost::python::tuple
-  execute(boost::python::dict const& facts)
+  bp::tuple
+  execute(bp::dict const& facts)
   {
     std::map<std::string, bool> fact_vals;
 
     auto fnames = facts.keys();
     for (int i = 0; i < len(fnames); ++i) {
-      fact_vals.emplace(extract<string>(fnames[i]),
-                        extract<bool>(facts[fnames[i]]));
+      fact_vals.emplace(bp::extract<string>(fnames[i]),
+                        bp::extract<bool>(facts[fnames[i]]));
     }
 
     std::map<std::string, std::vector<std::string>> out_actions;
@@ -30,11 +30,11 @@ struct RuleEngine {
 
     engine.execute(fact_vals, out_actions, out_facts);
 
-    dict py_actions;
-    dict py_facts;
+    bp::dict py_actions;
+    bp::dict py_facts;
 
     for (auto const& act : out_actions) {
-      boost::python::list act_names;
+      bp::list act_names;
       for (auto const& act_name : act.second)
         act_names.append(act_name);
 
@@ -42,14 +42,14 @@ struct RuleEngine {
     }
 
     for (auto const& rule_facts : out_facts) {
-      dict py_rule_facts;
+      bp::dict py_rule_facts;
       for (auto const& fact_val : rule_facts.second)
         py_rule_facts[fact_val.first] = fact_val.second;
 
       py_facts[rule_facts.first] = py_rule_facts;
     }
 
-    return boost::python::make_tuple(py_actions, py_facts);
+    return bp::make_tuple(py_actions, py_facts);
   }
 
 private:
@@ -58,7 +58,7 @@ private:
 
 BOOST_PYTHON_MODULE(RE)
 {
-  class_<RuleEngine, boost::noncopyable>(
-    "RuleEngine", init<boost::python::dict, boost::python::dict>())
+  bp::class_<RuleEngine, boost::noncopyable>(
+    "RuleEngine", bp::init<bp::dict, bp::dict>())
     .def("execute", &RuleEngine::execute);
 }
