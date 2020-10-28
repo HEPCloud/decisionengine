@@ -20,9 +20,9 @@ import multiprocessing
 class State(enum.Enum):
     BOOT = 0
     STEADY = 1
-    OFFLINE = 2
-    SHUTTINGDOWN = 3
-    SHUTDOWN = 4
+    SHUTTINGDOWN = 2
+    SHUTDOWN = 3
+    OFFLINE = 4
     ERROR = 5
 
 
@@ -59,5 +59,7 @@ class ProcessingState:
             self._cv.wait_for(lambda: not self.has_value(state))
 
     def should_stop(self):
-        value = self.get().value
-        return value > State.STEADY.value
+        return self.get().value > State.STEADY.value
+
+    def inactive(self):
+        return self.get().value > State.SHUTTINGDOWN.value
