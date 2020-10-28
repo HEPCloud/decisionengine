@@ -10,6 +10,19 @@ FORMATTER = logging.Formatter(
 
 
 class Worker(multiprocessing.Process):
+    '''
+    Class that encapsulates a channel's task manager as a separate process.
+
+    This class' run function is called whenever the process is
+    started.  If the process is abruptly terminated--e.g. the run
+    method is pre-empted by a signal or an os._exit(n) call--the
+    Worker object will still exist even if the operating-system
+    process no longer does.
+
+    To determine the exit code of this process, use the
+    Worker.exitcode value, provided by the multiprocessing.Process
+    base class.
+    '''
 
     def __init__(self, task_manager, logger_config):
         super().__init__()
@@ -56,54 +69,59 @@ class Worker(multiprocessing.Process):
 
 
 class Workers:
+    '''
+    This class manages and provides access to the task-manager workers.
+
+    The intention is that the decision engine never directly interacts with the
+    workers but refers to them via a context manager:
+
+      with workers.access() as ws:
+          # Access to ws now protected
+          ws['new_channel'] = Worker(...)
+
+    In cases where the decision engine's block_while or block_until
+    methods must be called (e.g. during tests), one should used the
+    unguarded access:
+
+      with workers.unguarded_access() as ws:
+          # Access to ws is unprotected
+          ws['new_channel'].wait_until(...)
+
+    Calling a blocking method while using the protected context
+    manager (i.e. workers.access()) will likely result in a deadlock.
+    '''
+
     def __init__(self):
         self._workers = {}
         self._lock = threading.Lock()
 
-    def access(self):
-        class Lock:
-            def __init__(self, workers, lock):
-                self._workers = workers
-                self._lock = lock
+    def _update_channel_states(self):
+        with self._lock:
+            for channel, process in self._workers.items():
+                if process.is_alive():
+                    continue
+                if process.task_manager.state.inactive():
+                    continue
+                process.task_manager.state.set(ProcessingState.State.ERROR)
 
-            def _update_channel_states(self):
-                for channel, process in self._workers.items():
-                    if process.is_alive():
-                        continue
-                    if process.task_manager.state.inactive():
-                        continue
-                    process.task_manager.state.set(ProcessingState.State.ERROR)
+    class Access:
+        def __init__(self, workers, lock):
+            self._workers = workers
+            self._lock = lock
 
-            def __enter__(self):
+        def __enter__(self):
+            if self._lock:
                 self._lock.acquire()
-                self._update_channel_states()
-                return self._workers
+            return self._workers
 
-            def __exit__(self, error, type, bt):
+        def __exit__(self, error, type, bt):
+            if self._lock:
                 self._lock.release()
 
-        return Lock(self._workers, self._lock)
+    def access(self):
+        self._update_channel_states()
+        return self.Access(self._workers, self._lock)
 
     def unguarded_access(self):
-        class NoLock:
-            def __init__(self, workers, lock):
-                self._workers = workers
-                self._lock = lock  # Only used to update channels while entering context
-
-            def _update_channel_states(self):
-                for channel, process in self._workers.items():
-                    if process.is_alive():
-                        continue
-                    if process.task_manager.state.inactive():
-                        continue
-                    process.task_manager.state.set(ProcessingState.State.ERROR)
-
-            def __enter__(self):
-                with self._lock:
-                    self._update_channel_states()
-                return self._workers
-
-            def __exit__(self, error, type, bt):
-                pass
-
-        return NoLock(self._workers, self._lock)
+        self._update_channel_states()
+        return self.Access(self._workers, None)
