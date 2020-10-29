@@ -68,7 +68,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def block_until(self, state):
         with self.workers.unguarded_access() as workers:
             if not workers:
-                self.logger.info('No active task managers.')
+                self.logger.info('No active channels.')
             for tm in workers.values():
                 if tm.is_alive():
                     tm.wait_until(state)
@@ -76,7 +76,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def block_while(self, state):
         with self.workers.unguarded_access() as workers:
             if not workers:
-                self.logger.info('No active task managers.')
+                self.logger.info('No active channels.')
             for tm in workers.values():
                 if tm.is_alive():
                     tm.wait_while(state)
@@ -86,7 +86,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         try:
             allowed_state = ProcessingState.State[state_str]
         except Exception:
-            return f'{state_str} is not a valid task manager state.'
+            return f'{state_str} is not a valid channel state.'
         self.block_while(allowed_state)
         return f'No channels in {state_str} state.'
 
