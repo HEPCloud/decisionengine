@@ -1,3 +1,28 @@
+Release 1.4.1
+-------------
+
+In this release:
+
+* Bug fixes to 1.4.0 release 
+
+Issues fixed in this release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- `213 <https://github.com/HEPCloud/decisionengine/issues/213>`_ : de-client hangs under certain circumstances in version 1.4 and greater (race condition) (`84ecfe2 <https://github.com/HEPCloud/decisionengine/commit/84ecfe2501a09aa1375552c1afe16576cc9ee80f>`_)
+
+
+Full list of commits since version 1.4.0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+9799b9a <https://github.com/HEPCloud/decisionengine/commit/9799b9abe4c6c900819248b4143f7f0f93876a3c>`_
+:   update release version to 1.4.1
+
+`84ecfe2 <https://github.com/HEPCloud/decisionengine/commit/84ecfe2501a09aa1375552c1afe16576cc9ee80f>`_
+:   Synchronize access to the task managers (#214)
+
+`751b6b8 <https://github.com/HEPCloud/decisionengine/commit/751b6b8f8a4bf8407b1b0cc8c5416682dc98ce8c>`_
+:   Address data races; remove need to sleep in unit tests (#205)
+
 
 
 Release 1.4.0
