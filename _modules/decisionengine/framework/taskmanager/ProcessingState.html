@@ -54,9 +54,9 @@
 <div class="viewcode-block" id="State"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.State">[docs]</a><span class="k">class</span> <span class="nc">State</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">BOOT</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">STEADY</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">OFFLINE</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">SHUTTINGDOWN</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">SHUTDOWN</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">SHUTTINGDOWN</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">SHUTDOWN</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">OFFLINE</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">ERROR</span> <span class="o">=</span> <span class="mi">5</span></div>
 
 
@@ -93,8 +93,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">state</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ProcessingState.should_stop"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.should_stop">[docs]</a>    <span class="k">def</span> <span class="nf">should_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
-        <span class="k">return</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="o">.</span><span class="n">value</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="ProcessingState.inactive"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.inactive">[docs]</a>    <span class="k">def</span> <span class="nf">inactive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="o">.</span><span class="n">value</span></div></div>
 </pre></div>
 
           </div>
