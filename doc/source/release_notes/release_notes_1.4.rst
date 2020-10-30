@@ -14,7 +14,7 @@ Issues fixed in this release
 Full list of commits since version 1.4.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-9799b9a <https://github.com/HEPCloud/decisionengine/commit/9799b9abe4c6c900819248b4143f7f0f93876a3c>`_
+`9799b9a <https://github.com/HEPCloud/decisionengine/commit/9799b9abe4c6c900819248b4143f7f0f93876a3c>`_
 :   update release version to 1.4.1
 
 `84ecfe2 <https://github.com/HEPCloud/decisionengine/commit/84ecfe2501a09aa1375552c1afe16576cc9ee80f>`_
