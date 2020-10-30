@@ -1,4 +1,3 @@
-
 First command ``cd`` is just to make sure that you end up in a directory that will contain two subdirectory ``decisionengine`` and ``decisionengine_modules``. Of course this can be done in any directory, not necessarily home directory.
 
 Decisionengine framework
@@ -29,8 +28,8 @@ Build & test
    cmake3 .. -DPYVER=3.6
    make -j <number> # say number of CPUs on your box
    cd ../../
-   ln -s cxx/build/ErrorHandler/RE.so
-   ln -s cxx/build/ErrorHandler/libLogicEngine.so
+   ln -s cxx/build/RE.so
+   ln -s cxx/build/libLogicEngine.so
    export LD_LIBRARY_PATH=`pwd`
    cd ../../
    #pytest -v --tb=native
