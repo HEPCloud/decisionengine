@@ -48,8 +48,8 @@ process_branch() {
     make --debug
     [ -e ../../RE.so ] && rm ../../RE.so
     [ -e ../../libLogicEngine.so ] && rm ../../libLogicEngine.so
-    cp ErrorHandler/RE.so ../..
-    cp ErrorHandler/libLogicEngine.so ../..
+    cp RE.so ../..
+    cp libLogicEngine.so ../..
     echo "Building Logic Engine ... DONE"
 
     cd $WORKSPACE
