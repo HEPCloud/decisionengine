@@ -53,11 +53,7 @@ yum -y install \
   && easy_install DBUtils
 yum -y install \
     cmake3 python3-devel make \
-    boost-python36-devel \
     python3-devel \
-    boost-regex \
-    boost-system \
-    boost-python-devel \
     python-devel \
     redhat-lsb-core \
     python36-virtualenv \

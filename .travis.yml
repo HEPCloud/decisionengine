@@ -17,7 +17,6 @@ python:
 jobs:
   allow_failures:
     # These don't need to work, but be nice if they did
-    # https://svn.boost.org/trac10/ticket/4125 / https://github.com/boostorg/python/pull/291
     - python: "pypy3"
     # Latest python tested for future planning purposes
     - python: "nightly"
@@ -62,7 +61,7 @@ before_install:
 
 # Environment variables
 env:
-  - LD_LIBRARY_PATH="${TRAVIS_BUILD_DIR}/framework/logicengine/"   PYTHONPATH=$(dirname ${TRAVIS_BUILD_DIR})    PYTHON_PATH=${PYTHONPATH}
+  - PYTHONPATH=$(dirname ${TRAVIS_BUILD_DIR})    PYTHON_PATH=${PYTHONPATH}
 
 # commands to install any dependencies
 install:
@@ -83,22 +82,20 @@ install:
   - travis_retry wget -c http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz
   - tar xf boost_1_58_0.tar.gz
   - cd boost_1_58_0
-  - ./bootstrap.sh --with-python=$(which python) --with-python-root=/opt/python/${TRAVIS_PYTHON_VERSION}/ --with-libraries=python,regex,system
-  - ./b2 -q --prefix=/usr/local/ cxxflags=-fpermissive include=/opt/python/${TRAVIS_PYTHON_VERSION}/include/ install  -j 6
+  - ./bootstrap.sh --with-libraries=system
+  - ./b2 -q --prefix=/usr/local/ cxxflags=-fpermissive install -j 6
 
     # Setup pkg-config and cmake search paths to use the virtualenv python from travis
   - export PKG_CONFIG_PATH="/opt/python/${TRAVIS_PYTHON_VERSION}/lib/pkgconfig"
-  - export CMAKE_INCLUDE_PATH="/opt/python/${TRAVIS_PYTHON_VERSION}/include/python${TRAVIS_PYTHON_VERSION}m/include/;/opt/python/${TRAVIS_PYTHON_VERSION}/include/python${TRAVIS_PYTHON_VERSION}/include/;/opt/python/${TRAVIS_PYTHON_VERSION}/include/"
-  - export CMAKE_LIBRARY_PATH="/opt/python/${TRAVIS_PYTHON_VERSION}/lib/;/opt/python/${TRAVIS_PYTHON_VERSION}/lib_pypy/"
   - export PYVER=$(python -c 'import sys; print("%d.%d" % (sys.version_info.major, sys.version_info.minor))')
 
   # run cmake and build logic engine
   - sudo apt-get -y install cmake g++
+  - pip install -U pybind11
   - mkdir -p ${TRAVIS_BUILD_DIR}/framework/logicengine/cxx/build
   - cd ${TRAVIS_BUILD_DIR}/framework/logicengine/cxx/build
-  - cmake -DPYVER=${PYVER} -DCMAKE_LIBRARY_PATH="${CMAKE_LIBRARY_PATH}" -DCMAKE_INCLUDE_PATH="${CMAKE_INCLUDE_PATH}" ..
-  - make
-  - make liblinks
+  - cmake -DPYVER=${PYVER} -Dpybind11_DIR=$(pybind11-config --cmakedir) ..
+  - make install
 
   # pull in any listed python requirements
   - cd ${TRAVIS_BUILD_DIR}

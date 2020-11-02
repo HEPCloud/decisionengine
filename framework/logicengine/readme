@@ -1,18 +1,7 @@
-1. to build the  c++ library:
+To build this library and make it available for the Python runtime, execute the following steps:
 
   $ cd cxx
   $ mkdir build
   $ cd build
-  $ cmake ..
-  $ make
-  $ cd ../../
-
-2. to make the RulesEngine class available to Python:
-
-  $ ln -s cxx/build/RE.so RE.so
-
-3. run the tests for LogicEngine.py
-
-  $ cd ../../
-  [ you should now be in the 'decisionengine' directory]
-  $ PYTHONPATH=$PWD/..  py.test
+  $ cmake3 .. -DPYVER=3.6 -Dpybind11_DIR=$(pybind11-config --cmakedir)
+  $ make install [-j <num>]
