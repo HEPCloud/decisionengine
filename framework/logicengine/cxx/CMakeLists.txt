@@ -19,6 +19,26 @@ if(PYTHONLIBS_VERSION_STRING VERSION_LESS "3.0.0")
   set(BOOST_PY_SUFFIX)
 endif()
 
-add_subdirectory(ErrorHandler)
+include_directories(
+    ${PROJECT_SOURCE_DIR}
+    ${Boost_INCLUDE_DIRS}
+    ${PYTHON_INCLUDE_DIRS}
+)
 
-add_custom_target(liblinks ln -s ${CMAKE_BINARY_DIR}/ErrorHandler/RE.so ${CMAKE_SOURCE_DIR}/../ COMMAND ln -s ${CMAKE_BINARY_DIR}/ErrorHandler/libLogicEngine.so ${CMAKE_SOURCE_DIR}/../)
+add_library(LogicEngine SHARED
+    ma_boolean_andexpr.cpp
+    ma_boolean_cond.cpp
+    ma_boolean_expr.cpp
+    ma_parse.cpp
+    Rule.cpp
+    RuleEngine.cpp
+)
+target_link_libraries(LogicEngine boost_regex)
+
+python_add_module(RE py_rule_engine.cc)
+target_link_libraries(RE LogicEngine
+                      boost_python${BOOST_PY_SUFFIX}
+                      boost_system
+                      ${PYTHON_LIBRARIES})
+
+add_custom_target(liblinks ln -s ${CMAKE_BINARY_DIR}/RE.so ${CMAKE_SOURCE_DIR}/../ COMMAND ln -s ${CMAKE_BINARY_DIR}/libLogicEngine.so ${CMAKE_SOURCE_DIR}/../)

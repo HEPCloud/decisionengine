@@ -1,18 +1,18 @@
 """
 Task Manager
 """
-import enum
 import importlib
 import threading
 import logging
 import time
-import sys
 import multiprocessing
 import pandas
 import uuid
 
 from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
+from decisionengine.framework.taskmanager.ProcessingState import State
+from decisionengine.framework.taskmanager.ProcessingState import ProcessingState
 
 _TRANSFORMS_TO = 300  # 5 minutes
 _DEFAULT_SCHEDULE = 300  # ""
@@ -73,14 +73,6 @@ class Channel:
         self.task_manager = channel_dict.get('task_manager', {})
 
 
-class State(enum.Enum):
-    BOOT = 0
-    STEADY = 1
-    OFFLINE = 2
-    SHUTTINGDOWN = 3
-    SHUTDOWN = 4
-
-
 class TaskManager:
     """
     Task Manager
@@ -105,11 +97,9 @@ class TaskManager:
                                                  generation_id)  # my current data block
         self.name = name
         self.channel = Channel(channel_dict)
-        self.state = multiprocessing.Value('i', State.BOOT.value)
+        self.state = ProcessingState()
         self.loglevel = multiprocessing.Value('i', logging.WARNING)
-        self.decision_cycle_active = False
         self.lock = threading.Lock()
-        self.stop = False  # stop running all loops when this is True
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
         for src_worker in self.channel.sources.values():
@@ -123,9 +113,9 @@ class TaskManager:
         :arg events_done: list of events to wait for
         """
         logging.getLogger().info('Waiting for all tasks to run')
-        while not all([e.isSet() for e in events_done]):
+        while not all([e.is_set() for e in events_done]):
             time.sleep(1)
-            if self.stop:
+            if self.state.should_stop():
                 break
 
         for e in events_done:
@@ -138,13 +128,13 @@ class TaskManager:
         :type events_done: :obj:`list`
         :arg events_done: list of events to wait for
         """
-        while not any([e.isSet() for e in events_done]):
+        while not any([e.is_set() for e in events_done]):
             time.sleep(1)
-            if self.stop:
+            if self.state.should_stop():
                 break
 
         for e in events_done:
-            if e.isSet():
+            if e.is_set():
                 e.clear()
 
     def run(self):
@@ -153,25 +143,27 @@ class TaskManager:
         """
         logging.getLogger().setLevel(self.loglevel.value)
         logging.getLogger().info(f'Starting Task Manager {self.id}')
-        done_events = self.start_sources(self.data_block_t0)
+        done_events, source_threads = self.start_sources(self.data_block_t0)
         # This is a boot phase
         # Wait until all sources run at least one time
         self.wait_for_all(done_events)
         logging.getLogger().info('All sources finished')
-        if self.get_state() != State.BOOT:
+        if not self.state.has_value(State.BOOT):
+            for thread in source_threads:
+                thread.join()
             logging.getLogger().error(
                 f'Error occured during initial run of sources. Task Manager {self.name} exits')
-            sys.exit(1)
+            return
 
         self.decision_cycle()
-        self.set_state(State.STEADY)
+        self.state.set(State.STEADY)
 
-        while self.get_state() == State.STEADY:
+        while not self.state.should_stop():
             try:
                 logging.getLogger().setLevel(self.loglevel.value)
                 self.wait_for_any(done_events)
                 self.decision_cycle()
-                if self.stop:
+                if self.state.should_stop():
                     logging.getLogger().info(f'Task Manager {self.id} received stop signal and exits')
                     for source in self.channel.sources.values():
                         source.stop_running.set()
@@ -186,14 +178,15 @@ class TaskManager:
                                           self.id, self.get_state_name())
                 break
             time.sleep(1)
+        for thread in source_threads:
+            thread.join()
 
-    def set_state(self, state):
+    def get_state_value(self):
         with self.state.get_lock():
-            self.state.value = state.value
+            return self.state.value
 
     def get_state(self):
-        with self.state.get_lock():
-            return State(self.state.value)
+        return self.state.get()
 
     def get_state_name(self):
         return self.get_state().name
@@ -209,15 +202,13 @@ class TaskManager:
         with self.loglevel.get_lock():
             return self.loglevel.value
 
-    def _take_offline(self, current_data_block):
+    def take_offline(self, current_data_block):
         """
         offline and stop task manager
         """
-
-        self.set_state(State.OFFLINE)
+        self.state.set(State.OFFLINE)
         # invalidate data block
         # not implemented yet
-        self.stop = True
 
     def data_block_put(self, data, header, data_block):
         """
@@ -265,7 +256,7 @@ class TaskManager:
             self.run_transforms(data_block_t1)
         except Exception:
             logging.getLogger().exception('error in decision cycle(transforms) ')
-            # We do not call '_take_offline' here because it has
+            # We do not call 'take_offline' here because it has
             # already been called in the run_transform code on
             # operating on a separate thread.
 
@@ -275,7 +266,7 @@ class TaskManager:
             logging.getLogger().info('ran all logic engines')
         except Exception as e:
             logging.getLogger().exception(f'error in decision cycle(logic engine) {e}')
-            self._take_offline(data_block_t1)
+            self.take_offline(data_block_t1)
 
         for a_f in actions_facts:
             try:
@@ -283,7 +274,7 @@ class TaskManager:
                     a_f['actions'], a_f['newfacts'], data_block_t1)
             except Exception as e:
                 logging.getLogger().exception(f'error in decision cycle(publishers) {e}')
-                self._take_offline(data_block_t1)
+                self.take_offline(data_block_t1)
 
     def run_source(self, src):
         """
@@ -295,7 +286,7 @@ class TaskManager:
         """
 
         # If task manager is in offline state, do not keep executing sources.
-        while self.get_state() != State.OFFLINE:
+        while not self.state.should_stop():
             try:
                 logging.getLogger().info(f'Src {src.name} calling acquire')
                 data = src.worker.acquire()
@@ -315,7 +306,7 @@ class TaskManager:
                 logging.getLogger().info(f'Src {src.name} {src.module} finished cycle')
             except Exception as e:
                 logging.getLogger().exception(f'Exception running source {src.name} : {e}')
-                self._take_offline(self.data_block_t0)
+                self.take_offline(self.data_block_t0)
             if src.schedule > 0:
                 s = src.stop_running.wait(src.schedule)
                 if s:
@@ -335,15 +326,17 @@ class TaskManager:
         """
 
         event_list = []
+        source_threads = []
         for key, source in self.channel.sources.items():
             logging.getLogger().info(f'starting loop for {key}')
             event_list.append(source.data_updated)
             thread = threading.Thread(target=self.run_source,
                                       name=source.name,
                                       args=(source,))
+            source_threads.append(thread)
             # Cannot catch exception from function called in separate thread
             thread.start()
-        return event_list
+        return (event_list, source_threads)
 
     def run_transforms(self, data_block=None):
         """
@@ -359,16 +352,20 @@ class TaskManager:
         if not data_block:
             return
         event_list = []
+        threads = []
         for key, transform in self.channel.transforms.items():
             logging.getLogger().info(f'starting transform {key}')
             event_list.append(transform.data_updated)
             thread = threading.Thread(target=self.run_transform,
                                       name=transform.name,
                                       args=(transform, data_block))
+            threads.append(thread)
             # Cannot catch exception from function called in separate thread
             thread.start()
 
         self.wait_for_all(event_list)
+        for thread in threads:
+            thread.join()
         logging.getLogger().info('all transforms finished')
 
     def run_transform(self, transform, data_block):
@@ -386,7 +383,7 @@ class TaskManager:
         logging.getLogger().info('transform: %s expected keys: %s provided keys: %s',
                                  transform.name, consume_keys, list(data_block.keys()))
         loop_counter = 0
-        while self.get_state() != State.OFFLINE:
+        while not self.state.should_stop():
             # Check if data is ready
             if set(consume_keys) <= set(data_block.keys()):
                 # data is ready -  may run transform()
@@ -403,7 +400,7 @@ class TaskManager:
                     logging.getLogger().info('transform put data')
                 except Exception as e:
                     logging.getLogger().exception(f'exception from transform {transform.name} : {e}')
-                    self._take_offline(data_block)
+                    self.take_offline(data_block)
                 break
             s = transform.stop_running.wait(1)
             if s:
@@ -453,7 +450,6 @@ class TaskManager:
         header = datablock.Header(data_block.taskmanager_id,
                                   create_time=t, creator='logicengine')
         self.data_block_put(data, header, data_block)
-
         return le_list
 
     def run_publishers(self, actions, facts, data_block=None):
