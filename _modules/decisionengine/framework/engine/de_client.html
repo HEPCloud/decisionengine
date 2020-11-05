@@ -250,6 +250,10 @@
     <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--query&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;panda query, e.g. </span><span class="se">\&quot;</span><span class="s2">FigureOfMerit != infs</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--types&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print columns types&quot;</span><span class="p">)</span>
 
     <span class="n">reaper</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Database reaper options&quot;</span><span class="p">)</span>
     <span class="n">reaper</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -318,7 +322,8 @@
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">print_product</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">print_product</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">print_product</span><span class="p">,</span>
                                        <span class="n">argsparsed</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
-                                       <span class="n">argsparsed</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
+                                       <span class="n">argsparsed</span><span class="o">.</span><span class="n">query</span><span class="p">,</span>
+                                       <span class="n">argsparsed</span><span class="o">.</span><span class="n">types</span><span class="p">)</span>
 
     <span class="c1"># Database-reaper options</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">reaper_stop</span><span class="p">:</span>
