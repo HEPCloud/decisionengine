@@ -89,6 +89,10 @@ def create_parser():
     products.add_argument(
         "--query",
         help="panda query, e.g. \"FigureOfMerit != infs\"")
+    products.add_argument(
+        "--types",
+        action="store_true",
+        help="print columns types")
 
     reaper = parser.add_argument_group("Database reaper options")
     reaper.add_argument(
@@ -157,7 +161,8 @@ def execute_command_from_args(argsparsed, de_socket):
     if argsparsed.print_product:
         return de_socket.print_product(argsparsed.print_product,
                                        argsparsed.columns,
-                                       argsparsed.query)
+                                       argsparsed.query,
+                                       argsparsed.types)
 
     # Database-reaper options
     if argsparsed.reaper_stop:

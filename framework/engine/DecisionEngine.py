@@ -114,7 +114,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def rpc_show_de_config(self):
         return self.global_config.dump()
 
-    def rpc_print_product(self, product, columns=None, query=None):
+    def rpc_print_product(self, product, columns=None, query=None, types=False):
         found = False
         txt = "Product {}: ".format(product)
         with self.workers.access() as workers:
@@ -139,6 +139,13 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                     data_block.generation_id -= 1
                     df = data_block[product]
                     df = pd.read_json(df.to_json())
+                    if types:
+                        for column in df.columns:
+                            df.insert(
+                                df.columns.get_loc(column) + 1,
+                                f"{column}.type",
+                                df[column].transform(lambda x: type(x).__name__)
+                            )
                     column_names = []
                     if columns:
                         column_names = columns.split(",")
