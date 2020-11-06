@@ -22,10 +22,6 @@ RUN yum -y install \
   rpm-devel \
   mock \
   cmake3 python3-devel make \
-  boost-python36-devel \
-  boost-regex \
-  boost-system \
-  boost-python-devel \
   python-devel \
   redhat-lsb-core \
   python36-virtualenv \

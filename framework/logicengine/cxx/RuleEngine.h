@@ -1,6 +1,8 @@
 #ifndef logicengine_cxx_RuleEngine_h
 #define logicengine_cxx_RuleEngine_h
 
+#include <pybind11/pybind11.h>
+
 #include "Fact.h"
 #include "Rule.h"
 #include "ma_types.h"
@@ -9,8 +11,8 @@ namespace logic_engine {
 
   class RuleEngine {
   public:
-    RuleEngine(boost::python::dict const& facts,
-               boost::python::dict const& rules);
+    RuleEngine(pybind11::dict const& facts,
+               pybind11::dict const& rules);
 
     void execute(std::map<std::string, bool> const& fact_vals,
                  std::map<std::string, strings_t>& actions,

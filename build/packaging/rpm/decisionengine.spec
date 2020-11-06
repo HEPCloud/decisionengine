@@ -15,6 +15,8 @@
 
 %define le_builddir %{_builddir}/decisionengine/framework/logicengine/cxx/build
 
+%define python3_sitebin %(%{__python3} -m site --user-base)/bin
+
 # From http://fedoraproject.org/wiki/Packaging:Python
 # Define python_sitelib
 %if ! (0%{?fedora} > 12 || 0%{?rhel} > 5)
@@ -37,10 +39,6 @@ URL:            http://hepcloud.fnal.gov
 Source0:        decisionengine.tar.gz
 
 BuildArch:      x86_64
-Requires:       boost-python36-devel >= 1.53.0
-Requires:       boost-python36 >= 1.53.0
-Requires:       boost-regex >= 1.53.0
-Requires:       boost-system >= 1.53.0
 Requires:       python3
 BuildRequires:  cmake3
 BuildRequires:  python36-devel
@@ -79,14 +77,12 @@ The testcase used to try out the Decision Engine.
 
 %build
 pwd
+python3 -m pip install --user --upgrade pip
+python3 -m pip install --user --upgrade pybind11
 mkdir %{le_builddir}
 cd %{le_builddir}
-cmake3 .. -DPYVER=3.6
-make
-[ -e ../../RE.so ] && rm ../../RE.so
-[ -e ../../libLogicEngine.so ] && rm ../../libLogicEngine.so
-cp RE.so ../..
-cp libLogicEngine.so ../..
+cmake3 .. -DPYVER=3.6 -Dpybind11_DIR=$(%{python3_sitebin}/pybind11-config --cmakedir)
+make install
 
 
 %install

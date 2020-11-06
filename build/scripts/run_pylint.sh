@@ -44,12 +44,8 @@ process_branch() {
     [ -e $le_buildir ] && rm -rf $le_builddir
     mkdir $le_builddir
     cd $le_builddir
-    cmake3 -Wno-dev --debug-output ..
-    make --debug
-    [ -e ../../RE.so ] && rm ../../RE.so
-    [ -e ../../libLogicEngine.so ] && rm ../../libLogicEngine.so
-    cp RE.so ../..
-    cp libLogicEngine.so ../..
+    cmake3 -Wno-dev --debug-output .. -Dpybind11_DIR=$(pybind11-config --cmakedir)
+    make install --debug
     echo "Building Logic Engine ... DONE"
 
     cd $WORKSPACE

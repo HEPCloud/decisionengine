@@ -10,8 +10,8 @@ Prerequisites:
 
    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
    yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-   yum install -y python3 python3-pip cmake3 boost-devel python36-devel boost-python36-devel postgresql11 postgresql11-server
-   pip3 install pandas DBUtils psycopg2-binary tabulate mock pytest
+   yum install -y python3 python3-pip cmake3 boost-devel python36-devel postgresql11 postgresql11-server
+   pip3 install pandas DBUtils psycopg2-binary tabulate mock pytest pybind11
 
 Build & test
 ^^^^^^^^^^^^
@@ -25,31 +25,41 @@ Build & test
 
    mkdir decisionengine/framework/logicengine/cxx/build
    cd decisionengine/framework/logicengine/cxx/build
-   cmake3 .. -DPYVER=3.6
-   make -j <number> # say number of CPUs on your box
-   cd ../../
-   ln -s cxx/build/RE.so
-   ln -s cxx/build/libLogicEngine.so
-   export LD_LIBRARY_PATH=`pwd`
-   cd ../../
-   #pytest -v --tb=native
+   cmake3 .. -DPYVER=3.6 -Dpybind11_DIR=$(pybind11-config --cmakedir)
+   make install -j <number> # say number of CPUs on your box
+   cd ../../../../
    python3 -m pytest
 
-   ==================================== test session starts =====================================
-   platform linux -- Python 3.6.8, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
-   rootdir: /root/junjk/decisionengine
-   collected 26 items
+   ==================================== test session starts ====================================
+   platform linux -- Python 3.6.8, pytest-6.0.1, py-1.9.0, pluggy-0.13.1
+   rootdir: /cloud/login/knoepfel/de-devel/decisionengine
+   plugins: timeout-1.4.2, postgresql-2.5.1, profiling-1.7.0
+   collected 89 items
 
-   framework/dataspace/tests/test_Reaper.py .......                                       [ 26%]
-   framework/logicengine/tests/test_cascaded_rules.py ..                                  [ 34%]
-   framework/logicengine/tests/test_construction.py .....                                 [ 53%]
-   framework/logicengine/tests/test_facts.py .....                                        [ 73%]
-   framework/logicengine/tests/test_pandas_fact.py ..                                     [ 80%]
-   framework/logicengine/tests/test_rule_with_negated_fact.py ..                          [ 88%]
-   framework/logicengine/tests/test_simple_configuration.py ..                            [ 96%]
-   framework/util/tests/test_tsort.py .                                                   [100%]
+   framework/config/tests/test_config.py .............                                   [ 14%]
+   framework/config/tests/test_policies.py ....                                          [ 19%]
+   framework/dataspace/datasources/tests/test_postgresql.py ......                       [ 25%]
+   framework/dataspace/tests/test_Reaper.py .......                                      [ 33%]
+   framework/dataspace/tests/test_datablock.py ..............                            [ 49%]
+   framework/engine/tests/test_client_only.py ..                                         [ 51%]
+   framework/engine/tests/test_startup.py ..                                             [ 53%]
+   framework/logicengine/tests/test_cascaded_rules.py ..                                 [ 56%]
+   framework/logicengine/tests/test_construction.py .....                                [ 61%]
+   framework/logicengine/tests/test_facts.py .....                                       [ 67%]
+   framework/logicengine/tests/test_pandas_fact.py ..                                    [ 69%]
+   framework/logicengine/tests/test_rule_with_negated_fact.py ..                         [ 71%]
+   framework/logicengine/tests/test_simple_configuration.py ..                           [ 74%]
+   framework/taskmanager/tests/test_processing_state.py .....                            [ 79%]
+   framework/taskmanager/tests/test_task_manager.py ...                                  [ 83%]
+   framework/tests/test_defaults.py ...                                                  [ 86%]
+   framework/tests/test_reaper.py ...                                                    [ 89%]
+   framework/tests/test_restart_channel.py .                                             [ 91%]
+   framework/tests/test_sample_config.py ...                                             [ 94%]
+   framework/tests/test_start_with_no_channels.py .                                      [ 95%]
+   framework/util/tests/test_fs.py ...                                                   [ 98%]
+   framework/util/tests/test_tsort.py .                                                  [100%]
 
-   ==================================== 26 passed in 23.86s =====================================
+   =============================== 89 passed in 90.01s (0:01:30) ===============================
 
 Decisionengine_modules
 ======================

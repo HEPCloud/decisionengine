@@ -1,43 +1,42 @@
-#include "boost/python.hpp"
-#include "boost/python/stl_iterator.hpp"
 #include "RuleEngine.h"
 
-using namespace logic_engine;
+#include <pybind11/stl.h>
 
-namespace bp = boost::python;
+using namespace logic_engine;
+namespace py = pybind11;
 
 namespace {
   std::vector<std::string>
-  to_strings(bp::list const& py_list)
+  to_strings(py::list const& py_list)
   {
-    return std::vector<std::string>(
-      bp::stl_input_iterator<std::string>{py_list},
-      bp::stl_input_iterator<std::string>{});
+    return py::cast<std::vector<std::string>>(py_list);
+//      py::stl_input_iterator<std::string>{py_list},
+//      py::stl_input_iterator<std::string>{});
   }
 
   std::vector<std::string>
-  to_strings_or_empty(bp::dict const& rule, std::string const& key)
+  to_strings_or_empty(py::dict const& rule, std::string const& key)
   {
-    if (rule.has_key(key)) {
-      bp::list tmp_list = bp::extract<bp::list>{rule.get(key)};
+    if (rule.contains(key)) {
+      py::list tmp_list = rule[key.c_str()];
       return to_strings(tmp_list);
     }
     return {};
   }
 }
 
-RuleEngine::RuleEngine(boost::python::dict const& facts_dict,
-                       boost::python::dict const& rules)
+RuleEngine::RuleEngine(py::dict const& facts_dict,
+                       py::dict const& rules)
 {
-  auto fact_names = to_strings(facts_dict.keys());
-  auto const rule_names = to_strings(rules.keys());
+  auto fact_names = to_strings(facts_dict.attr("keys")());
+  auto const rule_names = to_strings(rules.attr("keys")());
 
   // find all facts from the rule's actions
   for (std::string const& name : rule_names) {
-    bp::dict const rule = bp::extract<bp::dict>{rules.get(name)};
+    py::dict const rule = rules[name.c_str()];
 
-    if (rule.has_key("facts")) {
-      bp::list const fact_list = bp::extract<bp::list>{rule.get("facts")};
+    if (rule.contains("facts")) {
+      py::list const fact_list = rule["facts"];
       auto const facts_from_rule = to_strings(fact_list);
       for (std::string const& f : facts_from_rule) {
         fact_names.emplace_back(f);
@@ -63,9 +62,9 @@ RuleEngine::RuleEngine(boost::python::dict const& facts_dict,
     // push the Rule object into the container first, then do the
     // parse.
 
-    bp::dict rule = bp::extract<bp::dict>{rules.get(rule_name)};
+    py::dict rule = rules[rule_name.c_str()];
 
-    it->second.parse(bp::extract<std::string>(rule.get("expression")),
+    it->second.parse(py::cast<std::string>(rule["expression"]),
                      to_strings_or_empty(rule, "actions"),
                      to_strings_or_empty(rule, "false_actions"),
                      to_strings_or_empty(rule, "facts"),
