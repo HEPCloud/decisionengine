@@ -177,8 +177,8 @@
 <h2>Prerequisites:<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">dl</span><span class="o">.</span><span class="n">fedoraproject</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">pub</span><span class="o">/</span><span class="n">epel</span><span class="o">/</span><span class="n">epel</span><span class="o">-</span><span class="n">release</span><span class="o">-</span><span class="n">latest</span><span class="o">-</span><span class="mf">7.</span><span class="n">noarch</span><span class="o">.</span><span class="n">rpm</span>
 <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">download</span><span class="o">.</span><span class="n">postgresql</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">pub</span><span class="o">/</span><span class="n">repos</span><span class="o">/</span><span class="n">yum</span><span class="o">/</span><span class="n">reporpms</span><span class="o">/</span><span class="n">EL</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="n">x86_64</span><span class="o">/</span><span class="n">pgdg</span><span class="o">-</span><span class="n">redhat</span><span class="o">-</span><span class="n">repo</span><span class="o">-</span><span class="n">latest</span><span class="o">.</span><span class="n">noarch</span><span class="o">.</span><span class="n">rpm</span>
-<span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">cmake3</span> <span class="n">boost</span><span class="o">-</span><span class="n">devel</span> <span class="n">python36</span><span class="o">-</span><span class="n">devel</span> <span class="n">boost</span><span class="o">-</span><span class="n">python36</span><span class="o">-</span><span class="n">devel</span> <span class="n">postgresql11</span> <span class="n">postgresql11</span><span class="o">-</span><span class="n">server</span>
-<span class="n">pip3</span> <span class="n">install</span> <span class="n">pandas</span> <span class="n">DBUtils</span> <span class="n">psycopg2</span><span class="o">-</span><span class="n">binary</span> <span class="n">tabulate</span> <span class="n">mock</span> <span class="n">pytest</span>
+<span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">cmake3</span> <span class="n">boost</span><span class="o">-</span><span class="n">devel</span> <span class="n">python36</span><span class="o">-</span><span class="n">devel</span> <span class="n">postgresql11</span> <span class="n">postgresql11</span><span class="o">-</span><span class="n">server</span>
+<span class="n">pip3</span> <span class="n">install</span> <span class="n">pandas</span> <span class="n">DBUtils</span> <span class="n">psycopg2</span><span class="o">-</span><span class="n">binary</span> <span class="n">tabulate</span> <span class="n">mock</span> <span class="n">pytest</span> <span class="n">pybind11</span>
 </pre></div>
 </div>
 </div>
@@ -191,31 +191,41 @@ export PYTHONPATH=`pwd`
 
 mkdir decisionengine/framework/logicengine/cxx/build
 cd decisionengine/framework/logicengine/cxx/build
-cmake3 .. -DPYVER=3.6
-make -j &lt;number&gt; # say number of CPUs on your box
-cd ../../
-ln -s cxx/build/RE.so
-ln -s cxx/build/libLogicEngine.so
-export LD_LIBRARY_PATH=`pwd`
-cd ../../
-#pytest -v --tb=native
+cmake3 .. -DPYVER=3.6 -Dpybind11_DIR=$(pybind11-config --cmakedir)
+make install -j &lt;number&gt; # say number of CPUs on your box
+cd ../../../../
 python3 -m pytest
 
-==================================== test session starts =====================================
-platform linux -- Python 3.6.8, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
-rootdir: /root/junjk/decisionengine
-collected 26 items
+==================================== test session starts ====================================
+platform linux -- Python 3.6.8, pytest-6.0.1, py-1.9.0, pluggy-0.13.1
+rootdir: /cloud/login/knoepfel/de-devel/decisionengine
+plugins: timeout-1.4.2, postgresql-2.5.1, profiling-1.7.0
+collected 89 items
 
-framework/dataspace/tests/test_Reaper.py .......                                       [ 26%]
-framework/logicengine/tests/test_cascaded_rules.py ..                                  [ 34%]
-framework/logicengine/tests/test_construction.py .....                                 [ 53%]
-framework/logicengine/tests/test_facts.py .....                                        [ 73%]
-framework/logicengine/tests/test_pandas_fact.py ..                                     [ 80%]
-framework/logicengine/tests/test_rule_with_negated_fact.py ..                          [ 88%]
-framework/logicengine/tests/test_simple_configuration.py ..                            [ 96%]
-framework/util/tests/test_tsort.py .                                                   [100%]
+framework/config/tests/test_config.py .............                                   [ 14%]
+framework/config/tests/test_policies.py ....                                          [ 19%]
+framework/dataspace/datasources/tests/test_postgresql.py ......                       [ 25%]
+framework/dataspace/tests/test_Reaper.py .......                                      [ 33%]
+framework/dataspace/tests/test_datablock.py ..............                            [ 49%]
+framework/engine/tests/test_client_only.py ..                                         [ 51%]
+framework/engine/tests/test_startup.py ..                                             [ 53%]
+framework/logicengine/tests/test_cascaded_rules.py ..                                 [ 56%]
+framework/logicengine/tests/test_construction.py .....                                [ 61%]
+framework/logicengine/tests/test_facts.py .....                                       [ 67%]
+framework/logicengine/tests/test_pandas_fact.py ..                                    [ 69%]
+framework/logicengine/tests/test_rule_with_negated_fact.py ..                         [ 71%]
+framework/logicengine/tests/test_simple_configuration.py ..                           [ 74%]
+framework/taskmanager/tests/test_processing_state.py .....                            [ 79%]
+framework/taskmanager/tests/test_task_manager.py ...                                  [ 83%]
+framework/tests/test_defaults.py ...                                                  [ 86%]
+framework/tests/test_reaper.py ...                                                    [ 89%]
+framework/tests/test_restart_channel.py .                                             [ 91%]
+framework/tests/test_sample_config.py ...                                             [ 94%]
+framework/tests/test_start_with_no_channels.py .                                      [ 95%]
+framework/util/tests/test_fs.py ...                                                   [ 98%]
+framework/util/tests/test_tsort.py .                                                  [100%]
 
-==================================== 26 passed in 23.86s =====================================
+=============================== 89 passed in 90.01s (0:01:30) ===============================
 </pre></div>
 </div>
 </div>
