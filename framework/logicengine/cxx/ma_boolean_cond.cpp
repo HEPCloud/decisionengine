@@ -2,6 +2,7 @@
 #include "ma_boolean_expr.h"
 
 #include <cassert>
+#include <stdexcept>
 
 using namespace logic_engine;
 

@@ -1,6 +1,8 @@
 #include "Rule.h"
 #include "ma_parse.h"
 
+#include <stdexcept>
+
 using namespace logic_engine;
 
 Rule::Rule(string_t const& rule_name) : name_{rule_name} {}
