@@ -24,6 +24,18 @@ jobs:
 
   fast_finish: true
 
+  include:
+    - stage: docs
+      install: |
+        sudo apt-get update;
+        sudo apt-get install -y python3-pip python3-psycopg2 latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended;
+        sudo pip3 install sphinx;
+        sudo pip3 install -r requirements.txt;
+        touch __init__.py;
+      script: |
+        cd doc;
+        make rst html latexpdf
+
 # Just some useful info and prep work
 before_install:
   - uname -a
