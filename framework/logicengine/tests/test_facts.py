@@ -1,5 +1,8 @@
-from decisionengine.framework.logicengine.NamedFact import NamedFact
+from decisionengine.framework.logicengine.NamedFact import NamedFact, facts_globals
 import pytest
+
+# Add in __builtins__ so we can do 'import numpy' as an expression
+facts_globals.update({'__builtins__': __builtins__})
 
 def test_simple_fact():
     fact = NamedFact("f1", "z < 100")
