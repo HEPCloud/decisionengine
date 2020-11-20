@@ -6,8 +6,9 @@ import threading
 import logging
 import time
 import multiprocessing
-import pandas
 import uuid
+
+import pandas
 
 from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
@@ -48,6 +49,8 @@ class Worker:
         self.run_counter = 0
         self.data_updated = threading.Event()
         self.stop_running = threading.Event()
+        logging.getLogger().debug('Creating worker: module=%s name=%s parameters=%s schedule=%s',
+                                  self.module, self.name, conf_dict['parameters'], self.schedule)
 
 
 def _make_workers_for(configs):
@@ -66,9 +69,13 @@ class Channel:
         :arg channel_dict: channel configuration
         """
 
+        logging.getLogger().debug('Creating channel source')
         self.sources = _make_workers_for(channel_dict['sources'])
+        logging.getLogger().debug('Creating channel transform')
         self.transforms = _make_workers_for(channel_dict['transforms'])
+        logging.getLogger().debug('Creating channel logicengine')
         self.le_s = _make_workers_for(channel_dict['logicengines'])
+        logging.getLogger().debug('Creating channel publisher')
         self.publishers = _make_workers_for(channel_dict['publishers'])
         self.task_manager = channel_dict.get('task_manager', {})
 
