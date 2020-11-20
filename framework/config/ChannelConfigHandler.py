@@ -157,6 +157,7 @@ class ChannelConfigHandler():
 
     def _load_channel(self, channel_name, path):
         channel_config = None
+        self.logger.debug("Loading channel %s from %s.", channel_name, path)
         try:
             channel_config = ValidConfig.ValidConfig(path)
         except Exception as msg:
@@ -170,6 +171,7 @@ class ChannelConfigHandler():
             return (False,
                     f"The channel configuration file {path} contains a "
                     f"validation error\n{msg}\nSKIPPING channel")
+        self.logger.debug("Channel %s config is valid.", channel_name)
 
         self.channels[channel_name] = channel_config
         return (True, channel_config)
