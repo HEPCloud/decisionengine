@@ -4,8 +4,8 @@ Decisionengine CI with Jenkins pipeline
 Jenkins dashboard with Decisionengine framework CI results is available
 `here <https://buildmaster.fnal.gov/buildmaster/view/CI/job/decisionengine_pipeline/>`_.
 
-A CI build is triggered any time a PR is created/closed or a commit is made to an existing PR.
-There are also nightly CI builds to test *master* branch.
+| A CI build is triggered any time a PR is created/closed or a commit is made to an existing PR.
+| There are also `nightly CI builds`_ to test a list of predefined branches.
 
 The Jenkins pipeline runs *pylint* and *unit_tests* test suites alongside the *rpmbuild* stage.
 
@@ -46,3 +46,38 @@ the user can modify these parameters to customize what code to test with the CI 
 When ready, by clicking on the *Build* button, the CI build will start.
 
 The `pipeline configuration <https://github.com/HEPCloud/decisionengine/blob/master/.Jenkinsfile/>`_ is part of the decisionengine repo.
+
+
+.. _nightly CI builds:
+
+Nightly CI build configuration
+------------------------------
+
+The nightly CI build for Decisionengine framework uses this `Jenkins project <https://buildmaster.fnal.gov/buildmaster/view/CI/job/decisionengine_ci/>`_ that triggers a CI build using the Jenkins pipeline described above to test a list of predefined branches.
+
+.. image:: jenkins_pic/DE_nightly_ci_build_dashboard.png
+
+|
+| Branches to test are defined using the project matrix as shown in the picture below.
+| Each branch in the list (here *master* and *1.4*) spawns an independent CI build.
+|
+
+.. image:: jenkins_pic/DE_nightly_ci_build_branch_cfg.png
+
+|
+| In the *Build* section of the configuration it is set the list of Jenkins subprojects to be triggered, in this case we have *decisionengine_pipeline* and *decisionengine_modules_pipeline*.
+| The *Parameters* text box is used to override parameters of each Jenkins subproject with a custom value.
+| In total this Jenkins project triggers 4 CI builds, i.e. 2 branches X 2 Jenkins subprojects.
+|
+
+.. image:: jenkins_pic/DE_nightly_ci_build_proj_cfg.png
+
+|
+| Finally the *Build Triggers* section is used to setup the schedule for the periodic build,
+| in this case it is scheduled to run at about 2 AM.
+| Jenkins will choose the actual time depending on the actual load on the system.
+|
+
+.. image:: jenkins_pic/DE_nightly_ci_build_schedule_cfg.png
+
+
