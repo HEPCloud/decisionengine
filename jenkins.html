@@ -164,8 +164,10 @@
 <h1>Decisionengine CI with Jenkins pipeline<a class="headerlink" href="#decisionengine-ci-with-jenkins-pipeline" title="Permalink to this headline">¶</a></h1>
 <p>Jenkins dashboard with Decisionengine framework CI results is available
 <a class="reference external" href="https://buildmaster.fnal.gov/buildmaster/view/CI/job/decisionengine_pipeline/">here</a>.</p>
-<p>A CI build is triggered any time a PR is created/closed or a commit is made to an existing PR.
-There are also nightly CI builds to test <em>master</em> branch.</p>
+<div class="line-block">
+<div class="line">A CI build is triggered any time a PR is created/closed or a commit is made to an existing PR.</div>
+<div class="line">There are also <a class="reference internal" href="#nightly-ci-builds">nightly CI builds</a> to test a list of predefined branches.</div>
+</div>
 <p>The Jenkins pipeline runs <em>pylint</em> and <em>unit_tests</em> test suites alongside the <em>rpmbuild</em> stage.</p>
 <p>The Jenkins dashboard looks like this:</p>
 <a class="reference internal image-reference" href="_images/DE_pipeline_dashboard.png"><img alt="_images/DE_pipeline_dashboard.png" src="_images/DE_pipeline_dashboard.png" style="width: 1005.6px; height: 917.6px;" /></a>
@@ -188,6 +190,34 @@ For this purpose, on the top left panel the user can click on the <img alt="Buil
 </div>
 <p>When ready, by clicking on the <em>Build</em> button, the CI build will start.</p>
 <p>The <a class="reference external" href="https://github.com/HEPCloud/decisionengine/blob/master/.Jenkinsfile/">pipeline configuration</a> is part of the decisionengine repo.</p>
+<div class="section" id="nightly-ci-build-configuration">
+<span id="nightly-ci-builds"></span><h2>Nightly CI build configuration<a class="headerlink" href="#nightly-ci-build-configuration" title="Permalink to this headline">¶</a></h2>
+<p>The nightly CI build for Decisionengine framework uses this <a class="reference external" href="https://buildmaster.fnal.gov/buildmaster/view/CI/job/decisionengine_ci/">Jenkins project</a> that triggers a CI build using the Jenkins pipeline described above to test a list of predefined branches.</p>
+<img alt="_images/DE_nightly_ci_build_dashboard.png" src="_images/DE_nightly_ci_build_dashboard.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line">Branches to test are defined using the project matrix as shown in the picture below.</div>
+<div class="line">Each branch in the list (here <em>master</em> and <em>1.4</em>) spawns an independent CI build.</div>
+<div class="line"><br /></div>
+</div>
+<img alt="_images/DE_nightly_ci_build_branch_cfg.png" src="_images/DE_nightly_ci_build_branch_cfg.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line">In the <em>Build</em> section of the configuration it is set the list of Jenkins subprojects to be triggered, in this case we have <em>decisionengine_pipeline</em> and <em>decisionengine_modules_pipeline</em>.</div>
+<div class="line">The <em>Parameters</em> text box is used to override parameters of each Jenkins subproject with a custom value.</div>
+<div class="line">In total this Jenkins project triggers 4 CI builds, i.e. 2 branches X 2 Jenkins subprojects.</div>
+<div class="line"><br /></div>
+</div>
+<img alt="_images/DE_nightly_ci_build_proj_cfg.png" src="_images/DE_nightly_ci_build_proj_cfg.png" />
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line">Finally the <em>Build Triggers</em> section is used to setup the schedule for the periodic build,</div>
+<div class="line">in this case it is scheduled to run at about 2 AM.</div>
+<div class="line">Jenkins will choose the actual time depending on the actual load on the system.</div>
+<div class="line"><br /></div>
+</div>
+<img alt="_images/DE_nightly_ci_build_schedule_cfg.png" src="_images/DE_nightly_ci_build_schedule_cfg.png" />
+</div>
 </div>
 
 
