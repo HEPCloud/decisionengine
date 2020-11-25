@@ -20,6 +20,7 @@ __all__ = ['DE_DB_HOST', 'DE_DB_USER', 'DE_DB_PASS', 'DE_DB_NAME', 'DE_SCHEMA',
 # Python XML RPC Socket server is IPv4 only right now.
 DE_HOST = '127.0.0.1'
 
+
 class DETestWorker(threading.Thread):
     '''A DE Server process with our test config'''
 
@@ -92,13 +93,16 @@ def DEServer(conf_path=None, conf_override=None,
                              db_name=db_info['database'],
                              version=conn_fixture.server_version):
             with psycopg2.connect(**db_info) as connection:
-                for filename in DE_SCHEMA: # noqa: F405
+                for filename in DE_SCHEMA:  # noqa: F405
                     with open(filename, 'r') as _fd, \
                          connection.cursor() as cur:
                         cur.execute(_fd.read())
 
             server_proc = DETestWorker(conf_path, channel_conf_path, host_port, db_info, conf_override, channel_conf_override)
             server_proc.start()
+            # FIXME: The following block only works if there are
+            # active workers; if it is called before any workers
+            # exist, then it will return and not block as requested.
             server_proc.de_server.block_while(State.BOOT)
 
             if not server_proc.is_alive():
