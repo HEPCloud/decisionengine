@@ -181,6 +181,7 @@
 <span class="c1"># Python XML RPC Socket server is IPv4 only right now.</span>
 <span class="n">DE_HOST</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span>
 
+
 <span class="k">class</span> <span class="nc">DETestWorker</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A DE Server process with our test config&#39;&#39;&#39;</span>
 
@@ -253,13 +254,16 @@
                              <span class="n">db_name</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">],</span>
                              <span class="n">version</span><span class="o">=</span><span class="n">conn_fixture</span><span class="o">.</span><span class="n">server_version</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_info</span><span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">DE_SCHEMA</span><span class="p">:</span> <span class="c1"># noqa: F405</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">DE_SCHEMA</span><span class="p">:</span>  <span class="c1"># noqa: F405</span>
                     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">_fd</span><span class="p">,</span> \
                          <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
                         <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_fd</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
             <span class="n">server_proc</span> <span class="o">=</span> <span class="n">DETestWorker</span><span class="p">(</span><span class="n">conf_path</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">host_port</span><span class="p">,</span> <span class="n">db_info</span><span class="p">,</span> <span class="n">conf_override</span><span class="p">,</span> <span class="n">channel_conf_override</span><span class="p">)</span>
             <span class="n">server_proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="c1"># FIXME: The following block only works if there are</span>
+            <span class="c1"># active workers; if it is called before any workers</span>
+            <span class="c1"># exist, then it will return and not block as requested.</span>
             <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
