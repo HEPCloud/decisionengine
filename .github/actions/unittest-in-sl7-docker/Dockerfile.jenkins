@@ -1,6 +1,9 @@
-FROM hepcloud/decision-engine-ci
+ARG BASEIMAGE=${BASEIMAGE:-hepcloud/decision-engine-ci}
+FROM ${BASEIMAGE:-hepcloud/decision-engine-ci}
+ARG USER
+ARG GROUP
 COPY entrypoint.sh /entrypoint.sh
-RUN groupadd -g 500 decision-engine-ci
-RUN useradd -u 500 -g 500 decision-engine-ci
+RUN groupadd -g ${GROUP:-500} decision-engine-ci
+RUN useradd -u ${USER:-500} -g ${GROUP:-500} decision-engine-ci
 USER decision-engine-ci
 ENTRYPOINT ["/entrypoint.sh"]

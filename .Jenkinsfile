@@ -42,7 +42,7 @@ pipeline {
                             cd ..
                         '''
                         echo "prepare docker image ${pylintStageDockerImage}"
-                        sh "docker build -t ${pylintStageDockerImage} -f decisionengine/.github/actions/pylint-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/pylint-in-sl7-docker/"
+                        sh "docker build --pull --tag ${pylintStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg USER=\$(id -u) --build-arg GROUP=\$(id -g) -f decisionengine/.github/actions/pylint-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/pylint-in-sl7-docker/"
                         echo "Run ${STAGE_NAME} tests"
                         sh "docker run --rm -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE} ${pylintStageDockerImage}"
                     }
@@ -83,7 +83,7 @@ pipeline {
                             cd ..
                         '''
                         echo "prepare docker image ${unit_testsStageDockerImage}"
-                        sh "docker build -t ${unit_testsStageDockerImage} -f decisionengine/.github/actions/unittest-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/unittest-in-sl7-docker"
+                        sh "docker build --pull --tag ${unit_testsStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg USER=\$(id -u) --build-arg GROUP=\$(id -g) -f decisionengine/.github/actions/unittest-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/unittest-in-sl7-docker"
                         echo "Run ${STAGE_NAME} tests"
                         sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE} ${unit_testsStageDockerImage}"
                     }
@@ -124,7 +124,7 @@ pipeline {
                             cd ..
                         '''
                         echo "prepare docker image ${rpmbuildStageDockerImage}"
-                        sh "docker build -t ${rpmbuildStageDockerImage} -f decisionengine/.github/actions/rpmbuild-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/rpmbuild-in-sl7-docker"
+                        sh "docker build --pull --tag ${rpmbuildStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg USER=\$(id -u) --build-arg GROUP=\$(id -g) -f decisionengine/.github/actions/rpmbuild-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/rpmbuild-in-sl7-docker"
                         echo "Run ${STAGE_NAME} tests"
                         sh "docker run --rm -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE} ${rpmbuildStageDockerImage}"
                     }
