@@ -154,18 +154,18 @@ class Postgresql(ds.DataSource):
                                "tm.datestamp "
                                "FROM taskmanager tm ")
 
-        haveWhere = False
+        have_where = False
         if taskmanager_name:
             SELECT_TASKMANAGERS += " WHERE tm.name = '" + taskmanager_name + "'"
-            haveWhere = True
+            have_where = True
         if start_time:
-            if haveWhere:
+            if have_where:
                 SELECT_TASKMANAGERS += " AND "
             else:
                 SELECT_TASKMANAGERS += " WHERE "
             SELECT_TASKMANAGERS += " tm.datestamp >= '" + start_time + "'"
         if end_time:
-            if haveWhere:
+            if have_where:
                 SELECT_TASKMANAGERS += " AND "
             else:
                 SELECT_TASKMANAGERS += " WHERE "
@@ -281,12 +281,12 @@ class Postgresql(ds.DataSource):
     def get_dataproducts(self, taskmanager_id):
         q = SELECT_PRODUCTS.format(ds.DataSource.dataproduct_table)
         try:
-            result=[]
+            result = []
             rows = self._select_dictresult(q, (taskmanager_id,))
             for row in rows:
                 result.append({'key': row['key'],
-                               'taskmanager_id' : row['taskmanager_id'],
-                               'generation_id' : row['generation_id'],
+                               'taskmanager_id': row['taskmanager_id'],
+                               'generation_id': row['generation_id'],
                                'value': row['value'].tobytes()})
             return result
         except IndexError:

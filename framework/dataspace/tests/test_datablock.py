@@ -2,7 +2,7 @@ import ast
 import os
 import pickle
 import pytest
-import pytest_postgresql
+import pytest_postgresql # noqa: F401
 import unittest
 import zlib
 
