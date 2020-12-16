@@ -1,6 +1,5 @@
 import os
 import pytest
-import pytest_postgresql
 
 from decisionengine.framework.dataspace.datablock import Header, Metadata
 from decisionengine.framework.dataspace.datasources.postgresql import Postgresql, generate_insert_query
@@ -20,7 +19,13 @@ def datasource(postgresql, data):
                 cursor.execute(f"INSERT INTO {table} ({keys}) VALUES ({values})")
     postgresql.commit()
 
-    return Postgresql(postgresql.info.dsn_parameters)
+    # psycop2ffi implements this a bit differently....
+    #  For now, clean up the options to match what we expect
+    dsn_info = dict(s.split("=") for s in postgresql.dsn.split())
+    dsn_info['password'] = ''
+    del dsn_info['options']
+
+    return Postgresql(dsn_info)
 
 @pytest.fixture(scope="session")
 def data():
