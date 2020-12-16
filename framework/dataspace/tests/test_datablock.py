@@ -196,6 +196,16 @@ class TestDatablock(unittest.TestCase):
         tid = self.datablock.get_taskmanager(taskmanager["name"])["taskmanager_id"]
         self.assertEqual(taskmanager["taskmanager_id"], tid)
 
+    def test_DataBlock_get_taskmanagers(self):
+        taskmanager = self.data["taskmanager"][0]
+        dataproduct = self.data["dataproduct"][0]
+        header = datablock.Header(dataproduct["taskmanager_id"])
+        self.datablock.put(dataproduct["key"], dataproduct["value"], header)
+        tms = self.dataspace.get_taskmanagers()
+        self.assertEqual(taskmanager["taskmanager_id"], tms[0]["taskmanager_id"])
+        products = self.datablock.get_dataproducts()
+        self.assertEqual(dataproduct["value"], products[0]["value"])
+
     def test_DataBlock_duplicate(self):
         dataproduct = self.data["dataproduct"][0]
         header = datablock.Header(dataproduct["taskmanager_id"])

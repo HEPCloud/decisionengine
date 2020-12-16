@@ -126,6 +126,9 @@ class DataSpace():
     def get_dataproduct(self, taskmanager_id, generation_id, key):
         return self.datasource.get_dataproduct(taskmanager_id, generation_id, key)
 
+    def get_dataproducts(self, taskmanager_id):
+        return self.datasource.get_dataproducts(taskmanager_id)
+
     def get_header(self, taskmanager_id, generation_id, key):
         return self.datasource.get_header(taskmanager_id, generation_id, key)
 
@@ -164,6 +167,9 @@ class DataSpace():
 
     def get_taskmanager(self, taskmanager_name, taskmanager_id=None):
         return self.datasource.get_taskmanager(taskmanager_name, taskmanager_id)
+
+    def get_taskmanagers(self, taskmanager_name=None, start_time=None, end_time=None):
+        return self.datasource.get_taskmanagers(taskmanager_name, start_time, end_time)
 
 
 MIN_RETENTION_INTERVAL_DAYS = 7

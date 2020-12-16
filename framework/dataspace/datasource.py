@@ -155,6 +155,16 @@ class DataSource(object):
         return
 
     @abc.abstractmethod
+    def get_dataproducts(self, taskmanager_id):
+        """
+        Return list of all data products associated with
+        with taskmanager_id
+
+        :type taskmanager_id: :obj:`string`
+        """
+        return
+
+    @abc.abstractmethod
     def get_header(self, taskmanager_id, generation_id, key):
         """
         Return the header from the header table for the given
@@ -237,6 +247,17 @@ class DataSource(object):
     def store_taskmanager(self, taskmanager_name, taskmanager_id):
         """
         Store TaskManager
+        :type taskmanager_name: :obj:`string`
+        :arg taskmanager_name: name of taskmanager to retrieve
+        :type taskmanager_id: :obj:`string`
+        :arg taskmanager_id: id of taskmanager to retrieve
+        """
+        return
+
+    @abc.abstractmethod
+    def get_taskmanagers(self, taskmanager_name=None, start_time=None, end_time=None):
+        """
+        Retrieve TaskManagers
         :type taskmanager_name: :obj:`string`
         :arg taskmanager_name: name of taskmanager to retrieve
         :type taskmanager_id: :obj:`string`

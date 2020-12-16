@@ -2,13 +2,13 @@
 GITHUB_WORKSPACE=${GITHUB_WORKSPACE:-`pwd`}
 source decisionengine/build/scripts/utils.sh
 setup_python_venv
-setup_dependencies
+#setup_dependencies
 le_builddir=decisionengine/framework/logicengine/cxx/build
-[ -e $le_buildir ] && rm -rf $le_builddir
-mkdir $le_builddir
+#[ -e $le_buildir ] && rm -rf $le_builddir
+#mkdir $le_builddir
 cd $le_builddir
-cmake3 -Wno-dev --debug-output -DPYVER=3.6 .. -Dpybind11_DIR=$(pybind11-config --cmakedir)
-make install --debug
+#cmake3 -Wno-dev --debug-output -DPYVER=3.6 .. -Dpybind11_DIR=$(pybind11-config --cmakedir)
+#make install --debug
 cd -
 export PYTHONPATH=$PWD:$PYTHONPATH
 source venv/bin/activate

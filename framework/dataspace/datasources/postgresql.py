@@ -41,6 +41,12 @@ WHERE tm.sequence_id = foo.taskmanager_id
 and foo.taskmanager_id=%s AND foo.generation_id=%s AND foo.key=%s
 """
 
+SELECT_PRODUCTS = """
+SELECT tm.taskmanager_id, foo.* FROM {} foo, taskmanager tm
+WHERE tm.sequence_id = foo.taskmanager_id
+and foo.taskmanager_id=%s
+"""
+
 SELECT_LAST_GENERATION_ID_BY_NAME = """
 SELECT max(generation_id)
 FROM dataproduct
@@ -136,6 +142,39 @@ class Postgresql(ds.DataSource):
             except IndexError:
                 raise KeyError(
                     "Taskmanager={} not found".format(taskmanager_name))
+
+    def get_taskmanagers(self,
+                         taskmanager_name=None,
+                         start_time=None,
+                         end_time=None):
+
+        SELECT_TASKMANAGERS = ("SELECT tm.name, "
+                               "tm.sequence_id, "
+                               "tm.taskmanager_id, "
+                               "tm.datestamp "
+                               "FROM taskmanager tm ")
+
+        haveWhere = False
+        if taskmanager_name:
+            SELECT_TASKMANAGERS += " WHERE tm.name = '" + taskmanager_name + "'"
+            haveWhere = True
+        if start_time:
+            if haveWhere:
+                SELECT_TASKMANAGERS += " AND "
+            else:
+                SELECT_TASKMANAGERS += " WHERE "
+            SELECT_TASKMANAGERS += " tm.datestamp >= '" + start_time + "'"
+        if end_time:
+            if haveWhere:
+                SELECT_TASKMANAGERS += " AND "
+            else:
+                SELECT_TASKMANAGERS += " WHERE "
+            SELECT_TASKMANAGERS += " tm.datestamp <=  '" + end_time + "'"
+        try:
+            return self._select_dictresult(SELECT_TASKMANAGERS +
+                                           " ORDER BY tm.datestamp ASC")
+        except IndexError:
+            raise KeyError("Not found")
 
     def get_last_generation_id(self,
                                taskmanager_name,
@@ -238,6 +277,20 @@ class Postgresql(ds.DataSource):
         except IndexError:
             raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
                 taskmanager_id, generation_id, key))
+
+    def get_dataproducts(self, taskmanager_id):
+        q = SELECT_PRODUCTS.format(ds.DataSource.dataproduct_table)
+        try:
+            result=[]
+            rows = self._select_dictresult(q, (taskmanager_id,))
+            for row in rows:
+                result.append({'key': row['key'],
+                               'taskmanager_id' : row['taskmanager_id'],
+                               'generation_id' : row['generation_id'],
+                               'value': row['value'].tobytes()})
+            return result
+        except IndexError:
+            raise KeyError("taskmanager_id={} not found".format(taskmanager_id))
 
     def get_dataproduct(self, taskmanager_id, generation_id, key):
         q = SELECT_QUERY.format(ds.DataSource.dataproduct_table)
