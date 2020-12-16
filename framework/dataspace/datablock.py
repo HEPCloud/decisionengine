@@ -336,7 +336,7 @@ class DataBlock(object):
             result.append({"key": value["key"],
                            "generation_id": value["generation_id"],
                            "taskmanager_id": value["taskmanager_id"],
-                           "value" : v })
+                           "value": v})
             return result
 
     def __getitem__(self, key, default=None):
