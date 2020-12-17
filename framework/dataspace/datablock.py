@@ -324,6 +324,21 @@ class DataBlock(object):
         else:
             self._insert(key, store_value, header, metadata)
 
+    def get_dataproducts(self):
+        values = self.dataspace.get_dataproducts(self.sequence_id)
+        result = []
+        for value in values:
+            v = ast.literal_eval(decompress(value.get("value")))
+            if v.get("pickled"):
+                v = zloads(v.get("value"))
+            else:
+                v = value.get("value")
+            result.append({"key": value["key"],
+                           "generation_id": value["generation_id"],
+                           "taskmanager_id": value["taskmanager_id"],
+                           "value": v})
+            return result
+
     def __getitem__(self, key, default=None):
         """
         Return the value associated with the key in the database
