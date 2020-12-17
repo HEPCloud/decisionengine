@@ -3,6 +3,7 @@ Description = Decision EngineService
 
 [Service]
 Type = simple
+EnvironmentFile = -/etc/sysconfig/decisionengine
 ExecStart = /usr/sbin/decision-engine start
 ExecStop = /usr/sbin/decision-engine stop
 ExecReload = /bin/kill -HUP $MAINPID
