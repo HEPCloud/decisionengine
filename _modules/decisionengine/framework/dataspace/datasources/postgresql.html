@@ -202,6 +202,12 @@
 <span class="s2">and foo.taskmanager_id=</span><span class="si">%s</span><span class="s2"> AND foo.generation_id=</span><span class="si">%s</span><span class="s2"> AND foo.key=</span><span class="si">%s</span><span class="s2"></span>
 <span class="s2">&quot;&quot;&quot;</span>
 
+<span class="n">SELECT_PRODUCTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">SELECT tm.taskmanager_id, foo.* FROM </span><span class="si">{}</span><span class="s2"> foo, taskmanager tm</span>
+<span class="s2">WHERE tm.sequence_id = foo.taskmanager_id</span>
+<span class="s2">and foo.taskmanager_id=</span><span class="si">%s</span><span class="s2"></span>
+<span class="s2">&quot;&quot;&quot;</span>
+
 <span class="n">SELECT_LAST_GENERATION_ID_BY_NAME</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">SELECT max(generation_id)</span>
 <span class="s2">FROM dataproduct</span>
@@ -297,6 +303,41 @@
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
                     <span class="s2">&quot;Taskmanager=</span><span class="si">{}</span><span class="s2"> not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Postgresql.get_taskmanagers"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_taskmanagers">[docs]</a>    <span class="k">def</span> <span class="nf">get_taskmanagers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                         <span class="n">taskmanager_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                         <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                         <span class="n">end_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">SELECT_TASKMANAGERS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SELECT tm.name, &quot;</span>
+                               <span class="s2">&quot;tm.sequence_id, &quot;</span>
+                               <span class="s2">&quot;tm.taskmanager_id, &quot;</span>
+                               <span class="s2">&quot;tm.datestamp &quot;</span>
+                               <span class="s2">&quot;FROM taskmanager tm &quot;</span><span class="p">)</span>
+
+        <span class="n">have_where</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">taskmanager_name</span><span class="p">:</span>
+            <span class="n">SELECT_TASKMANAGERS</span> <span class="o">+=</span> <span class="s2">&quot; WHERE tm.name = &#39;&quot;</span> <span class="o">+</span> <span class="n">taskmanager_name</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+            <span class="n">have_where</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">start_time</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">have_where</span><span class="p">:</span>
+                <span class="n">SELECT_TASKMANAGERS</span> <span class="o">+=</span> <span class="s2">&quot; AND &quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">SELECT_TASKMANAGERS</span> <span class="o">+=</span> <span class="s2">&quot; WHERE &quot;</span>
+                <span class="n">have_where</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">SELECT_TASKMANAGERS</span> <span class="o">+=</span> <span class="s2">&quot; tm.datestamp &gt;= &#39;&quot;</span> <span class="o">+</span> <span class="n">start_time</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+        <span class="k">if</span> <span class="n">end_time</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">have_where</span><span class="p">:</span>
+                <span class="n">SELECT_TASKMANAGERS</span> <span class="o">+=</span> <span class="s2">&quot; AND &quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">SELECT_TASKMANAGERS</span> <span class="o">+=</span> <span class="s2">&quot; WHERE &quot;</span>
+                <span class="n">have_where</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">SELECT_TASKMANAGERS</span> <span class="o">+=</span> <span class="s2">&quot; tm.datestamp &lt;=  &#39;&quot;</span> <span class="o">+</span> <span class="n">end_time</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">SELECT_TASKMANAGERS</span> <span class="o">+</span>
+                                           <span class="s2">&quot; ORDER BY tm.datestamp ASC&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Not found&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Postgresql.get_last_generation_id"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_last_generation_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_last_generation_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                                <span class="n">taskmanager_name</span><span class="p">,</span>
@@ -399,6 +440,20 @@
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{}</span><span class="s2"> or generation_id=</span><span class="si">{}</span><span class="s2"> or key=</span><span class="si">{}</span><span class="s2"> not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Postgresql.get_dataproducts"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_dataproducts">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataproducts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">SELECT_PRODUCTS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,))</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">],</span>
+                               <span class="s1">&#39;taskmanager_id&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;taskmanager_id&#39;</span><span class="p">],</span>
+                               <span class="s1">&#39;generation_id&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;generation_id&#39;</span><span class="p">],</span>
+                               <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()})</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{}</span><span class="s2"> not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Postgresql.get_dataproduct"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_dataproduct">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataproduct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="n">q</span> <span class="o">=</span> <span class="n">SELECT_QUERY</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">)</span>
