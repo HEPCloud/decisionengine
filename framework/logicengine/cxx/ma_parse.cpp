@@ -6,6 +6,8 @@
 #include "ma_boolean_cond.h"
 #include "ma_boolean_expr.h"
 
+#include "Fact.h"
+#include "FactLookup.h"
 #include "Rule.h"
 
 #include <boost/any.hpp>
@@ -37,7 +39,7 @@ using logic_engine::CO_LE;
 using logic_engine::CO_NE;
 using logic_engine::compare_op_t;
 using logic_engine::Fact;
-using logic_engine::fact_map_t;
+using logic_engine::FactLookup;
 using logic_engine::ma_boolean_andexpr;
 using logic_engine::ma_boolean_cond;
 using logic_engine::ma_boolean_expr;
@@ -79,7 +81,7 @@ insert_boolean_expr_neg(ma_boolean_cond& cond, ma_boolean_expr const& expr)
 static void
 insert_primitive_cond(ma_boolean_cond& cond,
                       string_t const& name,
-                      fact_map_t& fact_map,
+                      FactLookup& fact_lookup,
                       Rule* rule)
 {
   // 1. first insert the condition ptr to the corresponding rule
@@ -87,14 +89,14 @@ insert_primitive_cond(ma_boolean_cond& cond,
   //    NOTE* that the insertion of condition ptr only happens when
   //          parsing the boolean expression
   // 2. then insert the (ptr, idx) pair to the boolean_cond
-  auto fact = rule->insert_fact_ptr(name, fact_map);
+  auto fact = rule->insert_fact_ptr(name, fact_lookup);
   cond.insert(fact);
 }
 
 static void
 insert_primitive_cond_neg(ma_boolean_cond& cond,
                           string_t const& name,
-                          fact_map_t& fact_map,
+                          FactLookup& fact_lookup,
                           Rule* rule)
 {
   // 1. first insert the condition ptr to the corresponding rule
@@ -102,7 +104,7 @@ insert_primitive_cond_neg(ma_boolean_cond& cond,
   //    NOTE* that the insertion of condition ptr only happens when
   //          parsing the boolean expression
   // 2. then insert the (ptr, idx) pair to the boolean_cond
-  auto fact = rule->insert_fact_ptr(name, fact_map);
+  auto fact = rule->insert_fact_ptr(name, fact_lookup);
   cond.insert_neg(fact);
 }
 
@@ -117,7 +119,7 @@ struct logic_engine::boolean_expr_parser
   : qi::grammar<iter_t, ma_boolean_expr(), ws_t> {
 
   // default c'tor
-  boolean_expr_parser(fact_map_t& fact_map, Rule* rule);
+  boolean_expr_parser(FactLookup& fact_lookup, Rule* rule);
 
   // data member
   qi::rule<iter_t, ma_boolean_expr(), ws_t> boolean_expr;
@@ -139,7 +141,7 @@ struct logic_engine::boolean_expr_parser
 
 // ------------------------------------------------------------------
 
-logic_engine::boolean_expr_parser::boolean_expr_parser(fact_map_t& fact_map,
+logic_engine::boolean_expr_parser::boolean_expr_parser(FactLookup& fact_lookup,
                                                        Rule* rule)
   : boolean_expr_parser::base_type(boolean_expr)
 {
@@ -158,12 +160,12 @@ logic_engine::boolean_expr_parser::boolean_expr_parser(fact_map_t& fact_map,
        boolean_expr[phx::bind(&insert_boolean_expr_neg, ql::_val, ql::_1)] >>
        ')') // '! (' >> expr >> ')'
     | key[phx::bind(
-        &insert_primitive_cond, ql::_val, ql::_1, phx::ref(fact_map), rule)]
+        &insert_primitive_cond, ql::_val, ql::_1, phx::ref(fact_lookup), rule)]
     // Cond
     | (lit('!') >> key[phx::bind(&insert_primitive_cond_neg,
                                  ql::_val,
                                  ql::_1,
-                                 phx::ref(fact_map),
+                                 phx::ref(fact_lookup),
                                  rule)]);
 
   args = (arg % ',');
@@ -194,10 +196,10 @@ set_boolean_expr(ma_boolean_expr& expr, Rule* rule)
 
 bool
 logic_engine::parse_fact_expr(string_t const& s,
-                              fact_map_t& fact_map,
+                              FactLookup& fact_lookup,
                               Rule* rule)
 {
-  boolean_expr_parser boolean_p(fact_map, rule);
+  boolean_expr_parser boolean_p(fact_lookup, rule);
 
   iter_t begin = s.begin();
   iter_t const end = s.end();

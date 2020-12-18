@@ -27,7 +27,9 @@ struct RuleEngine {
     std::map<std::string, std::vector<std::string>> out_actions;
     std::map<std::string, std::map<std::string, bool>> out_facts;
 
-    engine.execute(fact_vals, out_actions, out_facts);
+    engine.execute(std::make_pair(std::string{}, fact_vals),
+                   out_actions,
+                   out_facts);
 
     py::dict py_actions;
     py::dict py_facts;

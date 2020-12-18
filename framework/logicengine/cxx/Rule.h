@@ -12,7 +12,8 @@
 
 namespace logic_engine {
 
-  // MsgAnalyzer Rule
+  class FactLookup;
+
   class Rule {
   public:
     explicit Rule(string_t const& name);
@@ -21,7 +22,7 @@ namespace logic_engine {
                strings_t const& actions,
                strings_t const& false_actions,
                strings_t const& facts,
-               fact_map_t& cond_map_ptr);
+               FactLookup& cond_map_ptr);
 
     strings_t const&
     get_action_names(bool const result) const
@@ -56,7 +57,7 @@ namespace logic_engine {
     }
 
     // called by the parser to push a cond_ptr to the container
-    Fact* insert_fact_ptr(string_t const& name, fact_map_t& cond_map);
+    Fact* insert_fact_ptr(string_t const& name, FactLookup& fact_lookup);
 
   private:
     // recursive evaluation function
