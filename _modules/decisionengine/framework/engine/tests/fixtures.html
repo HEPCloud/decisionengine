@@ -243,7 +243,7 @@
         <span class="n">conn_fixture</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span><span class="n">pg_db_conn_name</span><span class="p">)</span>
         <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">get_dsn_parameters</span><span class="p">()[</span><span class="s1">&#39;dbname&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_private&#39;</span>
 
-        <span class="c1"># for reasons I&#39;ve yet to determine</span>
+        <span class="c1"># FIXME: for reasons I&#39;ve yet to determine</span>
         <span class="c1">#  the schema isn&#39;t populated by the DE_DB fixture here...</span>
         <span class="c1">#  but the tablespace is locked by the fixture...</span>
         <span class="c1">#  so we just do it manually for now in a slightly different DB</span>
@@ -261,9 +261,11 @@
 
             <span class="n">server_proc</span> <span class="o">=</span> <span class="n">DETestWorker</span><span class="p">(</span><span class="n">conf_path</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">host_port</span><span class="p">,</span> <span class="n">db_info</span><span class="p">,</span> <span class="n">conf_override</span><span class="p">,</span> <span class="n">channel_conf_override</span><span class="p">)</span>
             <span class="n">server_proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-            <span class="c1"># FIXME: The following block only works if there are</span>
+            <span class="c1"># The following block only works if there are</span>
             <span class="c1"># active workers; if it is called before any workers</span>
             <span class="c1"># exist, then it will return and not block as requested.</span>
+            <span class="c1"># so long as your config contains at least one worker,</span>
+            <span class="c1"># this will work as you&#39;d expect.</span>
             <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
