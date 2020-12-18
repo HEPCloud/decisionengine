@@ -271,7 +271,9 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         worker = Worker(task_manager, self.global_config['logger'])
         with self.workers.access() as workers:
             workers[channel_name] = worker
+        self.logger.debug(f"Trying to start {channel_name}")
         worker.start()
+        worker.wait_while(ProcessingState.State['BOOT'])
         self.logger.info(f"Channel {channel_name} started")
 
     def start_channels(self):
@@ -318,6 +320,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         with self.workers.access() as workers:
             if channel not in workers:
                 return False
+            self.logger.debug(f"Trying to stop {channel}")
             self.stop_worker(workers[channel])
             del workers[channel]
         return True

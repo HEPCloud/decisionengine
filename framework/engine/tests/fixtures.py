@@ -82,7 +82,7 @@ def DEServer(conf_path=None, conf_override=None,
         conn_fixture = request.getfixturevalue(pg_db_conn_name)
         db_info['database'] = conn_fixture.get_dsn_parameters()['dbname'] + '_private'
 
-        # for reasons I've yet to determine
+        # FIXME: for reasons I've yet to determine
         #  the schema isn't populated by the DE_DB fixture here...
         #  but the tablespace is locked by the fixture...
         #  so we just do it manually for now in a slightly different DB
@@ -100,9 +100,11 @@ def DEServer(conf_path=None, conf_override=None,
 
             server_proc = DETestWorker(conf_path, channel_conf_path, host_port, db_info, conf_override, channel_conf_override)
             server_proc.start()
-            # FIXME: The following block only works if there are
+            # The following block only works if there are
             # active workers; if it is called before any workers
             # exist, then it will return and not block as requested.
+            # so long as your config contains at least one worker,
+            # this will work as you'd expect.
             server_proc.de_server.block_while(State.BOOT)
 
             if not server_proc.is_alive():
