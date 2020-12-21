@@ -81,7 +81,7 @@ python3 -m pip install --user --upgrade pip
 python3 -m pip install --user --upgrade pybind11
 mkdir %{le_builddir}
 cd %{le_builddir}
-cmake3 .. -DPYVER=3.6 -Dpybind11_DIR=$(%{python3_sitebin}/pybind11-config --cmakedir)
+cmake3 .. -DPython_FIND_IMPLEMENTATIONS=CPython -Dpybind11_DIR=$(%{python3_sitebin}/pybind11-config --cmakedir)
 make install
 
 
