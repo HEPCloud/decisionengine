@@ -3,23 +3,17 @@ import pandas
 from itertools import chain
 
 #pylint: disable=no-name-in-module
-from decisionengine.framework.logicengine.RE import RuleEngine
+from decisionengine.framework.logicengine.RuleEngine import RuleEngine
 #pylint: enable=no-name-in-module
 from decisionengine.framework.logicengine.NamedFact import NamedFact
 from decisionengine.framework.modules.Module import Module
 
-class LogicEngine(Module, object):
-    # Inheritance from object can be dropped if Module is modified to
-    # inherit from object.
+class LogicEngine(Module):
     def __init__(self, cfg):
         super().__init__(cfg)
         self.logger = logging.getLogger()
         self.facts = [NamedFact(name, expr) for name, expr in cfg["facts"].items()]
-
-        # Only the names of facts are really needed. We pass in the
-        # JSON form of the whole facts dictionary until the C++ is
-        # updated to take a list of strings.
-        self.re = RuleEngine(cfg["facts"], cfg["rules"])
+        self.re = RuleEngine(cfg["facts"].keys(), cfg["rules"])
 
     def produces(self):
         return ["actions", "newfacts"]

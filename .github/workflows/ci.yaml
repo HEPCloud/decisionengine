@@ -55,16 +55,6 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install coveralls
 
-      - name: Build Logic Engine
-        env:
-          PYTHONPATH: ${{ github.workspace }}/../
-        run: |
-          mkdir -p ${{ github.workspace }}/framework/logicengine/cxx/build
-          cd ${{ github.workspace }}/framework/logicengine/cxx/build
-          cmake -DPYVER=$(python -c 'import sys; print("%d.%d" % (sys.version_info.major, sys.version_info.minor))') -Dpybind11_DIR=$(pybind11-config --cmakedir) ..
-          make install
-          cd ${{ github.workspace }}
-
       - name: Run Unit Tests on Python ${{ matrix.python-version }}
         env:
           PYTHONPATH: ${{ github.workspace }}/../

@@ -37,7 +37,7 @@ def function_name_from_call(callnode):
         return None
     raise LogicError("unknown node type")
 
-class NamedFact(object):
+class NamedFact():
     def __init__(self, name, expr):
         self.name = name
         source = 'string'
