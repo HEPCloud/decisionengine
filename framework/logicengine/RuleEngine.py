@@ -15,7 +15,7 @@ class RuleEngine:
 
     def execute(self, evaluated_facts):
         facts = evaluated_facts
-        actions = {rule.name: list() for rule in self.rules}
+        actions = {rule.name: [] for rule in self.rules}
         new_facts = {}
         for rule in self.rules:
             rc = rule.evaluate(facts)
@@ -29,4 +29,4 @@ class RuleEngine:
                 # First instance of a fact with a given name receives precedence
                 facts = {**new_facts_for_rule, **facts}
 
-        return (actions, new_facts)
+        return actions, new_facts

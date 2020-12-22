@@ -2,6 +2,10 @@ from decisionengine.framework.logicengine.Rule import Rule
 
 from toposort import toposort_flatten
 
+import logging
+
+_TOP_LEVEL = ''  # Indicates facts not contained by rules
+
 
 class FactLookup:
     '''
@@ -13,17 +17,21 @@ class FactLookup:
     As an example, consider the following configuration:
 
       facts: {
-        should_publish: "(True)"
+        should_publish: "(True)",
       },
       rules: {
         publish_1: {
-          expression: "(should_publish)",
+          expression: "should_publish",
           facts: ["should_publish"]
         },
         publish_2: {
-          expression: "(should_publish)",
+          expression: "should_publish",
+          actions: ["go_to_press"]
           facts: ["should_publish"]
         }
+        retract: {
+          expression: "not should_publish",
+          facts: ["should_retract"]
       }
 
     In the above, the first fact to be evaluated will always be the
@@ -34,37 +42,36 @@ class FactLookup:
     'publish_1' and 'publish_2' will both use the evaluated fact from
     the top-level 'facts' table.
     '''
-
     def __init__(self, fact_names, rules_cfg):
-        self.facts = {}
-        for fact_name in fact_names:
-            self.facts[fact_name] = ['']
+        # For the above configuration, the 'self.facts' attribute is a dictionary of the form:
+        # {
+        #   'should_publish': ['', 'publish_1', 'publish_2'],
+        #   'should_retract': ['retract']
+        # }
+        # We therefore seed the dictionary entries to contain a [_TOP_LEVEL] list for all initial facts.
+        self.facts = dict.fromkeys(fact_names, [_TOP_LEVEL])
 
         # Add new facts from rules
         for rule_name, rule_cfg in rules_cfg.items():
             for fact_name in rule_cfg.get("facts", []):
-                if fact_name in self.facts:
-                    self.facts[fact_name].append(rule_name)
-                else:
-                    self.facts[fact_name] = [rule_name]
+                self.facts.setdefault(fact_name, []).append(rule_name)
+
+        logging.getLogger().debug(f"Registered the following facts:\n{self.facts}")
 
     def sorted_rules(self, rules_cfg):
         initial_rules = {name: Rule(name, cfg) for name, cfg in rules_cfg.items()}
         dependencies = {}
         for name, rule in initial_rules.items():
             dependencies[name] = set()
-            required_facts = rule.expr.names
+            required_facts = rule.expr.required_names
             for fact in required_facts:
                 rule_for_fact = self.rule_for(fact)
                 if rule_for_fact:
                     dependencies[name].add(rule_for_fact)
 
         ordered_dependencies = toposort_flatten(dependencies)
-        sorted_rules = []
-        for rule in ordered_dependencies:
-            sorted_rules.append(initial_rules[rule])
-        return sorted_rules
-
+        logging.getLogger().debug(f"Calculated the following order for evaluating rules:\n{ordered_dependencies}")
+        return [initial_rules[rule] for rule in ordered_dependencies]
 
     def rule_for(self, fact_name):
         return self.facts[fact_name][0]
