@@ -46,6 +46,7 @@ def data():
 
 @pytest.fixture()
 def dspace(datasource):
+    dsn_parameters = dict(s.split("=") for s in datasource.dsn.split())
     global_config = {
         'dataspace': {
             'reaper_start_delay_seconds': 1818,
@@ -54,11 +55,11 @@ def dspace(datasource):
                 'module': 'decisionengine.framework.dataspace.datasources.postgresql',
                 'name': 'Postgresql',
                 'config': {
-                    'user': datasource.info.dsn_parameters["user"],
+                    'user': dsn_parameters["user"],
                     'blocking': True,
-                    'host': datasource.info.dsn_parameters["host"],
-                    'port': datasource.info.dsn_parameters["port"],
-                    'database': datasource.info.dsn_parameters["dbname"],
+                    'host': dsn_parameters["host"],
+                    'port': dsn_parameters["port"],
+                    'database': dsn_parameters["dbname"],
                     'maxconnections': 100,
                     'maxcached': 10,
                 },
