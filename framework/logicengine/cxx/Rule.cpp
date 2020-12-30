@@ -1,4 +1,6 @@
 #include "Rule.h"
+
+#include "FactLookup.h"
 #include "ma_parse.h"
 
 #include <stdexcept>
@@ -12,7 +14,7 @@ Rule::parse(string_t const& fact_expr,
             strings_t const& actions,
             strings_t const& false_actions,
             strings_t const& facts,
-            fact_map_t& fact_map)
+            FactLookup& fact_map)
 {
   if (!parse_fact_expr(fact_expr, fact_map, this))
     throw std::runtime_error(std::string("rule parsing failed: ") + fact_expr);
@@ -24,26 +26,23 @@ Rule::parse(string_t const& fact_expr,
 }
 
 Fact*
-Rule::insert_fact_ptr(string_t const& name, fact_map_t& cond_map)
+Rule::insert_fact_ptr(string_t const& fact_name, FactLookup& fact_lookup)
 {
   // the fact has already been added
   {
-    auto it = facts_.find(name);
+    auto it = facts_.find(fact_name);
     if (it != facts_.end()) { return it->second; }
   }
 
-  // look for the cond in the rule_engine container
-  auto it = cond_map.find(name);
-  if (it == cond_map.end()) // name not found
-    throw std::runtime_error("insert_cond_ptr: condition " + name +
-                             " not found");
+  // look for the fact in the rule_engine's fact-lookup manager
+  auto fact = fact_lookup.find_fact(fact_name);
 
   // put this rule to the status notification list of the condition
-  it->second.push_rule(this);
+  fact->push_rule(this);
 
   // register the condition in the rule
-  facts_.emplace(name, &it->second);
-  return &it->second;
+  facts_.emplace(fact_name, fact);
+  return fact;
 }
 
 bool

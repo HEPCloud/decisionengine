@@ -4,6 +4,7 @@
 #include <pybind11/pybind11.h>
 
 #include "Fact.h"
+#include "FactLookup.h"
 #include "Rule.h"
 #include "ma_types.h"
 
@@ -14,7 +15,7 @@ namespace logic_engine {
     RuleEngine(pybind11::dict const& facts,
                pybind11::dict const& rules);
 
-    void execute(std::map<std::string, bool> const& fact_vals,
+    void execute(std::pair<std::string, std::map<std::string, bool>> const& fact_vals_per_rule,
                  std::map<std::string, strings_t>& actions,
                  std::map<std::string, std::map<string_t, bool>>& facts);
 
@@ -25,7 +26,7 @@ namespace logic_engine {
                         std::map<string_t, strings_t>& actions,
                         std::map<string_t, std::map<string_t, bool>>& facts);
 
-    fact_map_t facts_{};
+    FactLookup facts_{};
     rule_map_t rules_{};
   };
 

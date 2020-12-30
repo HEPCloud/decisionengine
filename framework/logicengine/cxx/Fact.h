@@ -31,12 +31,6 @@ namespace logic_engine {
         affected_rules_.push_back(rule);
     }
 
-    void
-    sort_rules()
-    {
-      affected_rules_.sort();
-    }
-
     rules_t
     get_rules() const
     {
@@ -49,7 +43,6 @@ namespace logic_engine {
   };
 
   using Facts = std::vector<Fact*>;
-  using fact_map_t = std::map<string_t, Fact>;
 
 } // end of namespace logic_engine
 

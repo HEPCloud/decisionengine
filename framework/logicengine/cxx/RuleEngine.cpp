@@ -2,6 +2,8 @@
 
 #include <pybind11/stl.h>
 
+#include <iostream>
+
 using namespace logic_engine;
 namespace py = pybind11;
 
@@ -10,8 +12,6 @@ namespace {
   to_strings(py::list const& py_list)
   {
     return py::cast<std::vector<std::string>>(py_list);
-//      py::stl_input_iterator<std::string>{py_list},
-//      py::stl_input_iterator<std::string>{});
   }
 
   std::vector<std::string>
@@ -28,27 +28,22 @@ namespace {
 RuleEngine::RuleEngine(py::dict const& facts_dict,
                        py::dict const& rules)
 {
-  auto fact_names = to_strings(facts_dict.attr("keys")());
+  auto const fact_names = to_strings(facts_dict.attr("keys")());
+  facts_.add_facts(fact_names);
+
   auto const rule_names = to_strings(rules.attr("keys")());
 
-  // find all facts from the rule's actions
+  // Collect all the names of new facts that will be generated from
+  // the rules' actions.
   for (std::string const& name : rule_names) {
     py::dict const rule = rules[name.c_str()];
 
-    if (rule.contains("facts")) {
-      py::list const fact_list = rule["facts"];
-      auto const facts_from_rule = to_strings(fact_list);
-      for (std::string const& f : facts_from_rule) {
-        fact_names.emplace_back(f);
-      }
-    }
+    if (not rule.contains("facts"))
+      continue;
 
-    // FIXME: What happens if a fact is specified that doesn't exist?
-  }
-
-  // create all facts
-  for (auto const& name : fact_names) {
-    facts_.emplace(name, Fact{});
+    py::list const fact_list = rule["facts"];
+    auto const facts_from_rule = to_strings(fact_list);
+    facts_.add_facts(facts_from_rule, name);
   }
 
   for (std::string const& rule_name : rule_names) {
@@ -71,23 +66,22 @@ RuleEngine::RuleEngine(py::dict const& facts_dict,
                      facts_);
   }
 
-  for (auto& pr : facts_)
-    pr.second.sort_rules();
+  facts_.freeze();
 }
 
 void
-RuleEngine::execute(std::map<std::string, bool> const& fact_vals,
+RuleEngine::execute(std::pair<string_t, std::map<std::string, bool>> const& fact_vals_for_rule,
                     std::map<std::string, strings_t>& actions,
                     std::map<std::string, std::map<string_t, bool>>& facts)
 {
   // Prepare initial facts
   facts_t initial_facts;
-  for (auto const& pr : fact_vals) {
-    auto cit = facts_.find(pr.first);
-    if (cit == facts_.end()) throw std::runtime_error("invalid fact name");
-
-    cit->second.set_value(pr.second);
-    initial_facts.push_back(&cit->second);
+  auto const& rule_name = fact_vals_for_rule.first;
+  auto const& facts_for_rule = fact_vals_for_rule.second;
+  for (auto const& pr : facts_for_rule) {
+    auto fact = facts_.find_exact(pr.first, rule_name);
+    fact->set_value(pr.second);
+    initial_facts.push_back(fact);
   }
 
   // Rules may generate new facts; we prepare for that here.
@@ -101,11 +95,7 @@ RuleEngine::execute(std::map<std::string, bool> const& fact_vals,
 
   // Recursively call execute for any new facts
   for (auto const& rfs : new_facts) {
-    new_fact_vals.insert(rfs.second.cbegin(), rfs.second.cend());
-  }
-
-  if (!new_fact_vals.empty()) {
-    execute(new_fact_vals, actions, facts);
+    execute(rfs, actions, facts);
   }
 }
 
