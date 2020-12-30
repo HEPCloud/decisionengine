@@ -80,6 +80,7 @@ class TestReaper(unittest.TestCase):
         with mock.patch.object(MockSource, "delete_data_older_than") as function:
             function.side_effect = KeyError
             self.reaper.start()
+            time.sleep(1)  # make sure stack trace bubbles up before checking state
             self.assertEqual(self.reaper.get_state(), dataspace.State.ERROR)
             self.reaper.stop()
             self.assertEqual(self.reaper.get_state(), dataspace.State.ERROR)
