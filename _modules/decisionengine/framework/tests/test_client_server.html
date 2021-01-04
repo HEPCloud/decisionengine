@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> decisionengine
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.4.html">Release 1.4.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.4.html#release-1-4-0">Release 1.4.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.3.html">Release 1.3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.2.html">Release 1.2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html">Decisionengine framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">decisionengine</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>decisionengine.framework.tests.test_client_server</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for decisionengine.framework.tests.test_client_server</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;Fixture based DE Server for the de-client tests&#39;&#39;&#39;</span>
+<span class="c1"># pylint: disable=redefined-outer-name</span>
+
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="n">DE_DB_HOST</span><span class="p">,</span> <span class="n">DE_DB_USER</span><span class="p">,</span> <span class="n">DE_DB_PASS</span><span class="p">,</span> <span class="n">DE_DB_NAME</span><span class="p">,</span> <span class="n">DE_SCHEMA</span> <span class="c1"># noqa: F401</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="n">DE_DB</span><span class="p">,</span> <span class="n">DE_HOST</span><span class="p">,</span> <span class="n">PG_PROG</span><span class="p">,</span> <span class="n">DEServer</span><span class="p">,</span> <span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">TEST_CHANNEL_CONFIG_PATH</span> <span class="c1"># noqa: F401</span>
+
+<span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">TEST_CHANNEL_CONFIG_PATH</span><span class="p">)</span> <span class="c1"># pylint: disable=invalid-name</span>
+
+<div class="viewcode-block" id="test_client_print_product"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_print_product</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="c1"># Test default options</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
+        <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+--------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|    | key1   | key2   |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|----+--------+--------|</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  0 | value1 | 0.1    |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  1 | value2 | 2      |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  2 | value3 | Test   |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+--------+&quot;</span>
+
+    <span class="c1"># Test --types</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--types&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
+        <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+-------------+--------+-------------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|    | key1   | key1.type   | key2   | key2.type   |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|----+--------+-------------+--------+-------------|</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  0 | value1 | str         | 0.1    | float       |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  1 | value2 | str         | 2      | int         |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  2 | value3 | str         | Test   | str         |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+-------------+--------+-------------+&quot;</span>
+
+    <span class="c1"># Test --format vertical</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--format&#39;</span><span class="p">,</span> <span class="s1">&#39;vertical&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
+        <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;Row 0</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+------+--------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;| key1 | value1 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;| key2 | 0.1    |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+------+--------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;Row 1</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+------+--------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;| key1 | value2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;| key2 | 2      |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+------+--------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;Row 2</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+------+--------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;| key1 | value3 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;| key2 | Test   |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+------+--------+&quot;</span>
+
+    <span class="c1"># Test --format column-names</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--format&#39;</span><span class="p">,</span> <span class="s1">&#39;column-names&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
+        <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+-----------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;| columns   |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|-----------|</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;| key1      |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;| key2      |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+-----------+&quot;</span>
+
+<span class="c1"># Test --format json</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--format&#39;</span><span class="p">,</span> <span class="s1">&#39;json&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
+        <span class="s1">&#39;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;{</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;    &quot;key1&quot;: {</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;        &quot;0&quot;: &quot;value1&quot;,</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;        &quot;1&quot;: &quot;value2&quot;,</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;        &quot;2&quot;: &quot;value3&quot;</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;    },</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;    &quot;key2&quot;: {</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;        &quot;0&quot;: 0.1,</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;        &quot;1&quot;: 2,</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;        &quot;2&quot;: &quot;Test&quot;</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;    }</span><span class="se">\n</span><span class="s1">&#39;</span> \
+        <span class="s1">&#39;}&#39;</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Fermi Research Alliance, LLC..
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
