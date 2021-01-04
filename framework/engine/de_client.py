@@ -93,6 +93,9 @@ def create_parser():
         "--types",
         action="store_true",
         help="print columns types")
+    products.add_argument(
+        "--format",
+        help="Possible formats are 'vertical', 'column-names', 'json'")
 
     reaper = parser.add_argument_group("Database reaper options")
     reaper.add_argument(
@@ -162,7 +165,8 @@ def execute_command_from_args(argsparsed, de_socket):
         return de_socket.print_product(argsparsed.print_product,
                                        argsparsed.columns,
                                        argsparsed.query,
-                                       argsparsed.types)
+                                       argsparsed.types,
+                                       argsparsed.format)
 
     # Database-reaper options
     if argsparsed.reaper_stop:

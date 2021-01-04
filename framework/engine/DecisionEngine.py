@@ -14,6 +14,7 @@ import sys
 import pandas as pd
 import os
 import tabulate
+import json
 
 import socketserver
 import xmlrpc.server
@@ -114,7 +115,24 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def rpc_show_de_config(self):
         return self.global_config.dump()
 
-    def rpc_print_product(self, product, columns=None, query=None, types=False):
+    def rpc_print_product(self, product, columns=None, query=None, types=False, format=None):
+        def dataframe_to_table(df):
+            return "{}\n".format(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
+
+        def dataframe_to_vertical_tables(df):
+            txt = ""
+            for i in range(len(df)):
+                txt += f"Row {i}\n"
+                txt += "{}\n".format(tabulate.tabulate(df.T.iloc[:, [i]], tablefmt='psql'))
+            return txt
+
+        def dataframe_to_column_names(df):
+            columns = df.columns.values.reshape([len(df.columns), 1])
+            return "{}\n".format(tabulate.tabulate(columns, headers=['columns'], tablefmt='psql'))
+
+        def dataframe_to_json(df):
+            return "{}\n".format(json.dumps(json.loads(df.to_json()), indent=4))
+
         found = False
         txt = "Product {}: ".format(product)
         with self.workers.access() as workers:
@@ -139,6 +157,13 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                     data_block.generation_id -= 1
                     df = data_block[product]
                     df = pd.read_json(df.to_json())
+                    dataframe_formatter = dataframe_to_table
+                    if format == 'vertical':
+                        dataframe_formatter = dataframe_to_vertical_tables
+                    if format == 'column-names':
+                        dataframe_formatter = dataframe_to_column_names
+                    if format == 'json':
+                        dataframe_formatter = dataframe_to_json
                     if types:
                         for column in df.columns:
                             df.insert(
@@ -151,23 +176,15 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                         column_names = columns.split(",")
                     if query:
                         if column_names:
-                            txt += "{}\n".format(tabulate.tabulate(df.loc[:, column_names].query(query),
-                                                                   headers='keys',
-                                                                   tablefmt='psql'))
+                            txt += dataframe_formatter(df.loc[:, column_names].query(query))
                         else:
-                            txt += "{}\n".format(tabulate.tabulate(df.query(query),
-                                                                   headers='keys',
-                                                                   tablefmt='psql'))
+                            txt += dataframe_formatter(df.query(query))
 
                     else:
                         if column_names:
-                            txt += "{}\n".format(tabulate.tabulate(df.loc[:, column_names],
-                                                                   headers='keys',
-                                                                   tablefmt='psql'))
+                            txt += dataframe_formatter(df.loc[:, column_names])
                         else:
-                            txt += "{}\n".format(tabulate.tabulate(df,
-                                                                   headers='keys',
-                                                                   tablefmt='psql'))
+                            txt += dataframe_formatter(df)
                 except Exception as e:
                     txt += "\t\t{}\n".format(e)
         if not found:
