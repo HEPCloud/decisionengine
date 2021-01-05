@@ -18,7 +18,7 @@ help:
 rst:
 	@$(SPHINXDOC)  --ext-autodoc --ext-coverage --ext-viewcode \
 	 -P -F -T -l -f -o "$(SOURCEDIR)"/code \
-	../ ../framework/logicengine ../framework/dataspace/tests \
+	../ ../framework/dataspace/tests \
 	../framework/util/tests ../framework/engine/tests
 clean:
 	@rm -rf "$(SOURCEDIR)"/code "$(BUILDDIR)"
@@ -27,4 +27,3 @@ clean:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-
