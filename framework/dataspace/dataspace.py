@@ -1,7 +1,6 @@
 import enum
 import importlib
 import logging
-import six
 import threading
 
 
@@ -51,8 +50,7 @@ class Singleton(type):
 
         return cls._instances[cls]
 
-@six.add_metaclass(Singleton)
-class DataSourceLoader():
+class DataSourceLoader(object, metaclass=Singleton):
 
     _ds = None
 
