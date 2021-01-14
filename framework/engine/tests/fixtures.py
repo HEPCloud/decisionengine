@@ -1,4 +1,6 @@
 '''pytest defaults'''
+import random
+import string
 import threading
 
 import psycopg2
@@ -59,7 +61,7 @@ def DEServer(conf_path=None, conf_override=None,
              channel_conf_path=None, channel_conf_override=None,
              host=DE_HOST, port=None,
              pg_prog_name='PG_PROG', pg_db_conn_name='DE_DB'):
-    '''A DE Server using our private database'''
+    '''A DE Server using a private database'''
 
     @pytest.fixture(scope='function')
     def de_server_factory(request):
@@ -79,19 +81,30 @@ def DEServer(conf_path=None, conf_override=None,
         db_info['user'] = proc_fixture.user
         db_info['password'] = proc_fixture.password
 
+        # used to find the version of postgres
         conn_fixture = request.getfixturevalue(pg_db_conn_name)
-        db_info['database'] = conn_fixture.get_dsn_parameters()['dbname'] + '_private'
 
-        # FIXME: for reasons I've yet to determine
-        #  the schema isn't populated by the DE_DB fixture here...
-        #  but the tablespace is locked by the fixture...
-        #  so we just do it manually for now in a slightly different DB
+        # pseudo random database name for testing
+        db_info['database'] = DE_DB_NAME + '_test_' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+
+        # Due to the multi-threaded/connection pooled nature
+        # of the DE Server, it is cleaner to build out an
+        # unscoped database.  The one created by the `DE_DB`
+        # fixture is private to a single socket/connection
+        # and cannot be shared cleanly.
+        #
+        # And even if we could share it, then we wouldn't
+        # be testing the production data path or pooling
+        # with those tricks
 
         # DatabaseJanitor will create and drop the tablespace for us
         with DatabaseJanitor(user=db_info['user'], password=db_info['password'],
                              host=db_info['host'], port=db_info['port'],
                              db_name=db_info['database'],
                              version=conn_fixture.server_version):
+            # if you swap this for the `DE_DB` fixture, it will
+            # block and changes will not be visable to the connection
+            # fired up within the DE Server thread.
             with psycopg2.connect(**db_info) as connection:
                 for filename in DE_SCHEMA:  # noqa: F405
                     with open(filename, 'r') as _fd, \
