@@ -25,11 +25,22 @@ class LogicEngine(Module):
         return list(set(chain(*list_of_lists)))
 
     def evaluate_facts(self, db):
+        """
+        :type db: :obj:`DataBlock`
+        :arg db: Products used to evaluate facts.
+        :rtype: dict
+        :returns: Evaluated fact values (e.g. True or False) for each fact name.
+        """
         return {name: f.evaluate(db) for name, f in self.facts.items()}
 
     def evaluate(self, db):
-        """evaluate our facts and rules, in the context of the given data.
-        db can be any mappable, in particular a DataBlock or dictionary."""
+        """
+        Evaluate our facts and rules, in the context of the given data.
+        db can be any mappable, in particular a DataBlock or dictionary.
+
+        :type db: :obj:`DataBlock`
+        :arg db: Products used to evaluate facts.
+        """
         self.logger.info("LE: calling evaluate_facts")
 
         evaluated_facts = self.evaluate_facts(db)

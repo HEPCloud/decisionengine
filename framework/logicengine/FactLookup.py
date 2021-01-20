@@ -59,6 +59,14 @@ class FactLookup:
         logging.getLogger().debug(f"Registered the following facts:\n{self.facts}")
 
     def sorted_rules(self, rules_cfg):
+        """
+        Rules sorted according to rule dependencies.
+
+        :type rules_cfg: dict
+        :arg rules_cfg: rules as specified in logic-engine configuration
+        :rtype: list
+        :return: Rules to be evaluated by the rule engine.
+        """
         initial_rules = {name: Rule(name, cfg) for name, cfg in rules_cfg.items()}
         dependencies = {}
         for name, rule in initial_rules.items():
@@ -74,4 +82,12 @@ class FactLookup:
         return [initial_rules[rule] for rule in ordered_dependencies]
 
     def rule_for(self, fact_name):
+        """
+        Selects rule required to evaluate fact with the supplied name.
+
+        :type fact_name: str
+        :arg fact_name: Name of fact for which rule will be selected.
+        :rtype: str
+        :returns: Rule name
+        """
         return self.facts[fact_name][0]

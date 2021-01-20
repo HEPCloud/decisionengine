@@ -14,6 +14,14 @@ class RuleEngine:
         self.rules = self.fact_lookup.sorted_rules(rules_cfg)
 
     def execute(self, evaluated_facts):
+        """
+        Evaluates all rules given the supplied facts.
+
+        :type evaluated_facts: dict
+        :arg evaluated_facts: Initial fact values (e.g. True or False) for each fact name.
+        :rtype: tuple
+        :returns: Actions to be taken based on rule evaluation; new facts produced during that evaluation.
+        """
         facts = evaluated_facts
         actions = {rule.name: [] for rule in self.rules}
         new_facts = {}

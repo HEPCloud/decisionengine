@@ -13,6 +13,13 @@ class Rule:
         self.new_facts = rule_cfg.get("facts")
 
     def evaluate(self, evaluated_facts):
+        """
+        Evaluates a compiled expression given the supplied facts.
+
+        :type evaluated_facts: dict
+        :arg evaluated_facts: Initial fact values (e.g. True or False) for each fact name.
+        :rtype: bool
+        """
         return self.expr.evaluate(evaluated_facts)
 
     def __str__(self):
