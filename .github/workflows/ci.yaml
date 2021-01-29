@@ -54,7 +54,6 @@ jobs:
           python -m pip install --upgrade wheel
           python -m pip install --upgrade pytest
           python -m pip install -r requirements.txt
-          python -m pip install coveralls
 
       - name: Build Logic Engine
         env:
@@ -70,16 +69,15 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/../
         run: |
-          coverage run -p -m pytest -v -l --durations=0 --tb=native ${{ github.workspace }}/../
-          coverage combine
+          pytest --cov-report term --cov-report xml
 
-      - name: Report to coveralls
-        env:
-          PYTHONPATH: ${{ github.workspace }}/../
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: coveralls
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          flags: python-${{ matrix.python-version }}
 
   build_doc:
+    name: Generate Documentation
     runs-on: ubuntu-latest
     needs: test
     steps:
