@@ -379,7 +379,8 @@
 
 
 <span class="k">def</span> <span class="nf">postgresql</span><span class="p">(</span>
-        <span class="n">process_fixture_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">process_fixture_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">load</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">isolation_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">extensions</span><span class="o">.</span><span class="n">ISOLATION_LEVEL_AUTOCOMMIT</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">FixtureRequest</span><span class="p">],</span> <span class="n">connection</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return connection fixture factory for PostgreSQL.</span>
@@ -387,6 +388,8 @@
 <span class="sd">    :param process_fixture_name: name of the process fixture</span>
 <span class="sd">    :param db_name: database name</span>
 <span class="sd">    :param load: SQL to automatically load into our test database</span>
+<span class="sd">    :param isolation_level: optional postgresql isolation level</span>
+<span class="sd">                            defaults to ISOLATION_LEVEL_AUTOCOMMIT</span>
 <span class="sd">    :returns: function which makes a connection to postgresql</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -418,7 +421,7 @@
 
         <span class="k">with</span> <span class="n">DatabaseJanitor</span><span class="p">(</span>
                 <span class="n">pg_user</span><span class="p">,</span> <span class="n">pg_host</span><span class="p">,</span> <span class="n">pg_port</span><span class="p">,</span> <span class="n">pg_db</span><span class="p">,</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
-                <span class="n">pg_password</span>
+                <span class="n">pg_password</span><span class="p">,</span> <span class="n">isolation_level</span>
         <span class="p">):</span>
             <span class="n">db_connection</span><span class="p">:</span> <span class="n">connection</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
                 <span class="n">dbname</span><span class="o">=</span><span class="n">pg_db</span><span class="p">,</span>
