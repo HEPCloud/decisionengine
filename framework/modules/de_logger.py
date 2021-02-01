@@ -58,7 +58,7 @@ def set_logging(log_level,
 
     if log_file_name != '/dev/null':
         if file_rotate_by == "size":
-            debug_handler = logging.handlers.RotatingFileHandler("%s_debug" % (log_file_name,),
+            debug_handler = logging.handlers.RotatingFileHandler("{}_debug".format(log_file_name),
                                                                  maxBytes=max_file_size,
                                                                  backupCount=max_backup_count)
         else:
