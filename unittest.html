@@ -182,8 +182,8 @@
 <h2>Prerequisites:<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">dl</span><span class="o">.</span><span class="n">fedoraproject</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">pub</span><span class="o">/</span><span class="n">epel</span><span class="o">/</span><span class="n">epel</span><span class="o">-</span><span class="n">release</span><span class="o">-</span><span class="n">latest</span><span class="o">-</span><span class="mf">7.</span><span class="n">noarch</span><span class="o">.</span><span class="n">rpm</span>
 <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">download</span><span class="o">.</span><span class="n">postgresql</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">pub</span><span class="o">/</span><span class="n">repos</span><span class="o">/</span><span class="n">yum</span><span class="o">/</span><span class="n">reporpms</span><span class="o">/</span><span class="n">EL</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="n">x86_64</span><span class="o">/</span><span class="n">pgdg</span><span class="o">-</span><span class="n">redhat</span><span class="o">-</span><span class="n">repo</span><span class="o">-</span><span class="n">latest</span><span class="o">.</span><span class="n">noarch</span><span class="o">.</span><span class="n">rpm</span>
-<span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">cmake3</span> <span class="n">boost</span><span class="o">-</span><span class="n">devel</span> <span class="n">python36</span><span class="o">-</span><span class="n">devel</span> <span class="n">postgresql11</span> <span class="n">postgresql11</span><span class="o">-</span><span class="n">server</span>
-<span class="n">pip3</span> <span class="n">install</span> <span class="n">pandas</span> <span class="n">DBUtils</span> <span class="n">psycopg2</span><span class="o">-</span><span class="n">binary</span> <span class="n">tabulate</span> <span class="n">mock</span> <span class="n">pytest</span> <span class="n">pybind11</span>
+<span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">python36</span><span class="o">-</span><span class="n">devel</span> <span class="n">postgresql11</span> <span class="n">postgresql11</span><span class="o">-</span><span class="n">server</span>
+<span class="n">pip3</span> <span class="n">install</span> <span class="n">pandas</span> <span class="n">DBUtils</span> <span class="n">psycopg2</span><span class="o">-</span><span class="n">binary</span> <span class="n">tabulate</span> <span class="n">mock</span> <span class="n">pytest</span> <span class="n">toposort</span>
 </pre></div>
 </div>
 </div>
@@ -194,11 +194,6 @@ git clone https://github.com/HEPCloud/decisionengine
 
 export PYTHONPATH=`pwd`
 
-mkdir decisionengine/framework/logicengine/cxx/build
-cd decisionengine/framework/logicengine/cxx/build
-cmake3 .. -DPYVER=3.6 -Dpybind11_DIR=$(pybind11-config --cmakedir)
-make install -j &lt;number&gt; # say number of CPUs on your box
-cd ../../../../
 python3 -m pytest
 
 ==================================== test session starts ====================================

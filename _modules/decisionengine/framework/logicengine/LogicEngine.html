@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>decisionengine.framework.logicengine.LogicEngine &mdash; decisionengine 1.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> decisionengine
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.5.html">Release 1.5.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.4.html">Release 1.4.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.4.html#release-1-4-0">Release 1.4.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.3.html">Release 1.3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.2.html">Release 1.2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html">Decisionengine framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">decisionengine</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>decisionengine.framework.logicengine.LogicEngine</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for decisionengine.framework.logicengine.LogicEngine</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pandas</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.RuleEngine</span> <span class="kn">import</span> <span class="n">RuleEngine</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.BooleanExpression</span> <span class="kn">import</span> <span class="n">BooleanExpression</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Module</span> <span class="kn">import</span> <span class="n">Module</span>
+
+
+<div class="viewcode-block" id="LogicEngine"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine">[docs]</a><span class="k">class</span> <span class="nc">LogicEngine</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">BooleanExpression</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">expr</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;facts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rule_engine</span> <span class="o">=</span> <span class="n">RuleEngine</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;facts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;rules&quot;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="LogicEngine.produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine.produces">[docs]</a>    <span class="k">def</span> <span class="nf">produces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">,</span> <span class="s2">&quot;newfacts&quot;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="LogicEngine.consumes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine.consumes">[docs]</a>    <span class="k">def</span> <span class="nf">consumes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the names of all the items that must be in the DataBlock for</span>
+<span class="sd">        the rules to be evaluated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">list_of_lists</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">required_names</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">list_of_lists</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="LogicEngine.evaluate_facts"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine.evaluate_facts">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_facts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type db: :obj:`DataBlock`</span>
+<span class="sd">        :arg db: Products used to evaluate facts.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        :returns: Evaluated fact values (e.g. True or False) for each fact name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+
+<div class="viewcode-block" id="LogicEngine.evaluate"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate our facts and rules, in the context of the given data.</span>
+<span class="sd">        db can be any mappable, in particular a DataBlock or dictionary.</span>
+
+<span class="sd">        :type db: :obj:`DataBlock`</span>
+<span class="sd">        :arg db: Products used to evaluate facts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;LE: calling evaluate_facts&quot;</span><span class="p">)</span>
+
+        <span class="n">evaluated_facts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_facts</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">evaluated_facts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluated Fact: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> -&gt; Value: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2"> -&gt; TypeOf(Value): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Process rules</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;LE: calling execute&quot;</span><span class="p">)</span>
+        <span class="n">actions</span><span class="p">,</span> <span class="n">newfacts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">evaluated_facts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;actions&quot;</span><span class="p">:</span> <span class="n">actions</span><span class="p">,</span> <span class="s2">&quot;newfacts&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_facts_dataframe</span><span class="p">(</span><span class="n">newfacts</span><span class="p">)}</span></div>
+
+<div class="viewcode-block" id="LogicEngine._create_facts_dataframe"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine._create_facts_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">_create_facts_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newfacts</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert newfacts dict in format below to dataframe with columns</span>
+<span class="sd">        [&#39;rule_name&#39;, &#39;fact_name&#39;, fact_value&#39;]</span>
+
+<span class="sd">        facts dict format:</span>
+<span class="sd">        &#39;newfacts&#39;: {</span>
+<span class="sd">            &#39;publish_glidein_requests&#39;: {</span>
+<span class="sd">                &#39;allow_hpc_new&#39;: True,</span>
+<span class="sd">                &#39;allow_foo&#39;: True</span>
+<span class="sd">            },</span>
+<span class="sd">            &#39;dummy_rule&#39;: {</span>
+<span class="sd">                &#39;dummy_new_fact&#39;: True</span>
+<span class="sd">            }</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Extract new facts from le_result</span>
+        <span class="c1"># Dataframe column values for Facts</span>
+        <span class="n">rule_name</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fact_name</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">fact_value</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">newfacts</span><span class="p">:</span>
+            <span class="n">facts</span> <span class="o">=</span> <span class="n">newfacts</span><span class="p">[</span><span class="n">rule</span><span class="p">]</span>
+            <span class="n">rule_name</span> <span class="o">+=</span> <span class="p">[</span><span class="n">rule</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">facts</span><span class="p">)</span>
+            <span class="n">fact_name</span> <span class="o">+=</span> <span class="n">facts</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">fact_value</span> <span class="o">+=</span> <span class="n">facts</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="n">facts</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;rule_name&#39;</span><span class="p">:</span> <span class="n">rule_name</span><span class="p">,</span>
+            <span class="s1">&#39;fact_name&#39;</span><span class="p">:</span> <span class="n">fact_name</span><span class="p">,</span>
+            <span class="s1">&#39;fact_value&#39;</span><span class="p">:</span> <span class="n">fact_value</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">facts</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Fermi Research Alliance, LLC..
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
