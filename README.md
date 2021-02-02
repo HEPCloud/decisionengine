@@ -35,9 +35,6 @@ yum -y install \
     python-unittest2 \
     python-behave \
     tmux \
-    cmake \
-    boost \
-    boost-devel \
     libevent-devel \
     ncurses-devel \
     python-pytest \
@@ -52,7 +49,7 @@ yum -y install \
     python-setuptools \
   && easy_install DBUtils
 yum -y install \
-    cmake3 python3-devel make \
+    python3-devel make \
     python3-devel \
     python-devel \
     redhat-lsb-core \

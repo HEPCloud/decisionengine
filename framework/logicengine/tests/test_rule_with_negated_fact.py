@@ -6,8 +6,8 @@ import pandas as pd
 def myengine():
     facts = {"f1": "val > 10"}
     rules = {}
-    rules["r1"] = {"expression": "!f1", "actions": ["a1"]}
-    rules["r2"] = {"expression": "!(f1)", "actions": ["a2"]}
+    rules["r1"] = {"expression": "not f1", "actions": ["a1"]}
+    rules["r2"] = {"expression": "not (f1)", "actions": ["a2"]}
     return LogicEngine({"facts": facts, "rules": rules})
 
 
