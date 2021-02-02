@@ -11,9 +11,6 @@ RUN yum -y install \
   python-pip \
   git \
   tmux \
-  cmake \
-  boost \
-  boost-devel \
   libevent-devel \
   ncurses-devel \
   graphviz.x86_64 \
@@ -21,7 +18,7 @@ RUN yum -y install \
   rpm-build-libs \
   rpm-devel \
   mock \
-  cmake3 python3-devel make \
+  python3-devel make \
   python-devel \
   redhat-lsb-core \
   python36-virtualenv \

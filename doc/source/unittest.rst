@@ -10,8 +10,8 @@ Prerequisites:
 
    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
    yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-   yum install -y python3 python3-pip cmake3 boost-devel python36-devel postgresql11 postgresql11-server
-   pip3 install pandas DBUtils psycopg2-binary tabulate mock pytest pybind11
+   yum install -y python3 python3-pip python36-devel postgresql11 postgresql11-server
+   pip3 install pandas DBUtils psycopg2-binary tabulate mock pytest toposort
 
 Build & test
 ^^^^^^^^^^^^
@@ -23,11 +23,6 @@ Build & test
 
    export PYTHONPATH=`pwd`
 
-   mkdir decisionengine/framework/logicengine/cxx/build
-   cd decisionengine/framework/logicengine/cxx/build
-   cmake3 .. -DPYVER=3.6 -Dpybind11_DIR=$(pybind11-config --cmakedir)
-   make install -j <number> # say number of CPUs on your box
-   cd ../../../../
    python3 -m pytest
 
    ==================================== test session starts ====================================
