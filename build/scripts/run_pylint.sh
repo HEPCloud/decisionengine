@@ -38,16 +38,6 @@ process_branch() {
     # Consider success if no git checkout was done
     echo "GIT_CHECKOUT=\"PASSED\"" >> $results
 
-    # Build Logic Engine
-    echo "Building Logic Engine ..."
-    le_builddir=$DECISIONENGINE_SRC/framework/logicengine/cxx/build
-    [ -e $le_buildir ] && rm -rf $le_builddir
-    mkdir $le_builddir
-    cd $le_builddir
-    cmake3 -Wno-dev --debug-output .. -Dpybind11_DIR=$(pybind11-config --cmakedir)
-    make install --debug
-    echo "Building Logic Engine ... DONE"
-
     cd $WORKSPACE
 
     # pylint related variables
