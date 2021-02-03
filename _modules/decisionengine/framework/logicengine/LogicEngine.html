@@ -181,12 +181,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">rule_engine</span> <span class="o">=</span> <span class="n">RuleEngine</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;facts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;rules&quot;</span><span class="p">])</span>
 
 <div class="viewcode-block" id="LogicEngine.produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine.produces">[docs]</a>    <span class="k">def</span> <span class="nf">produces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;in LE::produces()&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">,</span> <span class="s2">&quot;newfacts&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="LogicEngine.consumes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine.consumes">[docs]</a>    <span class="k">def</span> <span class="nf">consumes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the names of all the items that must be in the DataBlock for</span>
 <span class="sd">        the rules to be evaluated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;in LE::consumes()&quot;</span><span class="p">)</span>
         <span class="n">list_of_lists</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">required_names</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">list_of_lists</span><span class="p">)))</span></div>
 
@@ -234,6 +236,7 @@
 <span class="sd">            }</span>
 <span class="sd">        }</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;in LE::_create_facts_dataframe&quot;</span><span class="p">)</span>
         <span class="c1"># Extract new facts from le_result</span>
         <span class="c1"># Dataframe column values for Facts</span>
         <span class="n">rule_name</span> <span class="o">=</span> <span class="p">[]</span>
