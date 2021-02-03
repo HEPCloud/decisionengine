@@ -5,14 +5,14 @@ def test_default_construction():
     """LogicEngine is not default constructible."""
     with pytest.raises(TypeError):
         #pylint: disable=no-value-for-parameter
-        engine = LogicEngine()
+        LogicEngine()
         #pylint: enable=no-value-for-parameter
 
 def test_wrong_configuration():
     """LogicEngine construction requires rules and facts;
     if we don't supply them it is an error."""
     with pytest.raises(KeyError):
-        engine = LogicEngine({})
+        LogicEngine({})
 
 def test_trivial_configuration():
     """Logic engine constructed with trivial rules and facts."""
@@ -33,5 +33,5 @@ def test_configuration_with_numy_facts():
     rules = {"r1": {"expression": "f1", "actions": ["launch"]}}
     le = LogicEngine({"rules": rules, "facts": facts})
     assert le.produces() == ["actions", "newfacts"]
-    assert set(le.consumes()) == set(["vals", "blob"])
+    assert set(le.consumes()) == {"vals", "blob"}
     #cfg = { "rules": {}, "facts": {} }

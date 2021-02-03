@@ -43,7 +43,7 @@ class SourceProxy(Source.Source):
     def __init__(self, *args, **kwargs):
         if not set(must_have).issubset(set(args[0].keys())):
             raise RuntimeError(
-                'SourceProxy misconfigured. Must have %s defined' % (must_have,))
+                'SourceProxy misconfigured. Must have {} defined'.format(must_have))
         self.source_channel = args[0]['channel_name']
         self.data_keys = args[0]['Dataproducts']
         self.retries = args[0].get('retries', RETRIES)
@@ -151,7 +151,7 @@ class SourceProxy(Source.Source):
             time.sleep(self.retry_to)
 
         if len(filled_keys) != len(self.data_keys):
-            raise RuntimeError('Could not get all data. Expected %s Filled %s' % (
+            raise RuntimeError('Could not get all data. Expected {} Filled {}'.format(
                 self.data_keys, filled_keys))
         return rc
 
