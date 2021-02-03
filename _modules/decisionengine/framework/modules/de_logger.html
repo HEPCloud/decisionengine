@@ -224,7 +224,7 @@
 
     <span class="k">if</span> <span class="n">log_file_name</span> <span class="o">!=</span> <span class="s1">&#39;/dev/null&#39;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">file_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span>
-            <span class="n">debug_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_debug&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">log_file_name</span><span class="p">,),</span>
+            <span class="n">debug_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_debug&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">),</span>
                                                                  <span class="n">maxBytes</span><span class="o">=</span><span class="n">max_file_size</span><span class="p">,</span>
                                                                  <span class="n">backupCount</span><span class="o">=</span><span class="n">max_backup_count</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
