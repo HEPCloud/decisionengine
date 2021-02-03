@@ -52,7 +52,8 @@ class TestReaper(unittest.TestCase):
         self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)
 
     def test_start_stop_delay(self):
-        self.reaper.start(delay=20)
+        self.reaper.start(delay=90)
+        time.sleep(1)  # make sure scheduler has time to set state
         self.assertEqual(self.reaper.get_state(), dataspace.State.STARTING)
         self.reaper.stop()
         self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)

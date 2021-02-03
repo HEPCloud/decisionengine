@@ -1,4 +1,4 @@
-from decisionengine.framework.logicengine.BooleanExpression import BooleanExpression
+from decisionengine.framework.logicengine.BooleanExpression import BooleanExpression, facts_globals
 import pytest
 
 
@@ -28,6 +28,9 @@ def test_fact_with_nested_names():
 
 # We need to use this helper function to make sure the name np is not
 # seen in the context of the use of the facts.
+#
+# Add in __builtins__ so we can use 'import numpy as np' under a BooleanExpression
+facts_globals.update({'__builtins__': __builtins__})
 def make_db(maximum):
     import numpy as np
     return {"vals": np.arange(maximum)}
