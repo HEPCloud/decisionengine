@@ -164,7 +164,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for decisionengine.framework.logicengine.tests.test_facts</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.BooleanExpression</span> <span class="kn">import</span> <span class="n">BooleanExpression</span>
+<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.BooleanExpression</span> <span class="kn">import</span> <span class="n">BooleanExpression</span><span class="p">,</span> <span class="n">facts_globals</span>
 <span class="kn">import</span> <span class="nn">pytest</span>
 
 
@@ -194,6 +194,9 @@
 
 <span class="c1"># We need to use this helper function to make sure the name np is not</span>
 <span class="c1"># seen in the context of the use of the facts.</span>
+<span class="c1">#</span>
+<span class="c1"># Add in __builtins__ so we can use &#39;import numpy as np&#39; under a BooleanExpression</span>
+<span class="n">facts_globals</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;__builtins__&#39;</span><span class="p">:</span> <span class="n">__builtins__</span><span class="p">})</span>
 <div class="viewcode-block" id="make_db"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_facts.make_db">[docs]</a><span class="k">def</span> <span class="nf">make_db</span><span class="p">(</span><span class="n">maximum</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;vals&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">maximum</span><span class="p">)}</span></div>

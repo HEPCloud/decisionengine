@@ -164,15 +164,24 @@
            <div itemprop="articleBody">
             
   <h1>Source code for decisionengine.framework.dataspace.datasources.postgresql</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span></span><span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">dbutils.pooled_db</span> <span class="k">as</span> <span class="nn">pooled_db</span>
 <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">DBUtils.PooledDB</span> <span class="k">as</span> <span class="nn">pooled_db</span>
 
-<span class="kn">import</span> <span class="nn">psycopg2</span>
-<span class="kn">import</span> <span class="nn">psycopg2.extras</span>
+<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_implementation</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;CPython&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">psycopg2</span>
+    <span class="kn">import</span> <span class="nn">psycopg2.extras</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># try to load psycopg2cffi dynamically and use psycopg2 namespace</span>
+    <span class="kn">import</span> <span class="nn">importlib</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;psycopg2cffi&#39;</span><span class="p">)</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;psycopg2cffi.compat&#39;</span><span class="p">)</span>
+    <span class="nb">__import__</span><span class="p">(</span><span class="s1">&#39;psycopg2cffi&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">compat</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+    <span class="kn">import</span> <span class="nn">psycopg2.extras</span>
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datasource</span> <span class="k">as</span> <span class="nn">ds</span>
 
