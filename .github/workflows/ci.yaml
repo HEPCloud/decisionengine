@@ -17,8 +17,8 @@ jobs:
         python-version:
           - '3.6'
           - '3.9'
-        compiler:
-          - gcc
+          - 'pypy-3.6'
+
     name: Python ${{ matrix.python-version }} unit tests
     steps:
       - uses: actions/checkout@v2
@@ -34,9 +34,9 @@ jobs:
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
-          # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-${{ matrix.python-version }}
           restore-keys: |
+            ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
@@ -45,11 +45,10 @@ jobs:
           which python
           python -c 'import sys; print(sys.version)'
           python -c 'import platform; print(platform.python_implementation())'
+          python -m pip cache dir
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libboost-dev
           python -m pip install --upgrade pip
           python -m pip install --upgrade wheel
           python -m pip install --upgrade pytest
@@ -75,7 +74,7 @@ jobs:
 
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: '3.9'
           architecture: 'x64'
 
       - name: Cache pip
@@ -84,8 +83,9 @@ jobs:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
           # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-3.9
           restore-keys: |
+            ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 

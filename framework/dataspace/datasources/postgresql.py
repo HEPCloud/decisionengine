@@ -1,3 +1,4 @@
+import platform
 import time
 
 try:
@@ -5,8 +6,16 @@ try:
 except ModuleNotFoundError:
     import DBUtils.PooledDB as pooled_db
 
-import psycopg2
-import psycopg2.extras
+if platform.python_implementation() == 'CPython':
+    import psycopg2
+    import psycopg2.extras
+else:
+    # try to load psycopg2cffi dynamically and use psycopg2 namespace
+    import importlib
+    importlib.import_module('psycopg2cffi')
+    importlib.import_module('psycopg2cffi.compat')
+    __import__('psycopg2cffi').compat.register()
+    import psycopg2.extras
 
 import decisionengine.framework.dataspace.datasource as ds
 
