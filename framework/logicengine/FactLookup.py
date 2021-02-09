@@ -69,15 +69,21 @@ class FactLookup:
         """
         initial_rules = {name: Rule(name, cfg) for name, cfg in rules_cfg.items()}
         dependencies = {}
-        for name, rule in initial_rules.items():
-            dependencies[name] = set()
-            required_facts = rule.expr.required_names
-            for fact in required_facts:
-                rule_for_fact = self.rule_for(fact)
-                if rule_for_fact:
-                    dependencies[name].add(rule_for_fact)
 
-        ordered_dependencies = toposort_flatten(dependencies)
+        try:
+            for name, rule in initial_rules.items():
+                dependencies[name] = set()
+                required_facts = rule.expr.required_names
+                for fact in required_facts:
+                    rule_for_fact = self.rule_for(fact)
+                    if rule_for_fact:
+                        dependencies[name].add(rule_for_fact)
+
+            ordered_dependencies = toposort_flatten(dependencies)
+        except Exception:
+            logging.getLogger().exception("Unexpected error!")
+            raise
+
         logging.getLogger().debug(f"Calculated the following order for evaluating rules:\n{ordered_dependencies}")
         return [initial_rules[rule] for rule in ordered_dependencies]
 
