@@ -38,7 +38,13 @@ class TestReaper(unittest.TestCase):
             self.reaper = dataspace.Reaper(GLOBAL_CONFIG)
 
     def tearDown(self):
-        pass
+        '''
+            Make sure we don't leave any dangling reapers around
+        '''
+        try:
+            self.reaper.stop()
+        except Exception:
+            pass
 
     def test_reap(self):
         self.assertEqual(self.reaper.get_state(),
@@ -47,21 +53,28 @@ class TestReaper(unittest.TestCase):
 
     def test_start_stop(self):
         self.reaper.start()
+        time.sleep(0.5)  # make sure scheduler has time to set state
         self.assertTrue(self.reaper.get_state() in (dataspace.State.RUNNING, dataspace.State.SLEEPING))
         self.reaper.stop()
+        time.sleep(0.5)  # make sure scheduler has time to set state
         self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)
 
     def test_start_stop_delay(self):
         self.reaper.start(delay=90)
-        time.sleep(1)  # make sure scheduler has time to set state
+        time.sleep(0.5)  # make sure scheduler has time to set state
         self.assertEqual(self.reaper.get_state(), dataspace.State.STARTING)
         self.reaper.stop()
+        time.sleep(0.5)  # make sure scheduler has time to set state
         self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)
 
     def test_loop(self):
         for _ in range(3):
-            self.test_start_stop()
-            time.sleep(1)
+            self.reaper.start()
+            time.sleep(0.5)  # make sure scheduler has time to set state
+            self.assertTrue(self.reaper.get_state() in (dataspace.State.RUNNING, dataspace.State.SLEEPING))
+            self.reaper.stop()
+            time.sleep(0.5)  # make sure scheduler has time to set state
+            self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)
 
     def test_fail_missing_config_key(self):
         with self.assertRaises(dataspace.DataSpaceConfigurationError):
@@ -84,11 +97,15 @@ class TestReaper(unittest.TestCase):
             time.sleep(1)  # make sure stack trace bubbles up before checking state
             self.assertEqual(self.reaper.get_state(), dataspace.State.ERROR)
             self.reaper.stop()
+            time.sleep(0.5)  # make sure scheduler has time to set state
             self.assertEqual(self.reaper.get_state(), dataspace.State.ERROR)
+
             function.side_effect = None
             self.reaper.start()
+            time.sleep(0.5)  # make sure scheduler has time to set state
             self.assertTrue(self.reaper.get_state() in (dataspace.State.RUNNING, dataspace.State.SLEEPING))
             self.reaper.stop()
+            time.sleep(0.5)  # make sure scheduler has time to set state
             self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)
 
 
