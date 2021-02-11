@@ -1,5 +1,5 @@
 from decisionengine.framework.logicengine.FactLookup import FactLookup
-
+import logging
 
 class RuleEngine:
     '''
@@ -25,16 +25,20 @@ class RuleEngine:
         facts = evaluated_facts
         actions = {rule.name: [] for rule in self.rules}
         new_facts = {}
-        for rule in self.rules:
-            rc = rule.evaluate(facts)
-            if rc and rule.actions:
-                actions[rule.name] = rule.actions
-            if not rc and rule.false_actions:
-                actions[rule.name] = rule.false_actions
-            if rule.new_facts:
-                new_facts_for_rule = {fact_name: rc for fact_name in rule.new_facts}
-                new_facts[rule.name] = new_facts_for_rule
-                # First instance of a fact with a given name receives precedence
-                facts = {**new_facts_for_rule, **facts}
 
+        try:
+            for rule in self.rules:
+                rc = rule.evaluate(facts)
+                if rc and rule.actions:
+                    actions[rule.name] = rule.actions
+                if not rc and rule.false_actions:
+                    actions[rule.name] = rule.false_actions
+                if rule.new_facts:
+                    new_facts_for_rule = {fact_name: rc for fact_name in rule.new_facts}
+                    new_facts[rule.name] = new_facts_for_rule
+                    # First instance of a fact with a given name receives precedence
+                    facts = {**new_facts_for_rule, **facts}
+        except Exception:
+            logging.getLogger.exception("Unexpected error!")
+            raise
         return actions, new_facts
