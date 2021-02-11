@@ -10,6 +10,7 @@
 #   "np.sum(vals) > 40" # WRONG, illegal call to np.sum
 
 import ast
+import logging
 
 # If support for direct use of numpy and pandas functions becomes
 # wanted, then uncomment the following two import statements, and
@@ -25,16 +26,20 @@ class LogicError(TypeError):
 
 
 def function_name_from_call(callnode):
-    if not isinstance(callnode, ast.Call):
-        raise LogicError("not a call node")
-    if isinstance(callnode.func, ast.Name):
-        # This really is a function name
-        return callnode.func.id
-    if isinstance(callnode.func, ast.Attribute):
-        # This is the name of a function argument, not the name of a function.
-        return None
-    raise LogicError("unknown node type")
-
+    try:
+        if not isinstance(callnode, ast.Call):
+            raise LogicError("not a call node")
+        if isinstance(callnode.func, ast.Name):
+            # This really is a function name
+            return callnode.func.id
+        if isinstance(callnode.func, ast.Attribute):
+            # This is the name of a function argument, not the name of a function.
+            return None
+        else:
+            raise LogicError("unknown node type")
+    except Exception:
+        logging.getLogger().exception("Unexpected error!")
+        raise
 
 class BooleanExpression:
     def __init__(self, expr):
@@ -51,6 +56,7 @@ class BooleanExpression:
     def evaluate(self, d):
         """Return the evaluated Boolen value of this expression in the context
         of the given data 'd'."""
+        logging.getLogger().debug("calling NamedFact::evaluate()")
         return bool(eval(self.expr, facts_globals, d))
 
     def __str__(self):
