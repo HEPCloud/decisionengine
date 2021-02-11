@@ -1,4 +1,3 @@
-import pytest
 from decisionengine.framework.util import tsort
 
 
