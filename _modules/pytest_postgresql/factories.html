@@ -206,7 +206,7 @@
     <span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">options</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s1">&#39;exec&#39;</span><span class="p">,</span> <span class="s1">&#39;host&#39;</span><span class="p">,</span> <span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;options&#39;</span><span class="p">,</span> <span class="s1">&#39;startparams&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;logsprefix&#39;</span><span class="p">,</span> <span class="s1">&#39;unixsocketdir&#39;</span><span class="p">,</span> <span class="s1">&#39;dbname&#39;</span><span class="p">,</span> <span class="s1">&#39;load&#39;</span>
+        <span class="s1">&#39;logsprefix&#39;</span><span class="p">,</span> <span class="s1">&#39;unixsocketdir&#39;</span><span class="p">,</span> <span class="s1">&#39;dbname&#39;</span><span class="p">,</span> <span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="s1">&#39;postgres_options&#39;</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
         <span class="n">option_name</span> <span class="o">=</span> <span class="s1">&#39;postgresql_&#39;</span> <span class="o">+</span> <span class="n">option</span>
@@ -257,7 +257,7 @@
         <span class="n">executable</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">options</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">startparams</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">unixsocketdir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">logs_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="n">logs_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">postgres_options</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">FixtureRequest</span><span class="p">,</span> <span class="n">TempdirFactory</span><span class="p">],</span> <span class="n">PostgreSQLExecutor</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Postgresql process factory.</span>
@@ -276,6 +276,7 @@
 <span class="sd">    :param str startparams: postgresql starting parameters</span>
 <span class="sd">    :param str unixsocketdir: directory to create postgresql&#39;s unixsockets</span>
 <span class="sd">    :param str logs_prefix: prefix for log filename</span>
+<span class="sd">    :param str postgres_options: Postgres executable options for use by pg_ctl</span>
 <span class="sd">    :rtype: func</span>
 <span class="sd">    :returns: function which makes a postgresql process</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -325,6 +326,7 @@
             <span class="n">unixsocketdir</span><span class="o">=</span><span class="n">unixsocketdir</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;unixsocketdir&#39;</span><span class="p">],</span>
             <span class="n">logfile</span><span class="o">=</span><span class="n">logfile_path</span><span class="p">,</span>
             <span class="n">startparams</span><span class="o">=</span><span class="n">startparams</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;startparams&#39;</span><span class="p">],</span>
+            <span class="n">postgres_options</span><span class="o">=</span><span class="n">postgres_options</span> <span class="ow">or</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;postgres_options&#39;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="c1"># start server</span>
         <span class="k">with</span> <span class="n">postgresql_executor</span><span class="p">:</span>

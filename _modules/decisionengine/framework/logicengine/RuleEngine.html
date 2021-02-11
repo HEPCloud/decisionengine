@@ -165,7 +165,7 @@
             
   <h1>Source code for decisionengine.framework.logicengine.RuleEngine</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.FactLookup</span> <span class="kn">import</span> <span class="n">FactLookup</span>
-
+<span class="kn">import</span> <span class="nn">logging</span>
 
 <div class="viewcode-block" id="RuleEngine"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.RuleEngine.RuleEngine">[docs]</a><span class="k">class</span> <span class="nc">RuleEngine</span><span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -191,18 +191,22 @@
         <span class="n">facts</span> <span class="o">=</span> <span class="n">evaluated_facts</span>
         <span class="n">actions</span> <span class="o">=</span> <span class="p">{</span><span class="n">rule</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">}</span>
         <span class="n">new_facts</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
-            <span class="n">rc</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">facts</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">rc</span> <span class="ow">and</span> <span class="n">rule</span><span class="o">.</span><span class="n">actions</span><span class="p">:</span>
-                <span class="n">actions</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">actions</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">rc</span> <span class="ow">and</span> <span class="n">rule</span><span class="o">.</span><span class="n">false_actions</span><span class="p">:</span>
-                <span class="n">actions</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">false_actions</span>
-            <span class="k">if</span> <span class="n">rule</span><span class="o">.</span><span class="n">new_facts</span><span class="p">:</span>
-                <span class="n">new_facts_for_rule</span> <span class="o">=</span> <span class="p">{</span><span class="n">fact_name</span><span class="p">:</span> <span class="n">rc</span> <span class="k">for</span> <span class="n">fact_name</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">new_facts</span><span class="p">}</span>
-                <span class="n">new_facts</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_facts_for_rule</span>
-                <span class="c1"># First instance of a fact with a given name receives precedence</span>
-                <span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">new_facts_for_rule</span><span class="p">,</span> <span class="o">**</span><span class="n">facts</span><span class="p">}</span>
 
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+                <span class="n">rc</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">facts</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">rc</span> <span class="ow">and</span> <span class="n">rule</span><span class="o">.</span><span class="n">actions</span><span class="p">:</span>
+                    <span class="n">actions</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">actions</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">rc</span> <span class="ow">and</span> <span class="n">rule</span><span class="o">.</span><span class="n">false_actions</span><span class="p">:</span>
+                    <span class="n">actions</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">false_actions</span>
+                <span class="k">if</span> <span class="n">rule</span><span class="o">.</span><span class="n">new_facts</span><span class="p">:</span>
+                    <span class="n">new_facts_for_rule</span> <span class="o">=</span> <span class="p">{</span><span class="n">fact_name</span><span class="p">:</span> <span class="n">rc</span> <span class="k">for</span> <span class="n">fact_name</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">new_facts</span><span class="p">}</span>
+                    <span class="n">new_facts</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_facts_for_rule</span>
+                    <span class="c1"># First instance of a fact with a given name receives precedence</span>
+                    <span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">new_facts_for_rule</span><span class="p">,</span> <span class="o">**</span><span class="n">facts</span><span class="p">}</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
         <span class="k">return</span> <span class="n">actions</span><span class="p">,</span> <span class="n">new_facts</span></div></div>
 </pre></div>
 
