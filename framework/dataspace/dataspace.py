@@ -211,6 +211,7 @@ class Reaper():
         self.state = State.IDLE
         self.state_lock = threading.Lock()
         self.logger = logging.getLogger()
+        self._cv = threading.Condition()
 
     def get_retention_interval(self):
         return self.retention_interval
@@ -261,6 +262,11 @@ class Reaper():
                                            args=(delay, ),
                                            name="Reaper_loop_thread")
             self.thread.start()
+
+            # make sure the thread actually started before returning
+            # this doesn't make sure the thread is running, just that the scheduler picked it up
+            with self._cv:
+                self._cv.wait_for(lambda: True if self.get_state() != State.IDLE else False)
 
     def stop(self):
         if self.thread and self.thread.is_alive() and not self.stop_event.is_set():

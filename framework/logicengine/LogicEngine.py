@@ -15,12 +15,14 @@ class LogicEngine(Module):
         self.rule_engine = RuleEngine(cfg["facts"].keys(), cfg["rules"])
 
     def produces(self):
+        self.logger.debug("in LE::produces()")
         return ["actions", "newfacts"]
 
     def consumes(self):
         """Return the names of all the items that must be in the DataBlock for
         the rules to be evaluated.
         """
+        self.logger.debug("in LE::consumes()")
         list_of_lists = [f.required_names for f in self.facts.values()]
         return list(set(chain(*list_of_lists)))
 
@@ -68,6 +70,7 @@ class LogicEngine(Module):
             }
         }
         """
+        self.logger.debug("in LE::_create_facts_dataframe")
         # Extract new facts from le_result
         # Dataframe column values for Facts
         rule_name = []
