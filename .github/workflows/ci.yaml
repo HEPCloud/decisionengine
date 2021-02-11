@@ -21,7 +21,10 @@ jobs:
 
     name: Python ${{ matrix.python-version }} unit tests
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout code tree
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Setup python
         uses: actions/setup-python@v2
@@ -40,12 +43,12 @@ jobs:
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
-      - name: Note Python version/implementation
+      - name: Note Python version/implementation/cache
         run: |
-          which python
-          python -c 'import sys; print(sys.version)'
-          python -c 'import platform; print(platform.python_implementation())'
-          python -m pip cache dir
+          which python3
+          python3 -c 'import sys; print(sys.version)'
+          python3 -c 'import platform; print(platform.python_implementation())'
+          python3 -m pip cache dir
 
       - name: Install dependencies
         run: |
@@ -71,7 +74,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout code tree
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v2
         with:
@@ -90,11 +96,12 @@ jobs:
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
-      - name: Note Python version/implementation
+      - name: Note Python version/implementation/cache
         run: |
-          which python
-          python -c 'import sys; print(sys.version)'
-          python -c 'import platform; print(platform.python_implementation())'
+          which python3
+          python3 -c 'import sys; print(sys.version)'
+          python3 -c 'import platform; print(platform.python_implementation())'
+          python3 -m pip cache dir
 
       - name: Install dependencies
         run: |
