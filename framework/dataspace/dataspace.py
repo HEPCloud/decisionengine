@@ -231,12 +231,26 @@ class Reaper():
         with self.state_lock:
             return self.state
 
+    def __has_state_no_lock(self, this_state):
+        '''
+        During startup we check state, but we don't want to lock
+        and prevent the thread from changing the state.
+        That is the condition we are activly looking for!
+        '''
+        return self.state == this_state
+
     def reap(self):
         self.datasource.delete_data_older_than(self.retention_interval)
 
     def _reaper_loop(self, delay):
+        '''
+        The first thing this loop does should be to set the state
+        to State.STARTING so the caller can validate the thread is
+        in fact running and doing things.
+        '''
+        self._set_state(State.STARTING)
+
         if delay:
-            self._set_state(State.STARTING)
             self.stop_event.wait(delay)
 
         while not self.stop_event.is_set():
@@ -261,12 +275,17 @@ class Reaper():
                                            target=self._reaper_loop,
                                            args=(delay, ),
                                            name="Reaper_loop_thread")
+
+            # clear error state if we are re-starting the thread
+            if self.state == State.ERROR:
+                self._set_state(State.IDLE)
+
             self.thread.start()
 
-            # make sure the thread actually started before returning
-            # this doesn't make sure the thread is running, just that the scheduler picked it up
+            # make sure the thread had a chance to actually start before returning
+            # this should make sure the thread is running, ie that the scheduler picked it up
             with self._cv:
-                self._cv.wait_for(lambda: True if self.get_state() != State.IDLE else False)
+                self._cv.wait_for(lambda: not self.__has_state_no_lock(State.IDLE), timeout=3)
 
     def stop(self):
         if self.thread and self.thread.is_alive() and not self.stop_event.is_set():

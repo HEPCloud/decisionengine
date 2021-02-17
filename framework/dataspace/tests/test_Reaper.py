@@ -38,16 +38,25 @@ class TestReaper(unittest.TestCase):
             self.reaper = dataspace.Reaper(GLOBAL_CONFIG)
 
     def tearDown(self):
-        pass
+        # Make sure there are no dangling reapers
+        try:
+            self.reaper.stop()
+            time.sleep(0.1)
+        except Exception:
+            pass
 
-    def test_reap(self):
+    def test_reap_default_state(self):
+        self.assertEqual(self.reaper.get_state(),
+                         dataspace.State.IDLE)
+
+    def test_reap_can_reap(self):
         self.assertEqual(self.reaper.get_state(),
                          dataspace.State.IDLE)
         self.reaper.reap()
 
     def test_start_stop(self):
         self.reaper.start()
-        self.assertTrue(self.reaper.get_state() in (dataspace.State.RUNNING, dataspace.State.SLEEPING))
+        self.assertIn(self.reaper.get_state(), (dataspace.State.STARTING, dataspace.State.RUNNING, dataspace.State.SLEEPING))
         self.reaper.stop()
         self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)
 
@@ -58,9 +67,12 @@ class TestReaper(unittest.TestCase):
         self.reaper.stop()
         self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)
 
-    def test_loop(self):
+    def test_loop_of_start_stop_in_clumps(self):
         for _ in range(3):
-            self.test_start_stop()
+            self.reaper.start()
+            self.assertIn(self.reaper.get_state(), (dataspace.State.STARTING, dataspace.State.RUNNING, dataspace.State.SLEEPING))
+            self.reaper.stop()
+            self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)
             time.sleep(1)
 
     def test_fail_missing_config_key(self):
@@ -77,7 +89,7 @@ class TestReaper(unittest.TestCase):
                 GLOBAL_CONFIG["dataspace"]["retention_interval_in_days"] = "abc"
                 dataspace.Reaper(GLOBAL_CONFIG)
 
-    def test_source_fail(self):
+    def test_source_fail_can_be_fixed(self):
         with mock.patch.object(MockSource, "delete_data_older_than") as function:
             function.side_effect = KeyError
             self.reaper.start()
@@ -87,7 +99,7 @@ class TestReaper(unittest.TestCase):
             self.assertEqual(self.reaper.get_state(), dataspace.State.ERROR)
             function.side_effect = None
             self.reaper.start()
-            self.assertTrue(self.reaper.get_state() in (dataspace.State.RUNNING, dataspace.State.SLEEPING))
+            self.assertIn(self.reaper.get_state(), (dataspace.State.STARTING, dataspace.State.RUNNING, dataspace.State.SLEEPING))
             self.reaper.stop()
             self.assertEqual(self.reaper.get_state(), dataspace.State.STOPPED)
 
