@@ -251,19 +251,23 @@ class Reaper():
         self._set_state(State.STARTING)
 
         if delay:
+            self.logger.info(f"Reaper has a start delay of: {delay}.")
             self.stop_event.wait(delay)
 
         while not self.stop_event.is_set():
             try:
+                self.logger.info("Reaper.reap() started.")
                 self._set_state(State.RUNNING)
                 self.reap()
-            except Exception as e:
-                self.logger.error("Reaper.reap() failed with {}".format(e))
+            except Exception:
+                self.logger.exception("Reaper.reap() failed.")
                 self._set_state(State.ERROR)
                 break
+            self.logger.debug("Reaper waiting for time/stop_event.")
             self._set_state(State.SLEEPING)
             self.stop_event.wait(86400)
         else:
+            self.logger.info("Reaper stopped")
             self._set_state(State.STOPPED)
 
     def start(self, delay=0):
