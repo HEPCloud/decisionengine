@@ -397,12 +397,26 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_lock</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span></div>
 
+    <span class="k">def</span> <span class="nf">__has_state_no_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">this_state</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        During startup we check state, but we don&#39;t want to lock</span>
+<span class="sd">        and prevent the thread from changing the state.</span>
+<span class="sd">        That is the condition we are activly looking for!</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">this_state</span>
+
 <div class="viewcode-block" id="Reaper.reap"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.Reaper.reap">[docs]</a>    <span class="k">def</span> <span class="nf">reap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">delete_data_older_than</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retention_interval</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Reaper._reaper_loop"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.Reaper._reaper_loop">[docs]</a>    <span class="k">def</span> <span class="nf">_reaper_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        The first thing this loop does should be to set the state</span>
+<span class="sd">        to State.STARTING so the caller can validate the thread is</span>
+<span class="sd">        in fact running and doing things.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STARTING</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">delay</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STARTING</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stop_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
 
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
@@ -427,12 +441,17 @@
                                            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_reaper_loop</span><span class="p">,</span>
                                            <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="p">),</span>
                                            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Reaper_loop_thread&quot;</span><span class="p">)</span>
+
+            <span class="c1"># clear error state if we are re-starting the thread</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">State</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_state</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">IDLE</span><span class="p">)</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-            <span class="c1"># make sure the thread actually started before returning</span>
-            <span class="c1"># this doesn&#39;t make sure the thread is running, just that the scheduler picked it up</span>
+            <span class="c1"># make sure the thread had a chance to actually start before returning</span>
+            <span class="c1"># this should make sure the thread is running, ie that the scheduler picked it up</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">!=</span> <span class="n">State</span><span class="o">.</span><span class="n">IDLE</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__has_state_no_lock</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">IDLE</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Reaper.stop"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.Reaper.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
