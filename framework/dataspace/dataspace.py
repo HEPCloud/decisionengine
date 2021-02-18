@@ -280,9 +280,8 @@ class Reaper():
                                            args=(delay, ),
                                            name="Reaper_loop_thread")
 
-            # clear error state if we are re-starting the thread
-            if self.state == State.ERROR:
-                self._set_state(State.IDLE)
+            # clear state if we are re-starting the thread
+            self._set_state(State.IDLE)
 
             self.thread.start()
 
