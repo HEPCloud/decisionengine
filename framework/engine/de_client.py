@@ -56,7 +56,22 @@ def create_parser():
         metavar="<channel name>")
     channels.add_argument(
         "--stop-channel",
-        metavar="<channel name>")
+        metavar="<channel name>",
+        help="Attempt clean shutdown of channel.")
+    channels.add_argument(
+        "--kill-channel",
+        metavar="<channel name>",
+        help="Same as --stop-channel, except the channel process will be killed "
+        "once the server's configured shutdown timeout window is exceeded")
+    kill_options = channels.add_mutually_exclusive_group()
+    kill_options.add_argument(
+        '-f', '--force',
+        action='store_true',
+        help="May be used with --kill-channel to immediately kill the channel process")
+    kill_options.add_argument(
+        '--timeout',
+        metavar="<seconds>",
+        help="May be specified with --kill-channel to override the DE server's configured timeout window.")
     channels.add_argument(
         "--show-config",
         action='store_true',
@@ -138,6 +153,19 @@ def execute_command_from_args(argsparsed, de_socket):
     # Channel-specific options
     if argsparsed.stop_channel:
         return de_socket.stop_channel(argsparsed.stop_channel)
+    if argsparsed.force:
+        if not argsparsed.kill_channel:
+            return "The --force (-f) option may be used only with --kill-channel."
+    if argsparsed.timeout:
+        if not argsparsed.kill_channel:
+            return "The --timeout option may be used only with --kill-channel."
+    if argsparsed.kill_channel:
+        timeout = None  # Use server-configured timeout
+        if argsparsed.force:
+            timeout = 0
+        elif argsparsed.timeout:
+            timeout = argsparsed.timeout
+        return de_socket.kill_chaannel(argsparsed.kill_channel, timeout)
     if argsparsed.start_channel:
         return de_socket.start_channel(argsparsed.start_channel)
     if argsparsed.stop_channels:

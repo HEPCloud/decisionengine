@@ -39,7 +39,7 @@ def test_restart_channel(deserver_mock_data_block):
 
     # Take channel offline
     output = deserver_mock_data_block.rpc_stop_channel('test_channel')
-    assert output == 'OK'
+    assert output == 'Channel test_channel stopped cleanly.'
 
     # Verify no channels are active
     output = deserver_mock_data_block.rpc_status()
