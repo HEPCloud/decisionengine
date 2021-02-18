@@ -38,5 +38,3 @@ set_target_properties(RE PROPERTIES SUFFIX ${EXT_SUFFIX})
 # Install in decisionengine/framework/logicengine subdirectory for
 # Python runtime availability
 install(TARGETS RE DESTINATION ${CMAKE_SOURCE_DIR}/../)
-
-add_custom_target(liblinks ln -s ${CMAKE_BINARY_DIR}/RE.so ${CMAKE_SOURCE_DIR}/../ COMMAND ln -s ${CMAKE_BINARY_DIR}/libLogicEngine.so ${CMAKE_SOURCE_DIR}/../)
