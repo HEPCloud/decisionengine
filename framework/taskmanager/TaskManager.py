@@ -176,7 +176,6 @@ class TaskManager:
 
         while not self.state.should_stop():
             try:
-                logging.getLogger().setLevel(self.loglevel.value)
                 self.wait_for_any(done_events)
                 self.decision_cycle()
                 if self.state.should_stop():
@@ -207,7 +206,7 @@ class TaskManager:
     def get_state_name(self):
         return self.get_state().name
 
-    def set_loglevel(self, log_level):
+    def set_loglevel_value(self, log_level):
         """Assumes log_level is a string corresponding to the supported logging-module levels."""
         with self.loglevel.get_lock():
             # Convert from string to int form using technique

@@ -20,7 +20,7 @@ _MANDATORY_CHANNEL_KEYS = {'sources', 'logicengines', 'transforms', 'publishers'
 _ALLOWED_CHANNEL_KEYS = _MANDATORY_CHANNEL_KEYS | {'task_manager'}
 _MANDATORY_MODULE_KEYS = {"module", "name", "parameters"}
 
-def _make_logger(global_config):
+def _make_de_logger(global_config):
     if 'logger' not in global_config:
         raise RuntimeError("No logger configuration has been specified.")
     try:
@@ -134,7 +134,7 @@ class ChannelConfigHandler():
     def __init__(self, global_config, channel_config_dir):
         self.channel_config_dir = channel_config_dir
         self.channels = {}
-        self.logger = _make_logger(global_config)
+        self.logger = _make_de_logger(global_config)
 
     def get_produces(self, channel_config):
         produces = {}

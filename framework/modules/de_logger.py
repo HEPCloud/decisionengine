@@ -41,7 +41,8 @@ def set_logging(log_level,
         return
 
     formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(module)s - %(threadName)s - %(levelname)s - %(message)s")
+        "%(asctime)s - %(name)s - %(module)s - %(threadName)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%dT%H:%M:%S%z")
 
     if file_rotate_by == "size":
         file_handler = logging.handlers.RotatingFileHandler(log_file_name,
@@ -97,7 +98,8 @@ def set_stream_logging(logger_name=''):
     """
     logger = logging.getLogger("decision_engine")
     formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s")
+        "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%dT%H:%M:%S%z")
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logger.addHandler(handler)

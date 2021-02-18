@@ -385,7 +385,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             log_level_code = getattr(logging, log_level)
             if worker.task_manager.get_loglevel() == log_level_code:
                 return f"Nothing to do. Current log level is : {log_level}"
-            worker.task_manager.set_loglevel(log_level)
+            worker.task_manager.set_loglevel_value(log_level)
         return f"Log level changed to : {log_level}"
 
     def rpc_reaper_start(self, delay=0):

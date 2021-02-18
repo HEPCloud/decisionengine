@@ -6,7 +6,8 @@ import threading
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 
 FORMATTER = logging.Formatter(
-    "%(asctime)s - %(name)s - %(module)s - %(process)d - %(threadName)s - %(levelname)s - %(message)s")
+    "%(asctime)s - %(name)s - %(module)s - %(process)d - %(threadName)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S%z")
 
 
 class Worker(multiprocessing.Process):
@@ -41,6 +42,7 @@ class Worker(multiprocessing.Process):
 
     def run(self):
         logger = logging.getLogger()
+        logger.setLevel(logging.WARNING)
         logger_rotate_by = self.logger_config.get("file_rotate_by", "size")
 
         if logger_rotate_by == "size":
@@ -61,10 +63,10 @@ class Worker(multiprocessing.Process):
                                                                      interval=self.logger_config.get("rotation_time_interval", '1'))
 
         file_handler.setFormatter(FORMATTER)
-        logger.setLevel(logging.WARNING)
         logger.addHandler(file_handler)
+
         channel_log_level = self.logger_config.get("global_channel_log_level", "WARNING")
-        self.task_manager.set_loglevel(channel_log_level)
+        self.task_manager.set_loglevel_value(channel_log_level)
         self.task_manager.run()
 
 
