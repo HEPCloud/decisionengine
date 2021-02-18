@@ -10,3 +10,6 @@ class Publisher(Module.Module):
 
     def publish(self, data_block=None):
         print("Called Publisher.publish")
+
+    def shutdown(self):
+        print("Called Publisher.shutdown")
