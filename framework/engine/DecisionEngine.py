@@ -335,16 +335,29 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             timeout = self.global_config.get("shutdown_timeout", 10)
         return self.rpc_rm_channel(channel, timeout)
 
-    def rpc_rm_channel(self, channel, timeout):
-        rc = self.stop_channel(channel, timeout)
+    def rpc_rm_channel(self, channel, maybe_timeout):
+        rc = self.rm_channel(channel, maybe_timeout)
         if rc == StopState.NotFound:
             return f"No channel found with the name {channel}."
         elif rc == StopState.Terminated:
-            if timeout == 0:
+            if maybe_timeout == 0:
                 return f"Channel {channel} has been killed."
-            return f"Channel {channel} has been killed due to shutdown timeout ({timeout} seconds)."
+            # Would be better to use something like the inflect
+            # module, but that introduces another dependency.
+            suffix = 's' if maybe_timeout > 1 else ''
+            return f"Channel {channel} has been killed due to shutdown timeout ({maybe_timeout} second{suffix})."
         assert rc == StopState.Clean
         return f"Channel {channel} stopped cleanly."
+
+    def rm_channel(self, channel, maybe_timeout):
+        rc = None
+        with self.workers.access() as workers:
+            if channel not in workers:
+                return StopState.NotFound
+            self.logger.debug(f"Trying to stop {channel}")
+            rc = self.stop_worker(workers[channel], maybe_timeout)
+            del workers[channel]
+        return rc
 
     def stop_worker(self, worker, timeout):
         if worker.is_alive():
@@ -355,16 +368,6 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             return StopState.Terminated
         else:
             return StopState.Clean
-
-    def stop_channel(self, channel, timeout):
-        rc = None
-        with self.workers.access() as workers:
-            if channel not in workers:
-                return StopState.NotFound
-            self.logger.debug(f"Trying to stop {channel}")
-            rc = self.stop_worker(workers[channel], timeout)
-            del workers[channel]
-        return rc
 
     def stop_channels(self):
         timeout = self.global_config.get("shutdown_timeout", 10)
