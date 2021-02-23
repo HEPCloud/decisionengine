@@ -6,9 +6,10 @@ After = network.target
 [Service]
 Type = simple
 EnvironmentFile = -/etc/sysconfig/decisionengine
-ExecStart = /usr/sbin/decision-engine start
-ExecStop = /usr/sbin/decision-engine stop
-ExecReload = /bin/kill -HUP $MAINPID
+User = decisionengine
+Group = decisionengine
+ExecStart = /usr/bin/decisionengine
+ExecStop = /usr/bin/de-client stop
 
 [Install]
 WantedBy = multi-user.target
