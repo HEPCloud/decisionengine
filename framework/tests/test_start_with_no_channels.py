@@ -56,11 +56,21 @@ def test_start_from_nothing(deserver_mock_data_block):
 
     # Take channel offline
     output = deserver.rpc_stop_channel('test_channel')
-    assert output == 'OK'
+    assert output == 'Channel test_channel stopped cleanly.'
 
     # Verify no channels are active
     output = deserver.rpc_status()
     assert "No channels are currently active" in output
+
+    # Bring channel back online
+    deserver.rpc_start_channel('test_channel')
+    deserver.block_while(State.BOOT)
+    output = deserver.rpc_status()
+    assert re.search('test_channel.*state = STEADY', output)
+
+    # Kill channel
+    output = deserver.rpc_kill_channel('test_channel', 0)
+    assert output == 'Channel test_channel has been killed.'
 
     # Verify that the relevant configuration file still exists.
     assert os.path.exists(new_config_path)

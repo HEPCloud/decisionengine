@@ -7,6 +7,7 @@ if this environment variable is not defined the ``DE-Config.py`` file from the `
 """
 
 import argparse
+import enum
 import importlib
 import logging
 import signal
@@ -26,6 +27,11 @@ import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
 
+
+class StopState(enum.Enum):
+    NotFound = 1
+    Clean = 2
+    Terminated = 3
 
 def _channel_preamble(name):
     header = f'Channel: {name}'
@@ -322,35 +328,57 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return "OK"
 
     def rpc_stop_channel(self, channel):
-        if not self.stop_channel(channel):
+        return self.rpc_rm_channel(channel, None)
+
+    def rpc_kill_channel(self, channel, timeout=None):
+        if timeout is None:
+            timeout = self.global_config.get("shutdown_timeout", 10)
+        return self.rpc_rm_channel(channel, timeout)
+
+    def rpc_rm_channel(self, channel, maybe_timeout):
+        rc = self.rm_channel(channel, maybe_timeout)
+        if rc == StopState.NotFound:
             return f"No channel found with the name {channel}."
-        return "OK"
+        elif rc == StopState.Terminated:
+            if maybe_timeout == 0:
+                return f"Channel {channel} has been killed."
+            # Would be better to use something like the inflect
+            # module, but that introduces another dependency.
+            suffix = 's' if maybe_timeout > 1 else ''
+            return f"Channel {channel} has been killed due to shutdown timeout ({maybe_timeout} second{suffix})."
+        assert rc == StopState.Clean
+        return f"Channel {channel} stopped cleanly."
 
-    def stop_worker(self, worker):
-        if worker.is_alive():
-            worker.task_manager.take_offline(None)
-            worker.join(self.global_config.get("shutdown_timeout", 10))
-        if worker.exitcode is None:
-            worker.terminate()
-
-    def stop_channel(self, channel):
+    def rm_channel(self, channel, maybe_timeout):
+        rc = None
         with self.workers.access() as workers:
             if channel not in workers:
-                return False
+                return StopState.NotFound
             self.logger.debug(f"Trying to stop {channel}")
-            self.stop_worker(workers[channel])
+            rc = self.stop_worker(workers[channel], maybe_timeout)
             del workers[channel]
-        return True
+        return rc
+
+    def stop_worker(self, worker, timeout):
+        if worker.is_alive():
+            worker.task_manager.take_offline(None)
+            worker.join(timeout)
+        if worker.exitcode is None:
+            worker.terminate()
+            return StopState.Terminated
+        else:
+            return StopState.Clean
 
     def stop_channels(self):
+        timeout = self.global_config.get("shutdown_timeout", 10)
         with self.workers.access() as workers:
             for worker in workers.values():
-                self.stop_worker(worker)
+                self.stop_worker(worker, timeout)
             workers.clear()
 
     def rpc_stop_channels(self):
         self.stop_channels()
-        return "OK"
+        return "All channels stopped."
 
     def handle_sighup(self, signum, frame):
         self.reaper_stop()
