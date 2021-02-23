@@ -186,7 +186,7 @@
 <span class="n">_ALLOWED_CHANNEL_KEYS</span> <span class="o">=</span> <span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">|</span> <span class="p">{</span><span class="s1">&#39;task_manager&#39;</span><span class="p">}</span>
 <span class="n">_MANDATORY_MODULE_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">}</span>
 
-<div class="viewcode-block" id="_make_logger"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._make_logger">[docs]</a><span class="k">def</span> <span class="nf">_make_logger</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
+<div class="viewcode-block" id="_make_de_logger"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._make_de_logger">[docs]</a><span class="k">def</span> <span class="nf">_make_de_logger</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
     <span class="k">if</span> <span class="s1">&#39;logger&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">global_config</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No logger configuration has been specified.&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -300,7 +300,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_dir</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">channel_config_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">_make_logger</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">_make_de_logger</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ChannelConfigHandler.get_produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.get_produces">[docs]</a>    <span class="k">def</span> <span class="nf">get_produces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
         <span class="n">produces</span> <span class="o">=</span> <span class="p">{}</span>
