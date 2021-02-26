@@ -2,7 +2,12 @@
     PEP-0396 provides instructions for providing module versions
     While we are at it, add a few other useful bits
 '''
-__version__ = '1.6.0rc'
+try:
+    # This is built by setuptools_scm
+    from .version import version as __version__  # noqa: F401
+except ImportError:
+    __version__ = 'DEVELOPMENT'
+
 __title__ = 'decisionengine'
 __description__ = 'The HEPCloud Decision Engine Framework'
 __author__ = 'Fermilab'
