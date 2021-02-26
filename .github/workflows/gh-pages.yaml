@@ -22,6 +22,9 @@ jobs:
         python-version: '3.9'
         architecture: 'x64'
 
+    - name: Merge requirements files into one
+      run: cat requirements/*.txt | sort -u | grep -v requirements-runtime.txt > requirements.txt
+
     - name: Cache pip
       uses: actions/cache@v2
       with:
@@ -50,23 +53,17 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
-        sudo pip install -U pip
-        sudo pip3 install sphinx
+        sudo python3 -m pip install -U pip
+        sudo python3 -m pip install sphinx
 
     - name: Install required modules for AST to parse the codebase
-      run: pip3 install -r requirements.txt
+      run: python3 -m pip install -r requirements.txt
 
     - name: Setup safe/unique tmp dir for out of tree storage
       run: rm -rf /tmp/${{ github.sha }}
 
-    - name: Make source code importable
-      run: |
-        touch __init__.py
-        cd ..
-        touch __init__.py
-
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=${GITHUB_WORKSPACE}/../" >> $GITHUB_ENV
+    - name: Ensure version.py exists
+      run: python3 setup.py bdist_wheel
 
     - name: Run sphinx to make docs
       run: |

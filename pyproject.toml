@@ -1,4 +1,17 @@
+[build-system]
+requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "src/decisionengine/framework/version.py"
+version_scheme = "post-release"
+
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-l -v --durations=0 --tb=long --full-trace --cov=decisionengine --cov-report term --no-cov-on-fail --cov-branch"
-testpaths = '../'
+addopts = "-l -v --durations=0"
+log_level = "debug"
+testpaths = "src/decisionengine"
+flake8-max-line-length = "120"
+flake8-ignore = "E501 E303 E302 E261 E265 W503 W504"
+flake8-show-source = "True"
+flake8-statistics = "True"
