@@ -1,4 +1,5 @@
 import abc
+import logging
 
 
 class DataSource(object, metaclass=abc.ABCMeta):
@@ -22,6 +23,8 @@ class DataSource(object, metaclass=abc.ABCMeta):
         """
 
         self.config = config
+        self.logger = logging.getLogger()
+        self.logger.debug('Initializing a datasource')
 
     def __repr__(self):
         return self.__str__()
@@ -37,6 +40,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type table: :obj:`string`
         :arg table: Name of the table
         """
+        self.logger.info('getting the datasource schema')
 
         schemas = {
             'taskmanager': [
@@ -84,6 +88,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         """
         Create a pool of database connections
         """
+        self.logger.info('datasource is creating the database connections')
         return
 
     @abc.abstractmethod
@@ -91,6 +96,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         """
         Create database tables
         """
+        self.logger.info('datasource is creating the database tables')
         return
 
     @abc.abstractmethod
@@ -113,6 +119,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type metadata: :obj:`~datablock.Metadata`
         :arg header: Metadata for the value
         """
+        self.logger.info('datasource is inserting data into the database tables')
         return
 
     @abc.abstractmethod
@@ -135,6 +142,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type metadata: :obj:`~datablock.Metadata`
         :arg header: Metadata for the value
         """
+        self.logger.info('datasource is updating data in the database tables')
         return
 
     @abc.abstractmethod
@@ -150,6 +158,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type key: :obj:`string`
         :arg key: key for the value
         """
+        self.logger.info('datasource is getting a dataproduct for a taskmanger')
         return
 
     @abc.abstractmethod
@@ -160,6 +169,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
 
         :type taskmanager_id: :obj:`string`
         """
+        self.logger.info('datasource is getting all dataproducts for a taskmanger')
         return
 
     @abc.abstractmethod
@@ -175,6 +185,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type key: :obj:`string`
         :arg key: key for the value
         """
+        self.logger.info('datasource is getting the header for a taskmanger')
         return
 
     @abc.abstractmethod
@@ -190,6 +201,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type key: :obj:`string`
         :arg key: key for the value
         """
+        self.logger.info('datasource is getting the metadata for a taskmanger')
         return
 
     @abc.abstractmethod
@@ -203,6 +215,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type generation_id: :obj:`int`
         :arg generation_id: generation_id of the data
         """
+        self.logger.info('datasource is getting the datablock for a taskmanger')
         return
 
     @abc.abstractmethod
@@ -219,6 +232,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type new_generation_id: :obj:`int`
         :arg new_generation_id: generation_id of the new datablock created
         """
+        self.logger.info('datasource is duplicating a datablock for a taskmanger')
         return
 
     @abc.abstractmethod
@@ -232,6 +246,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type taskmanager_id: :obj:`string`
         :arg taskmanager_id: task manager id
         """
+        self.logger.info('datasource is getting the last generation id for a taskmanager')
         return
 
     @abc.abstractmethod
@@ -239,6 +254,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         """
         Close all connections to the database
         """
+        self.logger.info('datasource is closing database connections')
         return
 
     @abc.abstractmethod
@@ -250,6 +266,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type taskmanager_id: :obj:`string`
         :arg taskmanager_id: id of taskmanager to retrieve
         """
+        self.logger.info('datasource is storing a taskmanager')
         return
 
     @abc.abstractmethod
@@ -261,6 +278,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type taskmanager_id: :obj:`string`
         :arg taskmanager_id: id of taskmanager to retrieve
         """
+        self.logger.info('datasource is getting all taskmanagers')
         return
 
     @abc.abstractmethod
@@ -272,6 +290,7 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type taskmanager_id: :obj:`string`
         :arg taskmanager_id: id of taskmanager to retrieve
         """
+        self.logger.info('datasource is getting a taskmanager')
         return
 
     @abc.abstractmethod
@@ -281,4 +300,5 @@ class DataSource(object, metaclass=abc.ABCMeta):
         :type days: :obj:`long`
         :arg days: remove data older than interval
         """
+        self.logger.info('datasource is deleting data')
         return
