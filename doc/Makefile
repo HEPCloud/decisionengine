@@ -17,10 +17,8 @@ help:
 
 rst:
 	@$(SPHINXDOC)  --ext-autodoc --ext-coverage --ext-viewcode \
-	 -P -F -T -l -f -o "$(SOURCEDIR)"/code \
-	../ ../framework/dataspace/tests \
-	../framework/util/tests ../framework/engine/tests
-	rm -f source/code/setup.rst
+	--force --private --follow-links --full \
+	-o "$(SOURCEDIR)"/code ../src/decisionengine ../src/*test*
 clean:
 	@rm -rf "$(SOURCEDIR)"/code "$(BUILDDIR)"
 
