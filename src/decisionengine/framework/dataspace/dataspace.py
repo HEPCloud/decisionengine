@@ -79,18 +79,24 @@ class DataSpace():
         :arg config: Configuration dictionary
         """
 
+        self.logger = logging.getLogger()
+        self.logger.debug('Initializing a dataspace')
+
         # Validate configuration
         if not config.get('dataspace'):
+            self.logger.exception("Error in initializing DataSpace!")
             raise DataSpaceConfigurationError('Configuration is missing dataspace information: dataspace key not found.')
         elif not isinstance(config.get('dataspace'), dict):
+            self.logger.exception("Error in initializing DataSpace!")
             raise DataSpaceConfigurationError('Invalid dataspace configuration: '
                                               'dataspace key must correspond to a dictionary')
         try:
             self._db_driver_name = config['dataspace']['datasource']['name']
             self._db_driver_module = config['dataspace']['datasource']['module']
             self._db_driver_config = config['dataspace']['datasource']['config']
-        except KeyError as e:
-            raise DataSpaceConfigurationError(f'Invalid dataspace configuration: {e}')
+        except KeyError:
+            self.logger.exception("Error in initializing DataSpace!")
+            raise DataSpaceConfigurationError('Invalid dataspace configuration')
 
         self.datasource = DataSourceLoader().create_datasource(self._db_driver_module,
                                                                self._db_driver_name,
@@ -101,25 +107,41 @@ class DataSpace():
         self.prev_datablocks = {}
 
         # Connect to the database
-        self.datasource.connect()
+        try:
+            self.datasource.connect()
+        except DataSpaceConnectionError:
+            self.logger.exception('Cannot connect to the datasource!')
+            raise
 
         # Create tables if not created
         if not DataSpace._tables_created:
-            self.datasource.create_tables()
-            DataSpace._tables_created = True
+            try:
+                self.datasource.create_tables()
+                DataSpace._tables_created = True
+            except Exception:
+                self.logger.exception('Cannot create datebase tables')
+                raise
 
     def __str__(self):
         return '%s' % vars(self)
 
     def insert(self, taskmanager_id, generation_id, key,
                value, header, metadata):
-        self.datasource.insert(taskmanager_id, generation_id, key,
-                               value, header, metadata)
+        try:
+            self.datasource.insert(taskmanager_id, generation_id, key,
+                                   value, header, metadata)
+        except Exception:
+            self.logger.exception("Error in dataspace insert!")
+            raise
 
     def update(self, taskmanager_id, generation_id, key,
                value, header, metadata):
-        self.datasource.update(taskmanager_id, generation_id, key,
-                               value, header, metadata)
+        try:
+            self.datasource.update(taskmanager_id, generation_id, key,
+                                   value, header, metadata)
+        except Exception:
+            self.logger.exception("Error in dataspace update!")
+            raise
 
     def get_dataproduct(self, taskmanager_id, generation_id, key):
         return self.datasource.get_dataproduct(taskmanager_id, generation_id, key)
@@ -186,9 +208,14 @@ class Reaper():
         :arg config: Configuration dictionary
         """
         # Validate configuration
+        self.logger = logging.getLogger()
+        self.logger.debug('Initializing a reaper')
+
         if not config.get('dataspace'):
+            self.logger.exception("Error in initializing Reaper!")
             raise DataSpaceConfigurationError('Configuration is missing dataspace information: dataspace key not found.')
         elif not isinstance(config.get('dataspace'), dict):
+            self.logger.exception("Error in initializing Reaper!")
             raise DataSpaceConfigurationError('Invalid dataspace configuration: '
                                               'dataspace key must correspond to a dictionary')
         try:
@@ -197,10 +224,12 @@ class Reaper():
             db_driver_config = config['dataspace']['datasource']['config']
             self.retention_interval = int(config['dataspace']['retention_interval_in_days'])
             if self.retention_interval < MIN_RETENTION_INTERVAL_DAYS:
+                self.logger.exception("Error in initializing Reaper!")
                 raise ValueError("For safety the data retention interval has to be greater than {} days".
                                  format(MIN_RETENTION_INTERVAL_DAYS))
-        except KeyError as e:
-            raise DataSpaceConfigurationError(f'Invalid dataspace configuration: {e}')
+        except KeyError:
+            self.logger.exception("Error in initializing Reaper!")
+            raise DataSpaceConfigurationError('Invalid dataspace configuration')
 
         self.datasource = DataSourceLoader().create_datasource(db_driver_module,
                                                                db_driver_name,
@@ -218,6 +247,7 @@ class Reaper():
 
     def set_retention_interval(self, interval):
         if int(interval) < MIN_RETENTION_INTERVAL_DAYS:
+            self.logger.exception("Error in setting the retention interval")
             raise ValueError("For safety the data retention interval has to be greater than {} days".
                              format(MIN_RETENTION_INTERVAL_DAYS))
         self.retention_interval = interval
@@ -275,15 +305,18 @@ class Reaper():
         Start thread with an optional delay to start the thread in X seconds
         '''
         if (not self.thread or not self.thread.is_alive()) and not self.stop_event.is_set():
-            self.thread = threading.Thread(group=None,
-                                           target=self._reaper_loop,
-                                           args=(delay, ),
-                                           name="Reaper_loop_thread")
+            try:
+                self.thread = threading.Thread(group=None,
+                                               target=self._reaper_loop,
+                                               args=(delay, ),
+                                               name="Reaper_loop_thread")
 
-            # clear state if we are re-starting the thread
-            self._set_state(State.IDLE)
+                # clear state if we are re-starting the thread
+                self._set_state(State.IDLE)
 
-            self.thread.start()
+                self.thread.start()
+            except Exception:
+                self.logger.exception('Reaper loop thread not started')
 
             # make sure the thread had a chance to actually start before returning
             # this should make sure the thread is running, ie that the scheduler picked it up

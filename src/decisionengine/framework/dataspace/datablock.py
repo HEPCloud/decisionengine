@@ -5,6 +5,7 @@ import threading
 import time
 import uuid
 import zlib
+import logging
 from collections import UserDict
 
 ###############################################################################
@@ -99,7 +100,8 @@ class Metadata(UserDict):
         """
         UserDict.__init__(self)
         if state not in Metadata.valid_states:
-            raise InvalidMetadataError('Invalid Metadata state "%s"' % state)
+            logging.getLogger().exception(f'Invalid Metadata state: {state}')
+            raise InvalidMetadataError()
         if not generation_time:
             generation_time = time.time()
 
@@ -119,8 +121,8 @@ class Metadata(UserDict):
         """
 
         if state not in Metadata.valid_states:
-            raise InvalidMetadataError(
-                '%s is not a valid Metadata state' % state)
+            logging.getLogger().exception(f'{state} is not a valid Metadata state')
+            raise InvalidMetadataError()
         self.data['state'] = state
 
 
@@ -169,9 +171,11 @@ class Header(UserDict):
         """
         Check if the Header has minimum required information
         """
-
-        return set(self.data.keys()).issubset(Header.required_keys)
-
+        try:
+            return set(self.data.keys()).issubset(Header.required_keys)
+        except Exception:
+            logging.getLogger().exception("Unexpected error checking Header information")
+            raise
 
 class DataBlock(object):
 
@@ -185,6 +189,8 @@ class DataBlock(object):
         :type generation_id: :obj:`int`
         """
 
+        self.logger = logging.getLogger()
+        self.logger.debug('Initializing a datablock')
         self.dataspace = dataspace
 
         # If taskmanager_id is None create new or
@@ -327,17 +333,21 @@ class DataBlock(object):
     def get_dataproducts(self):
         values = self.dataspace.get_dataproducts(self.sequence_id)
         result = []
-        for value in values:
-            v = ast.literal_eval(decompress(value.get("value")))
-            if v.get("pickled"):
-                v = zloads(v.get("value"))
-            else:
-                v = value.get("value")
-            result.append({"key": value["key"],
-                           "generation_id": value["generation_id"],
-                           "taskmanager_id": value["taskmanager_id"],
-                           "value": v})
-            return result
+
+        try:
+            for value in values:
+                v = ast.literal_eval(decompress(value.get("value")))
+                if v.get("pickled"):
+                    v = zloads(v.get("value"))
+                else:
+                    v = value.get("value")
+                result.append({"key": value["key"],
+                               "generation_id": value["generation_id"],
+                               "taskmanager_id": value["taskmanager_id"],
+                               "value": v})
+        except Exception:
+            self.logger.exception("Unexpected error in get_dataproducts")
+        return result
 
     def __getitem__(self, key, default=None):
         """
@@ -353,9 +363,11 @@ class DataBlock(object):
                                                    self.generation_id, key)
             value = ast.literal_eval(decompress(value))
         except KeyError:
+            self.logger.error("Did not get key in datablock __getitem__")
             value = default
 
         if not value:
+            self.logger.exception("No Key in datablock __getitem__")
             raise KeyError
 
         if value.get('pickled'):
@@ -418,6 +430,7 @@ class DataBlock(object):
         """
         Check if the dataproduct for a given key or any key is expired
         """
+        self.logger.info('datablock is checking for expired dataproducts')
         pass
 
     def mark_expired(self, expiration_time):
@@ -425,4 +438,5 @@ class DataBlock(object):
         Set the expiration_time for the current generation of the dataproduct
         and mark it as expired if expiration_time <= current time
         """
+        self.logger.info('datablock is marking expired dataproducts')
         pass
