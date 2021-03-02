@@ -46,6 +46,5 @@ Test
 .. code-block::
 
    git clone https://github.com/HEPCloud/decisionengine_modules
-   cd ..
    ./decisionengine_modules/.github/actions/unittest-in-sl7-docker/entrypoint.sh
 
