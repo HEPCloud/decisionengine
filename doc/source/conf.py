@@ -11,7 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import sphinx_rtd_theme
+import sphinx_rtd_theme  # noqa
 import sys
 import time
 
@@ -21,13 +21,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(__name__), '..'))
 sys.path.insert(0, os.path.join(os.path.dirname(__name__), '../..'))
 
 # -- Project information -----------------------------------------------------
+from decisionengine.framework.about import __version__, __title__, __author__  # noqa
 
-project = 'decisionengine'
-copyright = '{}, Fermi Research Alliance, LLC.'.format(time.localtime().tm_year)
-author = 'Fermi Research Alliance, LLC.'
+project = __title__
+copyright = '{}, {}'.format(time.localtime().tm_year, __author__)
+author = __author__
 
 # The full version, including alpha/beta/rc tags
-release = '1.1.1'
+release = __version__
 
 
 # -- General configuration ---------------------------------------------------

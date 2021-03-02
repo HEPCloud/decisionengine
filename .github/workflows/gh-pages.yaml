@@ -12,36 +12,58 @@ jobs:
   build-docs:
     runs-on: ubuntu-latest
     steps:
-
     - name: checkout code tree
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+        architecture: 'x64'
+
+    - name: Merge requirements files into one
+      run: cat requirements/*.txt | sort -u | grep -v requirements-runtime.txt > requirements.txt
+
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        # This path is specific to Ubuntu
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-3.9
+        restore-keys: |
+          ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
+
+    - name: Note Python version/implementation/cache
+      run: |
+        which python3
+        python3 -c 'import sys; print(sys.version)'
+        python3 -c 'import platform; print(platform.python_implementation())'
+        python3 -m pip cache dir
 
     - name: Configure owner of git commits
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
 
-    - name: Install sphinx within the container
+    - name: Install sphinx expected fonts within the container
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-pip python3-psycopg2 latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
-        sudo pip install -U pip
-        sudo pip3 install sphinx
+        sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+        sudo python3 -m pip install -U pip
+        sudo python3 -m pip install sphinx
 
     - name: Install required modules for AST to parse the codebase
-      run: pip3 install -r requirements.txt
+      run: python3 -m pip install -r requirements.txt
 
     - name: Setup safe/unique tmp dir for out of tree storage
       run: rm -rf /tmp/${{ github.sha }}
 
-    - name: Make source code importable
-      run: |
-        touch __init__.py
-        cd ..
-        touch __init__.py
-
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=${GITHUB_WORKSPACE}/../" >> $GITHUB_ENV
+    - name: Ensure version.py exists
+      run: python3 setup.py bdist_wheel
 
     - name: Run sphinx to make docs
       run: |

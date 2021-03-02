@@ -1,38 +1,14 @@
 FROM sl:7
-RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm yum-plugin-priorities \
-    && yum -y clean all
-RUN yum -y install https://repo.opensciencegrid.org/osg/3.5/osg-3.5-el7-release-latest.rpm \
-    && yum -y clean all
 RUN yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm \
     && yum -y clean all
-RUN yum -y install yum-conf-softwarecollections && yum -y clean all
 RUN yum -y install \
-  gcc gcc-c++ libgcc \
-  python-pip \
+  python3 python3-devel python3-pip python3-wheel \
+  gcc gcc-c++ make \
   git \
-  tmux \
-  libevent-devel \
-  ncurses-devel \
-  graphviz.x86_64 \
   rpm-build \
-  rpm-build-libs \
-  rpm-devel \
-  mock \
-  python3-devel make \
-  python-devel \
-  redhat-lsb-core \
-  python36-virtualenv \
-  python-virtualenv \
-  postgresql11-server \
-  postgresql11-devel \
-  python36-pip \
-  python36-m2crypto \
-  python-rrdtool \
-  osg-wn-client \
-  vo-client \
-  voms-clients-cpp \
-  python36-ldap3 \
-  python36-jwt \
-  PyYAML \
+  postgresql96-server postgresql96 postgresql96-devel \
   && yum -y clean all
+RUN git clone https://github.com/HEPCloud/decisionengine.git
+RUN python3 -m pip install -r decisionengine/requirements/requirements-runtime.txt
+RUN python3 -m pip install -r decisionengine/requirements/requirements-develop.txt
 ENTRYPOINT ["/bin/bash"]

@@ -20,6 +20,7 @@ rst:
 	 -P -F -T -l -f -o "$(SOURCEDIR)"/code \
 	../ ../framework/dataspace/tests \
 	../framework/util/tests ../framework/engine/tests
+	rm -f source/code/setup.rst
 clean:
 	@rm -rf "$(SOURCEDIR)"/code "$(BUILDDIR)"
 
