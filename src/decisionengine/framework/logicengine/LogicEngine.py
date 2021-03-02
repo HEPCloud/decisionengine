@@ -33,7 +33,21 @@ class LogicEngine(Module):
         :rtype: dict
         :returns: Evaluated fact values (e.g. True or False) for each fact name.
         """
-        return {name: f.evaluate(db) for name, f in self.facts.items()}
+        try:
+            return {name: f.evaluate(db) for name, f in self.facts.items()}
+        except NameError as e:
+            msg = f"The following error was encountered: {e}\n"
+            if len(db) == 0:
+                msg += "No fact names are available."
+            else:
+                msg += "Allowed fact names are:\n"
+                for key in db:
+                    msg += "  '" + key + "'\n"
+            self.logger.error(msg)
+            raise e
+        except Exception as e:
+            self.logger.exception("Unexpected exception while evaluating facts.")
+            raise e
 
     def evaluate(self, db):
         """
