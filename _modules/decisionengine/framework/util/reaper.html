@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.Publisher &mdash; decisionengine 1.6.0rc0.post18+g8154b24 documentation</title>
+  <title>decisionengine.framework.util.reaper &mdash; decisionengine 1.6.0rc0.post18+g8154b24 documentation</title>
   
 
   
@@ -144,7 +144,7 @@
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
-      <li>decisionengine.framework.modules.Publisher</li>
+      <li>decisionengine.framework.util.reaper</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -159,22 +159,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for decisionengine.framework.modules.Publisher</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Module</span>
+  <h1>Source code for decisionengine.framework.util.reaper</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A stand-alone script purges data in database older than specified</span>
+<span class="sd">in configuration. Configuration file has to have this bit added:</span>
+<span class="sd">   {</span>
+<span class="sd">     &quot;dataspace&quot; : { &quot;retention_interval_in_days&quot; : 365,</span>
+<span class="sd">                      &quot;datasource&quot; :  { ... }</span>
+<span class="sd">                   }</span>
+<span class="sd">    }</span>
+<span class="sd">Can be used in a cron job.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pwd</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">decisionengine.framework.config.policies</span> <span class="k">as</span> <span class="nn">policies</span>
+<span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.config.ValidConfig</span> <span class="kn">import</span> <span class="n">ValidConfig</span>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.reaper.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">pwd</span><span class="o">.</span><span class="n">getpwuid</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">())</span><span class="o">.</span><span class="n">pw_name</span>
+    <span class="k">if</span> <span class="n">username</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="s1">&#39;decisionengine&#39;</span><span class="p">]:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;User &#39;</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&#39; is not allowed to run this script.&quot;</span><span class="p">)</span>
+
+    <span class="n">config_file</span> <span class="o">=</span> <span class="n">policies</span><span class="o">.</span><span class="n">global_config_file</span><span class="p">()</span>
+    <span class="n">global_config</span> <span class="o">=</span> <span class="n">ValidConfig</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+    <span class="n">reaper</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">Reaper</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
+    <span class="n">reaper</span><span class="o">.</span><span class="n">reap</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Publisher"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Publisher.Publisher">[docs]</a><span class="k">class</span> <span class="nc">Publisher</span><span class="p">(</span><span class="n">Module</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_of_parameters</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">set_of_parameters</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Publisher.consumes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Publisher.Publisher.consumes">[docs]</a>    <span class="k">def</span> <span class="nf">consumes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_list</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Publisher.consumes&quot;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Publisher.publish"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Publisher.Publisher.publish">[docs]</a>    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_block</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Publisher.publish&quot;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Publisher.shutdown"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Publisher.Publisher.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Publisher.shutdown&quot;</span><span class="p">)</span></div></div>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
 </pre></div>
 
            </div>

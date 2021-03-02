@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.logicengine.BooleanExpression &mdash; decisionengine 1.6.0rc documentation</title>
+  <title>decisionengine.framework.logicengine.BooleanExpression &mdash; decisionengine 1.6.0rc0.post18+g8154b24 documentation</title>
   
 
   
@@ -89,10 +89,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.3.html">Release 1.3.0</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.2.html">Release 1.2.0</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html">Decisionengine framework</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
@@ -178,14 +174,16 @@
 <span class="kn">import</span> <span class="nn">ast</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="c1"># If support for direct use of numpy and pandas functions becomes</span>
-<span class="c1"># wanted, then uncomment the following two import statements, and</span>
-<span class="c1"># switch the definition of facts_globals to the commented-out</span>
-<span class="c1"># version.#</span>
+<span class="c1"># If support for direct use of numpy and pandas functions is desired,</span>
+<span class="c1"># import the numpy and pandas modules and adjust the facts_globals:</span>
+<span class="c1">#   facts_globals.update(np=np, pd=pd)</span>
 
-<span class="n">facts_globals</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="c1"># facts_globals = {&quot;np&quot;: np, &quot;pd&quot;: pd}</span>
 
+<div class="viewcode-block" id="fail_on_error"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.BooleanExpression.fail_on_error">[docs]</a><span class="k">def</span> <span class="nf">fail_on_error</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<span class="n">facts_globals</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fail_on_error&#39;</span><span class="p">:</span> <span class="n">fail_on_error</span><span class="p">}</span>
 
 <div class="viewcode-block" id="LogicError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.BooleanExpression.LogicError">[docs]</a><span class="k">class</span> <span class="nc">LogicError</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
     <span class="k">pass</span></div>
@@ -215,6 +213,7 @@
         <span class="n">syntax_tree</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
         <span class="n">all_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">syntax_tree</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)]</span>
         <span class="n">func_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">function_name_from_call</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">syntax_tree</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fail_on_error</span> <span class="o">=</span> <span class="n">func_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;fail_on_error&#39;</span> <span class="k">if</span> <span class="n">func_names</span> <span class="k">else</span> <span class="kc">False</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">required_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">all_names</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">func_names</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">expr</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">syntax_tree</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
@@ -223,7 +222,14 @@
         <span class="sd">&quot;&quot;&quot;Return the evaluated Boolen value of this expression in the context</span>
 <span class="sd">        of the given data &#39;d&#39;.&quot;&quot;&quot;</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;calling NamedFact::evaluate()&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">,</span> <span class="n">facts_globals</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">,</span> <span class="n">facts_globals</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fail_on_error</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;The following exception was suppressed, and the &quot;</span>
+                                              <span class="s2">&quot;Boolean expression will evaluate to False.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">raise</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expr_str</span><span class="si">}</span><span class="s2">&quot;</span></div>
