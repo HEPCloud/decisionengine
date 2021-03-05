@@ -11,7 +11,7 @@ on:
       - '!gh-pages'   # excludes gh-pages branch
 
 jobs:
-  rpm_build_job:
+  pytest:
     runs-on: ubuntu-latest
     name: A job to test the decision engine framework on EL7
 
@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run the tests in a container (SL7/HEPCloud-CI)
-        uses: ./.github/actions/pytest-in-sl7-container
+        uses: ./.github/actions/python-command-in-sl7-container
 
       - name: Archive logs
         uses: actions/upload-artifact@v2

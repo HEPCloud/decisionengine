@@ -188,3 +188,26 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
           pytest -m flake8 --flake8
+
+  rpmbuild_el7:
+    name: Build an EL7 rpm
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: checkout code tree
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Run the build in a container (SL7/HEPCloud-CI)
+        uses: ./.github/actions/python-command-in-sl7-container
+        with:
+          python-command: 'setup.py bdist_rpm'
+          logfile: 'rpmbuild.log'
+
+      - name: Archive rpm
+        uses: actions/upload-artifact@v2
+        with:
+          name: rpms
+          path: dist/*.rpm
+          if-no-files-found: error
