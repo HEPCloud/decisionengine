@@ -3,7 +3,7 @@ pipeline {
     stages{
         stage('DE tests') {
             parallel {
-                stage('pylint') {
+                stage('flake8') {
                     agent {
                         node {
                             label 'docker'
@@ -13,7 +13,7 @@ pipeline {
                     steps {
                         script {
                             // DOCKER_IMAGE is defined through Jenkins project
-                            pylintStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                            flake8StageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
                             // Set custom Build Name
                             if (params.GITHUB_PR_NUMBER) {
                                 if (params.GITHUB_PR_STATE == 'CLOSED') {
@@ -41,16 +41,16 @@ pipeline {
                             fi
                             cd ..
                         '''
-                        echo "prepare docker image ${pylintStageDockerImage}"
-                        sh "docker build --pull --tag ${pylintStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg USER=\$(id -u) --build-arg GROUP=\$(id -g) -f decisionengine/.github/actions/pylint-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/pylint-in-sl7-docker/"
+                        echo "prepare docker image ${flake8StageDockerImage}"
+                        sh "docker build --pull --tag ${flake8StageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/Dockerfile decisionengine/package/ci/"
                         echo "Run ${STAGE_NAME} tests"
-                        sh "docker run --rm -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE} ${pylintStageDockerImage}"
+                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${flake8StageDockerImage} \"-m pytest -m flake8 --flake8\" \"flake8.log\""
                     }
                     post {
                         always {
-                            archiveArtifacts artifacts: "pep8.*.log,pylint.*.log,results.*.log,mail.results"
-                            echo "cleanup docker image ${pylintStageDockerImage}"
-                            sh "docker rmi ${pylintStageDockerImage}"
+                            archiveArtifacts artifacts: "decisionengine/flake8.log"
+                            echo "cleanup docker image ${flake8StageDockerImage}"
+                            sh "docker rmi ${flake8StageDockerImage}"
                         }
                     }
                 }
@@ -83,13 +83,13 @@ pipeline {
                             cd ..
                         '''
                         echo "prepare docker image ${unit_testsStageDockerImage}"
-                        sh "docker build --pull --tag ${unit_testsStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg USER=\$(id -u) --build-arg GROUP=\$(id -g) -f decisionengine/.github/actions/unittest-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/unittest-in-sl7-docker"
+                        sh "docker build --pull --tag ${unit_testsStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/Dockerfile decisionengine/package/ci/"
                         echo "Run ${STAGE_NAME} tests"
-                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE} ${unit_testsStageDockerImage}"
+                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${unit_testsStageDockerImage} \"-m pytest --cov-report term --cov=decisionengine --no-cov-on-fail\" \"pytest.log\""
                     }
                     post {
                         always {
-                            archiveArtifacts artifacts: "pytest.log"
+                            archiveArtifacts artifacts: "decisionengine/pytest.log"
                             echo "cleanup docker image ${unit_testsStageDockerImage}"
                             sh "docker rmi ${unit_testsStageDockerImage}"
                             }
@@ -124,13 +124,13 @@ pipeline {
                             cd ..
                         '''
                         echo "prepare docker image ${rpmbuildStageDockerImage}"
-                        sh "docker build --pull --tag ${rpmbuildStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg USER=\$(id -u) --build-arg GROUP=\$(id -g) -f decisionengine/.github/actions/rpmbuild-in-sl7-docker/Dockerfile.jenkins decisionengine/.github/actions/rpmbuild-in-sl7-docker"
+                        sh "docker build --pull --tag ${rpmbuildStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/Dockerfile decisionengine/package/ci/"
                         echo "Run ${STAGE_NAME} tests"
-                        sh "docker run --rm -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE} ${rpmbuildStageDockerImage}"
+                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${rpmbuildStageDockerImage} \"setup.py bdist_rpm\" \"rpmbuild.log\""
                     }
                     post {
                         always {
-                            archiveArtifacts artifacts: "rpmbuild.tar"
+                            archiveArtifacts artifacts: "decisionengine/rpmbuild.log,decisionengine/dist/*.rpm"
                             echo "cleanup docker image ${rpmbuildStageDockerImage}"
                             sh "docker rmi ${rpmbuildStageDockerImage}"
                         }
