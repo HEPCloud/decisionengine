@@ -21,6 +21,8 @@ def test_client_print_product(deserver):
         "|  1 | value2 | 2      |\n" \
         "|  2 | value3 | Test   |\n" \
         "+----+--------+--------+"
+    output = deserver.de_client_run_cli('--print-product', 'NO_SUCH_PRODUCT')
+    assert output == "Product NO_SUCH_PRODUCT: Not produced by any module"
 
     # Test --types
     output = deserver.de_client_run_cli('--print-product', 'foo', '--types')
@@ -33,6 +35,59 @@ def test_client_print_product(deserver):
         "|  1 | value2 | str         | 2      | int         |\n" \
         "|  2 | value3 | str         | Test   | str         |\n" \
         "+----+--------+-------------+--------+-------------+"
+
+    # Test specific columns only
+    output = deserver.de_client_run_cli('--print-product', 'foo', '--columns', 'key1')
+    assert output == \
+        "Product foo:  Found in channel test_channel\n" \
+        "+----+--------+\n" \
+        "|    | key1   |\n" \
+        "|----+--------|\n" \
+        "|  0 | value1 |\n" \
+        "|  1 | value2 |\n" \
+        "|  2 | value3 |\n" \
+        "+----+--------+"
+
+    output = deserver.de_client_run_cli('--print-product', 'foo', '--columns', 'key1,key2')
+    assert output == \
+        "Product foo:  Found in channel test_channel\n" \
+        "+----+--------+--------+\n" \
+        "|    | key1   | key2   |\n" \
+        "|----+--------+--------|\n" \
+        "|  0 | value1 | 0.1    |\n" \
+        "|  1 | value2 | 2      |\n" \
+        "|  2 | value3 | Test   |\n" \
+        "+----+--------+--------+"
+
+    # Test query
+    output = deserver.de_client_run_cli('--print-product', 'foo', '--query', 'key2 == 2')
+    assert output == \
+        "Product foo:  Found in channel test_channel\n" \
+        "+----+--------+--------+\n" \
+        "|    | key1   |   key2 |\n" \
+        "|----+--------+--------|\n" \
+        "|  1 | value2 |      2 |\n" \
+        "+----+--------+--------+"
+
+    # Test query and column names
+    output = deserver.de_client_run_cli('--print-product', 'foo', '--query', 'key2 == 2', '--columns', 'key2')
+    assert output == \
+        "Product foo:  Found in channel test_channel\n" \
+        "+----+--------+\n" \
+        "|    |   key2 |\n" \
+        "|----+--------|\n" \
+        "|  1 |      2 |\n" \
+        "+----+--------+"
+
+    output = deserver.de_client_run_cli('--print-product', 'foo', '--query', 'key2 == 2', '--columns', 'key1,key2')
+    assert output == \
+        "Product foo:  Found in channel test_channel\n" \
+        "+----+--------+--------+\n" \
+        "|    | key1   |   key2 |\n" \
+        "|----+--------+--------|\n" \
+        "|  1 | value2 |      2 |\n" \
+        "+----+--------+--------+"
+
 
     # Test --format vertical
     output = deserver.de_client_run_cli('--print-product', 'foo', '--format', 'vertical')
