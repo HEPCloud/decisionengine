@@ -24,3 +24,9 @@ def test_client_with_no_server():
     assert de_client.main(['--status']) == \
         "An error occurred while trying to access a DE server at 'http://localhost:8888'\n" + \
         "Please ensure that the host and port names correspond to a running DE instance."
+
+def test_exclusive_options():
+    assert de_client.main(['--force']) == \
+        "The --force (-f) option may be used only with --kill-channel."
+    assert de_client.main(['--timeout', '2']) == \
+        "The --timeout option may be used only with --kill-channel."

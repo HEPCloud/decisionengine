@@ -129,7 +129,7 @@ class TaskManager:
 
             for e in events_done:
                 e.clear()
-        except Exception:
+        except Exception:  # pragma: no cover
             logging.getLogger().exception("Unexpected error!")
             raise
 
@@ -149,7 +149,7 @@ class TaskManager:
             for e in events_done:
                 if e.is_set():
                     e.clear()
-        except Exception:
+        except Exception:  # pragma: no cover
             logging.getLogger().exception("Unexpected error!")
             raise
 
@@ -187,7 +187,7 @@ class TaskManager:
                         transform.stop_running.set()
                         time.sleep(5)
                     break
-            except Exception:
+            except Exception:  # pragma: no cover
                 logging.getLogger().exception("Exception in the task manager main loop")
                 logging.getLogger().error('Error occured. Task Manager %s exits with state %s',
                                           self.id, self.get_state_name())
@@ -469,7 +469,7 @@ class TaskManager:
             header = datablock.Header(data_block.taskmanager_id,
                                       create_time=t, creator='logicengine')
             self.data_block_put(data, header, data_block)
-        except Exception:
+        except Exception:  # pragma: no cover
             logging.getLogger().exception("Unexpected error!")
             raise
         else:
