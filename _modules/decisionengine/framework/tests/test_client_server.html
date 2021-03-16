@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 1.6.0rc documentation</title>
+  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 1.6.0rc0.post35+g2551e07 documentation</title>
   
 
   
@@ -91,8 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html">Decisionengine framework</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../unittest.html#decisionengine-modules">Decisionengine_modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
@@ -187,6 +186,8 @@
         <span class="s2">&quot;|  1 | value2 | 2      |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|  2 | value3 | Test   |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;+----+--------+--------+&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;NO_SUCH_PRODUCT&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;Product NO_SUCH_PRODUCT: Not produced by any module&quot;</span>
 
     <span class="c1"># Test --types</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--types&#39;</span><span class="p">)</span>
@@ -199,6 +200,59 @@
         <span class="s2">&quot;|  1 | value2 | str         | 2      | int         |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|  2 | value3 | str         | Test   | str         |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;+----+--------+-------------+--------+-------------+&quot;</span>
+
+    <span class="c1"># Test specific columns only</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--columns&#39;</span><span class="p">,</span> <span class="s1">&#39;key1&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
+        <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|    | key1   |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|----+--------|</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  0 | value1 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  1 | value2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  2 | value3 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+&quot;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--columns&#39;</span><span class="p">,</span> <span class="s1">&#39;key1,key2&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
+        <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+--------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|    | key1   | key2   |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|----+--------+--------|</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  0 | value1 | 0.1    |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  1 | value2 | 2      |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  2 | value3 | Test   |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+--------+&quot;</span>
+
+    <span class="c1"># Test query</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--query&#39;</span><span class="p">,</span> <span class="s1">&#39;key2 == 2&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
+        <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+--------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|    | key1   |   key2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|----+--------+--------|</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  1 | value2 |      2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+--------+&quot;</span>
+
+    <span class="c1"># Test query and column names</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--query&#39;</span><span class="p">,</span> <span class="s1">&#39;key2 == 2&#39;</span><span class="p">,</span> <span class="s1">&#39;--columns&#39;</span><span class="p">,</span> <span class="s1">&#39;key2&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
+        <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|    |   key2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|----+--------|</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  1 |      2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+&quot;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--query&#39;</span><span class="p">,</span> <span class="s1">&#39;key2 == 2&#39;</span><span class="p">,</span> <span class="s1">&#39;--columns&#39;</span><span class="p">,</span> <span class="s1">&#39;key1,key2&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
+        <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+--------+</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|    | key1   |   key2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|----+--------+--------|</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;|  1 | value2 |      2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
+        <span class="s2">&quot;+----+--------+--------+&quot;</span>
+
 
     <span class="c1"># Test --format vertical</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--format&#39;</span><span class="p">,</span> <span class="s1">&#39;vertical&#39;</span><span class="p">)</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.6.0rc0.post34+gdde3945 documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.6.0rc0.post35+g2551e07 documentation</title>
   
 
   
@@ -294,7 +294,7 @@
 
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events_done</span><span class="p">:</span>
                 <span class="n">e</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
@@ -314,7 +314,7 @@
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events_done</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                     <span class="n">e</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
@@ -352,7 +352,7 @@
                         <span class="n">transform</span><span class="o">.</span><span class="n">stop_running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
                         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
                     <span class="k">break</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Exception in the task manager main loop&quot;</span><span class="p">)</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error occured. Task Manager </span><span class="si">%s</span><span class="s1"> exits with state </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
                                           <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state_name</span><span class="p">())</span>
@@ -634,7 +634,7 @@
             <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">data_block</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span>
                                       <span class="n">create_time</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">creator</span><span class="o">=</span><span class="s1">&#39;logicengine&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data_block_put</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
             <span class="k">raise</span>
         <span class="k">else</span><span class="p">:</span>
