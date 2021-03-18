@@ -3,8 +3,8 @@ Release 1.6.0
 
 In this release:
 
-* Pure python Logic Engine implementation. Dropped C++ dependency.
-* Migrated to setuptools package development library.
+* The logic engine has been rewritten in pure a python implementation. This removes the last C++ dependency the decision engine had. The build system has been updated accordingly.
+* Migrated to setuptools package development library. This build system is the standard vanilla python build system provided with the python distribution. Build configurations have been updated and rpm packaging remains the primary distribution method.
 * Completed logging implementation.
 * Improvements in error handling and code coverage.
 * Improvements in Jenkins and GitHub actions CI/CD pipelines.
