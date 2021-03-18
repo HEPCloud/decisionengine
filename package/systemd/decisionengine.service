@@ -9,7 +9,8 @@ EnvironmentFile = -/etc/sysconfig/decisionengine
 User = decisionengine
 Group = decisionengine
 ExecStart = /usr/bin/decisionengine
-ExecStop = /usr/bin/de-client stop
+ExecStopPre =- /usr/bin/echo "Running /usr/bin/de-client --stop" >&2
+ExecStop = /usr/bin/de-client --stop
 
 [Install]
 WantedBy = multi-user.target

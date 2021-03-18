@@ -497,10 +497,23 @@ def _create_de_server(global_config, channel_config_loader):
 
 def _start_de_server(global_config, channel_config_loader):
     '''Create and start the DE server with the passed global configuration and config manager'''
-    server = _create_de_server(global_config, channel_config_loader)
-    server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
-    server.start_channels()
-    server.serve_forever()
+    try:
+        server = _create_de_server(global_config, channel_config_loader)
+        server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
+        server.start_channels()
+        server.serve_forever()
+    except Exception as e:  # pragma: no cover
+        msg = f"""Server Address: {global_config.get('server_address')}
+              Fatal Error: {e}"""
+        print(msg, file=sys.stderr)
+
+        try:
+            server.get_logger().error(msg)
+        except Exception:
+            pass
+
+        raise e
+
 
 
 def main(args=None):
@@ -515,10 +528,11 @@ def main(args=None):
                                                                 options)
     try:
         _start_de_server(global_config, channel_config_loader)
-    except Exception as e:
-        sys.exit("Server Address: {}\n".format(global_config.get('server_address')) +
-                 "Config Dir: {}\n".format(global_config_dir) +
-                 "Fatal Error: {}\n".format(e))
+    except Exception as e:  # pragma: no cover
+        msg = f"""Config Dir: {global_config_dir}
+              Fatal Error: {e}"""
+        print(msg, file=sys.stderr)
+        sys.exit(msg)
 
 
 if __name__ == "__main__":
