@@ -28,7 +28,6 @@ try:
         for item in _fd.readlines():
             req = (
                 item.partition("#")[0]
-                    .partition("-")[0]
                     .partition(">")[0]
                     .partition("=")[0]
             )

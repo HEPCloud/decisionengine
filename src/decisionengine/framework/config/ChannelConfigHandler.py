@@ -96,7 +96,7 @@ def _validate(channel):
 
     if not all_consumes.issubset(all_produces):
         extra_keys = list(all_consumes - all_produces)
-        raise RuntimeError(f"consumes are not subset of produce, extra keys {extra_keys}")
+        raise RuntimeError(f"consumes are not a subset of produce, extra keys {extra_keys}")
 
     # graph contains pairs of modules and lists of modules that depends on
     # this module, e.g.:
