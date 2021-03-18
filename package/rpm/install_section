@@ -1,7 +1,7 @@
 python3 setup.py install --single-version-externally-managed -O1 --root=%{buildroot} --record=INSTALLED_FILES
 
-install -m 0644 -D package/systemd/decisionengine.service %{buildroot}/usr/lib/systemd/system/decisionengine.service
-echo "%attr(0644,root,root) /usr/lib/systemd/system/decisionengine.service" >> INSTALLED_FILES
+install -m 0644 -D package/systemd/decision-engine.service %{buildroot}/usr/lib/systemd/system/decision-engine.service
+echo "%attr(0644,root,root) /usr/lib/systemd/system/decision-engine.service" >> INSTALLED_FILES
 
 mkdir -p %{buildroot}/%{_localstatedir}/log/decisionengine
 echo "%attr(0750,decisionengine,decisionengine) /%{_localstatedir}/log/decisionengine" >> INSTALLED_FILES
