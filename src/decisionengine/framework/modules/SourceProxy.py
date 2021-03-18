@@ -55,7 +55,7 @@ class SourceProxy(Source.Source):
 
     def consumes(self):
         """
-        Assumes that self.datakeys has the following structure:
+        Assumes that self.data_keys has the following structure:
           is a list of tuples or singletons:
           [
           (data_product_name, data_product_name_translation),
@@ -73,7 +73,7 @@ class SourceProxy(Source.Source):
 
     def produces(self):
         """
-        Assumes that self.datakeys has the following structure
+        Assumes that self.data_keys has the following structure
           data_keys[key1] = (data_product_name, data_product_name_translation)
           ....
           or
