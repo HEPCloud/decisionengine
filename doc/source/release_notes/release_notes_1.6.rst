@@ -3,11 +3,11 @@ Release 1.6.0
 
 In this release:
 
-* Pure python Logic Engine implementation. Dropped C++ dependency
-* Migrated to setuptools package development library
-* Completed logging implementation
-* Improvements in error hadling and code coverage
-* Improvements in Jenkins and GitHub acrions CI/CD pipelines
+* Pure python Logic Engine implementation. Dropped C++ dependency.
+* Migrated to setuptools package development library.
+* Completed logging implementation.
+* Improvements in error handling and code coverage.
+* Improvements in Jenkins and GitHub actions CI/CD pipelines.
 
 Issues fixed in this release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
