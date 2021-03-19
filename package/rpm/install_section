@@ -10,7 +10,7 @@ mkdir -p %{buildroot}/%{_sysconfdir}/decisionengine/config.d
 cp -r config/* %{buildroot}/%{_sysconfdir}/decisionengine/
 
 echo "%attr(0750,decisionengine,decisionengine) /%{_sysconfdir}/decisionengine/" >> INSTALLED_FILES
-echo "%attr(0640,decisionengine,decisionengine) %config(noreplace) /%{_sysconfdir}/decisionengine/decision_engine.conf" >> INSTALLED_FILES
+echo "%attr(0640,decisionengine,decisionengine) %config(noreplace) /%{_sysconfdir}/decisionengine/decision_engine.jsonnet" >> INSTALLED_FILES
 
 echo "%attr(0750,decisionengine,decisionengine) /%{_sysconfdir}/decisionengine/config.d" >> INSTALLED_FILES
 [ "$(ls -A %{buildroot}/%{_sysconfdir}/decisionengine/config.d)" ] && echo "%attr(0640decisionengine,decisionengine) %config(noreplace) /%{_sysconfdir}/decisionengine/config.d/*" >> INSTALLED_FILES
