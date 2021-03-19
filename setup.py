@@ -93,7 +93,7 @@ setup(
         "console_scripts": [
             "de-reaper=decisionengine.framework.utils.reaper:main",
             "decisionengine=decisionengine.framework.engine.DecisionEngine:main",  # noqa: E501
-            "de-client=decisionengine.framework.engine.de_client:main",
+            "de-client=decisionengine.framework.engine.de_client:console_scripts_main",  # noqa: E501
         ],
     },
     options={
