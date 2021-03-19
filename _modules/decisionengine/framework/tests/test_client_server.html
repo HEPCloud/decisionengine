@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 1.7.0rc0.post6+g2fd8db4 documentation</title>
+  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 1.7.0rc0.post7+g255c641 documentation</title>
   
 
   
@@ -167,12 +167,28 @@
 <span></span><span class="sd">&#39;&#39;&#39;Fixture based DE Server for the de-client tests&#39;&#39;&#39;</span>
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
 <span class="kn">import</span> <span class="nn">pytest</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="n">DE_DB_HOST</span><span class="p">,</span> <span class="n">DE_DB_USER</span><span class="p">,</span> <span class="n">DE_DB_PASS</span><span class="p">,</span> <span class="n">DE_DB_NAME</span><span class="p">,</span> <span class="n">DE_SCHEMA</span> <span class="c1"># noqa: F401</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="n">DE_DB</span><span class="p">,</span> <span class="n">DE_HOST</span><span class="p">,</span> <span class="n">PG_PROG</span><span class="p">,</span> <span class="n">DEServer</span><span class="p">,</span> <span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">TEST_CHANNEL_CONFIG_PATH</span> <span class="c1"># noqa: F401</span>
 
 <span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">TEST_CHANNEL_CONFIG_PATH</span><span class="p">)</span> <span class="c1"># pylint: disable=invalid-name</span>
+
+<div class="viewcode-block" id="test_client_status_msg_to_stdout"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_status_msg_to_stdout">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_status_msg_to_stdout</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure the actuall client console call goes to stdout&quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">decisionengine.framework.engine.de_client</span> <span class="k">as</span> <span class="nn">de_client</span>
+
+    <span class="n">myoutput</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">myoutput</span>
+    <span class="n">de_client</span><span class="o">.</span><span class="n">console_scripts_main</span><span class="p">([</span><span class="s1">&#39;--host&#39;</span><span class="p">,</span> <span class="n">deserver</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                    <span class="s1">&#39;--port&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">deserver</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                                    <span class="s1">&#39;--status&#39;</span><span class="p">])</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span>
+    <span class="k">assert</span> <span class="s1">&#39;channel: test_channel&#39;</span> <span class="ow">in</span> <span class="n">myoutput</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="test_client_print_product"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_print_product</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
