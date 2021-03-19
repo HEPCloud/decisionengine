@@ -281,6 +281,7 @@ class Postgresql(ds.DataSource):
         try:
             return self._select(q, (taskmanager_id, generation_id, key))[0]
         except IndexError:
+            # do not log stack trace, Exception thrown is handled by the caller
             raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
                 taskmanager_id, generation_id, key))
 
@@ -289,6 +290,7 @@ class Postgresql(ds.DataSource):
         try:
             return self._select(q, (taskmanager_id, generation_id, key))[0]
         except IndexError:
+            # do not log stack trace, Exception thrown is handled by the caller
             raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
                 taskmanager_id, generation_id, key))
 
@@ -304,6 +306,7 @@ class Postgresql(ds.DataSource):
                                'value': row['value'].tobytes()})
             return result
         except IndexError:
+            # do not log stack trace, Exception thrown is handled by the caller
             raise KeyError("taskmanager_id={} not found".format(taskmanager_id))
 
     def get_dataproduct(self, taskmanager_id, generation_id, key):
@@ -312,6 +315,7 @@ class Postgresql(ds.DataSource):
             value_row = self._select_dictresult(q, (taskmanager_id, generation_id, key))[0]
             return value_row['value'].tobytes()
         except IndexError:
+            # do not log stack trace, Exception thrown is handled by the caller
             raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
                 taskmanager_id, generation_id, key))
 
@@ -378,6 +382,7 @@ class Postgresql(ds.DataSource):
         :arg days: remove data older than days interval
         """
         if days <= 0:
+            # do not log stack trace, Exception thrown is handled by the caller
             raise ValueError("Argument has to be positive, non zero integer. Supplied {}".format(days))
         self._remove(DELETE_OLD_DATA_QUERY, (days, ))
         return
@@ -398,6 +403,7 @@ class Postgresql(ds.DataSource):
             try:
                 return self.connection_pool.connection()
             except Exception:
+                # do not log stack trace, Exception thrown is handled by the caller
                 i -= 1
                 if not i:
                     raise
@@ -425,11 +431,13 @@ class Postgresql(ds.DataSource):
             res = cursor.fetchall()
             return colnames, res
         except psycopg2.Error:
+            # do not log stack trace, Exception thrown is handled by the caller
             raise
         finally:
             try:
                 list([x.close if x else None for x in (cursor, db)])
             except psycopg2.Error:
+                # do not log stack trace, Exception thrown is handled by the caller
                 pass
 
     def _update(self, query_string, values=None):

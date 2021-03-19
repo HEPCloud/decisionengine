@@ -486,18 +486,18 @@ class TaskManager:
         if not data_block:
             return
         try:
+            log = logging.getLogger()
             for action_list in actions.values():
                 for action in action_list:
                     publisher = self.channel.publishers[action]
                     name = publisher.name
-                    logging.getLogger().info(f'run publisher {name}')
-                    logging.getLogger().\
-                        debug(f'run publisher {name} {data_block}')
+                    log.info(f'run publisher {name}')
+                    log.debug(f'run publisher {name} {data_block}')
                     try:
                         publisher.worker.publish(data_block)
                     except KeyError as e:
                         if self.state.should_stop():
-                            logging.getLogger().warning(f"Exception executing publisher {name} publish() call: {e}")
+                            log.warning(f"TaskManager stopping, ignore exception {name} publish() call: {e}")
                             continue
                         else:
                             raise
