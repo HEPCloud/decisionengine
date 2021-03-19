@@ -11,6 +11,6 @@ def get_random_port():
     except OSError:
         logging.getLogger().error("problem with get_random_port")
         raise
-    except Exception:
+    except Exception:  # pragma: no cover
         logging.getLogger().exception("Unexpected error!")
         raise
