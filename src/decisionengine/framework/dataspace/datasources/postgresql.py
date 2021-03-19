@@ -145,7 +145,6 @@ class Postgresql(ds.DataSource):
                 return self._select_dictresult(SELECT_TASKMANAGER_BY_NAME_AND_ID,
                                                (taskmanager_name, taskmanager_id))[0]
             except IndexError:
-                self.logger.exception("Error encountered getting taskmanager in Postgresql Datasource!")
                 raise KeyError("Taskmanager={} taskmanager_id={} not found".format(
                     taskmanager_name, taskmanager_id))
         else:
@@ -153,7 +152,6 @@ class Postgresql(ds.DataSource):
                 return self._select_dictresult(SELECT_TASKMANAGER_BY_NAME,
                                                (taskmanager_name,))[0]
             except IndexError:
-                self.logger.exception("Error encountered getting taskmanager in Postgresql Datasource!")
                 raise KeyError(
                     "Taskmanager={} not found".format(taskmanager_name))
 
@@ -190,7 +188,6 @@ class Postgresql(ds.DataSource):
             return self._select_dictresult(SELECT_TASKMANAGERS +
                                            " ORDER BY tm.datestamp ASC")
         except IndexError:
-            self.logger.exception("Taskmanagers not found by Postgresql Datasource")
             raise KeyError()
 
     def get_last_generation_id(self,
@@ -203,7 +200,6 @@ class Postgresql(ds.DataSource):
                 assert generation_id
                 return generation_id
             except AssertionError:
-                self.logger.exception("Error in getting last generation id!")
                 raise KeyError("Last generation id not found for taskmanager={} taskmanager_id={}".
                                format(taskmanager_name, taskmanager_id))
         else:
@@ -213,7 +209,6 @@ class Postgresql(ds.DataSource):
                 assert generation_id
                 return generation_id
             except AssertionError:
-                self.logger.exception("Error in getting last generation id!")
                 raise KeyError("Last generation id not found for taskmanager={}".
                                format(taskmanager_name, ))
 
@@ -286,7 +281,6 @@ class Postgresql(ds.DataSource):
         try:
             return self._select(q, (taskmanager_id, generation_id, key))[0]
         except IndexError:
-            self.logger.exception("Error in get_header")
             raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
                 taskmanager_id, generation_id, key))
 
@@ -295,7 +289,6 @@ class Postgresql(ds.DataSource):
         try:
             return self._select(q, (taskmanager_id, generation_id, key))[0]
         except IndexError:
-            self.logger.exception("Error in get_metadata")
             raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
                 taskmanager_id, generation_id, key))
 
@@ -311,7 +304,6 @@ class Postgresql(ds.DataSource):
                                'value': row['value'].tobytes()})
             return result
         except IndexError:
-            self.logger.exception("Error in get_dataproducts")
             raise KeyError("taskmanager_id={} not found".format(taskmanager_id))
 
     def get_dataproduct(self, taskmanager_id, generation_id, key):
@@ -320,7 +312,6 @@ class Postgresql(ds.DataSource):
             value_row = self._select_dictresult(q, (taskmanager_id, generation_id, key))[0]
             return value_row['value'].tobytes()
         except IndexError:
-            self.logger.exception("Error in get_dataproduct")
             raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
                 taskmanager_id, generation_id, key))
 
@@ -387,7 +378,6 @@ class Postgresql(ds.DataSource):
         :arg days: remove data older than days interval
         """
         if days <= 0:
-            self.logger.exception("Error deleting data!")
             raise ValueError("Argument has to be positive, non zero integer. Supplied {}".format(days))
         self._remove(DELETE_OLD_DATA_QUERY, (days, ))
         return
@@ -408,7 +398,6 @@ class Postgresql(ds.DataSource):
             try:
                 return self.connection_pool.connection()
             except Exception:
-                self.logger.exception("Error in getting connection!")
                 i -= 1
                 if not i:
                     raise
@@ -436,13 +425,11 @@ class Postgresql(ds.DataSource):
             res = cursor.fetchall()
             return colnames, res
         except psycopg2.Error:
-            self.logger.exception("Query error in Postgresql DataSource")
             raise
         finally:
             try:
                 list([x.close if x else None for x in (cursor, db)])
             except psycopg2.Error:
-                self.logger.exception("Query error in Postgresql DataSource")
                 pass
 
     def _update(self, query_string, values=None):
@@ -456,16 +443,13 @@ class Postgresql(ds.DataSource):
                 cursor.execute(query_string)
             db.commit()
         except psycopg2.Error:
-            self.logger.exception("Update error in Postgresql DataSource")
             try:
                 if db:
                     db.rollback()
             except psycopg2.Error:
-                self.logger.exception("Update error in Postgresql DataSource")
                 pass
             raise
         except psycopg2.Error:
-            self.logger.exception("Update error in Postgresql DataSource")
             if db:
                 db.rollback()
             raise
@@ -486,16 +470,13 @@ class Postgresql(ds.DataSource):
             db.commit()
             return res
         except psycopg2.Error:
-            self.logger.exception("Update returning result error in Postgresql DataSource")
             try:
                 if db:
                     db.rollback()
             except psycopg2.Error:
-                self.logger.exception("Update returning result error in Postgresql DataSource")
                 pass
             raise
         except psycopg2.Error:
-            self.logger.exception("Update returning result error in Postgresql DataSource")
             if db:
                 db.rollback()
             raise
@@ -514,7 +495,6 @@ class Postgresql(ds.DataSource):
             else:
                 return self._update(table_name_or_sql_query)
         except Exception:
-            self.logger.exception("insert error in Postgresql DataSource")
             raise
 
 
@@ -530,7 +510,6 @@ class Postgresql(ds.DataSource):
             else:
                 return self._update_returning_result(table_name_or_sql_query)
         except Exception:
-            self.logger.exception("insert returning result error in Postgresql DataSource")
             raise
 
     def _remove(self, sql_query, values=None):

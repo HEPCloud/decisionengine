@@ -491,8 +491,16 @@ class TaskManager:
                     publisher = self.channel.publishers[action]
                     name = publisher.name
                     logging.getLogger().info(f'run publisher {name}')
-                    logging.getLogger().debug(f'run publisher {name} {data_block}')
-                    publisher.worker.publish(data_block)
+                    logging.getLogger().\
+                        debug(f'run publisher {name} {data_block}')
+                    try:
+                        publisher.worker.publish(data_block)
+                    except KeyError as e:
+                        if self.state.should_stop():
+                            logging.getLogger().warning(f"Exception executing publisher {name} publish() call: {e}")
+                            continue
+                        else:
+                            raise
         except Exception:
             logging.getLogger().exception("Unexpected error!")
             raise
