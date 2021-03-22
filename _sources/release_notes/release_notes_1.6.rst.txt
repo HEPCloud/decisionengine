@@ -1,3 +1,36 @@
+Release 1.6.1
+-------------
+
+Patch level (bug fix) release.
+
+Issues fixed in this release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- `306 <https://github.com/HEPCloud/decisionengine/issues/306>`_ : /etc/decisionengine/decision_engine.conf as shipped in RPM is wrong format (`de0aef3 <https://github.com/HEPCloud/decisionengine/commit/de0aef35e73de120f4e869091a630a14f4c11be1>`_)
+- `275 <https://github.com/HEPCloud/decisionengine/issues/275>`_ : Running de-client --stop-channel <channel> results in KeyError (`59fb44e <https://github.com/HEPCloud/decisionengine/commit/59fb44e793d8a66d079e63079c5a4b8032446df0>`_)
+
+Full list of commits since version 1.6.0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`d7ccd8a <https://github.com/HEPCloud/decisionengine/commit/d7ccd8a723bc537bf2378526a722f53baed2702f>`_
+:   doc: fix typo
+
+`ac48e50 <https://github.com/HEPCloud/decisionengine/commit/ac48e50ca1d6a286cc8327cb49d896be9c1e9303>`_
+:   updated release notes
+
+`de0aef3 <https://github.com/HEPCloud/decisionengine/commit/de0aef35e73de120f4e869091a630a14f4c11be1>`_
+:   Fix name to match expectations (#305)
+
+`59fb44e <https://github.com/HEPCloud/decisionengine/commit/59fb44e793d8a66d079e63079c5a4b8032446df0>`_
+:   postgresql: do not print stack trace for low level library (#309) (#310)
+
+`2162bbe <https://github.com/HEPCloud/decisionengine/commit/2162bbe356fad51263224f1ce0bcfa8fb2ac6f24>`_
+:   Setuptools uses entry return value as an error msg (#308)
+
+`b0fd9fb <https://github.com/HEPCloud/decisionengine/commit/b0fd9fbc1533d4ef4736c77e52ac42e104ea1ece>`_
+:   1.6.0 package backports (#302)
+
+
 Release 1.6.0
 -------------
 
@@ -18,7 +51,7 @@ Issues fixed in this release
 
 
 Full list of commits since version 1.5.0
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `2551e07 <https://github.com/HEPCloud/decisionengine/commit/2551e071a0a02c3683d26452e4d6f2964b783e09>`_
 :   More coverage for de-client (#296)
