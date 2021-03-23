@@ -76,7 +76,7 @@ class ValidConfig(UserDict):
     '''
     ValidConfig represents a valid JSON configuration in the form of a dictionary.
 
-    In addition to the normal dictionary operations, users my call 'dump()' to print
+    In addition to the normal dictionary operations, users may call 'dump()' to print
     out in a string form the JSON configuration.
     '''
     def __init__(self, filename):

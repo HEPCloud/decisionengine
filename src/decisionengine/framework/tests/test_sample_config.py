@@ -54,6 +54,7 @@ def test_client_cannot_double_start(deserver):
     output = deserver.de_client_run_cli('--start-channel', 'test_channel')
     assert 'test_channel is running' in output
 
+
 @pytest.mark.usefixtures("deserver")
 def test_client_can_stop_channels(deserver):
     '''Verify client can stop channels'''
