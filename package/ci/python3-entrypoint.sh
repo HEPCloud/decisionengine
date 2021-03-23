@@ -8,8 +8,8 @@ python3 -m site
 echo ''
 
 python3 setup.py bdist_wheel
-python3 -m pip install -r requirements/requirements-runtime.txt --user
-python3 -m pip install -r requirements/requirements-develop.txt --user
+python3 -m pip install -e . --user
+python3 -m pip install -e .[develop] --user
 
 echo''
 python3 -m pip list
