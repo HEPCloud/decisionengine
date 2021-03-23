@@ -45,6 +45,12 @@ def test_wrong_type(load):
         load('wrong_type.conf')
     assert e.match('The supplied configuration must be a valid Jsonnet/JSON document')
 
+def test_syntax_error_in_config_names_bad_file(load):
+    with pytest.raises(Exception) as e:
+        load('invalid.jsonnet')
+    assert e.match('invalid.jsonnet')
+
+
 # --------------------------------------------------------------------
 # These tests yield valid DE configuration structures. However, the
 # configurations are missing a logger configuration, which is the next
