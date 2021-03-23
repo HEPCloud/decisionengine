@@ -9,9 +9,9 @@ MB = 1000000
 
 def set_logging(log_level,
                 file_rotate_by,
-                rotation_time_unit,
-                rotation_interval,
-                max_backup_count,
+                rotation_time_unit='D',
+                rotation_interval=1,
+                max_backup_count=6,
                 max_file_size=200 * MB,
                 log_file_name='/tmp/decision_engine_logs/decision_engine_log'):
     """
@@ -37,21 +37,26 @@ def set_logging(log_level,
         os.makedirs(dirname)
     logger = logging.getLogger("decision_engine")
     logger.setLevel(getattr(logging, log_level.upper()))
+
     if logger.handlers:
-        return
+        logger.debug('Reusing existing logging handlers')
+        return logger
 
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(module)s - %(threadName)s - %(levelname)s - %(message)s",
         datefmt="%Y-%m-%dT%H:%M:%S%z")
+    file_handler = None
 
     if file_rotate_by == "size":
         file_handler = logging.handlers.RotatingFileHandler(log_file_name,
                                                             maxBytes=max_file_size,
                                                             backupCount=max_backup_count)
-    else:
+    elif file_rotate_by == "time":
         file_handler = logging.handlers.TimedRotatingFileHandler(log_file_name,
                                                                  when=rotation_time_unit,
                                                                  interval=rotation_interval)
+    else:
+        raise ValueError(f"Incorrect 'file_rotate_by':'{file_rotate_by}:'")
 
     file_handler.setFormatter(formatter)
     file_handler.setLevel(logging.INFO)
@@ -62,10 +67,12 @@ def set_logging(log_level,
             debug_handler = logging.handlers.RotatingFileHandler("{}_debug".format(log_file_name),
                                                                  maxBytes=max_file_size,
                                                                  backupCount=max_backup_count)
-        else:
-            debug_handler = logging.handlers.TimedRotatingFileHandler(log_file_name,
+        elif file_rotate_by == "time":
+            debug_handler = logging.handlers.TimedRotatingFileHandler("{}_debug".format(log_file_name),
                                                                       when=rotation_time_unit,
                                                                       interval=rotation_interval)
+        else:
+            raise ValueError(f"Incorrect 'file_rotate_by':'{file_rotate_by}:'")
 
         debug_handler.setFormatter(formatter)
         debug_handler.setLevel(logging.DEBUG)
@@ -87,7 +94,7 @@ def get_logger():
     return logging.getLogger("decision_engine")
 
 
-def set_stream_logging(logger_name=''):
+def set_stream_logging(logger_name='decision_engine'):
     """
     This is for debugging.
     Set stream logging for logger.
@@ -96,14 +103,14 @@ def set_stream_logging(logger_name=''):
     :arg logger_name: logger name
     :rtype: :class:`logging.Logger`
     """
-    logger = logging.getLogger("decision_engine")
+    logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s",
         datefmt="%Y-%m-%dT%H:%M:%S%z")
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     return logger
 
 
