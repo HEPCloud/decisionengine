@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.tests.test_startup &mdash; decisionengine 1.7.0rc0.post12+g915673f documentation</title>
+  <title>decisionengine.framework.modules.tests.test_LogicEngine &mdash; decisionengine 1.7.0rc0.post12+g915673f documentation</title>
   
 
   
@@ -149,7 +149,7 @@
         
           <li><a href="../../../../index.html">Module code</a> &raquo;</li>
         
-      <li>decisionengine.framework.engine.tests.test_startup</li>
+      <li>decisionengine.framework.modules.tests.test_LogicEngine</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -164,34 +164,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for decisionengine.framework.engine.tests.test_startup</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">tempfile</span>
+  <h1>Source code for decisionengine.framework.modules.tests.test_LogicEngine</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules.LogicEngine</span> <span class="kn">import</span> <span class="n">LogicEngine</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="kn">import</span> <span class="n">parse_program_options</span><span class="p">,</span> <span class="n">_get_global_config</span>
+<div class="viewcode-block" id="test_logicengine_structure"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_LogicEngine.test_logicengine_structure">[docs]</a><span class="k">def</span> <span class="nf">test_logicengine_structure</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The module.Module itself is a bit of a skeleton...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">test_logicengine</span> <span class="o">=</span> <span class="n">LogicEngine</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">test_logicengine</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
-<span class="c1"># Because we just want to ensure correct behavior of program options</span>
-<span class="c1"># overriding a configuration, it is not necessary to have a valid DE</span>
-<span class="c1"># server configuration.  We therefore produce a small, temporary file</span>
-<span class="c1"># with the valid Jsonnet configuration &#39;{}&#39;.</span>
+    <span class="n">test_logicengine</span><span class="o">.</span><span class="n">set_data_block</span><span class="p">(</span><span class="s1">&#39;example&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">test_logicengine</span><span class="o">.</span><span class="n">get_data_block</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;example&#39;</span>
 
-<span class="n">global_config_file</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span>
-<span class="n">global_config_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="n">global_config_file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-
-<span class="c1"># We do not call the DE&#39;s _get_de_conf_manager as that assumes the</span>
-<span class="c1"># presence of configuration directories, which are unnecessary for</span>
-<span class="c1"># this test.</span>
-<div class="viewcode-block" id="_check_override"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_startup._check_override">[docs]</a><span class="k">def</span> <span class="nf">_check_override</span><span class="p">(</span><span class="n">arguments</span><span class="p">):</span>
-    <span class="n">options</span> <span class="o">=</span> <span class="n">parse_program_options</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_get_global_config</span><span class="p">(</span><span class="n">global_config_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="test_default_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_startup.test_default_config">[docs]</a><span class="k">def</span> <span class="nf">test_default_config</span><span class="p">():</span>
-    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">assert</span> <span class="n">_check_override</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8888</span><span class="p">]}</span></div>
-
-<div class="viewcode-block" id="test_change_port"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_startup.test_change_port">[docs]</a><span class="k">def</span> <span class="nf">test_change_port</span><span class="p">():</span>
-    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;--port=54321&#39;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">_check_override</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;server_address&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">54321</span><span class="p">]}</span></div>
+    <span class="n">test_logicengine</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s1">&#39;asdf&#39;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

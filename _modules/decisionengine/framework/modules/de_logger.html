@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.de_logger &mdash; decisionengine 1.7.0rc0.post11+gbc0c21a documentation</title>
+  <title>decisionengine.framework.modules.de_logger &mdash; decisionengine 1.7.0rc0.post12+g915673f documentation</title>
   
 
   
@@ -176,9 +176,9 @@
 
 <div class="viewcode-block" id="set_logging"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.de_logger.set_logging">[docs]</a><span class="k">def</span> <span class="nf">set_logging</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span>
                 <span class="n">file_rotate_by</span><span class="p">,</span>
-                <span class="n">rotation_time_unit</span><span class="p">,</span>
-                <span class="n">rotation_interval</span><span class="p">,</span>
-                <span class="n">max_backup_count</span><span class="p">,</span>
+                <span class="n">rotation_time_unit</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">,</span>
+                <span class="n">rotation_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">max_backup_count</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
                 <span class="n">max_file_size</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">MB</span><span class="p">,</span>
                 <span class="n">log_file_name</span><span class="o">=</span><span class="s1">&#39;/tmp/decision_engine_logs/decision_engine_log&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -204,21 +204,26 @@
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;decision_engine&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">log_level</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
+
     <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
-        <span class="k">return</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Reusing existing logging handlers&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">logger</span>
 
     <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
         <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(module)s</span><span class="s2"> - </span><span class="si">%(threadName)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S%z&quot;</span><span class="p">)</span>
+    <span class="n">file_handler</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">file_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span>
         <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">,</span>
                                                             <span class="n">maxBytes</span><span class="o">=</span><span class="n">max_file_size</span><span class="p">,</span>
                                                             <span class="n">backupCount</span><span class="o">=</span><span class="n">max_backup_count</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">file_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
         <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">TimedRotatingFileHandler</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">,</span>
                                                                  <span class="n">when</span><span class="o">=</span><span class="n">rotation_time_unit</span><span class="p">,</span>
                                                                  <span class="n">interval</span><span class="o">=</span><span class="n">rotation_interval</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect &#39;file_rotate_by&#39;:&#39;</span><span class="si">{</span><span class="n">file_rotate_by</span><span class="si">}</span><span class="s2">:&#39;&quot;</span><span class="p">)</span>
 
     <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
     <span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
@@ -229,10 +234,12 @@
             <span class="n">debug_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_debug&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">),</span>
                                                                  <span class="n">maxBytes</span><span class="o">=</span><span class="n">max_file_size</span><span class="p">,</span>
                                                                  <span class="n">backupCount</span><span class="o">=</span><span class="n">max_backup_count</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">debug_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">TimedRotatingFileHandler</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">,</span>
+        <span class="k">elif</span> <span class="n">file_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
+            <span class="n">debug_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">TimedRotatingFileHandler</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_debug&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">),</span>
                                                                       <span class="n">when</span><span class="o">=</span><span class="n">rotation_time_unit</span><span class="p">,</span>
                                                                       <span class="n">interval</span><span class="o">=</span><span class="n">rotation_interval</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect &#39;file_rotate_by&#39;:&#39;</span><span class="si">{</span><span class="n">file_rotate_by</span><span class="si">}</span><span class="s2">:&#39;&quot;</span><span class="p">)</span>
 
         <span class="n">debug_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
         <span class="n">debug_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
@@ -254,7 +261,7 @@
     <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;decision_engine&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="set_stream_logging"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.de_logger.set_stream_logging">[docs]</a><span class="k">def</span> <span class="nf">set_stream_logging</span><span class="p">(</span><span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="set_stream_logging"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.de_logger.set_stream_logging">[docs]</a><span class="k">def</span> <span class="nf">set_stream_logging</span><span class="p">(</span><span class="n">logger_name</span><span class="o">=</span><span class="s1">&#39;decision_engine&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is for debugging.</span>
 <span class="sd">    Set stream logging for logger.</span>
@@ -263,14 +270,14 @@
 <span class="sd">    :arg logger_name: logger name</span>
 <span class="sd">    :rtype: :class:`logging.Logger`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;decision_engine&quot;</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span><span class="p">)</span>
     <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
         <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(module)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S%z&quot;</span><span class="p">)</span>
     <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
     <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">logger</span></div>
 
 

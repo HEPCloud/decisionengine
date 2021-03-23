@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>decisionengine.framework.modules.tests.test_de_logger &mdash; decisionengine 1.7.0rc0.post12+g915673f documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> decisionengine
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.6.html">Release 1.6.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.6.html#release-1-6-0">Release 1.6.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.5.html">Release 1.5.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.4.html">Release 1.4.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.4.html#release-1-4-0">Release 1.4.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.3.html">Release 1.3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.2.html">Release 1.2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">decisionengine</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>decisionengine.framework.modules.tests.test_de_logger</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for decisionengine.framework.modules.tests.test_de_logger</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">import</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="k">as</span> <span class="nn">de_logger</span>
+
+<div class="viewcode-block" id="TestLogger"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.TestLogger">[docs]</a><span class="k">class</span> <span class="nc">TestLogger</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestLogger.setUp"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.TestLogger.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">mylogger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;decision_engine&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">mylogger</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">mylogger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">mylogger</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">break</span></div>
+
+<div class="viewcode-block" id="TestLogger.test_by_nonsense_is_err"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.TestLogger.test_by_nonsense_is_err">[docs]</a>    <span class="k">def</span> <span class="nf">test_by_nonsense_is_err</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
+                <span class="n">de_logger</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="n">max_backup_count</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                                      <span class="n">file_rotate_by</span><span class="o">=</span><span class="s2">&quot;nonsense&quot;</span><span class="p">,</span> <span class="n">max_file_size</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span>
+                                      <span class="n">log_file_name</span><span class="o">=</span><span class="n">log</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s2">&quot;Incorrect &#39;file_rotate_by&#39;&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestLogger.test_by_size"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.TestLogger.test_by_size">[docs]</a>    <span class="k">def</span> <span class="nf">test_by_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
+            <span class="n">mylogger</span> <span class="o">=</span> <span class="n">de_logger</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="n">max_backup_count</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                                             <span class="n">file_rotate_by</span><span class="o">=</span><span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">max_file_size</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span>
+                                             <span class="n">log_file_name</span><span class="o">=</span><span class="n">log</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="n">mylogger</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
+            <span class="k">assert</span> <span class="s1">&#39;RotatingFileHandler&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">mylogger</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
+            <span class="n">de_logger</span><span class="o">.</span><span class="n">set_stream_logging</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">mylogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="n">mylogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;infomsg&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="TestLogger.test_by_time"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.TestLogger.test_by_time">[docs]</a>    <span class="k">def</span> <span class="nf">test_by_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
+            <span class="n">mylogger</span> <span class="o">=</span> <span class="n">de_logger</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="n">rotation_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                             <span class="n">file_rotate_by</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">rotation_time_unit</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">,</span>
+                                             <span class="n">log_file_name</span><span class="o">=</span><span class="n">log</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="n">mylogger</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
+            <span class="k">assert</span> <span class="s1">&#39;TimedRotatingFileHandler&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">mylogger</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
+            <span class="n">de_logger</span><span class="o">.</span><span class="n">set_stream_logging</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">mylogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="n">mylogger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;infomsg&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Fermilab.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
