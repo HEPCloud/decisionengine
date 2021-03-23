@@ -51,7 +51,7 @@ jobs:
 
     - name: Install sphinx expected fonts within the container
       run: |
-        sudo apt-get update
+        sudo apt-get update || true
         sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
         sudo python3 -m pip install -U pip
         sudo python3 -m pip install sphinx
