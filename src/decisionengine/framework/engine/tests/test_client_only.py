@@ -27,7 +27,9 @@ def test_client_with_no_server():
 
 def test_client_with_no_server_verbose():
     msg = de_client.main(['--status', '--verbose'])
-    if "Connection refused" not in msg and "Cannot assign requested address" not in msg:
+    if "Connection refused" not in msg \
+            and "Cannot assign requested address" not in msg \
+            and "Network is unreachable" not in msg:
         raise ValueError(msg)
 
 def test_exclusive_options():
