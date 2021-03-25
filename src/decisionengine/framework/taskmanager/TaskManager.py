@@ -171,28 +171,31 @@ class TaskManager:
                 f'Error occured during initial run of sources. Task Manager {self.name} exits')
             return
 
-        self.decision_cycle()
-        self.state.set(State.STEADY)
-
         while not self.state.should_stop():
             try:
-                self.wait_for_any(done_events)
                 self.decision_cycle()
-                if self.state.should_stop():
-                    logging.getLogger().info(f'Task Manager {self.id} received stop signal and exits')
-                    for source in self.channel.sources.values():
-                        source.stop_running.set()
-                        time.sleep(5)
-                    for transform in self.channel.transforms.values():
-                        transform.stop_running.set()
-                        time.sleep(5)
-                    break
+                if not self.state.should_stop():
+                    # the last decision_cycle completed without error
+                    self.state.set(State.STEADY)
+                    self.wait_for_any(done_events)
             except Exception:  # pragma: no cover
                 logging.getLogger().exception("Exception in the task manager main loop")
                 logging.getLogger().error('Error occured. Task Manager %s exits with state %s',
                                           self.id, self.get_state_name())
                 break
-            time.sleep(1)
+
+        else:
+            # we did not use 'break' to exit the loop
+            logging.getLogger().info(f'Task Manager {self.id} received stop signal and exits')
+
+        for source in self.channel.sources.values():
+            source.stop_running.set()
+
+        for transform in self.channel.transforms.values():
+            transform.stop_running.set()
+            # the run_transform function is performing our .join()
+            # for these threads.
+
         for thread in source_threads:
             thread.join()
 
