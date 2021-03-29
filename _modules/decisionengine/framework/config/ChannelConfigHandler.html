@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.0rc0.post16+g30e59dc documentation</title>
+  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.0rc0.post18+ga6e3ab1 documentation</title>
   
 
   
@@ -200,7 +200,7 @@
                               <span class="n">max_file_size</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max_file_size&#39;</span><span class="p">,</span> <span class="mi">1000000</span><span class="p">),</span>
                               <span class="n">log_file_name</span><span class="o">=</span><span class="n">logger_config</span><span class="p">[</span><span class="s1">&#39;log_file&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">de_logger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create log: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="_check_keys"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._check_keys">[docs]</a><span class="k">def</span> <span class="nf">_check_keys</span><span class="p">(</span><span class="n">channel_conf_dict</span><span class="p">):</span>
@@ -309,11 +309,7 @@
             <span class="n">modules</span> <span class="o">=</span> <span class="n">channel_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">{})</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">modules</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">my_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">))</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">produces</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                        <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="s1">&#39;PRODUCES&#39;</span><span class="p">))</span>
-                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                    <span class="k">pass</span>
+                <span class="n">produces</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="s1">&#39;PRODUCES&#39;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">produces</span></div>
 
 <div class="viewcode-block" id="ChannelConfigHandler.get_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.get_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -372,6 +368,7 @@
         <span class="k">for</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">full_path</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
             <span class="c1"># Load only the channels that are not already in memory</span>
             <span class="k">if</span> <span class="n">channel_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Already loaded a channel called &#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39;, skipping </span><span class="si">{</span><span class="n">full_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">success</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">full_path</span><span class="p">)</span>
