@@ -221,7 +221,7 @@ class TaskManager:
 
     def set_to_shutdown(self):
         self.state.set(State.SHUTTINGDOWN)
-        logging.getLogger.debug('Shutting down.  Will call shutdown on all '
+        logging.getLogger().debug('Shutting down.  Will call shutdown on all '
                                 'publishers')
         for publisher_worker in self.channel.publishers.values():
             publisher_worker.worker.shutdown()
