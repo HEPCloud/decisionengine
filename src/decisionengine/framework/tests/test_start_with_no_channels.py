@@ -5,6 +5,7 @@ import os
 import re
 import shutil
 import tempfile
+from unittest.mock import patch
 
 import pytest
 
@@ -54,9 +55,18 @@ def test_start_from_nothing(deserver_mock_data_block):
     output = deserver.rpc_status()
     assert re.search('test_channel.*state = STEADY', output)
 
-    # Take channel offline
-    output = deserver.rpc_stop_channel('test_channel')
-    assert output == 'Channel test_channel stopped cleanly.'
+    # Take channel offline.  Make sure Publisher.shutdown method is called and
+    # that we stop cleanly.
+    # with patch('decisionengine.framework.modules.Publisher.Publisher.shutdown'
+    with patch('decisionengine.framework.tests.PublisherNOP.PublisherNOP.shutdown'
+        ) as mocked_shutdown:
+        output = deserver.rpc_stop_channel('test_channel')
+        mocked_shutdown.assert_called()
+        print("yay")
+        assert output == 'Channel test_channel stopped cleanly.'
+
+    # output = deserver.rpc_stop_channel('test_channel')
+    # assert output == 'Channel test_channel stopped cleanly.'
 
     # Verify no channels are active
     output = deserver.rpc_status()
