@@ -7,6 +7,26 @@ def logic_engine_with_fact(fact):
     rules = {"r1": {"expression": "f1"}}
     return LogicEngine({"facts": facts, "rules": rules})
 
+def test_true_literal_fact():
+    engine = logic_engine_with_fact("fail_on_error(True)")
+    facts = engine.evaluate_facts({})
+    assert facts == {"f1": True}
+
+def test_false_literal_fact():
+    engine = logic_engine_with_fact("fail_on_error(False)")
+    facts = engine.evaluate_facts({})
+    assert facts == {"f1": False}
+
+def test_true_fact():
+    engine = logic_engine_with_fact("fail_on_error(1 < 2)")
+    facts = engine.evaluate_facts({})
+    assert facts == {"f1": True}
+
+def test_false_fact_with_spaces():
+    engine = logic_engine_with_fact(" fail_on_error ( 2 < 1 )")
+    facts = engine.evaluate_facts({})
+    assert facts == {"f1": False}
+
 def test_misspecified_fact():
     engine = logic_engine_with_fact("val > 10")
     with pytest.raises(NameError, match="name 'val' is not defined"):
@@ -25,7 +45,7 @@ def test_conditional_fact():
     facts = engine.evaluate_facts({"val": []})
     assert facts == {"f1": False}
 
-def test_lookup_error():
+def test_index_error():
     engine = logic_engine_with_fact("val[0] == 42")
     with pytest.raises(IndexError, match="list index out of range"):
         engine.evaluate_facts({"val": []})

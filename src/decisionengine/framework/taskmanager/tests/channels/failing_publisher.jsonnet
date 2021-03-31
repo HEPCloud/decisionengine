@@ -21,7 +21,7 @@
       name: 'LogicEngine',
       parameters: {
         facts: {
-          pass_all: "(True)"
+          pass_all: "fail_on_error(True)"
         },
         rules: {
           r1: {
