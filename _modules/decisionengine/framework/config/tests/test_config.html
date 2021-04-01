@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.config.tests.test_config &mdash; decisionengine 1.7.0rc0.post26+g87e32c2 documentation</title>
+  <title>decisionengine.framework.config.tests.test_config &mdash; decisionengine 1.7.0rc0.post28+ge4dc35e documentation</title>
   
 
   
@@ -211,6 +211,12 @@
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">load</span><span class="p">(</span><span class="s1">&#39;wrong_type.conf&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;The supplied configuration must be a valid Jsonnet/JSON document&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_syntax_error_in_config_names_bad_file"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_syntax_error_in_config_names_bad_file">[docs]</a><span class="k">def</span> <span class="nf">test_syntax_error_in_config_names_bad_file</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">load</span><span class="p">(</span><span class="s1">&#39;invalid.jsonnet&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;invalid.jsonnet&#39;</span><span class="p">)</span></div>
+
 
 <span class="c1"># --------------------------------------------------------------------</span>
 <span class="c1"># These tests yield valid DE configuration structures. However, the</span>
