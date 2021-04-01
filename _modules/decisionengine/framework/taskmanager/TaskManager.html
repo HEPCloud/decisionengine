@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.0rc0.post22+g4108472 documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.0rc0.post24+gdec85d5 documentation</title>
   
 
   
@@ -338,28 +338,31 @@
                 <span class="sa">f</span><span class="s1">&#39;Error occured during initial run of sources. Task Manager </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> exits&#39;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">decision_cycle</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="p">)</span>
-
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_any</span><span class="p">(</span><span class="n">done_events</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">decision_cycle</span><span class="p">()</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Task Manager </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> received stop signal and exits&#39;</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                        <span class="n">source</span><span class="o">.</span><span class="n">stop_running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">transform</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                        <span class="n">transform</span><span class="o">.</span><span class="n">stop_running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-                    <span class="k">break</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
+                    <span class="c1"># the last decision_cycle completed without error</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_any</span><span class="p">(</span><span class="n">done_events</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Exception in the task manager main loop&quot;</span><span class="p">)</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error occured. Task Manager </span><span class="si">%s</span><span class="s1"> exits with state </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
                                           <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state_name</span><span class="p">())</span>
                 <span class="k">break</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we did not use &#39;break&#39; to exit the loop</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Task Manager </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> received stop signal and exits&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">source</span><span class="o">.</span><span class="n">stop_running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">transform</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">transform</span><span class="o">.</span><span class="n">stop_running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="c1"># the run_transform function is performing our .join()</span>
+            <span class="c1"># for these threads.</span>
+
         <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">source_threads</span><span class="p">:</span>
             <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span></div>
 
