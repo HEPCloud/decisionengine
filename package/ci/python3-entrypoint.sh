@@ -17,5 +17,8 @@ python3 -m pip list
 # make sure the pipe doesn't eat failures
 set -o pipefail
 
+export PYTHONPATH=${PWD}/src:${PYTHONPATH}
+echo "PYTHONPATH: ${PYTHONPATH}"
+
 # run the python "module/command"
 python3 ${CMD} 2>&1 | tee ${LOGFILE}
