@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.0rc0.post24+gdec85d5 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.0rc0.post26+g87e32c2 documentation</title>
   
 
   
@@ -188,6 +188,7 @@
 <span class="kn">import</span> <span class="nn">xmlrpc.server</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.config</span> <span class="kn">import</span> <span class="n">ChannelConfigHandler</span><span class="p">,</span> <span class="n">ValidConfig</span><span class="p">,</span> <span class="n">policies</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.maintain</span> <span class="kn">import</span> <span class="n">Reaper</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.engine.Workers</span> <span class="kn">import</span> <span class="n">Worker</span><span class="p">,</span> <span class="n">Workers</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="k">as</span> <span class="nn">datablock</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
@@ -225,7 +226,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span> <span class="o">=</span> <span class="n">channel_config_loader</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span> <span class="o">=</span> <span class="n">global_config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">Reaper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span> <span class="o">=</span> <span class="n">Reaper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DecisionEngine started on </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">server_address</span><span class="p">))</span>
 
 <div class="viewcode-block" id="DecisionEngine.get_logger"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.get_logger">[docs]</a>    <span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -603,14 +604,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_reaper_status"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_reaper_status">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_reaper_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">get_retention_interval</span><span class="p">()</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+        <span class="n">interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">retention_interval</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="n">txt</span> <span class="o">=</span> <span class="s1">&#39;reaper:</span><span class="se">\n\t</span><span class="s1">state: </span><span class="si">{}</span><span class="se">\n\t</span><span class="s1">retention_interval: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">txt</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.reaper_status"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.reaper_status">[docs]</a>    <span class="k">def</span> <span class="nf">reaper_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">get_retention_interval</span><span class="p">()</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+        <span class="n">interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">retention_interval</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="n">txt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">reaper:</span><span class="se">\n\t</span><span class="s1">state: </span><span class="si">{}</span><span class="se">\n\t</span><span class="s1">retention_interval: </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">txt</span></div></div>
 

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 1.7.0rc0.post24+gdec85d5 documentation</title>
+  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 1.7.0rc0.post26+g87e32c2 documentation</title>
   
 
   
@@ -199,6 +199,8 @@
 <p>The ProcessingState class can represent any of the following task-manager states:</p>
 <blockquote>
 <div><p>BOOT
+IDLE
+ACTIVE
 STEADY
 OFFLINE
 SHUTTINGDOWN
@@ -208,14 +210,22 @@ ERROR</p>
 <p>In addition, the class supports ‘wait_until(state)’ and ‘wait_while(state)’ methods,
 which, when called from a different process, block until the state has been entered
 or exited, respectively.</p>
+<p>The ‘RUNNING_CONDITIONS’ list is a list of states that a thread may have if it is started/starting.
+The ‘STOPPING_CONDITIONS’ list is a list of states that a thread may have if it is stopped/stopping.
+The ‘INACTIVE_CONDITIONS’ list is a list of states that a thread may have when it is not active</p>
 <dl class="py class">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.ProcessingState">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.ProcessingState.</span></code><code class="sig-name descname"><span class="pre">ProcessingState</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">state=&lt;State.BOOT:</span> <span class="pre">0&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/ProcessingState.html#ProcessingState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.ProcessingState" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This object tracks the state of a process.</p>
+<p>A number of convience wrappers are provided.</p>
+<p>Additionally you may use the <cite>.lock</cite> attribute for <cite>with</cite> block
+to lock the state during specific operations.</p>
 <dl class="py method">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.ProcessingState.get">
 <code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/ProcessingState.html#ProcessingState.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.get" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function is a minimally locking check to fetch the state.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.ProcessingState.has_value">
@@ -228,9 +238,23 @@ or exited, respectively.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="decisionengine.framework.taskmanager.ProcessingState.ProcessingState.lock">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">lock</span></code><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.lock" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="decisionengine.framework.taskmanager.ProcessingState.ProcessingState.probably_running">
+<code class="sig-name descname"><span class="pre">probably_running</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/ProcessingState.html#ProcessingState.probably_running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.probably_running" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.ProcessingState.set">
 <code class="sig-name descname"><span class="pre">set</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/ProcessingState.html#ProcessingState.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.set" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function will lock (and possibly block) to ensure a consistent
+change to the state value.</p>
+<p>This function can be blocked using the <cite>.lock</cite> to force state
+sync between threads if need be.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.ProcessingState.should_stop">
@@ -239,12 +263,12 @@ or exited, respectively.</p>
 
 <dl class="py method">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.ProcessingState.wait_until">
-<code class="sig-name descname"><span class="pre">wait_until</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/ProcessingState.html#ProcessingState.wait_until"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.wait_until" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">wait_until</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/ProcessingState.html#ProcessingState.wait_until"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.wait_until" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.ProcessingState.wait_while">
-<code class="sig-name descname"><span class="pre">wait_while</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/ProcessingState.html#ProcessingState.wait_while"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.wait_while" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">wait_while</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/ProcessingState.html#ProcessingState.wait_while"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.wait_while" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -255,33 +279,43 @@ or exited, respectively.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>An enumeration.</p>
 <dl class="py attribute">
+<dt id="decisionengine.framework.taskmanager.ProcessingState.State.ACTIVE">
+<code class="sig-name descname"><span class="pre">ACTIVE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.ACTIVE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.State.BOOT">
 <code class="sig-name descname"><span class="pre">BOOT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.BOOT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.State.ERROR">
-<code class="sig-name descname"><span class="pre">ERROR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.ERROR" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ERROR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">7</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="decisionengine.framework.taskmanager.ProcessingState.State.IDLE">
+<code class="sig-name descname"><span class="pre">IDLE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.IDLE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.State.OFFLINE">
-<code class="sig-name descname"><span class="pre">OFFLINE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.OFFLINE" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">OFFLINE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.OFFLINE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.State.SHUTDOWN">
-<code class="sig-name descname"><span class="pre">SHUTDOWN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.SHUTDOWN" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">SHUTDOWN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.SHUTDOWN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.State.SHUTTINGDOWN">
-<code class="sig-name descname"><span class="pre">SHUTTINGDOWN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.SHUTTINGDOWN" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">SHUTTINGDOWN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.SHUTTINGDOWN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="decisionengine.framework.taskmanager.ProcessingState.State.STEADY">
-<code class="sig-name descname"><span class="pre">STEADY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.STEADY" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">STEADY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.STEADY" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

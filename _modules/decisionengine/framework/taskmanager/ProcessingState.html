@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.taskmanager.ProcessingState &mdash; decisionengine 1.7.0rc0.post24+gdec85d5 documentation</title>
+  <title>decisionengine.framework.taskmanager.ProcessingState &mdash; decisionengine 1.7.0rc0.post26+g87e32c2 documentation</title>
   
 
   
@@ -169,6 +169,8 @@
 <span class="sd">The ProcessingState class can represent any of the following task-manager states:</span>
 
 <span class="sd">  BOOT</span>
+<span class="sd">  IDLE</span>
+<span class="sd">  ACTIVE</span>
 <span class="sd">  STEADY</span>
 <span class="sd">  OFFLINE</span>
 <span class="sd">  SHUTTINGDOWN</span>
@@ -178,6 +180,10 @@
 <span class="sd">In addition, the class supports &#39;wait_until(state)&#39; and &#39;wait_while(state)&#39; methods,</span>
 <span class="sd">which, when called from a different process, block until the state has been entered</span>
 <span class="sd">or exited, respectively.</span>
+
+<span class="sd">The &#39;RUNNING_CONDITIONS&#39; list is a list of states that a thread may have if it is started/starting.</span>
+<span class="sd">The &#39;STOPPING_CONDITIONS&#39; list is a list of states that a thread may have if it is stopped/stopping.</span>
+<span class="sd">The &#39;INACTIVE_CONDITIONS&#39; list is a list of states that a thread may have when it is not active</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
 <span class="kn">import</span> <span class="nn">enum</span>
@@ -186,21 +192,48 @@
 
 <div class="viewcode-block" id="State"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.State">[docs]</a><span class="k">class</span> <span class="nc">State</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">BOOT</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">STEADY</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">SHUTTINGDOWN</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">SHUTDOWN</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">OFFLINE</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="n">ERROR</span> <span class="o">=</span> <span class="mi">5</span></div>
+    <span class="n">IDLE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">ACTIVE</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">STEADY</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">SHUTTINGDOWN</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">SHUTDOWN</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">OFFLINE</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="mi">7</span></div>
+
+
+<span class="n">RUNNING_CONDITIONS</span> <span class="o">=</span> <span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">,</span> <span class="n">State</span><span class="o">.</span><span class="n">IDLE</span><span class="p">,</span> <span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">,</span> <span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="p">)</span>
+<span class="n">STOPPING_CONDITIONS</span> <span class="o">=</span> <span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="p">,</span> <span class="n">State</span><span class="o">.</span><span class="n">SHUTDOWN</span><span class="p">,</span> <span class="n">State</span><span class="o">.</span><span class="n">OFFLINE</span><span class="p">,</span> <span class="n">State</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+<span class="n">INACTIVE_CONDITIONS</span> <span class="o">=</span> <span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">OFFLINE</span><span class="p">,</span> <span class="n">State</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="ProcessingState"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState">[docs]</a><span class="k">class</span> <span class="nc">ProcessingState</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This object tracks the state of a process.</span>
+
+<span class="sd">    A number of convience wrappers are provided.</span>
+
+<span class="sd">    Additionally you may use the `.lock` attribute for `with` block</span>
+<span class="sd">    to lock the state during specific operations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">):</span>
         <span class="n">allowed_state</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Condition</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">allowed_state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span>
+
+    <span class="nd">@lock</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You may not redefine the ProcessingState lock&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="ProcessingState.get"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is a minimally locking check to fetch the state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
@@ -211,38 +244,52 @@
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="ProcessingState.set"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function will lock (and possibly block) to ensure a consistent</span>
+<span class="sd">        change to the state value.</span>
+
+<span class="sd">        This function can be blocked using the `.lock` to force state</span>
+<span class="sd">        sync between threads if need be.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">State</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Supplied value is not a State variable.&quot;</span><span class="p">)</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">notify</span><span class="p">()</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>  <span class="c1"># don&#39;t hold other locks if we can&#39;t get this one</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">notify</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="ProcessingState.has_value"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.has_value">[docs]</a>    <span class="k">def</span> <span class="nf">has_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">State</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Supplied value is not a State variable.&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">==</span> <span class="n">state</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">State</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Supplied value is not a State variable or list of State values.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="kc">True</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has_value</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">==</span> <span class="n">state</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="ProcessingState.wait_until"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.wait_until">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessingState.wait_until"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.wait_until">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">state</span><span class="p">))</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">state</span><span class="p">),</span> <span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ProcessingState.wait_while"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.wait_while">[docs]</a>    <span class="k">def</span> <span class="nf">wait_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessingState.wait_while"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.wait_while">[docs]</a>    <span class="k">def</span> <span class="nf">wait_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">state</span><span class="p">))</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">state</span><span class="p">),</span> <span class="n">timeout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProcessingState.probably_running"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.probably_running">[docs]</a>    <span class="k">def</span> <span class="nf">probably_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">RUNNING_CONDITIONS</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProcessingState.should_stop"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.should_stop">[docs]</a>    <span class="k">def</span> <span class="nf">should_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="o">.</span><span class="n">value</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">STOPPING_CONDITIONS</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProcessingState.inactive"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.inactive">[docs]</a>    <span class="k">def</span> <span class="nf">inactive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="o">.</span><span class="n">value</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">INACTIVE_CONDITIONS</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

@@ -1,0 +1,399 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>decisionengine.framework.dataspace.maintain &mdash; decisionengine 1.7.0rc0.post26+g87e32c2 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> decisionengine
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.6.html">Release 1.6.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.6.html#release-1-6-0">Release 1.6.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.5.html">Release 1.5.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.4.html">Release 1.4.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.4.html#release-1-4-0">Release 1.4.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.3.html">Release 1.3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.2.html">Release 1.2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">decisionengine</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>decisionengine.framework.dataspace.maintain</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for decisionengine.framework.dataspace.maintain</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">State</span><span class="p">,</span> <span class="n">STOPPING_CONDITIONS</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">ProcessingState</span>
+
+
+<div class="viewcode-block" id="Reaper"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.maintain.Reaper">[docs]</a><span class="k">class</span> <span class="nc">Reaper</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reaper provides functionality of periodic deletion</span>
+<span class="sd">    of data older than retention_interval in days</span>
+
+<span class="sd">    The class attributes indicate a rational set of defaults</span>
+<span class="sd">    that shouldn&#39;t be altered by user configuration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">MIN_RETENTION_INTERVAL_DAYS</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="n">MIN_SECONDS_BETWEEN_RUNS</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">59</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type config: :obj:`dict`</span>
+<span class="sd">        :arg config: Configuration dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Validate configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Initializing a reaper&#39;</span><span class="p">)</span>
+
+        <span class="c1"># since we must validate this, have a private store space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__retention_interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MIN_RETENTION_INTERVAL_DAYS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__seconds_between_runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MIN_SECONDS_BETWEEN_RUNS</span>
+
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataspace&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing Reaper!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration: &#39;</span>
+                                                        <span class="s1">&#39;dataspace key not found in dictionary&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataspace&#39;</span><span class="p">),</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing Reaper!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration: &#39;</span>
+                                                        <span class="s1">&#39;dataspace key must correspond to a dictionary&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">db_driver_name</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">db_driver_module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;module&#39;</span><span class="p">]</span>
+            <span class="n">db_driver_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">retention_interval</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;retention_interval_in_days&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seconds_between_runs</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reaper_run_interval&#39;</span><span class="p">,</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing Reaper!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSourceLoader</span><span class="p">()</span><span class="o">.</span><span class="n">create_datasource</span><span class="p">(</span><span class="n">db_driver_module</span><span class="p">,</span>
+                                                                         <span class="n">db_driver_name</span><span class="p">,</span>
+                                                                         <span class="n">db_driver_config</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">ProcessingState</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">retention_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;We have data constraints, so use a property to track&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__retention_interval</span>
+
+    <span class="nd">@retention_interval</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">retention_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MIN_RETENTION_INTERVAL_DAYS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing Reaper!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For safety the data retention interval has to be greater than </span><span class="si">{}</span><span class="s2"> days&quot;</span><span class="o">.</span>
+                             <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MIN_RETENTION_INTERVAL_DAYS</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reaper setting retention_interval to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__retention_interval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">seconds_between_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;We have data constraints, so use a property to track&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__seconds_between_runs</span>
+
+    <span class="nd">@seconds_between_runs</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">seconds_between_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MIN_SECONDS_BETWEEN_RUNS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing Reaper!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For performance the time between runs to be greater than </span><span class="si">{}</span><span class="s2"> seconds&quot;</span><span class="o">.</span>
+                             <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MIN_SECONDS_BETWEEN_RUNS</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reaper setting seconds_between_runs to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__seconds_between_runs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Reaper.reap"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.maintain.Reaper.reap">[docs]</a>    <span class="k">def</span> <span class="nf">reap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Actually spawn the query to delete the old records.</span>
+<span class="sd">        Lock the state as this task doesn&#39;t have a cancel option.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
+                <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reaper.reap() started.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">delete_data_older_than</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retention_interval</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reaper.reap() completed.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Reaper._reaper_loop"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.maintain.Reaper._reaper_loop">[docs]</a>    <span class="k">def</span> <span class="nf">_reaper_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The thread actually runs this.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Reaper thread started.&quot;</span><span class="p">)</span>
+        <span class="n">between_runs</span> <span class="o">=</span> <span class="n">delay</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
+                        <span class="c1"># The start function will block until the state is changed from BOOT</span>
+                        <span class="c1"># If we are signaled to stop, don&#39;t override that state</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">IDLE</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reaper waiting </span><span class="si">{</span><span class="n">between_runs</span><span class="si">}</span><span class="s2"> seconds or for a stop.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_until</span><span class="p">(</span><span class="n">STOPPING_CONDITIONS</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">between_runs</span><span class="p">)</span>
+
+                <span class="c1"># in stop state, end wait and get out of the loop ASAP</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reaper recieved a stop event: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">reap</span><span class="p">()</span>
+                    <span class="c1"># after waiting the initial delay time</span>
+                    <span class="c1">#  use the self.seconds_between_runs as the delay</span>
+                    <span class="k">if</span> <span class="n">between_runs</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds_between_runs</span><span class="p">:</span>
+                        <span class="n">between_runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds_between_runs</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reaper.reap() failed: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we did not use &#39;break&#39; to exit the loop</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTDOWN</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reaper shutdown cleanly.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Reaper.start"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.maintain.Reaper.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start thread with an optional delay to start the thread in X seconds</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">inactive</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reaper asked to start during stop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># threads need to end, else we orphan one and make a new thread</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Reaper asked to start, but it is running already.&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">__e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">__e</span><span class="p">)</span>
+                    <span class="k">raise</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># each invocation must be a new thread</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                               <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_reaper_loop</span><span class="p">,</span>
+                                               <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="p">),</span>
+                                               <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Reaper_loop_thread&quot;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Reaper loop thread not started&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Reaper.stop"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.maintain.Reaper.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to stop the reaper, will block if the reaper cannot be interupted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sending reaper State.SHUTTINGDOWN signal&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reaper shutdown : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reaper tried to stop but is stopped already: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Reaper tried to stop but was never started&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Reaper, retention interval </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">retention_interval</span><span class="p">,</span><span class="si">}</span><span class="s2"> days, &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;between runs wait </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">seconds_between_runs</span><span class="si">}</span><span class="s2"> seconds, state </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Fermilab.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
