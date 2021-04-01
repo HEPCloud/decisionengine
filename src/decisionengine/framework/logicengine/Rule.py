@@ -22,7 +22,7 @@ class Rule:
         """
         return self.expr.evaluate(evaluated_facts)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return f"name: {self.name}\n"
         f"expression: '{self.expr}'\n"
         f"actions: {self.actions}\n"

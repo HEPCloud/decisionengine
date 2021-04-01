@@ -26,10 +26,10 @@ class DataSource(object, metaclass=abc.ABCMeta):  # pragma: no cover
         self.logger = logging.getLogger()
         self.logger.debug('Initializing a datasource')
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return self.__str__()
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return '%s' % vars(self)
 
     @abc.abstractmethod

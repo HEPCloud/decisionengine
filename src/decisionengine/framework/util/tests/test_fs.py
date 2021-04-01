@@ -26,9 +26,11 @@ def test_nonempty_directory_with_extensions():
         __a = Path(mydir, 'a.txt')
         __b = Path(mydir, 'b.jsonnet')
         __c = Path(mydir, 'c.conf')
+        __d = Path(mydir, 'somedir')
         __a.touch()
         __b.touch()
         __c.touch()
+        __d.mkdir()
 
         files = fs.files_with_extensions(mydir, '.jsonnet')
         assert files == (['b', str(__b)], )

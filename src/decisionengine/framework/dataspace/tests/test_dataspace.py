@@ -1,4 +1,20 @@
+import pytest
+
+from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace.datasource import DataSource
+
+def test_datablock_config_finds_bad():
+    with pytest.raises(dataspace.DataSpaceConfigurationError) as e:
+        dataspace.DataSpace({})
+    assert e.match('missing dataspace information')
+
+    with pytest.raises(dataspace.DataSpaceConfigurationError) as e:
+        dataspace.DataSpace({'dataspace': 'asdf'})
+    assert e.match('dataspace key must correspond to a dictionary')
+
+    with pytest.raises(dataspace.DataSpaceConfigurationError) as e:
+        dataspace.DataSpace({'dataspace': {'asdf': 'asdf'}})
+    assert e.match('Invalid dataspace configuration')
 
 def test_has_methods_we_expect():
     getattr(DataSource, 'taskmanager_table')

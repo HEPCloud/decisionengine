@@ -42,3 +42,8 @@ def test_client_err_returned_as_rc():
     """no de server is running, so --status should error"""
     msg = de_client.console_scripts_main(['--status'])
     assert 'An error occurred' in msg
+
+def test_client_err_returned_verbose_as_rc():
+    """no de server is running, so --status should error"""
+    msg = de_client.console_scripts_main(['--status', '--verbose'])
+    assert 'An error occurred' in msg

@@ -45,7 +45,7 @@ def function_name_from_call(callnode):
             return None
         else:
             raise LogicError("unknown node type")
-    except Exception:
+    except Exception:  # pragma: no cover
         logging.getLogger().exception("Unexpected error!")
         raise
 
@@ -80,5 +80,5 @@ class BooleanExpression:
                 return False
             raise
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return f"{self.expr_str}"

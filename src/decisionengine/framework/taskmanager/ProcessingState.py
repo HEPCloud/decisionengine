@@ -72,7 +72,7 @@ class ProcessingState:
             with self._state.get_lock():
                 value = self._state.value
             return State(value)
-        except Exception:
+        except Exception:  # pragma: no cover
             self.logger.exception("Unexpected error!")
             raise
 

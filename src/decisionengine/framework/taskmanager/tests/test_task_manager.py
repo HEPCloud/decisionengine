@@ -51,6 +51,7 @@ def test_take_task_manager_offline(mock_data_block):  # noqa: F811
         task_manager.state.wait_until(State.STEADY)
         task_manager.take_offline(None)
         assert task_manager.state.has_value(State.OFFLINE)
+        assert task_manager.get_state_value() == State.OFFLINE.value
 
 
 @pytest.mark.usefixtures("mock_data_block")
@@ -58,3 +59,22 @@ def test_failing_publisher(mock_data_block):  # noqa: F811
     task_manager = task_manager_for('failing_publisher')
     task_manager.run()
     assert task_manager.state.has_value(State.OFFLINE)
+
+
+@pytest.mark.usefixtures("mock_data_block")
+def test_bad_datablock(mock_data_block, caplog):  # noqa: F811
+    with RunChannel('test_channel') as task_manager:
+        task_manager.state.wait_until(State.STEADY)
+        task_manager.data_block_put('bad_string', 'header', mock_data_block)
+        task_manager.take_offline(None)
+        assert "data_block put expecting" in caplog.text
+
+
+@pytest.mark.usefixtures("mock_data_block")
+def test_no_data_to_transform(mock_data_block):  # noqa: F811
+    with RunChannel('test_channel') as task_manager:
+        task_manager.state.wait_until(State.STEADY)
+        task_manager.run_transforms()
+        task_manager.run_publishers('action', 'facts')
+        task_manager.run_logic_engine()
+        task_manager.take_offline(None)
