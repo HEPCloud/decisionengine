@@ -2,6 +2,7 @@ import threading
 import os
 
 import pytest
+from unittest.mock import patch
 
 import decisionengine.framework.config.policies as policies
 from decisionengine.framework.config.ValidConfig import ValidConfig
@@ -48,12 +49,10 @@ def test_task_manager_construction(mock_data_block):  # noqa: F811
 def test_set_to_shutdown(mock_data_block):  # noqa: F811
     with RunChannel('test_channel') as task_manager:
         task_manager.state.wait_until(State.STEADY)
-        task_manager.set_to_shutdown()
-        # with patch('decisionengine.framework.tests.PublisherNOP.PublisherNOP.shutdown'
-        #     ) as mocked_shutdown:
-        #     output = deserver.rpc_stop_channel('test_channel')
-        #     mocked_shutdown.assert_called()
-        #     print("yay")   # SBDEBUG
+        with patch('decisionengine.framework.tests.PublisherNOP.PublisherNOP.shutdown'
+            ) as mocked_shutdown:
+            task_manager.set_to_shutdown()
+            mocked_shutdown.assert_called()
         assert task_manager.state.has_value(State.SHUTDOWN)
 
 
