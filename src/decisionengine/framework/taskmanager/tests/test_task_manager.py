@@ -45,6 +45,7 @@ def test_task_manager_construction(mock_data_block):  # noqa: F811
     task_manager = task_manager_for('test_channel')
     assert task_manager.state.has_value(State.BOOT)
 
+
 @pytest.mark.usefixtures("mock_data_block")
 def test_set_to_shutdown(mock_data_block):  # noqa: F811
     with RunChannel('test_channel') as task_manager:
