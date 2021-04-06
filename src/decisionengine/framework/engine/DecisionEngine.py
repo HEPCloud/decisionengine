@@ -362,7 +362,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
     def stop_worker(self, worker, timeout):
         if worker.is_alive():
-            worker.task_manager.set_to_shutdown(None)
+            worker.task_manager.set_to_shutdown()
             worker.task_manager.take_offline(None)
             worker.join(timeout)
         if worker.exitcode is None:
