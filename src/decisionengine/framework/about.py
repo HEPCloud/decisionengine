@@ -5,7 +5,7 @@
 try:
     # This is built by setuptools_scm
     from .version import version as __version__  # noqa: F401
-except ImportError:
+except ImportError:  # pragma: no cover
     __version__ = 'DEVELOPMENT'
 
 __title__ = 'decisionengine'
