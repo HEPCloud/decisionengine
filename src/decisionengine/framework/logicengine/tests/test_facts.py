@@ -1,4 +1,4 @@
-from decisionengine.framework.logicengine.BooleanExpression import BooleanExpression, facts_globals
+from decisionengine.framework.logicengine.BooleanExpression import BooleanExpression, _facts_globals
 import pytest
 
 
@@ -10,8 +10,14 @@ def test_simple_fact():
     assert fact.evaluate({"z": 200}) is False
 
 
-def test_compound_fact():
-    fact = BooleanExpression("z < 100 and a == 4")
+def test_syntax_error(caplog):
+    with pytest.raises(SyntaxError):
+        BooleanExpression("z <")
+    assert "The following expression string could not be parsed" in caplog.text
+
+
+def test_compound_fact_with_spaces():
+    fact = BooleanExpression(" z < 100 and a == 4 ")
     assert set(fact.required_names) == {"z", "a"}
     assert fact.evaluate({"z": 50, "a": 4}) is True
     assert fact.evaluate({"z": 100, "a": 4}) is False
@@ -26,11 +32,16 @@ def test_fact_with_nested_names():
     assert set(fact.required_names) == {"z", "b"}
 
 
+def test_fact_with_fail_on_error():
+    fact = BooleanExpression("fail_on_error(a[0])")
+    assert set(fact.required_names) == {"a"}
+
+
 # We need to use this helper function to make sure the name np is not
 # seen in the context of the use of the facts.
 #
 # Add in __builtins__ so we can use 'import numpy as np' under a BooleanExpression
-facts_globals.update({'__builtins__': __builtins__})
+_facts_globals.update({'__builtins__': __builtins__})
 def make_db(maximum):
     import numpy as np
     return {"vals": np.arange(maximum)}
