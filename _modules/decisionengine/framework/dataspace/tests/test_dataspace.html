@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.tests.test_dataspace &mdash; decisionengine 1.7.0rc0.post38+g44e0ad6 documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_dataspace &mdash; decisionengine 1.7.0rc0.post40+gbaf0170 documentation</title>
   
 
   
@@ -165,7 +165,23 @@
            <div itemprop="articleBody">
             
   <h1>Source code for decisionengine.framework.dataspace.tests.test_dataspace</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasource</span> <span class="kn">import</span> <span class="n">DataSource</span>
+<span></span><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace</span> <span class="kn">import</span> <span class="n">dataspace</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasource</span> <span class="kn">import</span> <span class="n">DataSource</span>
+
+<div class="viewcode-block" id="test_datablock_config_finds_bad"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_dataspace.test_datablock_config_finds_bad">[docs]</a><span class="k">def</span> <span class="nf">test_datablock_config_finds_bad</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">({})</span>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;missing dataspace information&#39;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">({</span><span class="s1">&#39;dataspace&#39;</span><span class="p">:</span> <span class="s1">&#39;asdf&#39;</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;dataspace key must correspond to a dictionary&#39;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">({</span><span class="s1">&#39;dataspace&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;asdf&#39;</span><span class="p">:</span> <span class="s1">&#39;asdf&#39;</span><span class="p">}})</span>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="test_has_methods_we_expect"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_dataspace.test_has_methods_we_expect">[docs]</a><span class="k">def</span> <span class="nf">test_has_methods_we_expect</span><span class="p">():</span>
     <span class="nb">getattr</span><span class="p">(</span><span class="n">DataSource</span><span class="p">,</span> <span class="s1">&#39;taskmanager_table&#39;</span><span class="p">)</span>

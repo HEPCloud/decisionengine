@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.de_logger &mdash; decisionengine 1.7.0rc0.post38+g44e0ad6 documentation</title>
+  <title>decisionengine.framework.modules.de_logger &mdash; decisionengine 1.7.0rc0.post40+gbaf0170 documentation</title>
   
 
   
@@ -238,8 +238,8 @@
             <span class="n">debug_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">TimedRotatingFileHandler</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_debug&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">),</span>
                                                                       <span class="n">when</span><span class="o">=</span><span class="n">rotation_time_unit</span><span class="p">,</span>
                                                                       <span class="n">interval</span><span class="o">=</span><span class="n">rotation_interval</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect &#39;file_rotate_by&#39;:&#39;</span><span class="si">{</span><span class="n">file_rotate_by</span><span class="si">}</span><span class="s2">:&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># already validated file_rotate_by is a known value</span>
 
         <span class="n">debug_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
         <span class="n">debug_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests.test_postgresql &mdash; decisionengine 1.7.0rc0.post38+g44e0ad6 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.test_postgresql &mdash; decisionengine 1.7.0rc0.post40+gbaf0170 documentation</title>
   
 
   
@@ -303,6 +303,14 @@
 <div class="viewcode-block" id="test_insert"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_insert">[docs]</a><span class="k">def</span> <span class="nf">test_insert</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="n">dataproduct</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
     <span class="n">datasource</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">dataproduct</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span> <span class="n">dataproduct</span><span class="p">[</span><span class="s2">&quot;generation_id&quot;</span><span class="p">],</span> <span class="n">dataproduct</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">],</span>
                       <span class="n">dataproduct</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_delete_data_older_than_arg"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_delete_data_older_than_arg">[docs]</a><span class="k">def</span> <span class="nf">test_delete_data_older_than_arg</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">datasource</span><span class="o">.</span><span class="n">delete_data_older_than</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;Argument has to be positive, non zero integer&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">datasource</span><span class="o">.</span><span class="n">delete_data_older_than</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;Argument has to be positive, non zero integer&#39;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_reaper &mdash; decisionengine 1.7.0rc0.post40+gbaf0170 documentation</title>
+  <title>decisionengine.framework.tests.test_client_errors &mdash; decisionengine 1.7.0rc0.post40+gbaf0170 documentation</title>
   
 
   
@@ -149,7 +149,7 @@
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
-      <li>decisionengine.framework.tests.test_reaper</li>
+      <li>decisionengine.framework.tests.test_client_errors</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -164,8 +164,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for decisionengine.framework.tests.test_reaper</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;Fixture based DE Server for the reaper tests&#39;&#39;&#39;</span>
+  <h1>Source code for decisionengine.framework.tests.test_client_errors</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;Fixture based DE Server tests of the sample config&#39;&#39;&#39;</span>
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 
 <span class="kn">import</span> <span class="nn">pytest</span>
@@ -175,58 +175,11 @@
 
 <span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">TEST_CHANNEL_CONFIG_PATH</span><span class="p">)</span> <span class="c1"># pylint: disable=invalid-name</span>
 
-<div class="viewcode-block" id="test_client_can_get_de_server_reaper_status"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_reaper.test_client_can_get_de_server_reaper_status">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_client_can_get_de_server_reaper_status</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Verify reaper status&#39;&#39;&#39;</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--reaper-status&#39;</span><span class="p">)</span>
-
-    <span class="c1"># find reaper section</span>
-    <span class="k">assert</span> <span class="s1">&#39;reaper:&#39;</span> <span class="ow">in</span> <span class="n">output</span>
-
-    <span class="c1"># find reaper state section</span>
-    <span class="k">assert</span> <span class="s1">&#39;state:&#39;</span> <span class="ow">in</span> <span class="n">output</span>
-
-    <span class="c1"># find reaper interval</span>
-    <span class="k">assert</span> <span class="s1">&#39;retention_interval:&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
-
-<div class="viewcode-block" id="test_client_can_get_de_server_reaper_stop"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_reaper.test_client_can_get_de_server_reaper_stop">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_client_can_get_de_server_reaper_stop</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Verify reaper can stop&#39;&#39;&#39;</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--reaper-stop&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;OK&#39;</span>
-
-    <span class="c1"># get status to be sure</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--reaper-status&#39;</span><span class="p">)</span>
-
-    <span class="c1"># find reaper section</span>
-    <span class="k">assert</span> <span class="s1">&#39;reaper:&#39;</span> <span class="ow">in</span> <span class="n">output</span>
-
-    <span class="c1"># find reaper state section</span>
-    <span class="k">assert</span> <span class="s1">&#39;state:&#39;</span> <span class="ow">in</span> <span class="n">output</span>
-
-    <span class="c1"># find reaper state value</span>
-    <span class="k">assert</span> <span class="s1">&#39;State.SHUTDOWN&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
-
-<div class="viewcode-block" id="test_client_can_get_de_server_reaper_start_delay"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_reaper.test_client_can_get_de_server_reaper_start_delay">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_client_can_get_de_server_reaper_start_delay</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Verify reaper can start with delay&#39;&#39;&#39;</span>
-    <span class="c1"># make sure the reaper is stopped first</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--reaper-stop&#39;</span><span class="p">)</span>
-
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--reaper-start&#39;</span><span class="p">,</span> <span class="s1">&#39;--reaper-start-delay-secs=90&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;OK&#39;</span>
-
-    <span class="c1"># get status to be sure</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--reaper-status&#39;</span><span class="p">)</span>
-
-    <span class="c1"># find reaper section</span>
-    <span class="k">assert</span> <span class="s1">&#39;reaper:&#39;</span> <span class="ow">in</span> <span class="n">output</span>
-
-    <span class="c1"># find reaper state section</span>
-    <span class="k">assert</span> <span class="s1">&#39;state:&#39;</span> <span class="ow">in</span> <span class="n">output</span>
-
-    <span class="c1"># find reaper state value</span>
-    <span class="k">assert</span> <span class="s1">&#39;State.IDLE&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
+<div class="viewcode-block" id="test_client_cannot_wait_on_bad_state"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_errors.test_client_cannot_wait_on_bad_state">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_cannot_wait_on_bad_state</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Verify wait is for a valid state&#39;&#39;&#39;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while=INVALID_STATE&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;INVALID_STATE is not a valid channel state.&#39;</span></div>
 </pre></div>
 
            </div>
