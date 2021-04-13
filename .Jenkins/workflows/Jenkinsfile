@@ -54,6 +54,47 @@ pipeline {
                         }
                     }
                 }
+                stage('pylint') {
+                    agent {
+                        node {
+                            label 'docker'
+                            customWorkspace "${WORKSPACE}/${STAGE_NAME}"
+                        }
+                    }
+                    steps {
+                        script {
+                            // DOCKER_IMAGE is defined through Jenkins project
+                            pylintStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                        }
+                        echo "cleanup workspace"
+                        sh 'for f in $(ls -A); do rm -rf ${f}; done'
+                        // DE_REPO is defined through Jenkins project
+                        echo "clone decisionengine code from ${DE_REPO}"
+                        sh '''
+                            git clone ${DE_REPO}
+                            cd decisionengine
+                            echo "checkout ${BRANCH} branch"
+                            git checkout ${BRANCH}
+                            echo GITHUB_PR_NUMBER: ${GITHUB_PR_NUMBER} - GITHUB_PR_STATE: ${GITHUB_PR_STATE}
+                            if [[ -n ${GITHUB_PR_NUMBER} && ${GITHUB_PR_STATE} == OPEN ]]; then
+                                git fetch origin pull/${GITHUB_PR_NUMBER}/merge:merge${GITHUB_PR_NUMBER}
+                                git checkout merge${GITHUB_PR_NUMBER}
+                            fi
+                            cd ..
+                        '''
+                        echo "prepare docker image ${pylintStageDockerImage}"
+                        sh "docker build --pull --tag ${pylintStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/Dockerfile decisionengine/package/ci/"
+                        echo "Run ${STAGE_NAME} tests"
+                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${pylintStageDockerImage} \"-m pylint src/decisionengine/ src/tests/\" \"pylint.log\""
+                    }
+                    post {
+                        always {
+                            archiveArtifacts artifacts: "decisionengine/pylint.log"
+                            echo "cleanup docker image ${pylintStageDockerImage}"
+                            sh "docker rmi ${pylintStageDockerImage}"
+                            }
+                    }
+                }
                 stage('unit_tests') {
                     agent {
                         node {
