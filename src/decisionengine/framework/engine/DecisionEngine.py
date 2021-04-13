@@ -21,6 +21,7 @@ import socketserver
 import xmlrpc.server
 
 from decisionengine.framework.config import ChannelConfigHandler, ValidConfig, policies
+from decisionengine.framework.dataspace.maintain import Reaper
 from decisionengine.framework.engine.Workers import Worker, Workers
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
@@ -58,7 +59,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.channel_config_loader = channel_config_loader
         self.global_config = global_config
         self.dataspace = dataspace.DataSpace(self.global_config)
-        self.reaper = dataspace.Reaper(self.global_config)
+        self.reaper = Reaper(self.global_config)
         self.logger.info("DecisionEngine started on {}".format(server_address))
 
     def get_logger(self):
@@ -436,14 +437,14 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.reaper.stop()
 
     def rpc_reaper_status(self):
-        interval = self.reaper.get_retention_interval()
-        state = self.reaper.get_state()
+        interval = self.reaper.retention_interval
+        state = self.reaper.state.get()
         txt = 'reaper:\n\tstate: {}\n\tretention_interval: {}'.format(state, interval)
         return txt
 
     def reaper_status(self):
-        interval = self.reaper.get_retention_interval()
-        state = self.reaper.get_state()
+        interval = self.reaper.retention_interval
+        state = self.reaper.state.get()
         txt = '\nreaper:\n\tstate: {}\n\tretention_interval: {}\n'.format(state, interval)
         return txt
 

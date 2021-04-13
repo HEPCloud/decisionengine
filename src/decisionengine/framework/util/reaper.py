@@ -14,17 +14,17 @@ import pwd
 import sys
 
 import decisionengine.framework.config.policies as policies
-import decisionengine.framework.dataspace.dataspace as dataspace
+from decisionengine.framework.dataspace.maintain import Reaper
 from decisionengine.framework.config.ValidConfig import ValidConfig
 
-def main():
+def main():  # pragma: no cover
     username = pwd.getpwuid(os.getuid()).pw_name
     if username not in ['root', 'decisionengine']:
         sys.exit(f"User '{username}' is not allowed to run this script.")
 
     config_file = policies.global_config_file()
     global_config = ValidConfig(config_file)
-    reaper = dataspace.Reaper(global_config)
+    reaper = Reaper(global_config)
     reaper.reap()
 
 
