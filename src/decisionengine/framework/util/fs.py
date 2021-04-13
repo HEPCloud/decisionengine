@@ -29,7 +29,7 @@ def files_with_extensions(dir_path, *extensions):
     except FileNotFoundError:
         logging.getLogger("decision_engine").exception("invalid path to config file given")
         raise
-    except Exception:
+    except Exception:  # pragma: no cover
         logging.getLogger("decision_engine").exception("Unexpected error!")
         raise
     else:

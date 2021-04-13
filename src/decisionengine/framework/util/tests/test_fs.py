@@ -1,31 +1,37 @@
 import tempfile
 from pathlib import Path
 
+import pytest
+
 from decisionengine.framework.util import fs
 
+def test_non_real_directory():
+    with pytest.raises(FileNotFoundError):
+        fs.files_with_extensions('/this/dir/isnt/real')
+
 def test_empty_directory():
-    mydir = tempfile.TemporaryDirectory()
-    files = fs.files_with_extensions(mydir.name)
-    assert len(files) == 0
+    with tempfile.TemporaryDirectory() as mydir:
+        files = fs.files_with_extensions(mydir)
+        assert len(files) == 0
 
 def test_nonempty_directory():
-    mydir = tempfile.TemporaryDirectory()
-    __a = Path(mydir.name, 'a.txt')
-    __a.touch()
-    files = fs.files_with_extensions(mydir.name)
-    assert files == (['a', str(__a)], )
+    with tempfile.TemporaryDirectory() as mydir:
+        __a = Path(mydir, 'a.txt')
+        __a.touch()
+        files = fs.files_with_extensions(mydir)
+        assert files == (['a', str(__a)], )
 
 def test_nonempty_directory_with_extensions():
-    mydir = tempfile.TemporaryDirectory()
-    __a = Path(mydir.name, 'a.txt')
-    __b = Path(mydir.name, 'b.jsonnet')
-    __c = Path(mydir.name, 'c.conf')
-    __a.touch()
-    __b.touch()
-    __c.touch()
+    with tempfile.TemporaryDirectory() as mydir:
+        __a = Path(mydir, 'a.txt')
+        __b = Path(mydir, 'b.jsonnet')
+        __c = Path(mydir, 'c.conf')
+        __a.touch()
+        __b.touch()
+        __c.touch()
 
-    files = fs.files_with_extensions(mydir.name, '.jsonnet')
-    assert files == (['b', str(__b)], )
+        files = fs.files_with_extensions(mydir, '.jsonnet')
+        assert files == (['b', str(__b)], )
 
-    files = fs.files_with_extensions(mydir.name, '.jsonnet', '.conf')
-    assert files == (['b', str(__b)], ['c', str(__c)])
+        files = fs.files_with_extensions(mydir, '.jsonnet', '.conf')
+        assert files == (['b', str(__b)], ['c', str(__c)])

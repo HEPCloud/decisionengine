@@ -30,7 +30,7 @@ def _make_de_logger(global_config):
                               rotation_time_unit=logger_config.get('rotation_time_unit', 'D'),
                               rotation_interval=logger_config.get('rotation_time_interval', 1),
                               max_backup_count=logger_config.get('max_backup_count', 6),
-                              max_file_size=logger_config['max_file_size'],
+                              max_file_size=logger_config.get('max_file_size', 1000000),
                               log_file_name=logger_config['log_file'])
         return de_logger.get_logger()
     except Exception as msg:
