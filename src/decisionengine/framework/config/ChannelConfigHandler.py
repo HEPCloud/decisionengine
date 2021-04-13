@@ -33,7 +33,7 @@ def _make_de_logger(global_config):
                               max_file_size=logger_config.get('max_file_size', 1000000),
                               log_file_name=logger_config['log_file'])
         return de_logger.get_logger()
-    except Exception as msg:
+    except Exception as msg:  # pragma: no cover
         raise RuntimeError(f"Failed to create log: {msg}")
 
 def _check_keys(channel_conf_dict):
@@ -142,11 +142,7 @@ class ChannelConfigHandler():
             modules = channel_config.get(i, {})
             for name, conf in modules.items():
                 my_module = importlib.import_module(conf.get('module'))
-                try:
-                    produces.setdefault(name, []).extend(
-                        getattr(my_module, 'PRODUCES'))
-                except AttributeError:
-                    pass
+                produces.setdefault(name, []).extend(getattr(my_module, 'PRODUCES'))
         return produces
 
     def get_channels(self):
@@ -205,6 +201,7 @@ class ChannelConfigHandler():
         for channel_name, full_path in files:
             # Load only the channels that are not already in memory
             if channel_name in self.channels:
+                self.logger.info(f"Already loaded a channel called '{channel_name}', skipping {full_path}")
                 continue
 
             success, result = self._load_channel(channel_name, full_path)

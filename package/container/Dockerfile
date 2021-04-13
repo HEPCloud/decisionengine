@@ -31,8 +31,8 @@ RUN yum -y install postgresql$(echo -n ${PG_VERSION} | tr -d '.')-server \
 
 # Install utils
 RUN yum -y install \
-    python3 python3-devel python3-pip python3-setuptools python3-wheel \
-    gcc gcc-c++ make \
+    python3 python3-pip python3-setuptools python3-wheel \
+    gcc gcc-c++ make python3-devel swig openssl-devel \
     git \
     rpm-build \
  && yum -y clean all

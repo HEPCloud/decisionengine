@@ -38,7 +38,7 @@ def test_client_can_get_de_server_reaper_stop(deserver):
     assert 'state:' in output
 
     # find reaper state value
-    assert 'State.STOPPED' in output
+    assert 'State.SHUTDOWN' in output
 
 @pytest.mark.usefixtures("deserver")
 def test_client_can_get_de_server_reaper_start_delay(deserver):
@@ -59,4 +59,4 @@ def test_client_can_get_de_server_reaper_start_delay(deserver):
     assert 'state:' in output
 
     # find reaper state value
-    assert 'State.STARTING' in output
+    assert 'State.IDLE' in output

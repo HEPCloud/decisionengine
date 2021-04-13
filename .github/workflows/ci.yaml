@@ -33,17 +33,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: x64
 
-      - name: Merge requirements files into one
-        run: cat requirements/*.txt | sort -u | grep -v requirements-runtime.txt > requirements.txt
-
       - name: Cache pip
         uses: actions/cache@v2
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-${{ matrix.python-version }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-${{ matrix.python-version }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-
+            ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
@@ -57,9 +54,10 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade wheel
+          python3 -m pip install --upgrade wheel setuptools
           python3 -m pip install --upgrade pytest
-          python3 -m pip install -r requirements.txt
+          python3 -m pip install -e . --user
+          python3 -m pip install -e .[develop] --user
 
       - name: Ensure version.py exists
         run: python3 setup.py bdist_wheel
@@ -91,18 +89,15 @@ jobs:
           python-version: '3.9'
           architecture: 'x64'
 
-      - name: Merge requirements files into one
-        run: cat requirements/*.txt | sort -u | grep -v requirements-runtime.txt > requirements.txt
-
       - name: Cache pip
         uses: actions/cache@v2
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
-          # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-3.9
+          # Look to see if there is a cache hit for the corresponding file
+          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-3.9
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-
+            ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
@@ -116,16 +111,16 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade wheel
+          python3 -m pip install --upgrade wheel setuptools
           python3 -m pip install --upgrade pytest
-          python3 -m pip install -r requirements.txt
+          python3 -m pip install -e . --user
+          python3 -m pip install -e .[develop] --user
 
       - name: Install sphinx expected fonts within the container
         run: |
           sudo apt-get update || true
           sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
-          sudo pip install -U pip
-          sudo pip3 install sphinx
+          python3 -m pip install sphinx sphinx_rtd_theme --user
 
       - name: Ensure version.py exists
         run: python3 setup.py bdist_wheel
@@ -152,18 +147,15 @@ jobs:
           python-version: '3.9'
           architecture: 'x64'
 
-      - name: Merge requirements files into one
-        run: cat requirements/*.txt | sort -u | grep -v requirements-runtime.txt > requirements.txt
-
       - name: Cache pip
         uses: actions/cache@v2
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
-          # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-3.9
+          # Look to see if there is a cache hit for the corresponding file
+          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-3.9
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-
+            ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
@@ -177,9 +169,10 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade wheel
+          python3 -m pip install --upgrade wheel setuptools
           python3 -m pip install --upgrade pytest
-          python3 -m pip install -r requirements.txt
+          python3 -m pip install -e . --user
+          python3 -m pip install -e .[develop] --user
 
       - name: Ensure version.py exists
         run: python3 setup.py bdist_wheel
