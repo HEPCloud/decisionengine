@@ -80,7 +80,7 @@ class FactLookup:
                         dependencies[name].add(rule_for_fact)
 
             ordered_dependencies = toposort_flatten(dependencies)
-        except Exception:
+        except Exception:  # pragma: no cover
             logging.getLogger().exception("Unexpected error!")
             raise
 

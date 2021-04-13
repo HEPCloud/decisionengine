@@ -2,10 +2,7 @@ import platform
 import time
 import logging
 
-try:
-    import dbutils.pooled_db as pooled_db
-except ModuleNotFoundError:
-    import DBUtils.PooledDB as pooled_db
+import dbutils.pooled_db as pooled_db
 
 if platform.python_implementation() == 'CPython':
     import psycopg2
@@ -430,13 +427,13 @@ class Postgresql(ds.DataSource):
             colnames = [desc[0] for desc in cursor.description]
             res = cursor.fetchall()
             return colnames, res
-        except psycopg2.Error:
+        except psycopg2.Error:  # pragma: no cover
             # do not log stack trace, Exception thrown is handled by the caller
             raise
         finally:
             try:
                 list([x.close if x else None for x in (cursor, db)])
-            except psycopg2.Error:
+            except psycopg2.Error:  # pragma: no cover
                 # do not log stack trace, Exception thrown is handled by the caller
                 pass
 
@@ -454,7 +451,7 @@ class Postgresql(ds.DataSource):
             try:
                 if db:
                     db.rollback()
-            except psycopg2.Error:
+            except psycopg2.Error:  # pragma: no cover
                 pass
             raise
         except psycopg2.Error:
@@ -481,7 +478,7 @@ class Postgresql(ds.DataSource):
             try:
                 if db:
                     db.rollback()
-            except psycopg2.Error:
+            except psycopg2.Error:  # pragma: no cover
                 pass
             raise
         except psycopg2.Error:

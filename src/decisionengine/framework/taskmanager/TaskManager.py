@@ -200,8 +200,7 @@ class TaskManager:
             thread.join()
 
     def get_state_value(self):
-        with self.state.get_lock():
-            return self.state.value
+        return self.state.get().value
 
     def get_state(self):
         return self.state.get()
@@ -272,7 +271,7 @@ class TaskManager:
         data_block_t1 = self.do_backup()
         try:
             self.run_transforms(data_block_t1)
-        except Exception:
+        except Exception:  # pragma: no cover
             logging.getLogger().exception("error in decision cycle(transforms) ")
             # We do not call 'take_offline' here because it has
             # already been called in the run_transform code on
@@ -282,7 +281,7 @@ class TaskManager:
         try:
             actions_facts = self.run_logic_engine(data_block_t1)
             logging.getLogger().info('ran all logic engines')
-        except Exception:
+        except Exception:  # pragma: no cover
             logging.getLogger().exception("error in decision cycle(logic engine) ")
             self.take_offline(data_block_t1)
 
@@ -290,7 +289,7 @@ class TaskManager:
             try:
                 self.run_publishers(
                     a_f['actions'], a_f['newfacts'], data_block_t1)
-            except Exception:
+            except Exception:  # pragma: no cover
                 logging.getLogger().exception("error in decision cycle(publishers) ")
                 self.take_offline(data_block_t1)
 
@@ -417,7 +416,7 @@ class TaskManager:
                                               creator=transform.name)
                     self.data_block_put(data, header, data_block)
                     logging.getLogger().info('transform put data')
-                except Exception:
+                except Exception:  # pragma: no cover
                     logging.getLogger().exception(f'exception from transform {transform.name} ')
                     self.take_offline(data_block)
                 break
@@ -504,6 +503,6 @@ class TaskManager:
                             continue
                         else:
                             raise
-        except Exception:
+        except Exception:  # pragma: no cover
             logging.getLogger().exception("Unexpected error!")
             raise

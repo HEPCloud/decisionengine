@@ -38,7 +38,7 @@ class RuleEngine:
                     new_facts[rule.name] = new_facts_for_rule
                     # First instance of a fact with a given name receives precedence
                     facts = {**new_facts_for_rule, **facts}
-        except Exception:
+        except Exception:  # pragma: no cover
             logging.getLogger.exception("Unexpected error!")
             raise
         return actions, new_facts

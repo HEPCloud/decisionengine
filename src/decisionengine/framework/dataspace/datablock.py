@@ -173,7 +173,7 @@ class Header(UserDict):
         """
         try:
             return set(self.data.keys()).issubset(Header.required_keys)
-        except Exception:
+        except Exception:  # pragma: no cover
             logging.getLogger().exception("Unexpected error checking Header information")
             raise
 
@@ -345,7 +345,7 @@ class DataBlock(object):
                                "generation_id": value["generation_id"],
                                "taskmanager_id": value["taskmanager_id"],
                                "value": v})
-        except Exception:
+        except Exception:  # pragma: no cover
             self.logger.exception("Unexpected error in get_dataproducts")
         return result
 

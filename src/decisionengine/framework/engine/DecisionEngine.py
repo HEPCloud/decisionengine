@@ -192,7 +192,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                             txt += dataframe_formatter(df.loc[:, column_names])
                         else:
                             txt += dataframe_formatter(df)
-                except Exception as e:
+                except Exception as e:  # pragma: no cover
                     txt += "\t\t{}\n".format(e)
         if not found:
             txt += "Not produced by any module\n"
@@ -238,7 +238,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                                 df = pd.read_json(df.to_json())
                                 txt += "{}\n".format(tabulate.tabulate(df,
                                                                        headers='keys', tablefmt='psql'))
-                            except Exception as e:
+                            except Exception as e:  # pragma: no cover
                                 txt += "\t\t\t{}\n".format(e)
         return txt[:-1]
 
@@ -470,7 +470,7 @@ def _get_global_config(config_file, options):
     global_config = None
     try:
         global_config = ValidConfig.ValidConfig(config_file)
-    except Exception as msg:
+    except Exception as msg:  # pragma: no cover
         sys.exit(f"Failed to load configuration {config_file}\n{msg}")
 
     global_config.update({
@@ -481,7 +481,7 @@ def _get_global_config(config_file, options):
 
 def _get_de_conf_manager(global_config_dir, channel_config_dir, options):
     config_file = os.path.join(global_config_dir, options.config)
-    if not os.path.isfile(config_file):
+    if not os.path.isfile(config_file):  # pragma: no cover
         raise Exception(f"Config file '{config_file}' not found")
 
     global_config = _get_global_config(config_file, options)

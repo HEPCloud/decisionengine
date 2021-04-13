@@ -8,7 +8,7 @@ def get_random_port():
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             return s.getsockname()[1]
 
-    except OSError:
+    except OSError:  # pragma: no cover
         logging.getLogger().error("problem with get_random_port")
         raise
     except Exception:  # pragma: no cover

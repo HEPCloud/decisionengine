@@ -120,7 +120,7 @@ class DataSpace():
                 self.logger.exception('Cannot create datebase tables')
                 raise
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return '%s' % vars(self)
 
     def insert(self, taskmanager_id, generation_id, key,

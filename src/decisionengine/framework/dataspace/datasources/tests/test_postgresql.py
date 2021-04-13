@@ -136,3 +136,11 @@ def test_get_last_generation_id(datasource, taskmanager, data):
 def test_insert(datasource, dataproduct, header, metadata):
     datasource.insert(dataproduct["taskmanager_id"], dataproduct["generation_id"], dataproduct["key"],
                       dataproduct["value"].encode(), header, metadata)
+
+def test_delete_data_older_than_arg(datasource):
+    with pytest.raises(ValueError) as e:
+        datasource.delete_data_older_than(0)
+    assert e.match('Argument has to be positive, non zero integer')
+    with pytest.raises(ValueError) as e:
+        datasource.delete_data_older_than(-5)
+    assert e.match('Argument has to be positive, non zero integer')

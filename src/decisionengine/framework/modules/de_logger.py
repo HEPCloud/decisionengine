@@ -71,8 +71,8 @@ def set_logging(log_level,
             debug_handler = logging.handlers.TimedRotatingFileHandler("{}_debug".format(log_file_name),
                                                                       when=rotation_time_unit,
                                                                       interval=rotation_interval)
-        else:
-            raise ValueError(f"Incorrect 'file_rotate_by':'{file_rotate_by}:'")
+
+        # already validated file_rotate_by is a known value
 
         debug_handler.setFormatter(formatter)
         debug_handler.setLevel(logging.DEBUG)
