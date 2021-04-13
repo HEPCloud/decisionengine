@@ -363,11 +363,11 @@ class DataBlock(object):
                                                    self.generation_id, key)
             value = ast.literal_eval(decompress(value))
         except KeyError:
-            self.logger.error("Did not get key in datablock __getitem__")
+            self.logger.error(f"Did not get key '{key}' in datablock __getitem__")
             value = default
 
         if not value:
-            self.logger.exception("No Key in datablock __getitem__")
+            self.logger.exception(f"No key '{key}' in datablock __getitem__")
             raise KeyError
 
         if value.get('pickled'):
