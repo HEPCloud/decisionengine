@@ -6,7 +6,7 @@
 
 import importlib
 import pathlib
-import platform
+import site
 import sys
 from setuptools import find_packages, setup
 
@@ -20,49 +20,39 @@ about = importlib.import_module('decisionengine.framework.about')
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
 # pull in runtime requirements
-require = []
-rpm_require = ["shadow-utils", "systemd"]
-devel_req = []
-try:
-    with open("requirements/requirements-runtime.txt") as _fd:
-        for item in _fd.readlines():
-            req = (
-                item.partition("#")[0]
-                    .partition(">")[0]
-                    .partition("=")[0]
-            )
-            req = req.replace(" ", "").replace("\n", "")
-            if req != "" and not req.startswith("http"):
-                if platform.python_implementation() == "CPython":
-                    if req != "psycopg2cffi":
-                        # Disable more detailed RPM requires for now
-                        # TODO: resolve this long term for deployment
-                        # rpm_require.append('python3-'+ req.partition(';')[0])
-                        require.append(req)
-                elif platform.python_implementation() == "PyPy":
-                    if req != "psycopg2-binary":
-                        rpm_require.append("python3-" + req.partition(";")[0])
-                        require.append(req)
-                else:
-                    raise NotImplementedError("Unknown python implementation")
+runtime_require = ["jsonnet >= 0.17.0", "numpy >= 1.19", "tabulate >= 0.8.7",
+                   "toposort >= 1.6", "wheel >= 0.36.2", "DBUtils >= 2.0",
+                   "pandas == 1.1.5; python_version <= '3.6'",
+                   "pandas >= 1.1.5; python_version >= '3.7'",
+                   "psycopg2-binary >= 2.8.6; platform_python_implementation == 'CPython'",  # noqa: E501
+                   "psycopg2cffi >= 2.9.0; platform_python_implementation == 'PyPy'"]  # noqa: E501
 
-except FileNotFoundError:
-    print("", file=sys.stderr)
-    print("> running without setuptools-scm and toml?", file=sys.stderr)
-    print("", file=sys.stderr)
-    raise
 
-# read in development requirements in development environment
-with open("requirements/requirements-develop.txt") as _fd:
-    for item in _fd.readlines():
-        req = (
-            item.partition("#")[0]
-                .partition("-")[0]
-                .partition(">")[0]
-                .partition("=")[0]
-        )
-        if req != "" and not req.startswith("http"):
-            devel_req.append(req)
+devel_req = ["setuptools >= 42", "setuptools-scm >= 5.0.1",
+             "setuptools-scm[toml] >= 5.0.1", "toml >= 0.10.2",
+             "mock >= 4.0.3", "pytest >= 6.2.2", "pytest-cov >= 2.11.1",
+             "pytest-flake8 >= 1.0.7", "pytest-postgresql >= 2.5.3",
+             "pytest-timeout >= 1.4.2",
+             "importlib_resources >= 5.1.2; python_version <= '3.8'",
+             "sphinx >= 3.5.3", "sphinx_rtd_theme >= 0.5.1"]
+
+rpm_require = ["shadow-utils", "systemd", "python3"]
+
+#
+# Because some python modules are required, but not packaged
+# add some additional "runtime" requirements so we can fetch,
+# compile, and install the modules.
+#
+# NOTE: in an ideal world, we wouldn't need the following:
+#       hopefully one day we can drop these.
+#
+__base_pip_requires = ['python3-pip', 'python3-setuptools', 'python3-wheel']
+__jsonnet_requires = ['gcc', 'gcc-c++', 'make', 'python3-devel']
+rpm_require.extend(__base_pip_requires)
+rpm_require.extend(__jsonnet_requires)
+
+# workaround bug in editable install when PEP517 is detected
+site.ENABLE_USER_SITE = "--user" in sys.argv[1:]
 
 # This metadata can be read out with:
 #    import importlib.metadata
@@ -72,7 +62,7 @@ with open("requirements/requirements-develop.txt") as _fd:
 #
 # Much of it comes out of decisionengine.framework.about.py
 setup(
-    setup_requires=["setuptools", "wheel", "setuptools_scm", "toml"],
+    setup_requires=["setuptools", "wheel", "setuptools_scm[toml]"],
     name=about.__title__,
     use_scm_version={"version_scheme": "post-release"},
     description=about.__description__,
@@ -85,7 +75,7 @@ setup(
     packages=find_packages(
         where="src", exclude=("*.tests", "*.tests.*", "build.*", "doc.*")
     ),
-    install_requires=require,
+    install_requires=runtime_require,
     extras_require={
         "develop": devel_req,
     },
