@@ -48,6 +48,10 @@ def _check_keys(channel_conf_dict):
         raise RuntimeError(f"channel is missing one or more mandatory keys:\n{missing}")
     for name in _MANDATORY_CHANNEL_KEYS:
         conf = channel_conf_dict[name]
+
+        if not isinstance(conf, dict):
+            raise RuntimeError(f"{name} module is not a dictionary: {type(conf)}")
+
         for module_name, module_conf in conf.items():
             try:
                 module_keys = set(module_conf.keys())
