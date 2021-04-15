@@ -177,11 +177,62 @@ jobs:
       - name: Ensure version.py exists
         run: python3 setup.py bdist_wheel
 
-      - name: Run Flake8 Tests on Python ${{ matrix.python-version }}
+      - name: Run Flake8 Tests against the code tree
         env:
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
           pytest -m flake8 --flake8
+
+  run_pylint:
+    name: Run pylint against code tree
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: checkout code tree
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          architecture: 'x64'
+
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding file
+          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-3.9
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+
+      - name: Note Python version/implementation
+        run: |
+          which python3
+          python3 -c 'import sys; print(sys.version)'
+          python3 -c 'import platform; print(platform.python_implementation())'
+          python3 -m pip cache dir
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install --upgrade wheel setuptools
+          python3 -m pip install --upgrade pytest
+          python3 -m pip install -e . --user
+          python3 -m pip install -e .[develop] --user
+
+      - name: Ensure version.py exists
+        run: python3 setup.py bdist_wheel
+
+      - name: Run pylint against the code tree
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: |
+          pylint src/decisionengine/
 
   rpmbuild_el7:
     name: Build an EL7 rpm
