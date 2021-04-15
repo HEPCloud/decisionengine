@@ -84,6 +84,18 @@ class TestReaper(unittest.TestCase):
         time.sleep(0.5)  # make sure reaper has a chance to get the lock
         self.assertEqual(self.reaper.state.get(), State.ACTIVE)
 
+    @pytest.mark.timeout(20)
+    def test_state_sets_timer_and_uses_it(self):
+        self.reaper.MIN_SECONDS_BETWEEN_RUNS = 1
+        self.reaper.seconds_between_runs = 1
+        self.reaper.start(delay=2)
+        self.assertEqual(self.reaper.seconds_between_runs, 1)
+        self.reaper.state.wait_while(State.IDLE)  # Make sure the reaper started
+        self.assertEqual(self.reaper.state.get(), State.ACTIVE)
+        self.reaper.state.wait_while(State.ACTIVE)  # let the reaper finish its scan
+        self.reaper.state.wait_while(State.IDLE)  # Make sure the reaper started a second time
+        self.reaper.state.wait_while(State.ACTIVE)  # let the reaper finish its scan
+
     def test_start_delay(self):
         self.reaper.start(delay=90)
         self.assertEqual(self.reaper.state.get(), State.IDLE)
