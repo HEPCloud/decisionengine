@@ -12,6 +12,12 @@ _channel_config_dir = os.path.join(TEST_CONFIG_PATH, 'test-bad-channel')  # noqa
 deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir)  # pylint: disable=invalid-name
 
 
+def _missing_produces(name):
+    return f"The following modules are missing '@produces' declarations:\n\n - {name}\n"
+
+def _missing_consumes(name):
+    return f"The following modules are missing '@consumes' declarations:\n\n - {name}\n"
+
 def _expected_circularity(test_str):
     return re.search("Circular dependencies exist among these items: "
                      "{'a_uses_b':{'b_uses_a'}, 'b_uses_a':{'a_uses_b'}}",
@@ -36,12 +42,11 @@ def test_client_can_get_products_no_channels(deserver, caplog):
     error_msgs.remove(circularity_msg)
     assert len(error_msgs) == 3
 
-    # Test missing produces/consumes errors
-    expected_missing_lists = {'source1': 'PRODUCES',
-                              'transform1': 'PRODUCES',
-                              'publisher1': 'CONSUMES'}
+    # Test missing-list messages
+    expected = {'test_bad_publisher': _missing_consumes('publisher1'),
+                'test_bad_source': _missing_produces('source1'),
+                'test_bad_transform': _missing_produces('transform1') + '\n' + _missing_consumes('transform1')}
+
     for err_msg in error_msgs:
-        match = re.match(r'.*module (\w+) does not have a (\w+) list.*', err_msg, re.DOTALL)
-        assert match
-        module_name, missing_list = match.groups()
-        assert missing_list == expected_missing_lists[module_name]
+        channel_name = re.search(r"^Channel (\w+).*", err_msg).groups()[0]
+        assert expected[channel_name] in err_msg

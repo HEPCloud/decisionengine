@@ -1,5 +1,5 @@
 from decisionengine.framework.modules import Publisher
 
 
-class PublisherWithMisingConsumes(Publisher.Publisher):
+class PublisherWithMissingConsumes(Publisher.Publisher):
     pass
