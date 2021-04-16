@@ -177,7 +177,21 @@ class Header(UserDict):
             logging.getLogger().exception("Unexpected error checking Header information")
             raise
 
-class DataBlock(object):
+
+class ProductRetriever:
+    def __init__(self, product_name, product_type, product_source):
+        self.name = product_name
+        self.type = product_type    # Not yet used
+        self.creator = product_source   # Not yet used
+
+    def __call__(self, datablock):
+        return datablock[self.name]
+
+    def __str__(self):
+        return f"Product retriever for {self.__dict__}"
+
+
+class DataBlock:
 
     def __init__(self, dataspace, name, taskmanager_id=None, generation_id=None, sequence_id=None):
         """

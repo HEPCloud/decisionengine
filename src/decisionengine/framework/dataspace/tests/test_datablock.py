@@ -159,13 +159,18 @@ class TestDatablock(unittest.TestCase):
 
         self.datablock.put(dataproduct["key"], dataproduct["value"], header)
 
-        keys = self.datablock.keys()
-        self.assertIn(dataproduct["key"], keys)
-
+        self.assertIn(dataproduct["key"], self.datablock.keys())
         self.assertIn(dataproduct["key"], self.datablock)
 
         self.assertEqual(self.datablock.get(dataproduct["key"]), dataproduct["value"])
 
+        # Test product-retriever interface
+        retriever = datablock.ProductRetriever(dataproduct["key"], None, None)
+        assert retriever(self.datablock) == dataproduct["value"]
+        assert str(retriever) == "Product retriever for {'name': 'test_key1', 'type': None, 'creator': None}"
+
+        # FIXME: The following behavior should be disallowed for data-integrity reasons!
+        #        i.e. replacing a product name with a different value.
         newDict = {"subKey": "newValue"}
         self.datablock.put(dataproduct["key"], newDict, header)
         self.assertEqual(self.datablock[dataproduct["key"]], newDict)
