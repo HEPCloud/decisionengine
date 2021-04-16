@@ -1,8 +1,7 @@
 from decisionengine.framework.modules import Publisher
 
-CONSUMES = ["bar"]
 
-
+@Publisher.consumes(bar=None)
 class FailingPublisher(Publisher.Publisher):
 
     def __init__(self, config):
@@ -10,6 +9,3 @@ class FailingPublisher(Publisher.Publisher):
 
     def publish(self, data_block):
         raise RuntimeError("Test error-handling")
-
-    def consumes(self, name_list):
-        return CONSUMES

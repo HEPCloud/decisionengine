@@ -2,21 +2,16 @@ import pandas as pd
 
 from decisionengine.framework.modules import Transform
 
-CONSUMES = ["foo"]
-PRODUCES = ["bar"]
-
-
+@Transform.consumes(foo=pd.DataFrame)
+@Transform.produces(bar=pd.DataFrame)
 class TransformNOP(Transform.Transform):
 
     def __init__(self, config):
         super().__init__(config)
 
     def transform(self, data_block):
-        df_in = data_block[CONSUMES[0]]
-        return {PRODUCES[0]: pd.DataFrame(df_in["key2"])}
+        df_in = self.foo(data_block)
+        return {'bar': pd.DataFrame(df_in["key2"])}
 
-    def consumes(self, name_list=None):
-        return CONSUMES
 
-    def produces(self, name_schema_id_list=None):
-        return PRODUCES
+Transform.describe(TransformNOP)

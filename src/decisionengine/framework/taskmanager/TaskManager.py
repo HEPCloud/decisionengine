@@ -2,7 +2,6 @@
 Task Manager
 """
 import importlib
-import inspect
 import threading
 import logging
 import time
@@ -13,41 +12,36 @@ import pandas
 
 from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
+from decisionengine.framework.modules import Module
 from decisionengine.framework.modules.Publisher import Publisher
 from decisionengine.framework.modules.Source import Source
 from decisionengine.framework.modules.Transform import Transform
 from decisionengine.framework.logicengine.LogicEngine import LogicEngine
 from decisionengine.framework.taskmanager.ProcessingState import State
 from decisionengine.framework.taskmanager.ProcessingState import ProcessingState
+from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
+from decisionengine.framework.util.subclasses import all_subclasses
 
 _TRANSFORMS_TO = 300  # 5 minutes
 _DEFAULT_SCHEDULE = 300  # ""
-
-
-def _derived_class(cls, base_class):
-    """
-    Only matches subclasses that are not equal to the base class.
-    """
-    return cls is not base_class and issubclass(cls, base_class)
 
 
 def _find_only_one_subclass(module, base_class):
     """
     Search through module looking for only one subclass of the supplied base_class
     """
-    class_members = inspect.getmembers(module, inspect.isclass)
-    all_subclasses = [name for name, cls in class_members if _derived_class(cls, base_class)]
-    if not all_subclasses:
+    subclasses = all_subclasses(module, base_class)
+    if not subclasses:
         raise RuntimeError(f"Could not find a decision-engine '{base_class.__name__}' in the module:\n"
                            f"  '{module.__name__}'")
-    if len(all_subclasses) > 1:
+    if len(subclasses) > 1:
         error_msg = f"Found more than one decision-engine '{base_class.__name__}' in the module\n" + \
                     f"'{module.__name__}':\n\n"
-        for cls in all_subclasses:
+        for cls in subclasses:
             error_msg += ' - ' + cls + '\n'
         error_msg += "\nSpecify which subclass you want via the configuration 'name: <one of the above>'."
         raise RuntimeError(error_msg)
-    return all_subclasses[0]
+    return subclasses[0]
 
 
 def _create_module_instance(config_dict, base_class):
@@ -88,7 +82,6 @@ class Worker:
         logging.getLogger("decision_engine").debug('Creating worker: module=%s name=%s parameters=%s schedule=%s',
                                                    self.module, self.name, conf_dict['parameters'], self.schedule)
 
-
 def _make_workers_for(configs, base_class):
     return {name: Worker(e, base_class) for name, e in configs.items()}
 
@@ -114,6 +107,10 @@ class Channel:
         logging.getLogger("decision_engine").debug('Creating channel publisher')
         self.publishers = _make_workers_for(channel_dict['publishers'], Publisher)
         self.task_manager = channel_dict.get('task_manager', {})
+
+        ensure_no_circularities(self.sources,
+                                self.transforms,
+                                self.publishers)
 
 
 class TaskManager:
@@ -244,6 +241,24 @@ class TaskManager:
     def get_state_name(self):
         return self.get_state().name
 
+    def get_produces(self):
+        # FIXME: What happens if a transform and source have the same name?
+        produces = {}
+        for name, mod in self.channel.sources.items():
+            produces[name] = list(mod.worker._produces.keys())
+        for name, mod in self.channel.transforms.items():
+            produces[name] = list(mod.worker._produces.keys())
+        return produces
+
+    def get_consumes(self):
+        # FIXME: What happens if a transform and publisher have the same name?
+        consumes = {}
+        for name, mod in self.channel.transforms.items():
+            consumes[name] = list(mod.worker._consumes.keys())
+        for name, mod in self.channel.publishers.items():
+            consumes[name] = list(mod.worker._consumes.keys())
+        return consumes
+
     def set_loglevel_value(self, log_level):
         """Assumes log_level is a string corresponding to the supported logging-module levels."""
         with self.loglevel.get_lock():
@@ -343,6 +358,7 @@ class TaskManager:
             try:
                 logging.getLogger().info(f'Src {src.name} calling acquire')
                 data = src.worker.acquire()
+                Module.verify_products(src.worker, data)
                 logging.getLogger().info(f'Src {src.name} acquire retuned')
                 logging.getLogger().info(f'Src {src.name} filling header')
                 if data:
@@ -432,7 +448,7 @@ class TaskManager:
         :arg data_block: data block
         """
         data_to = self.channel.task_manager.get('data_TO', _TRANSFORMS_TO)
-        consume_keys = transform.worker.consumes()
+        consume_keys = list(transform.worker._consumes.keys())
 
         logging.getLogger().info('transform: %s expected keys: %s provided keys: %s',
                                  transform.name, consume_keys, list(data_block.keys()))

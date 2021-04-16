@@ -8,7 +8,6 @@ if this environment variable is not defined the ``DE-Config.py`` file from the `
 
 import argparse
 import enum
-import importlib
 import logging
 import signal
 import sys
@@ -148,8 +147,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                     txt += f"Channel {ch} is in not active\n"
                     continue
 
-                channel_config = self.channel_config_loader.get_channels()[ch]
-                produces = self.channel_config_loader.get_produces(channel_config)
+                produces = worker.get_produces()
                 r = [x for x in list(produces.items()) if product in x[1]]
                 if not r:
                     continue
@@ -222,7 +220,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                                                  sequence_id=tm['sequence_id'])
                 data_block.generation_id -= 1
                 channel_config = self.channel_config_loader.get_channels()[ch]
-                produces = self.channel_config_loader.get_produces(channel_config)
+                produces = worker.get_produces()
                 for i in ("sources",
                           "transforms",
                           "logicengines",
@@ -255,6 +253,8 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                                                                                           worker.task_manager_id,
                                                                                           worker.get_state_name(),
                                                                                           width=width)
+                produces = worker.get_produces()
+                consumes = worker.get_consumes()
                 channel_config = self.channel_config_loader.get_channels()[ch]
                 for i in ("sources",
                           "transforms",
@@ -264,20 +264,8 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                     modules = channel_config.get(i, {})
                     for mod_name, mod_config in modules.items():
                         txt += "\t\t{}\n".format(mod_name)
-                        my_module = importlib.import_module(
-                            mod_config.get('module'))
-                        produces = None
-                        consumes = None
-                        try:
-                            produces = getattr(my_module, 'PRODUCES')
-                        except AttributeError:
-                            pass
-                        try:
-                            consumes = getattr(my_module, 'CONSUMES')
-                        except AttributeError:
-                            pass
-                        txt += "\t\t\tconsumes : {}\n".format(consumes)
-                        txt += "\t\t\tproduces : {}\n".format(produces)
+                        txt += "\t\t\tconsumes : {}\n".format(consumes.get(mod_name, []))
+                        txt += "\t\t\tproduces : {}\n".format(produces.get(mod_name, []))
         return txt + self.reaper_status()
 
     def rpc_stop(self):

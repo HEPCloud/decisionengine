@@ -1,7 +1,7 @@
 from decisionengine.framework.modules import Transform
 
-CONSUMES = ['B']
-PRODUCES = ['A']
 
+@Transform.consumes(B=None)
+@Transform.produces(A=None)
 class ABTransform(Transform.Transform):
     pass
