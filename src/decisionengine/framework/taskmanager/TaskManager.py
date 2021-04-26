@@ -221,6 +221,8 @@ class TaskManager:
 
     def set_to_shutdown(self):
         self.state.set(State.SHUTTINGDOWN)
+        # The following logging statement is not properly logged.  This will
+        # be worked on in a future issue
         logging.getLogger().debug('Shutting down.  Will call shutdown on all '
                                 'publishers')
         for publisher_worker in self.channel.publishers.values():
