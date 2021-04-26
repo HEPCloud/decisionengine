@@ -50,8 +50,8 @@ def test_task_manager_construction(mock_data_block):  # noqa: F811
 def test_set_to_shutdown(mock_data_block):  # noqa: F811
     with RunChannel('test_channel') as task_manager:
         task_manager.state.wait_until(State.STEADY)
-        with patch('decisionengine.framework.tests.PublisherNOP.PublisherNOP.shutdown'
-            ) as mocked_shutdown:
+        m = 'decisionengine.framework.tests.PublisherNOP.PublisherNOP.shutdown'
+        with patch(m) as mocked_shutdown:
             task_manager.set_to_shutdown()
             mocked_shutdown.assert_called()
         assert task_manager.state.has_value(State.SHUTDOWN)
