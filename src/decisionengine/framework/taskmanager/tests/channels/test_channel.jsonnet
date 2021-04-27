@@ -16,7 +16,34 @@
        schedule: 1
      }
    },
-
-  logicengines: {},
-  publishers: {}
+  logicengines: {
+    "logicengine1": {
+      "module": "decisionengine.framework.logicengine.LogicEngine",
+      "name": "LogicEngine",
+      "parameters": {
+        "rules": {
+          "publish_nersc_fom": {
+            "expression": "(foo)",
+            "actions": [
+              "PublisherNOP"
+            ],
+            "facts": [
+              "foo"
+            ]
+          }
+        },
+        "facts": {
+          "foo": "(True)"
+        }
+      }
+    }
+  },
+  publishers: {
+    PublisherNOP: {
+      module: "decisionengine.framework.tests.PublisherNOP",
+      name : "PublisherNOP",
+      parameters: {},
+      schedule: 1
+    }
+  },
 }
