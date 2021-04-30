@@ -33,6 +33,7 @@ devel_req = ["setuptools >= 42", "setuptools-scm >= 5.0.1",
              "mock >= 4.0.3", "pytest >= 6.2.2", "pytest-cov >= 2.11.1",
              "pytest-flake8 >= 1.0.7", "pytest-postgresql >= 2.5.3",
              "pytest-timeout >= 1.4.2",
+             "pylint >= 2.7.4",
              "importlib_resources >= 5.1.2; python_version <= '3.8'",
              "sphinx >= 3.5.3", "sphinx_rtd_theme >= 0.5.1"]
 
