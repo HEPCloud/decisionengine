@@ -2,7 +2,6 @@
   sources: {
     source1: {
       module: "decisionengine.framework.tests.SourceNOP",
-      name: "SourceNOP",
       parameters: {},
       schedule: 1,
      }
@@ -11,14 +10,12 @@
   transforms: {
     bar_maker: {
       module: "decisionengine.framework.tests.TransformNOP",
-      name: "TransformNOP",
       parameters: {}
     }
   },
   logicengines: {
     le: {
       module: "decisionengine.framework.logicengine.LogicEngine",
-      name: 'LogicEngine',
       parameters: {
         facts: {
           pass_all: "fail_on_error(True)"
@@ -35,7 +32,6 @@
   publishers: {
     fail: {
       module: "decisionengine.framework.tests.FailingPublisher",
-      name: "FailingPublisher",
       parameters: {}
     }
   }

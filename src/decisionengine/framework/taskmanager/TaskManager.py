@@ -2,6 +2,7 @@
 Task Manager
 """
 import importlib
+import inspect
 import threading
 import logging
 import time
@@ -12,6 +13,10 @@ import pandas
 
 from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
+from decisionengine.framework.modules.Publisher import Publisher
+from decisionengine.framework.modules.Source import Source
+from decisionengine.framework.modules.Transform import Transform
+from decisionengine.framework.logicengine.LogicEngine import LogicEngine
 from decisionengine.framework.taskmanager.ProcessingState import State
 from decisionengine.framework.taskmanager.ProcessingState import ProcessingState
 
@@ -19,13 +24,47 @@ _TRANSFORMS_TO = 300  # 5 minutes
 _DEFAULT_SCHEDULE = 300  # ""
 
 
-def _create_worker(module_name, class_name, parameters):
+def _derived_class(cls, base_class):
+    """
+    Only matches subclasses that are not equal to the base class.
+    """
+    return cls is not base_class and issubclass(cls, base_class)
+
+
+def _find_only_one_subclass(module, base_class):
+    """
+    Search through module looking for only one subclass of the supplied base_class
+    """
+    class_members = inspect.getmembers(module, inspect.isclass)
+    all_subclasses = [name for name, cls in class_members if _derived_class(cls, base_class)]
+    if not all_subclasses:
+        raise RuntimeError(f"Could not find a decision-engine '{base_class.__name__}' in the module:\n"
+                           f"  '{module.__name__}'")
+    if len(all_subclasses) > 1:
+        error_msg = f"Found more than one decision-engine '{base_class.__name__}' in the module\n" + \
+                    f"'{module.__name__}':\n\n"
+        for cls in all_subclasses:
+            error_msg += ' - ' + cls + '\n'
+        error_msg += "\nSpecify which subclass you want via the configuration 'name: <one of the above>'."
+        raise RuntimeError(error_msg)
+    return all_subclasses[0]
+
+
+def _create_module_instance(config_dict, base_class):
     """
     Create instance of dynamically loaded module
     """
-    my_module = importlib.import_module(module_name)
+    my_module = importlib.import_module(config_dict['module'])
+    class_name = config_dict.get('name')
+    if class_name is None:
+        if base_class == LogicEngine:
+            # Icky kludge until we remove explicit LogicEngine 'module' specification
+            class_name = "LogicEngine"
+        else:
+            class_name = _find_only_one_subclass(my_module, base_class)
+
     class_type = getattr(my_module, class_name)
-    return class_type(parameters)
+    return class_type(config_dict['parameters'])
 
 
 class Worker:
@@ -34,15 +73,12 @@ class Worker:
     execution
     """
 
-    def __init__(self, conf_dict):
+    def __init__(self, conf_dict, base_class):
         """
         :type conf_dict: :obj:`dict`
         :arg conf_dict: configuration dictionary describing the worker
         """
-
-        self.worker = _create_worker(conf_dict['module'],
-                                     conf_dict['name'],
-                                     conf_dict['parameters'])
+        self.worker = _create_module_instance(conf_dict, base_class)
         self.module = conf_dict['module']
         self.name = self.worker.__class__.__name__
         self.schedule = conf_dict.get('schedule', _DEFAULT_SCHEDULE)
@@ -53,8 +89,8 @@ class Worker:
                                                    self.module, self.name, conf_dict['parameters'], self.schedule)
 
 
-def _make_workers_for(configs):
-    return {name: Worker(e) for name, e in configs.items()}
+def _make_workers_for(configs, base_class):
+    return {name: Worker(e, base_class) for name, e in configs.items()}
 
 
 class Channel:
@@ -70,13 +106,13 @@ class Channel:
         """
 
         logging.getLogger("decision_engine").debug('Creating channel source')
-        self.sources = _make_workers_for(channel_dict['sources'])
+        self.sources = _make_workers_for(channel_dict['sources'], Source)
         logging.getLogger("decision_engine").debug('Creating channel transform')
-        self.transforms = _make_workers_for(channel_dict['transforms'])
+        self.transforms = _make_workers_for(channel_dict['transforms'], Transform)
         logging.getLogger("decision_engine").debug('Creating channel logicengine')
-        self.le_s = _make_workers_for(channel_dict['logicengines'])
+        self.le_s = _make_workers_for(channel_dict['logicengines'], LogicEngine)
         logging.getLogger("decision_engine").debug('Creating channel publisher')
-        self.publishers = _make_workers_for(channel_dict['publishers'])
+        self.publishers = _make_workers_for(channel_dict['publishers'], Publisher)
         self.task_manager = channel_dict.get('task_manager', {})
 
 
