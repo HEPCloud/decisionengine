@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.0rc0.post44+g52b4847 documentation</title>
+  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.0rc0.post46+g01aa8ae documentation</title>
   
 
   
@@ -215,6 +215,10 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;channel is missing one or more mandatory keys:</span><span class="se">\n</span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_MANDATORY_CHANNEL_KEYS</span><span class="p">:</span>
         <span class="n">conf</span> <span class="o">=</span> <span class="n">channel_conf_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> module is not a dictionary: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">module_conf</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">module_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">module_conf</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.config.tests.test_config &mdash; decisionengine 1.7.0rc0.post44+g52b4847 documentation</title>
+  <title>decisionengine.framework.config.tests.test_config &mdash; decisionengine 1.7.0rc0.post46+g01aa8ae documentation</title>
   
 
   
@@ -279,6 +279,36 @@
 <div class="viewcode-block" id="test_channel_no_modules"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_no_modules">[docs]</a><span class="k">def</span> <span class="nf">test_channel_no_modules</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
     <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span>
          <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s1">&#39;channels/no_modules&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_channel_invalid_modules_string"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_invalid_modules_string">[docs]</a><span class="k">def</span> <span class="nf">test_channel_invalid_modules_string</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
+    <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span>
+         <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s1">&#39;channels/invalid_modules_string&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is not a dictionary:&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_channel_invalid_modules_list"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_invalid_modules_list">[docs]</a><span class="k">def</span> <span class="nf">test_channel_invalid_modules_list</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
+    <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span>
+         <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s1">&#39;channels/invalid_modules_list&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is not a dictionary:&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_channel_invalid_modules_no_keys"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_invalid_modules_no_keys">[docs]</a><span class="k">def</span> <span class="nf">test_channel_invalid_modules_no_keys</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
+    <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span>
+         <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s1">&#39;channels/invalid_modules_no_keys&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is not a dictionary:&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_channel_module_missing_all"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_module_missing_all">[docs]</a><span class="k">def</span> <span class="nf">test_channel_module_missing_all</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
+    <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span>
+         <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s1">&#39;channels/module_missing_all&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is missing one or more mandatory keys&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_channel_module_missing_module"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_module_missing_module">[docs]</a><span class="k">def</span> <span class="nf">test_channel_module_missing_module</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
+    <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span>
+         <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s1">&#39;channels/module_missing_module&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is missing one or more mandatory keys&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_channel_module_missing_parameters"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_module_missing_parameters">[docs]</a><span class="k">def</span> <span class="nf">test_channel_module_missing_parameters</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
+    <span class="n">load</span><span class="p">(</span><span class="s1">&#39;minimal_python.conf&#39;</span><span class="p">,</span>
+         <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s1">&#39;channels/module_missing_parameters&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is missing one or more mandatory keys&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
 <span class="c1"># --------------------------------------------------------------------</span>
 <span class="c1"># Test channel names based on channel configuration file names</span>
