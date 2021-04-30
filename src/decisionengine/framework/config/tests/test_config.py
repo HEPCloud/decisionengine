@@ -113,6 +113,36 @@ def test_channel_no_modules(load):
     load('minimal_python.conf',
          relative_channel_config_dir='channels/no_modules')
 
+def test_channel_invalid_modules_string(load, caplog):
+    load('minimal_python.conf',
+         relative_channel_config_dir='channels/invalid_modules_string')
+    assert re.search("is not a dictionary:", caplog.text)
+
+def test_channel_invalid_modules_list(load, caplog):
+    load('minimal_python.conf',
+         relative_channel_config_dir='channels/invalid_modules_list')
+    assert re.search("is not a dictionary:", caplog.text)
+
+def test_channel_invalid_modules_no_keys(load, caplog):
+    load('minimal_python.conf',
+         relative_channel_config_dir='channels/invalid_modules_no_keys')
+    assert re.search("is not a dictionary:", caplog.text)
+
+def test_channel_module_missing_all(load, caplog):
+    load('minimal_python.conf',
+         relative_channel_config_dir='channels/module_missing_all')
+    assert re.search("is missing one or more mandatory keys", caplog.text)
+
+def test_channel_module_missing_module(load, caplog):
+    load('minimal_python.conf',
+         relative_channel_config_dir='channels/module_missing_module')
+    assert re.search("is missing one or more mandatory keys", caplog.text)
+
+def test_channel_module_missing_parameters(load, caplog):
+    load('minimal_python.conf',
+         relative_channel_config_dir='channels/module_missing_parameters')
+    assert re.search("is missing one or more mandatory keys", caplog.text)
+
 # --------------------------------------------------------------------
 # Test channel names based on channel configuration file names
 def test_channel_names(load):
