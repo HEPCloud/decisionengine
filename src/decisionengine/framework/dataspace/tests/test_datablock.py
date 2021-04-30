@@ -205,6 +205,28 @@ class TestDatablock(unittest.TestCase):
         tms = self.dataspace.get_taskmanagers()
         self.assertEqual(taskmanager["taskmanager_id"], tms[0]["taskmanager_id"])
 
+    def test_DataBlock_is_expired(self):
+        """This test just validates the method/function exists.
+           The stub within our default code should be replaced
+           by a class inheriting from it.
+           That class should have more rational return types.
+        """
+        assert self.datablock.is_expired() is None
+
+    def test_DataBlock_is_expired_with_key(self):
+        """This test just validates the method/function exists.
+           The stub within our default code should be replaced
+           by a class inheriting from it.
+           That class should have more rational return types.
+        """
+        dataproduct = self.data["dataproduct"][0]
+        assert self.datablock.is_expired(key=dataproduct["key"]) is None
+
+
+    def test_DataBlock_mark_expired(self):
+        # mark_expired is just a stub in this case
+        # failure in a real implementation should raise an exception
+        assert self.datablock.mark_expired(1) is None
 
     def test_DataBlock_get_dataproducts(self):
         dataproduct = self.data["dataproduct"][0]
