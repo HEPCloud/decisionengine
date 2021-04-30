@@ -10,11 +10,11 @@ dependencies.
 
 import importlib
 import os
+import toposort
 
 from decisionengine.framework.config import ValidConfig
 import decisionengine.framework.modules.de_logger as de_logger
 import decisionengine.framework.util.fs as fs
-import decisionengine.framework.util.tsort as tsort
 
 _MANDATORY_CHANNEL_KEYS = {'sources', 'logicengines', 'transforms', 'publishers'}
 _ALLOWED_CHANNEL_KEYS = _MANDATORY_CHANNEL_KEYS | {'task_manager'}
@@ -62,6 +62,31 @@ def _check_keys(channel_conf_dict):
                 missing_keys = str(list(diff))
                 raise RuntimeError(f"{name} module {module_name} is missing one or more mandatory keys:\n{missing_keys} ")
 
+def _modules_from(channel, key):
+    result = {}
+    for name, config in channel.get(key).items():
+        result[name] = importlib.import_module(config.get('module'))
+    return result
+
+def _produced_products(channel, key):
+    result = {}
+    for name, mod in _modules_from(channel, key).items():
+        try:
+            produces = getattr(mod, 'PRODUCES')
+            result.update(dict.fromkeys(produces, name))
+        except AttributeError:
+            raise RuntimeError(f"module {name} does not have a PRODUCES list")
+    return result
+
+def _consumed_products(channel, key):
+    result = {}
+    for name, mod in _modules_from(channel, key).items():
+        try:
+            result[name] = set(getattr(mod, 'CONSUMES'))
+        except AttributeError:
+            raise RuntimeError(f"module {name} does not have a CONSUMES list")
+    return result
+
 def _validate(channel):
     """
     Validate channels
@@ -69,68 +94,30 @@ def _validate(channel):
     """
     _check_keys(channel)
 
-    # Sources
-    sources = channel.get('sources')
-    all_produces = set()
-    for sname, conf in sources.items():
-        my_module = importlib.import_module(conf.get('module'))
-        try:
-            produces = getattr(my_module, 'PRODUCES')
-            all_produces |= set(produces)
-        except AttributeError:
-            raise RuntimeError(f"source module {sname} does not have required PRODUCES list")
 
+    produced_products = _produced_products(channel, 'sources')
+    produced_products.update(_produced_products(channel, 'transforms'))
+
+    consumed_products = _consumed_products(channel, 'transforms')
+    consumed_products.update(_consumed_products(channel, 'publishers'))
+
+    # Check that products to be consumed are actually produced
     all_consumes = set()
-
-    # Transforms
-    transforms = channel.get('transforms')
-    transform_map = {}
-
-    for tname, conf in transforms.items():
-        my_module = importlib.import_module(conf.get('module'))
-        try:
-            consumes = set(getattr(my_module, 'CONSUMES'))
-            produces = set(getattr(my_module, 'PRODUCES'))
-            all_consumes |= consumes
-            all_produces |= produces
-            transform_map[tname] = {'consumes': consumes,
-                                    'produces': produces}
-        except AttributeError as msg:
-            raise RuntimeError(f"transform module {tname} does not have required lists {msg}")
-
+    all_consumes.update(*consumed_products.values())
+    all_produces = set(produced_products.keys())
     if not all_consumes.issubset(all_produces):
         extra_keys = list(all_consumes - all_produces)
         raise RuntimeError(f"consumes are not a subset of produce, extra keys {extra_keys}")
 
-    # graph contains pairs of modules and lists of modules that depends on
-    # this module, e.g.:
-    # { "A" : [B,C,D],
-    # "D" : [C,B] }
     graph = {}
-    for i in range(len(transform_map)):
-        k1 = list(transform_map.keys())[i]
-        c1 = set(transform_map[k1].get('consumes', []))
-        p1 = set(transform_map[k1].get('produces', []))
-        added = False
-        for j in range(i + 1, len(transform_map)):
-            k2 = list(transform_map.keys())[j]
-            c2 = set(transform_map[k2].get('consumes', []))
-            p2 = set(transform_map[k2].get('produces', []))
-            if c2 & p1:
-                added = True
-                graph.setdefault(k1, []).append(k2)
-            if p2 & c1:
-                added = True
-                graph.setdefault(k2, []).append(k1)
-        if not added:
-            graph.setdefault(k1, [])
+    for consumer, products in consumed_products.items():
+        graph[consumer] = set(map(lambda p: produced_products.get(p), products))
 
-    # sort modules using topological sort
-    # sorted_modules are transform modules in order of execution
-    sorted_modules, cyclic_modules = tsort.tsort(graph)
-
-    if cyclic_modules:
-        raise RuntimeError(f"cyclic dependency detected for modules {list(cyclic_modules)}")
+    # Do the check
+    try:
+        toposort.toposort_flatten(graph)  # Flatten will trigger any potential circularity errors
+    except Exception as e:
+        raise RuntimeError(f"A produces/consumes circularity exists in the configuration:\n{e}")
 
 
 class ChannelConfigHandler():
@@ -142,11 +129,9 @@ class ChannelConfigHandler():
 
     def get_produces(self, channel_config):
         produces = {}
-        for i in ('sources', 'transforms'):
-            modules = channel_config.get(i, {})
-            for name, conf in modules.items():
-                my_module = importlib.import_module(conf.get('module'))
-                produces.setdefault(name, []).extend(getattr(my_module, 'PRODUCES'))
+        for key in ('sources', 'transforms'):
+            for name, mod in _modules_from(channel_config, key).items():
+                produces.setdefault(name, []).extend(getattr(mod, 'PRODUCES'))
         return produces
 
     def get_channels(self):
