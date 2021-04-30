@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 1.7.0rc0.post46+g01aa8ae documentation</title>
+  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 1.7.0rc0.post51+g31a8a90 documentation</title>
   
 
   
@@ -504,21 +504,33 @@ So far in main process.</p>
 
 <dl class="py class">
 <dt id="decisionengine.framework.taskmanager.TaskManager.Worker">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></code><code class="sig-name descname"><span class="pre">Worker</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#Worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.Worker" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></code><code class="sig-name descname"><span class="pre">Worker</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#Worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.Worker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Provides interface to loadable modules an events to sycronise
 execution</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="decisionengine.framework.taskmanager.TaskManager._create_worker">
-<code class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></code><code class="sig-name descname"><span class="pre">_create_worker</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#_create_worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager._create_worker" title="Permalink to this definition">¶</a></dt>
+<dt id="decisionengine.framework.taskmanager.TaskManager._create_module_instance">
+<code class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></code><code class="sig-name descname"><span class="pre">_create_module_instance</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#_create_module_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager._create_module_instance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create instance of dynamically loaded module</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="decisionengine.framework.taskmanager.TaskManager._derived_class">
+<code class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></code><code class="sig-name descname"><span class="pre">_derived_class</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#_derived_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager._derived_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only matches subclasses that are not equal to the base class.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="decisionengine.framework.taskmanager.TaskManager._find_only_one_subclass">
+<code class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></code><code class="sig-name descname"><span class="pre">_find_only_one_subclass</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#_find_only_one_subclass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager._find_only_one_subclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search through module looking for only one subclass of the supplied base_class</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="decisionengine.framework.taskmanager.TaskManager._make_workers_for">
-<code class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></code><code class="sig-name descname"><span class="pre">_make_workers_for</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#_make_workers_for"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager._make_workers_for" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></code><code class="sig-name descname"><span class="pre">_make_workers_for</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#_make_workers_for"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager._make_workers_for" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
