@@ -12,7 +12,7 @@ from decisionengine.framework.taskmanager.ProcessingState import INACTIVE_CONDIT
 
 class Worker(multiprocessing.Process):
     def __init__(self, state):
-        super().__init__()
+        super().__init__(name='TestWorker')
         self._state = state
 
     def run(self):

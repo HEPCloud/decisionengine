@@ -26,7 +26,7 @@ class Worker(multiprocessing.Process):
     '''
 
     def __init__(self, task_manager, logger_config):
-        super().__init__()
+        super().__init__(name=f'DEWorker-{task_manager.name}')
         self.task_manager = task_manager
         self.task_manager_id = task_manager.id
         self.logger_config = logger_config

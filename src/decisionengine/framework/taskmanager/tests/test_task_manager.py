@@ -27,7 +27,7 @@ def task_manager_for(name):
 class RunChannel:
     def __init__(self, name):
         self._tm = task_manager_for(name)
-        self._thread = threading.Thread(target=self._tm.run)
+        self._thread = threading.Thread(name=name, target=self._tm.run)
 
     def __enter__(self):
         self._thread.start()
