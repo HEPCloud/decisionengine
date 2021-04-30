@@ -1,6 +1,6 @@
 from decisionengine.framework.modules import Publisher
 
-CONSUMES = ["bar"]
+CONSUMES = ["foo"]
 
 
 class PublisherNOP(Publisher.Publisher):
