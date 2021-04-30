@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.Source &mdash; decisionengine 1.7.0rc0.post53+gde33a60 documentation</title>
+  <title>decisionengine.framework.tests.BATransform &mdash; decisionengine 1.7.0rc0.post53+gde33a60 documentation</title>
   
 
   
@@ -149,7 +149,7 @@
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
-      <li>decisionengine.framework.modules.Source</li>
+      <li>decisionengine.framework.tests.BATransform</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -164,33 +164,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for decisionengine.framework.modules.Source</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Module</span>
+  <h1>Source code for decisionengine.framework.tests.BATransform</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Transform</span>
 
+<span class="n">CONSUMES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span>
+<span class="n">PRODUCES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;B&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="Source"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Source.Source">[docs]</a><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Module</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_of_parameters</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">set_of_parameters</span><span class="p">)</span>
-
-    <span class="c1"># name_schema_id_list: a list of dictionaries containing</span>
-    <span class="c1"># the data product name and a pointer to a schema</span>
-<div class="viewcode-block" id="Source.produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Source.Source.produces">[docs]</a>    <span class="k">def</span> <span class="nf">produces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_schema_id_list</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Source.produces&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
-
-    <span class="c1"># acquire: The action function for a source. Will</span>
-    <span class="c1"># retrieve data from external sources and issue a</span>
-    <span class="c1"># DataBlock &quot;put&quot; transaction.</span>
-<div class="viewcode-block" id="Source.acquire"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Source.Source.acquire">[docs]</a>    <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Source.acquires&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
-
-    <span class="c1"># Expert-only - The post_create method will go away once the</span>
-    <span class="c1"># source proxy has been reimplemented.  It exists now so the</span>
-    <span class="c1"># SourceProxy base class can have access to the global</span>
-    <span class="c1"># configuration for creating a dataspace.</span>
-<div class="viewcode-block" id="Source.post_create"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Source.Source.post_create">[docs]</a>    <span class="k">def</span> <span class="nf">post_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_config</span><span class="p">):</span>
-        <span class="k">pass</span></div></div>
+<div class="viewcode-block" id="BATransform"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.BATransform.BATransform">[docs]</a><span class="k">class</span> <span class="nc">BATransform</span><span class="p">(</span><span class="n">Transform</span><span class="o">.</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="k">pass</span></div>
 </pre></div>
 
            </div>

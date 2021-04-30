@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 1.7.0rc0.post51+g31a8a90 documentation</title>
+  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 1.7.0rc0.post53+gde33a60 documentation</title>
   
 
   
@@ -170,12 +170,20 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">ERROR</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="n">DE_DB</span><span class="p">,</span> <span class="n">DE_HOST</span><span class="p">,</span> <span class="n">PG_PROG</span><span class="p">,</span> <span class="n">DEServer</span><span class="p">,</span> <span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">TEST_CHANNEL_CONFIG_PATH</span>  <span class="c1"># noqa: F401</span>
 
 <span class="n">_channel_config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="s1">&#39;test-bad-channel&#39;</span><span class="p">)</span>  <span class="c1"># noqa: F405</span>
 <span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">_channel_config_dir</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
+
+<div class="viewcode-block" id="_expected_circularity"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_bad_channels._expected_circularity">[docs]</a><span class="k">def</span> <span class="nf">_expected_circularity</span><span class="p">(</span><span class="n">test_str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;Circular dependencies exist among these items: &quot;</span>
+                     <span class="s2">&quot;{&#39;a_uses_b&#39;:{&#39;b_uses_a&#39;}, &#39;b_uses_a&#39;:{&#39;a_uses_b&#39;}}&quot;</span><span class="p">,</span>
+                     <span class="n">test_str</span><span class="p">,</span>
+                     <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="test_client_can_get_products_no_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_bad_channels.test_client_can_get_products_no_channels">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_get_products_no_channels</span><span class="p">(</span><span class="n">deserver</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
@@ -184,14 +192,26 @@
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-products&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;No channels are currently active.&#39;</span> <span class="ow">in</span> <span class="n">output</span>
 
-    <span class="n">error_logs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">logentry</span> <span class="ow">in</span> <span class="n">caplog</span><span class="o">.</span><span class="n">records</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">logentry</span><span class="o">.</span><span class="n">levelname</span> <span class="o">==</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">:</span>
-            <span class="n">error_logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logentry</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">error_logs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span>
+    <span class="n">error_msgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">message</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">caplog</span><span class="o">.</span><span class="n">records</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">ERROR</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">error_msgs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span>
 
-    <span class="k">assert</span> <span class="s1">&#39;source module source1 does not have required PRODUCES list&#39;</span> <span class="ow">in</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span>
-    <span class="k">assert</span> <span class="s2">&quot;has no attribute &#39;CONSUMES&#39;&quot;</span> <span class="ow">in</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span></div>
+    <span class="c1"># Find circularity error</span>
+    <span class="n">circularity_msg</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">_expected_circularity</span><span class="p">,</span> <span class="n">error_msgs</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">circularity_msg</span>
+
+    <span class="c1"># Remove circularity error now that we have verified it</span>
+    <span class="n">error_msgs</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">circularity_msg</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">error_msgs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+
+    <span class="c1"># Test missing produces/consumes errors</span>
+    <span class="n">expected_missing_lists</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;source1&#39;</span><span class="p">:</span> <span class="s1">&#39;PRODUCES&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;transform1&#39;</span><span class="p">:</span> <span class="s1">&#39;PRODUCES&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;publisher1&#39;</span><span class="p">:</span> <span class="s1">&#39;CONSUMES&#39;</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">err_msg</span> <span class="ow">in</span> <span class="n">error_msgs</span><span class="p">:</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*module (\w+) does not have a (\w+) list.*&#39;</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">match</span>
+        <span class="n">module_name</span><span class="p">,</span> <span class="n">missing_list</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">missing_list</span> <span class="o">==</span> <span class="n">expected_missing_lists</span><span class="p">[</span><span class="n">module_name</span><span class="p">]</span></div>
 </pre></div>
 
            </div>
