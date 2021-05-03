@@ -330,8 +330,8 @@ class DataBlock(object):
         else:
             self._insert(key, store_value, header, metadata)
 
-    def get_dataproducts(self):
-        values = self.dataspace.get_dataproducts(self.sequence_id)
+    def get_dataproducts(self, key=None):
+        values = self.dataspace.get_dataproducts(self.sequence_id, key)
         result = []
 
         try:

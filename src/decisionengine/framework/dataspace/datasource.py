@@ -162,12 +162,14 @@ class DataSource(object, metaclass=abc.ABCMeta):
         return
 
     @abc.abstractmethod
-    def get_dataproducts(self, taskmanager_id):
+    def get_dataproducts(self, taskmanager_id, key):
         """
         Return list of all data products associated with
         with taskmanager_id
 
         :type taskmanager_id: :obj:`string`
+        :type key: :obj:`string`
+        :arg key: data product key
         """
         self.logger.info('datasource is getting all dataproducts for a taskmanger')
         return
