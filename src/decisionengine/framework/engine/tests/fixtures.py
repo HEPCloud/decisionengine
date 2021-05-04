@@ -28,7 +28,7 @@ class DETestWorker(threading.Thread):
 
     def __init__(self, conf_path, channel_conf_path, server_address, db_info, conf_override=None, channel_conf_override=None):
         '''format of args should match what you set in conf_mamanger'''
-        super().__init__()
+        super().__init__(name='DETestWorker')
         self.server_address = server_address
 
         global_config, channel_config_loader = _get_de_conf_manager(conf_path, channel_conf_path, parse_program_options([]))
