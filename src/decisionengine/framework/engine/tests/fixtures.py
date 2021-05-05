@@ -5,7 +5,7 @@ import threading
 
 import psycopg2
 import pytest
-from pytest_postgresql.factories import DatabaseJanitor
+from pytest_postgresql.janitor import DatabaseJanitor
 
 import decisionengine.framework.engine.de_client as de_client
 import decisionengine.framework.engine.de_query_tool as de_query_tool
@@ -110,7 +110,7 @@ def DEServer(conf_path=None, conf_override=None,
         # DatabaseJanitor will create and drop the tablespace for us
         with DatabaseJanitor(user=db_info['user'], password=db_info['password'],
                              host=db_info['host'], port=db_info['port'],
-                             db_name=db_info['database'],
+                             dbname=db_info['database'],
                              version=conn_fixture.server_version):
             # if you swap this for the `DE_DB` fixture, it will
             # block and changes will not be visable to the connection
