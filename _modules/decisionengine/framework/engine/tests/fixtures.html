@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.0rc0.post57+gf8f4255 documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.0rc0.post59+g67a54d5 documentation</title>
   
 
   
@@ -172,7 +172,7 @@
 
 <span class="kn">import</span> <span class="nn">psycopg2</span>
 <span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">from</span> <span class="nn">pytest_postgresql.factories</span> <span class="kn">import</span> <span class="n">DatabaseJanitor</span>
+<span class="kn">from</span> <span class="nn">pytest_postgresql.janitor</span> <span class="kn">import</span> <span class="n">DatabaseJanitor</span>
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.engine.de_client</span> <span class="k">as</span> <span class="nn">de_client</span>
 
@@ -267,7 +267,7 @@
         <span class="c1"># DatabaseJanitor will create and drop the tablespace for us</span>
         <span class="k">with</span> <span class="n">DatabaseJanitor</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">],</span> <span class="n">password</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span>
                              <span class="n">host</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">],</span> <span class="n">port</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
-                             <span class="n">db_name</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">],</span>
+                             <span class="n">dbname</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">],</span>
                              <span class="n">version</span><span class="o">=</span><span class="n">conn_fixture</span><span class="o">.</span><span class="n">server_version</span><span class="p">):</span>
             <span class="c1"># if you swap this for the `DE_DB` fixture, it will</span>
             <span class="c1"># block and changes will not be visable to the connection</span>
