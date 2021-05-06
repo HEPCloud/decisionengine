@@ -49,9 +49,9 @@ and foo.taskmanager_id=%s AND foo.generation_id=%s AND foo.key=%s
 """
 
 SELECT_PRODUCTS = """
-SELECT tm.taskmanager_id, foo.* FROM {} foo, taskmanager tm
-WHERE tm.sequence_id = foo.taskmanager_id
-and foo.taskmanager_id=%s
+SELECT tm.taskmanager_id, foo.* FROM {} foo JOIN taskmanager tm
+ON tm.sequence_id = foo.taskmanager_id
+WHERE foo.taskmanager_id=%s
 """
 
 SELECT_LAST_GENERATION_ID_BY_NAME = """
@@ -291,8 +291,10 @@ class Postgresql(ds.DataSource):
             raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
                 taskmanager_id, generation_id, key))
 
-    def get_dataproducts(self, taskmanager_id):
+    def get_dataproducts(self, taskmanager_id, key=None):
         q = SELECT_PRODUCTS.format(ds.DataSource.dataproduct_table)
+        if key:
+            q += f"AND foo.key = '{key}'"
         try:
             result = []
             rows = self._select_dictresult(q, (taskmanager_id,))

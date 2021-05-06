@@ -144,8 +144,8 @@ class DataSpace():
     def get_dataproduct(self, taskmanager_id, generation_id, key):
         return self.datasource.get_dataproduct(taskmanager_id, generation_id, key)
 
-    def get_dataproducts(self, taskmanager_id):
-        return self.datasource.get_dataproducts(taskmanager_id)
+    def get_dataproducts(self, taskmanager_id, key=None):
+        return self.datasource.get_dataproducts(taskmanager_id, key)
 
     def get_header(self, taskmanager_id, generation_id, key):
         return self.datasource.get_header(taskmanager_id, generation_id, key)
