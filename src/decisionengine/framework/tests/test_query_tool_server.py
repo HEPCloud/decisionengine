@@ -32,7 +32,7 @@ def test_query_tool_default(deserver):
         "+----+--------+--------+--------------+------------------+-----------------+\n"
     )
 
-def test_query_tool_default(deserver):
+def test_query_tool_default_csv(deserver):
     # Test csv output
     output = deserver.de_query_tool_run_cli('foo', '--format=csv')
     assert output == (
