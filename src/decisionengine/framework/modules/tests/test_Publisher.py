@@ -10,7 +10,7 @@ def test_publisher_structure():
     test_publisher.set_data_block('example')
     assert test_publisher.get_data_block() == 'example'
 
-    test_publisher.consumes('asdf')
+    assert test_publisher._consumes == {}
     test_publisher.publish()
     test_publisher.publish(data_block='asdf')
     test_publisher.shutdown()

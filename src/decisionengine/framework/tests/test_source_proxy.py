@@ -1,4 +1,3 @@
-
 '''Fixture based tests of the SourceProxy module.'''
 # pylint: disable=redefined-outer-name
 

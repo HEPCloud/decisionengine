@@ -10,6 +10,6 @@ def test_transform_structure():
     test_transform.set_data_block('example')
     assert test_transform.get_data_block() == 'example'
 
-    test_transform.consumes('asdf')
-    test_transform.produces('asdf')
+    assert test_transform._consumes == {}
+    assert test_transform._produces == {}
     test_transform.transform()

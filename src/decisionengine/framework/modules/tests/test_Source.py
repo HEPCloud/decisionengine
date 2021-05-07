@@ -10,6 +10,6 @@ def test_source_structure():
     test_source.set_data_block('example')
     assert test_source.get_data_block() == 'example'
 
-    test_source.produces('asdf')
+    assert test_source._produces == {}
     test_source.acquire()
     test_source.post_create('asdf')

@@ -2,7 +2,6 @@
   sources: {
     source1: {
       module: "decisionengine.framework.tests.FailingSourceProxy",
-      name: "FailingSourceProxy",
       parameters: {
         channel_name: 'test_channel',
         Dataproducts: ['foo'],
@@ -16,7 +15,6 @@
    transforms: {
      transform1: {
        module: "decisionengine.framework.tests.TransformNOP",
-       name : "TransformNOP",
        parameters: {},
        schedule: 1
      }

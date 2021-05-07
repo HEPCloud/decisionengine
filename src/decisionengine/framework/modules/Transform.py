@@ -1,26 +1,18 @@
-from decisionengine.framework.modules import Module
+__all__ = ['Parameter', 'Transform', 'consumes', 'describe', 'produces', 'supports_config']
 
+from decisionengine.framework.modules.Module import Module, consumes, produces
+from decisionengine.framework.modules import describe
+from decisionengine.framework.modules.describe import Parameter, supports_config
 
-class Transform(Module.Module):
+describe = describe.main_wrapper
+
+class Transform(Module):
+    _consumes = {}
+    _produces = {}
+
     def __init__(self, set_of_parameters):
         super().__init__(set_of_parameters)
         self.name_list = []
-
-    """
-    name_list: A list of the data product names that
-    the Transform will consume
-    """
-    def consumes(self, name_list):
-        print("Called Transform.consumes")
-        self.name_list = name_list
-
-    """
-    name_schema_id_list: a list of dictionariescontaining
-    the data product name and a pointer to a schema
-    """
-    def produces(self, name_schema_id_list):
-        print("Called Transform.produces")
-        return None
 
     """
     decide: The action function for a Transform. Will
@@ -32,4 +24,3 @@ class Transform(Module.Module):
     """
     def transform(self):
         print("Called Transform.transform")
-        return True

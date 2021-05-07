@@ -40,6 +40,12 @@ class Worker(multiprocessing.Process):
     def get_state_name(self):
         return self.task_manager.get_state_name()
 
+    def get_produces(self):
+        return self.task_manager.get_produces()
+
+    def get_consumes(self):
+        return self.task_manager.get_consumes()
+
     def run(self):
         logger = logging.getLogger()
         logger.setLevel(logging.WARNING)

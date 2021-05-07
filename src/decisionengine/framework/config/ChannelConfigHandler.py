@@ -8,9 +8,7 @@ have the correct configuration artifacts and inter-module product
 dependencies.
 '''
 
-import importlib
 import os
-import toposort
 
 from decisionengine.framework.config import ValidConfig
 import decisionengine.framework.modules.de_logger as de_logger
@@ -62,63 +60,6 @@ def _check_keys(channel_conf_dict):
                 missing_keys = str(list(diff))
                 raise RuntimeError(f"{name} module {module_name} is missing one or more mandatory keys:\n{missing_keys} ")
 
-def _modules_from(channel, key):
-    result = {}
-    for name, config in channel.get(key).items():
-        result[name] = importlib.import_module(config.get('module'))
-    return result
-
-def _produced_products(channel, key):
-    result = {}
-    for name, mod in _modules_from(channel, key).items():
-        try:
-            produces = getattr(mod, 'PRODUCES')
-            result.update(dict.fromkeys(produces, name))
-        except AttributeError:
-            raise RuntimeError(f"module {name} does not have a PRODUCES list")
-    return result
-
-def _consumed_products(channel, key):
-    result = {}
-    for name, mod in _modules_from(channel, key).items():
-        try:
-            result[name] = set(getattr(mod, 'CONSUMES'))
-        except AttributeError:
-            raise RuntimeError(f"module {name} does not have a CONSUMES list")
-    return result
-
-def _validate(channel):
-    """
-    Validate channels
-    :type channel: :obj:`dict`
-    """
-    _check_keys(channel)
-
-
-    produced_products = _produced_products(channel, 'sources')
-    produced_products.update(_produced_products(channel, 'transforms'))
-
-    consumed_products = _consumed_products(channel, 'transforms')
-    consumed_products.update(_consumed_products(channel, 'publishers'))
-
-    # Check that products to be consumed are actually produced
-    all_consumes = set()
-    all_consumes.update(*consumed_products.values())
-    all_produces = set(produced_products.keys())
-    if not all_consumes.issubset(all_produces):
-        extra_keys = list(all_consumes - all_produces)
-        raise RuntimeError(f"consumes are not a subset of produce, extra keys {extra_keys}")
-
-    graph = {}
-    for consumer, products in consumed_products.items():
-        graph[consumer] = set(map(lambda p: produced_products.get(p), products))
-
-    # Do the check
-    try:
-        toposort.toposort_flatten(graph)  # Flatten will trigger any potential circularity errors
-    except Exception as e:
-        raise RuntimeError(f"A produces/consumes circularity exists in the configuration:\n{e}")
-
 
 class ChannelConfigHandler():
 
@@ -126,13 +67,6 @@ class ChannelConfigHandler():
         self.channel_config_dir = channel_config_dir
         self.channels = {}
         self.logger = _make_de_logger(global_config)
-
-    def get_produces(self, channel_config):
-        produces = {}
-        for key in ('sources', 'transforms'):
-            for name, mod in _modules_from(channel_config, key).items():
-                produces.setdefault(name, []).extend(getattr(mod, 'PRODUCES'))
-        return produces
 
     def get_channels(self):
         return self.channels
@@ -151,7 +85,7 @@ class ChannelConfigHandler():
                     f"contains error\n-> {msg}\nSKIPPING channel")
 
         try:
-            _validate(channel_config)
+            _check_keys(channel_config)
         except Exception as msg:
             return (False,
                     f"The channel configuration file {path} contains a "
