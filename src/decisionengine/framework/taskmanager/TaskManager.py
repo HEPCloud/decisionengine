@@ -76,7 +76,6 @@ class Worker:
         self.module = conf_dict['module']
         self.name = self.worker.__class__.__name__
         self.schedule = conf_dict.get('schedule', _DEFAULT_SCHEDULE)
-        self.run_counter = 0
         self.data_updated = threading.Event()
         self.stop_running = threading.Event()
         logging.getLogger("decision_engine").debug('Creating worker: module=%s name=%s parameters=%s schedule=%s',
@@ -100,17 +99,17 @@ class Channel:
 
         logging.getLogger("decision_engine").debug('Creating channel source')
         self.sources = _make_workers_for(channel_dict['sources'], Source)
-        logging.getLogger("decision_engine").debug('Creating channel transform')
-        self.transforms = _make_workers_for(channel_dict['transforms'], Transform)
         logging.getLogger("decision_engine").debug('Creating channel logicengine')
         self.le_s = _make_workers_for(channel_dict['logicengines'], LogicEngine)
         logging.getLogger("decision_engine").debug('Creating channel publisher')
         self.publishers = _make_workers_for(channel_dict['publishers'], Publisher)
-        self.task_manager = channel_dict.get('task_manager', {})
 
-        ensure_no_circularities(self.sources,
-                                self.transforms,
-                                self.publishers)
+        logging.getLogger("decision_engine").debug('Creating channel transform')
+        transforms = _make_workers_for(channel_dict['transforms'], Transform)
+        self.transforms = ensure_no_circularities(self.sources,
+                                                  transforms,
+                                                  self.publishers)
+        self.task_manager = channel_dict.get('task_manager', {})
 
 
 class TaskManager:
@@ -223,11 +222,6 @@ class TaskManager:
 
         for source in self.channel.sources.values():
             source.stop_running.set()
-
-        for transform in self.channel.transforms.values():
-            transform.stop_running.set()
-            # the run_transform function is performing our .join()
-            # for these threads.
 
         for thread in source_threads:
             thread.join()
@@ -378,7 +372,6 @@ class TaskManager:
                     logging.getLogger().info(f'Src {src.name} data block put done')
                 else:
                     logging.getLogger().warning(f'Src {src.name} acquire retuned no data')
-                src.run_counter += 1
                 src.data_updated.set()
                 logging.getLogger().info(f'Src {src.name} {src.module} finished cycle')
             except Exception:
@@ -430,21 +423,10 @@ class TaskManager:
         logging.getLogger().debug(f'run_transforms: data block {data_block}')
         if not data_block:
             return
-        event_list = []
-        threads = []
+
         for key, transform in self.channel.transforms.items():
             logging.getLogger().info(f'starting transform {key}')
-            event_list.append(transform.data_updated)
-            thread = threading.Thread(target=self.run_transform,
-                                      name=transform.name,
-                                      args=(transform, data_block))
-            threads.append(thread)
-            # Cannot catch exception from function called in separate thread
-            thread.start()
-
-        self.wait_for_all(event_list)
-        for thread in threads:
-            thread.join()
+            self.run_transform(transform, data_block)
         logging.getLogger().info('all transforms finished')
 
     def run_transform(self, transform, data_block):
@@ -456,41 +438,22 @@ class TaskManager:
         :type data_block: :obj:`~datablock.DataBlock`
         :arg data_block: data block
         """
-        data_to = self.channel.task_manager.get('data_TO', _TRANSFORMS_TO)
         consume_keys = list(transform.worker._consumes.keys())
 
         logging.getLogger().info('transform: %s expected keys: %s provided keys: %s',
                                  transform.name, consume_keys, list(data_block.keys()))
-        loop_counter = 0
-        while not self.state.should_stop():
-            # Check if data is ready
-            if set(consume_keys) <= set(data_block.keys()):
-                # data is ready -  may run transform()
-                logging.getLogger().info('run transform %s', transform.name)
-                try:
-                    with data_block.lock:
-                        data = transform.worker.transform(data_block)
-                    logging.getLogger().debug(f'transform returned {data}')
-                    t = time.time()
-                    header = datablock.Header(data_block.taskmanager_id,
-                                              create_time=t,
-                                              creator=transform.name)
-                    self.data_block_put(data, header, data_block)
-                    logging.getLogger().info('transform put data')
-                except Exception:  # pragma: no cover
-                    logging.getLogger().exception(f'exception from transform {transform.name} ')
-                    self.take_offline(data_block)
-                break
-            s = transform.stop_running.wait(1)
-            if s:
-                logging.getLogger().info(f'received stop_running signal for {transform.name}')
-                break
-            loop_counter += 1
-            if loop_counter == data_to:
-                logging.getLogger().info(f'transform {transform.name} did not get consumes data'
-                                         f'in {data_to} seconds. Exiting')
-                break
-        transform.data_updated.set()
+        logging.getLogger().info('run transform %s', transform.name)
+        try:
+            data = transform.worker.transform(data_block)
+            logging.getLogger().debug(f'transform returned {data}')
+            header = datablock.Header(data_block.taskmanager_id,
+                                      create_time=time.time(),
+                                      creator=transform.name)
+            self.data_block_put(data, header, data_block)
+            logging.getLogger().info('transform put data')
+        except Exception:  # pragma: no cover
+            logging.getLogger().exception(f'exception from transform {transform.name} ')
+            self.take_offline(data_block)
 
     def run_logic_engine(self, data_block=None):
         """
