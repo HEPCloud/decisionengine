@@ -1,17 +1,14 @@
-# Add the "decisionengine" user and group if they do not exist
-getent group decisionengine >/dev/null ||
-    groupadd -r  decisionengine
-getent passwd  decisionengine >/dev/null || \
-    useradd -r -g  decisionengine -d /var/lib/decisionengine \
-    -c "Decision Engine user" -s /sbin/nologin -m decisionengine
+# make sure our home area makes sense since we have a dynamic id
+chown decisionengine:decisionengine %{_sharedstatedir}/decisionengine
+chmod 750 %{_sharedstatedir}/decisionengine
 
 # If the decisionengine user already exists make sure it is part of
 # the decisionengine group
 usermod --append --groups  decisionengine  decisionengine >/dev/null
 
 # Change the ownership of log and lock dir if they already exist
-if [ -d /%{_localstatedir}/log/decisionengine ]; then
-    chown -R decisionengine:decisionengine /%{_localstatedir}/log/decisionengine
+if [ -d %{_localstatedir}/log/decisionengine ]; then
+    chown -R decisionengine:decisionengine %{_localstatedir}/log/decisionengine
 fi
 
 systemctl daemon-reload

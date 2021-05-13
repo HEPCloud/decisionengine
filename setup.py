@@ -92,6 +92,7 @@ setup(
             "build_requires": "python3",
             "provides": "python3-" + about.__title__,
             "install_script": "package/rpm/install_section",
+            "pre_install": "package/rpm/pre_install_section",
             "post_install": "package/rpm/post_install_section",
             "post_uninstall": "package/rpm/post_uninstall_section",
             "requires": rpm_require,
