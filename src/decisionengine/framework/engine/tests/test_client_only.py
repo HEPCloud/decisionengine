@@ -25,6 +25,12 @@ def test_client_with_no_server():
         "An error occurred while trying to access a DE server at 'http://localhost:8888'\n" + \
         "Please ensure that the host and port names correspond to a running DE instance."
 
+def test_client_with_no_command_says_use_help():
+    # --verbose doesn't do anything without an action item
+    msg = de_client.main(['--verbose'])
+    if "-h" not in msg:
+        raise ValueError(msg)
+
 def test_client_with_no_server_verbose():
     msg = de_client.main(['--status', '--verbose'])
     if "Connection refused" not in msg \
