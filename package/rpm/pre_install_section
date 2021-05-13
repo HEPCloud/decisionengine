@@ -1,0 +1,8 @@
+# Add the "decisionengine" user and group if they do not exist
+#
+# eventually this should be systemd-sysusers, but not on EL7
+getent group decisionengine >/dev/null ||
+    groupadd -r  decisionengine
+getent passwd  decisionengine >/dev/null || \
+    useradd -r -g  decisionengine -d %{_sharedstatedir}/decisionengine \
+    -c "Decision Engine user" -s /sbin/nologin -m decisionengine
