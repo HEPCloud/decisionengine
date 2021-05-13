@@ -204,6 +204,8 @@ def execute_command_from_args(argsparsed, de_socket):
     if argsparsed.reaper_status:
         return de_socket.reaper_status()
 
+    return 'No command specified, try --help'
+
 
 def main(args_to_parse=None):
     '''If you pass a list of args, they will be used instead of sys.argv'''
