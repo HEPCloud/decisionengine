@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Eventually this should move to pyproject.toml
@@ -20,16 +20,18 @@ about = importlib.import_module('decisionengine.framework.about')
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
 # pull in runtime requirements
-runtime_require = ["jsonnet >= 0.17.0", "numpy >= 1.19", "tabulate >= 0.8.7",
+runtime_require = ["jsonnet >= 0.17.0", "tabulate >= 0.8.7",
                    "toposort >= 1.6", "wheel >= 0.36.2", "DBUtils >= 2.0",
+                   "numpy == 1.19.5; python_version <= '3.6'",
+                   "numpy >= 1.19.5; python_version >= '3.7'",
                    "pandas == 1.1.5; python_version <= '3.6'",
                    "pandas >= 1.1.5; python_version >= '3.7'",
                    "psycopg2-binary >= 2.8.6; platform_python_implementation == 'CPython'",  # noqa: E501
                    "psycopg2cffi >= 2.9.0; platform_python_implementation == 'PyPy'"]  # noqa: E501
 
 
-devel_req = ["setuptools >= 42", "setuptools-scm >= 5.0.1",
-             "setuptools-scm[toml] >= 5.0.1", "toml >= 0.10.2",
+devel_req = ["setuptools >= 51.2", "setuptools-scm >= 6.0.1",
+             "setuptools-scm[toml] >= 6.0.1", "toml >= 0.10.2",
              "mock >= 4.0.3", "pytest >= 6.2.2", "pytest-cov >= 2.11.1",
              "pytest-flake8 >= 1.0.7", "pytest-postgresql >= 3.0.0",
              "pytest-timeout >= 1.4.2",
@@ -63,7 +65,7 @@ site.ENABLE_USER_SITE = "--user" in sys.argv[1:]
 #
 # Much of it comes out of decisionengine.framework.about.py
 setup(
-    setup_requires=["setuptools", "wheel", "setuptools_scm[toml]"],
+    setup_requires=["setuptools >= 51.2", "wheel", "setuptools_scm[toml] >= 6.0.1"],
     name=about.__title__,
     use_scm_version={"version_scheme": "post-release"},
     description=about.__description__,
