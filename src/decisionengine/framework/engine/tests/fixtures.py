@@ -62,8 +62,8 @@ class DETestWorker(threading.Thread):
         The DE Server host/port are automatically set for you
         '''
         return de_query_tool.main(["--host", self.server_address[0],
-                               "--port", str(self.server_address[1]),
-                               *args])
+                                   "--port", str(self.server_address[1]),
+                                   *args])
 
 
 # pylint: disable=invalid-name

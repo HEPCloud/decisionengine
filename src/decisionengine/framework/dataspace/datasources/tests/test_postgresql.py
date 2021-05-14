@@ -133,6 +133,20 @@ def test_get_last_generation_id(datasource, taskmanager, data):
     except Exception as e:
         assert e.__class__ == KeyError
 
+def test_get_dataproducts(datasource, taskmanager, data):
+    # test retrieved dataproducts
+    result = datasource.get_dataproducts(data["taskmanager"][0]["taskmanager_id"])
+    assert result[0]["key"] == data["dataproduct"][0]["key"]
+
+    result = datasource.get_dataproducts(data["taskmanager"][0]["taskmanager_id"], data["dataproduct"][0]["key"])
+    assert result[0]["key"] == data["dataproduct"][0]["key"]
+
+    # test taskmanager not present in the database
+    try:
+        datasource.get_dataproducts(taskmanager["taskmanager_id"])
+    except Exception as e:
+        assert e.__class__ == IndexError
+
 def test_insert(datasource, dataproduct, header, metadata):
     datasource.insert(dataproduct["taskmanager_id"], dataproduct["generation_id"], dataproduct["key"],
                       dataproduct["value"].encode(), header, metadata)
