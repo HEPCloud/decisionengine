@@ -8,6 +8,7 @@ import pytest
 from pytest_postgresql.janitor import DatabaseJanitor
 
 import decisionengine.framework.engine.de_client as de_client
+import decisionengine.framework.engine.de_query_tool as de_query_tool
 
 from decisionengine.framework.dataspace.datasources.tests.fixtures import DE_DB_HOST, DE_DB_USER, DE_DB_PASS, DE_DB_NAME, DE_SCHEMA, PG_PROG, DE_DB
 from decisionengine.framework.engine.DecisionEngine import _get_de_conf_manager, _create_de_server, parse_program_options
@@ -54,6 +55,18 @@ class DETestWorker(threading.Thread):
         return de_client.main(["--host", self.server_address[0],
                                "--port", str(self.server_address[1]),
                                *args])
+
+    def de_query_tool_run_cli(self, *args):
+        """
+        Run the DE Query Tool CLI with these args.
+        The DE Server host/port are automatically set for you.
+
+        Returns:
+            str: Query result
+        """
+        return de_query_tool.main(["--host", self.server_address[0],
+                                   "--port", str(self.server_address[1]),
+                                   *args])
 
 
 # pylint: disable=invalid-name

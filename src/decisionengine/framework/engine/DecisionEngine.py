@@ -89,6 +89,26 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                 if tm.is_alive():
                     tm.wait_while(state)
 
+    def _dataframe_to_table(self, df):
+        return "{}\n".format(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
+
+    def _dataframe_to_vertical_tables(self, df):
+        txt = ""
+        for i in range(len(df)):
+            txt += f"Row {i}\n"
+            txt += "{}\n".format(tabulate.tabulate(df.T.iloc[:, [i]], tablefmt='psql'))
+        return txt
+
+    def _dataframe_to_column_names(self, df):
+        columns = df.columns.values.reshape([len(df.columns), 1])
+        return "{}\n".format(tabulate.tabulate(columns, headers=['columns'], tablefmt='psql'))
+
+    def _dataframe_to_json(self, df):
+        return "{}\n".format(json.dumps(json.loads(df.to_json()), indent=4))
+
+    def _dataframe_to_csv(self, df):
+        return "{}\n".format(df.to_csv())
+
     def rpc_block_while(self, state_str):
         allowed_state = None
         try:
@@ -123,23 +143,6 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return self.global_config.dump()
 
     def rpc_print_product(self, product, columns=None, query=None, types=False, format=None):
-        def dataframe_to_table(df):
-            return "{}\n".format(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
-
-        def dataframe_to_vertical_tables(df):
-            txt = ""
-            for i in range(len(df)):
-                txt += f"Row {i}\n"
-                txt += "{}\n".format(tabulate.tabulate(df.T.iloc[:, [i]], tablefmt='psql'))
-            return txt
-
-        def dataframe_to_column_names(df):
-            columns = df.columns.values.reshape([len(df.columns), 1])
-            return "{}\n".format(tabulate.tabulate(columns, headers=['columns'], tablefmt='psql'))
-
-        def dataframe_to_json(df):
-            return "{}\n".format(json.dumps(json.loads(df.to_json()), indent=4))
-
         found = False
         txt = "Product {}: ".format(product)
         with self.workers.access() as workers:
@@ -164,13 +167,13 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                     data_block.generation_id -= 1
                     df = data_block[product]
                     df = pd.read_json(df.to_json())
-                    dataframe_formatter = dataframe_to_table
+                    dataframe_formatter = self._dataframe_to_table
                     if format == 'vertical':
-                        dataframe_formatter = dataframe_to_vertical_tables
+                        dataframe_formatter = self._dataframe_to_vertical_tables
                     if format == 'column-names':
-                        dataframe_formatter = dataframe_to_column_names
+                        dataframe_formatter = self._dataframe_to_column_names
                     if format == 'json':
-                        dataframe_formatter = dataframe_to_json
+                        dataframe_formatter = self._dataframe_to_json
                     if types:
                         for column in df.columns:
                             df.insert(
@@ -446,6 +449,59 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         interval = self.reaper.retention_interval
         state = self.reaper.state.get()
         txt = '\nreaper:\n\tstate: {}\n\tretention_interval: {}\n'.format(state, interval)
+        return txt
+
+    def rpc_query_tool(self, product, format=None, start_time=None):
+        found = False
+        result = pd.DataFrame()
+        txt = "Product {}: ".format(product)
+
+        with self.workers.access() as workers:
+            for ch, worker in workers.items():
+                if not worker.is_alive():
+                    txt += f"Channel {ch} is in not active\n"
+                    continue
+
+                channel_config = self.channel_config_loader.get_channels()[ch]
+                produces = self.channel_config_loader.get_produces(channel_config)
+                r = [x for x in list(produces.items()) if product in x[1]]
+                if not r:
+                    continue
+                found = True
+                txt += " Found in channel {}\n".format(ch)
+
+                if start_time:
+                    tms = self.dataspace.get_taskmanagers(ch, start_time=start_time)
+                else:
+                    tms = [self.dataspace.get_taskmanager(ch)]
+                for tm in tms:
+                    try:
+                        data_block = datablock.DataBlock(self.dataspace,
+                                                         ch,
+                                                         taskmanager_id=tm['taskmanager_id'],
+                                                         sequence_id=tm['sequence_id'])
+                        products = data_block.get_dataproducts(product)
+                        for p in products:
+                            df = p["value"]
+                            if df.shape[0] > 0:
+                                df["channel"] = [tm["name"]] * df.shape[0]
+                                df["taskmanager_id"] = [p["taskmanager_id"]] * df.shape[0]
+                                df["generation_id"] = [p["generation_id"]] * df.shape[0]
+                                result = result.append(df)
+                    except Exception as e:  # pragma: no cover
+                        txt += "\t\t{}\n".format(e)
+
+        if found:
+            dataframe_formatter = self._dataframe_to_table
+            if format == "csv":
+                dataframe_formatter = self._dataframe_to_csv
+            if format == "json":
+                dataframe_formatter = self._dataframe_to_json
+            result = result.reset_index(drop=True)
+            txt += dataframe_formatter(result)
+        else:
+            txt += "Not produced by any module\n"
+
         return txt
 
 
