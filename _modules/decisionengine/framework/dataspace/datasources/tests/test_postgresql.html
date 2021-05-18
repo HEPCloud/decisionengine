@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests.test_postgresql &mdash; decisionengine 1.7.0rc0.post59+g67a54d5 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.test_postgresql &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
         <script src="../../../../../../_static/jquery.js"></script>
         <script src="../../../../../../_static/underscore.js"></script>
         <script src="../../../../../../_static/doctools.js"></script>
@@ -299,6 +302,20 @@
         <span class="n">datasource</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">taskmanager</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">==</span> <span class="ne">KeyError</span></div>
+
+<div class="viewcode-block" id="test_get_dataproducts"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_get_dataproducts">[docs]</a><span class="k">def</span> <span class="nf">test_get_dataproducts</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="n">taskmanager</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="c1"># test retrieved dataproducts</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_dataproducts</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;taskmanager&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;dataproduct&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_dataproducts</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;taskmanager&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;dataproduct&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;dataproduct&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
+
+    <span class="c1"># test taskmanager not present in the database</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">datasource</span><span class="o">.</span><span class="n">get_dataproducts</span><span class="p">(</span><span class="n">taskmanager</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">==</span> <span class="ne">IndexError</span></div>
 
 <div class="viewcode-block" id="test_insert"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_insert">[docs]</a><span class="k">def</span> <span class="nf">test_insert</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="n">dataproduct</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
     <span class="n">datasource</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">dataproduct</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span> <span class="n">dataproduct</span><span class="p">[</span><span class="s2">&quot;generation_id&quot;</span><span class="p">],</span> <span class="n">dataproduct</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">],</span>

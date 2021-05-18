@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.0rc0.post59+g67a54d5 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
         <script src="../../../../_static/doctools.js"></script>
@@ -256,6 +259,26 @@
                 <span class="k">if</span> <span class="n">tm</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
                     <span class="n">tm</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="DecisionEngine._dataframe_to_table"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dataframe_to_table">[docs]</a>    <span class="k">def</span> <span class="nf">_dataframe_to_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tabulate</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s1">&#39;keys&#39;</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">&#39;psql&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DecisionEngine._dataframe_to_vertical_tables"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dataframe_to_vertical_tables">[docs]</a>    <span class="k">def</span> <span class="nf">_dataframe_to_vertical_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)):</span>
+            <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Row </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tabulate</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">&#39;psql&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">txt</span></div>
+
+<div class="viewcode-block" id="DecisionEngine._dataframe_to_column_names"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dataframe_to_column_names">[docs]</a>    <span class="k">def</span> <span class="nf">_dataframe_to_column_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tabulate</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;columns&#39;</span><span class="p">],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">&#39;psql&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DecisionEngine._dataframe_to_json"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dataframe_to_json">[docs]</a>    <span class="k">def</span> <span class="nf">_dataframe_to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_json</span><span class="p">()),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DecisionEngine._dataframe_to_csv"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dataframe_to_csv">[docs]</a>    <span class="k">def</span> <span class="nf">_dataframe_to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">())</span></div>
+
 <div class="viewcode-block" id="DecisionEngine.rpc_block_while"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_block_while">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_str</span><span class="p">):</span>
         <span class="n">allowed_state</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
@@ -290,23 +313,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_print_product"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_print_product">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_print_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">dataframe_to_table</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tabulate</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s1">&#39;keys&#39;</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">&#39;psql&#39;</span><span class="p">))</span>
-
-        <span class="k">def</span> <span class="nf">dataframe_to_vertical_tables</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
-            <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)):</span>
-                <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Row </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tabulate</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">&#39;psql&#39;</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">txt</span>
-
-        <span class="k">def</span> <span class="nf">dataframe_to_column_names</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
-            <span class="n">columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="mi">1</span><span class="p">])</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tabulate</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;columns&#39;</span><span class="p">],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">&#39;psql&#39;</span><span class="p">))</span>
-
-        <span class="k">def</span> <span class="nf">dataframe_to_json</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_json</span><span class="p">()),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-
         <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;Product </span><span class="si">{}</span><span class="s2">: &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">product</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
@@ -331,13 +337,13 @@
                     <span class="n">data_block</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">-=</span> <span class="mi">1</span>
                     <span class="n">df</span> <span class="o">=</span> <span class="n">data_block</span><span class="p">[</span><span class="n">product</span><span class="p">]</span>
                     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
-                    <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="n">dataframe_to_table</span>
+                    <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_table</span>
                     <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;vertical&#39;</span><span class="p">:</span>
-                        <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="n">dataframe_to_vertical_tables</span>
+                        <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_vertical_tables</span>
                     <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;column-names&#39;</span><span class="p">:</span>
-                        <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="n">dataframe_to_column_names</span>
+                        <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_column_names</span>
                     <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;json&#39;</span><span class="p">:</span>
-                        <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="n">dataframe_to_json</span>
+                        <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_json</span>
                     <span class="k">if</span> <span class="n">types</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                             <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
@@ -613,6 +619,59 @@
         <span class="n">interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">retention_interval</span>
         <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="n">txt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">reaper:</span><span class="se">\n\t</span><span class="s1">state: </span><span class="si">{}</span><span class="se">\n\t</span><span class="s1">retention_interval: </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">txt</span></div>
+
+<div class="viewcode-block" id="DecisionEngine.rpc_query_tool"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_query_tool">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_query_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;Product </span><span class="si">{}</span><span class="s2">: &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">product</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ch</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                    <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> is in not active</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="k">continue</span>
+
+                <span class="n">channel_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()[</span><span class="n">ch</span><span class="p">]</span>
+                <span class="n">produces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_produces</span><span class="p">(</span><span class="n">channel_config</span><span class="p">)</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">produces</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="k">if</span> <span class="n">product</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot; Found in channel </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">start_time</span><span class="p">:</span>
+                    <span class="n">tms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="n">start_time</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tms</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">ch</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">tm</span> <span class="ow">in</span> <span class="n">tms</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">data_block</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="p">,</span>
+                                                         <span class="n">ch</span><span class="p">,</span>
+                                                         <span class="n">taskmanager_id</span><span class="o">=</span><span class="n">tm</span><span class="p">[</span><span class="s1">&#39;taskmanager_id&#39;</span><span class="p">],</span>
+                                                         <span class="n">sequence_id</span><span class="o">=</span><span class="n">tm</span><span class="p">[</span><span class="s1">&#39;sequence_id&#39;</span><span class="p">])</span>
+                        <span class="n">products</span> <span class="o">=</span> <span class="n">data_block</span><span class="o">.</span><span class="n">get_dataproducts</span><span class="p">(</span><span class="n">product</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">products</span><span class="p">:</span>
+                            <span class="n">df</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="n">df</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">*</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="n">df</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]]</span> <span class="o">*</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="n">df</span><span class="p">[</span><span class="s2">&quot;generation_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;generation_id&quot;</span><span class="p">]]</span> <span class="o">*</span> <span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+                        <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">found</span><span class="p">:</span>
+            <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_table</span>
+            <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+                <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_csv</span>
+            <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+                <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_json</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">txt</span> <span class="o">+=</span> <span class="n">dataframe_formatter</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;Not produced by any module</span><span class="se">\n</span><span class="s2">&quot;</span>
+
         <span class="k">return</span> <span class="n">txt</span></div></div>
 
 

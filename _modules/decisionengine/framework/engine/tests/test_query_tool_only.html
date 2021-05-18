@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.tests.test_LogicEngine &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
+  <title>decisionengine.framework.engine.tests.test_query_tool_only &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
   
 
   
@@ -152,7 +152,7 @@
         
           <li><a href="../../../../index.html">Module code</a> &raquo;</li>
         
-      <li>decisionengine.framework.modules.tests.test_LogicEngine</li>
+      <li>decisionengine.framework.engine.tests.test_query_tool_only</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -167,20 +167,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for decisionengine.framework.modules.tests.test_LogicEngine</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules.LogicEngine</span> <span class="kn">import</span> <span class="n">LogicEngine</span>
+  <h1>Source code for decisionengine.framework.engine.tests.test_query_tool_only</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">decisionengine.framework.engine.de_query_tool</span> <span class="k">as</span> <span class="nn">de_query_tool</span>
 
-<div class="viewcode-block" id="test_logicengine_structure"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_LogicEngine.test_logicengine_structure">[docs]</a><span class="k">def</span> <span class="nf">test_logicengine_structure</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The module.Module itself is a bit of a skeleton...</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">test_logicengine</span> <span class="o">=</span> <span class="n">LogicEngine</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-    <span class="k">assert</span> <span class="n">test_logicengine</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 
-    <span class="n">test_logicengine</span><span class="o">.</span><span class="n">set_data_block</span><span class="p">(</span><span class="s1">&#39;example&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">test_logicengine</span><span class="o">.</span><span class="n">get_data_block</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;example&#39;</span>
+<span class="c1"># Unfortunately, because argparse short-circuits the &#39;-h&#39; process, we</span>
+<span class="c1"># need to run the -h option as a separate process, capturing the</span>
+<span class="c1"># output for testing.</span>
+<div class="viewcode-block" id="test_query_tool_help"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_query_tool_only.test_query_tool_help">[docs]</a><span class="k">def</span> <span class="nf">test_query_tool_help</span><span class="p">():</span>
+    <span class="n">de_query_tool_cmd</span> <span class="o">=</span> <span class="n">de_query_tool</span><span class="o">.</span><span class="vm">__file__</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">de_query_tool_cmd</span><span class="p">,</span> <span class="s2">&quot;-h&quot;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;usage: de_query_tool.py.*&quot;</span>
+                    <span class="sa">b</span><span class="s2">&quot;positional arguments.*&quot;</span>
+                    <span class="sa">b</span><span class="s2">&quot;optional arguments.*&quot;</span><span class="p">,</span>
+                    <span class="n">output</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
+                    <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span></div>
 
-    <span class="n">test_logicengine</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s1">&#39;asdf&#39;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="test_query_tool_with_no_server"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_query_tool_only.test_query_tool_with_no_server">[docs]</a><span class="k">def</span> <span class="nf">test_query_tool_with_no_server</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">de_query_tool</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s1">&#39;foo&#39;</span><span class="p">])</span> <span class="o">==</span> \
+        <span class="s2">&quot;An error occurred while trying to access a DE server at &#39;http://localhost:8888&#39;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
+        <span class="s2">&quot;Please ensure that the host and port names correspond to a running DE instance.&quot;</span></div>
+
+<div class="viewcode-block" id="test_query_tool_with_no_server_verbose"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_query_tool_only.test_query_tool_with_no_server_verbose">[docs]</a><span class="k">def</span> <span class="nf">test_query_tool_with_no_server_verbose</span><span class="p">():</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">de_query_tool</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--verbose&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="s2">&quot;Connection refused&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span> \
+            <span class="ow">and</span> <span class="s2">&quot;Cannot assign requested address&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span> \
+            <span class="ow">and</span> <span class="s2">&quot;Network is unreachable&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

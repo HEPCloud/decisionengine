@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>decisionengine.framework.tests.test_query_tool_server &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> decisionengine
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.6.html">Release 1.6.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.6.html#release-1-6-0">Release 1.6.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.5.html">Release 1.5.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.4.html">Release 1.4.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.4.html#release-1-4-0">Release 1.4.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.3.html">Release 1.3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.2.html">Release 1.2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">decisionengine</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>decisionengine.framework.tests.test_query_tool_server</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for decisionengine.framework.tests.test_query_tool_server</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;Fixture based DE Server for the de-query-tool tests&#39;&#39;&#39;</span>
+<span class="c1"># pylint: disable=redefined-outer-name</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="n">DE_DB_HOST</span><span class="p">,</span> <span class="n">DE_DB_USER</span><span class="p">,</span> <span class="n">DE_DB_PASS</span><span class="p">,</span> <span class="n">DE_DB_NAME</span><span class="p">,</span> <span class="n">DE_SCHEMA</span> <span class="c1"># noqa: F401</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="n">DE_DB</span><span class="p">,</span> <span class="n">DE_HOST</span><span class="p">,</span> <span class="n">PG_PROG</span><span class="p">,</span> <span class="n">DEServer</span><span class="p">,</span> <span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">TEST_CHANNEL_CONFIG_PATH</span> <span class="c1"># noqa: F401</span>
+
+<span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">TEST_CHANNEL_CONFIG_PATH</span><span class="p">)</span> <span class="c1"># pylint: disable=invalid-name</span>
+
+<span class="n">DEFAULT_OUTPUT</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;+----+--------+--------+--------------+------------------+-----------------+</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;|    | key1   | key2   | channel      |   taskmanager_id |   generation_id |</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;|----+--------+--------+--------------+------------------+-----------------|</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;|  0 | value1 | 0.1    | test_channel |                1 |               1 |</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;|  1 | value2 | 2      | test_channel |                1 |               1 |</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;|  2 | value3 | Test   | test_channel |                1 |               1 |</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;|  3 | value1 | 0.1    | test_channel |                1 |               2 |</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;|  4 | value2 | 2      | test_channel |                1 |               2 |</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;|  5 | value3 | Test   | test_channel |                1 |               2 |</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;|  6 | value1 | 0.1    | test_channel |                1 |               3 |</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;|  7 | value2 | 2      | test_channel |                1 |               3 |</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;|  8 | value3 | Test   | test_channel |                1 |               3 |</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;+----+--------+--------+--------------+------------------+-----------------+</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+<div class="viewcode-block" id="test_query_tool_default"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_default">[docs]</a><span class="k">def</span> <span class="nf">test_query_tool_default</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="c1"># Test default output</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="n">DEFAULT_OUTPUT</span></div>
+
+<div class="viewcode-block" id="test_query_tool_csv"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_csv">[docs]</a><span class="k">def</span> <span class="nf">test_query_tool_csv</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="c1"># Test csv output</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--format=csv&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="p">(</span>
+        <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;,key1,key2,channel,taskmanager_id,generation_id</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;0,value1,0.1,test_channel,1,1</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;1,value2,2,test_channel,1,1</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;2,value3,Test,test_channel,1,1</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;3,value1,0.1,test_channel,1,2</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;4,value2,2,test_channel,1,2</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;5,value3,Test,test_channel,1,2</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;6,value1,0.1,test_channel,1,3</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;7,value2,2,test_channel,1,3</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;8,value3,Test,test_channel,1,3</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_query_tool_json"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_json">[docs]</a><span class="k">def</span> <span class="nf">test_query_tool_json</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="c1"># Test json output</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--format=json&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s1">&#39;Product foo:  Found in channel test_channel\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;{\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;key1&quot;:\s*{\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;0&quot;:\s*&quot;value1&quot;,\n\s*&quot;1&quot;:\s*&quot;value2&quot;,\n\s*&quot;2&quot;:\s*&quot;value3&quot;,\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;3&quot;:\s*&quot;value1&quot;,\n\s*&quot;4&quot;:\s*&quot;value2&quot;,\n\s*&quot;5&quot;:\s*&quot;value3&quot;,\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;6&quot;:\s*&quot;value1&quot;,\n\s*&quot;7&quot;:\s*&quot;value2&quot;,\n\s*&quot;8&quot;:\s*&quot;value3&quot;\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*},\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;key2&quot;:\s*{\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;0&quot;:\s*0.1,\n\s*&quot;1&quot;:\s*2,\n\s*&quot;2&quot;:\s*&quot;Test&quot;,\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;3&quot;:\s*0.1,\n\s*&quot;4&quot;:\s*2,\n\s*&quot;5&quot;:\s*&quot;Test&quot;,\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;6&quot;:\s*0.1,\n\s*&quot;7&quot;:\s*2,\n\s*&quot;8&quot;:\s*&quot;Test&quot;\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*},\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;channel&quot;:\s*{\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;0&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;1&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;2&quot;:\s*&quot;test_channel&quot;,\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;3&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;4&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;5&quot;:\s*&quot;test_channel&quot;,\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;6&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;7&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;8&quot;:\s*&quot;test_channel&quot;\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*},\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;taskmanager_id&quot;:\s*{\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;0&quot;:\s*1,\n\s*&quot;1&quot;:\s*1,\n\s*&quot;2&quot;:\s*1,\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;3&quot;:\s*1,\n\s*&quot;4&quot;:\s*1,\n\s*&quot;5&quot;:\s*1,\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;6&quot;:\s*1,\n\s*&quot;7&quot;:\s*1,\n\s*&quot;8&quot;:\s*1\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*},\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;generation_id&quot;:\s*{\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;0&quot;:\s*1,\n\s*&quot;1&quot;:\s*1,\n\s*&quot;2&quot;:\s*1,\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;3&quot;:\s*2,\n\s*&quot;4&quot;:\s*2,\n\s*&quot;5&quot;:\s*2,\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*&quot;6&quot;:\s*3,\n\s*&quot;7&quot;:\s*3,\n\s*&quot;8&quot;:\s*3\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;\s*}\n&#39;</span>
+        <span class="sa">r</span><span class="s1">&#39;}\n&#39;</span><span class="p">,</span>
+        <span class="n">output</span>
+    <span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_query_tool_since"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_since">[docs]</a><span class="k">def</span> <span class="nf">test_query_tool_since</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="c1"># Test taskmanager start time</span>
+    <span class="n">current_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;--since=&quot;</span><span class="si">{</span><span class="n">current_time</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="n">DEFAULT_OUTPUT</span></div>
+
+<div class="viewcode-block" id="test_query_tool_invalid_product"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_invalid_product">[docs]</a><span class="k">def</span> <span class="nf">test_query_tool_invalid_product</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="c1"># Test invalid product output</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s1">&#39;not_foo&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;Product not_foo: Not produced by any module</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Fermilab.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

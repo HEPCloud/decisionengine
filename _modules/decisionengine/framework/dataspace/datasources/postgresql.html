@@ -7,12 +7,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.0rc0.post59+g67a54d5 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
         <script src="../../../../../_static/jquery.js"></script>
         <script src="../../../../../_static/underscore.js"></script>
         <script src="../../../../../_static/doctools.js"></script>
@@ -216,9 +219,9 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">SELECT_PRODUCTS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">SELECT tm.taskmanager_id, foo.* FROM </span><span class="si">{}</span><span class="s2"> foo, taskmanager tm</span>
-<span class="s2">WHERE tm.sequence_id = foo.taskmanager_id</span>
-<span class="s2">and foo.taskmanager_id=</span><span class="si">%s</span><span class="s2"></span>
+<span class="s2">SELECT tm.taskmanager_id, foo.* FROM </span><span class="si">{}</span><span class="s2"> foo JOIN taskmanager tm</span>
+<span class="s2">ON tm.sequence_id = foo.taskmanager_id</span>
+<span class="s2">WHERE foo.taskmanager_id=</span><span class="si">%s</span><span class="s2"></span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">SELECT_LAST_GENERATION_ID_BY_NAME</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -458,8 +461,10 @@
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{}</span><span class="s2"> or generation_id=</span><span class="si">{}</span><span class="s2"> or key=</span><span class="si">{}</span><span class="s2"> not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Postgresql.get_dataproducts"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_dataproducts">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataproducts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">):</span>
+<div class="viewcode-block" id="Postgresql.get_dataproducts"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_dataproducts">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataproducts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">q</span> <span class="o">=</span> <span class="n">SELECT_PRODUCTS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;AND foo.key = &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,))</span>
