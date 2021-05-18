@@ -450,8 +450,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                     txt += f"Channel {ch} is in not active\n"
                     continue
 
-                channel_config = self.channel_config_loader.get_channels()[ch]
-                produces = self.channel_config_loader.get_produces(channel_config)
+                produces = worker.get_produces()
                 r = [x for x in list(produces.items()) if product in x[1]]
                 if not r:
                     continue

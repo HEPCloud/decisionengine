@@ -1,6 +1,7 @@
 '''Fixture based DE Server for the de-query-tool tests'''
 # pylint: disable=redefined-outer-name
 
+import pytest
 import re
 
 from datetime import datetime
@@ -27,11 +28,13 @@ DEFAULT_OUTPUT = (
     "+----+--------+--------+--------------+------------------+-----------------+\n"
 )
 
+@pytest.mark.usefixtures("deserver")
 def test_query_tool_default(deserver):
     # Test default output
     output = deserver.de_query_tool_run_cli('foo')
     assert output == DEFAULT_OUTPUT
 
+@pytest.mark.usefixtures("deserver")
 def test_query_tool_csv(deserver):
     # Test csv output
     output = deserver.de_query_tool_run_cli('foo', '--format=csv')
@@ -50,6 +53,7 @@ def test_query_tool_csv(deserver):
         "\n"
     )
 
+@pytest.mark.usefixtures("deserver")
 def test_query_tool_json(deserver):
     # Test json output
     output = deserver.de_query_tool_run_cli('foo', '--format=json')
@@ -85,12 +89,14 @@ def test_query_tool_json(deserver):
         output
     )
 
+@pytest.mark.usefixtures("deserver")
 def test_query_tool_since(deserver):
     # Test taskmanager start time
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     output = deserver.de_query_tool_run_cli('foo', f'--since="{current_time}"')
     assert output == DEFAULT_OUTPUT
 
+@pytest.mark.usefixtures("deserver")
 def test_query_tool_invalid_product(deserver):
     # Test invalid product output
     output = deserver.de_query_tool_run_cli('not_foo')
