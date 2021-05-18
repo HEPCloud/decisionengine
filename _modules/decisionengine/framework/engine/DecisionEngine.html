@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.0rc0.post61+g0f60c4e documentation</title>
   
 
   
@@ -178,7 +178,6 @@
 
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">enum</span>
-<span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">signal</span>
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -321,8 +320,7 @@
                     <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> is in not active</span><span class="se">\n</span><span class="s2">&quot;</span>
                     <span class="k">continue</span>
 
-                <span class="n">channel_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()[</span><span class="n">ch</span><span class="p">]</span>
-                <span class="n">produces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_produces</span><span class="p">(</span><span class="n">channel_config</span><span class="p">)</span>
+                <span class="n">produces</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">get_produces</span><span class="p">()</span>
                 <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">produces</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="k">if</span> <span class="n">product</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
                     <span class="k">continue</span>
@@ -395,7 +393,7 @@
                                                  <span class="n">sequence_id</span><span class="o">=</span><span class="n">tm</span><span class="p">[</span><span class="s1">&#39;sequence_id&#39;</span><span class="p">])</span>
                 <span class="n">data_block</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">-=</span> <span class="mi">1</span>
                 <span class="n">channel_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()[</span><span class="n">ch</span><span class="p">]</span>
-                <span class="n">produces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_produces</span><span class="p">(</span><span class="n">channel_config</span><span class="p">)</span>
+                <span class="n">produces</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">get_produces</span><span class="p">()</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;sources&quot;</span><span class="p">,</span>
                           <span class="s2">&quot;transforms&quot;</span><span class="p">,</span>
                           <span class="s2">&quot;logicengines&quot;</span><span class="p">,</span>
@@ -428,6 +426,8 @@
                                                                                           <span class="n">worker</span><span class="o">.</span><span class="n">task_manager_id</span><span class="p">,</span>
                                                                                           <span class="n">worker</span><span class="o">.</span><span class="n">get_state_name</span><span class="p">(),</span>
                                                                                           <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+                <span class="n">produces</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">get_produces</span><span class="p">()</span>
+                <span class="n">consumes</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">get_consumes</span><span class="p">()</span>
                 <span class="n">channel_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()[</span><span class="n">ch</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;sources&quot;</span><span class="p">,</span>
                           <span class="s2">&quot;transforms&quot;</span><span class="p">,</span>
@@ -437,20 +437,8 @@
                     <span class="n">modules</span> <span class="o">=</span> <span class="n">channel_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">{})</span>
                     <span class="k">for</span> <span class="n">mod_name</span><span class="p">,</span> <span class="n">mod_config</span> <span class="ow">in</span> <span class="n">modules</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                         <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_name</span><span class="p">)</span>
-                        <span class="n">my_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span>
-                            <span class="n">mod_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">))</span>
-                        <span class="n">produces</span> <span class="o">=</span> <span class="kc">None</span>
-                        <span class="n">consumes</span> <span class="o">=</span> <span class="kc">None</span>
-                        <span class="k">try</span><span class="p">:</span>
-                            <span class="n">produces</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="s1">&#39;PRODUCES&#39;</span><span class="p">)</span>
-                        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                            <span class="k">pass</span>
-                        <span class="k">try</span><span class="p">:</span>
-                            <span class="n">consumes</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="s1">&#39;CONSUMES&#39;</span><span class="p">)</span>
-                        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                            <span class="k">pass</span>
-                        <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\t\t\t</span><span class="s2">consumes : </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">consumes</span><span class="p">)</span>
-                        <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\t\t\t</span><span class="s2">produces : </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">produces</span><span class="p">)</span>
+                        <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\t\t\t</span><span class="s2">consumes : </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">consumes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mod_name</span><span class="p">,</span> <span class="p">[]))</span>
+                        <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\t\t\t</span><span class="s2">produces : </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">produces</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mod_name</span><span class="p">,</span> <span class="p">[]))</span>
         <span class="k">return</span> <span class="n">txt</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper_status</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_stop"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.Transform &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
+  <title>decisionengine.framework.modules.Transform &mdash; decisionengine 1.7.0rc0.post61+g0f60c4e documentation</title>
   
 
   
@@ -168,29 +168,21 @@
            <div itemprop="articleBody">
             
   <h1>Source code for decisionengine.framework.modules.Transform</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Module</span>
+<span></span><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;Transform&#39;</span><span class="p">,</span> <span class="s1">&#39;consumes&#39;</span><span class="p">,</span> <span class="s1">&#39;describe&#39;</span><span class="p">,</span> <span class="s1">&#39;produces&#39;</span><span class="p">,</span> <span class="s1">&#39;supports_config&#39;</span><span class="p">]</span>
 
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Module</span> <span class="kn">import</span> <span class="n">Module</span><span class="p">,</span> <span class="n">consumes</span><span class="p">,</span> <span class="n">produces</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">describe</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.describe</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">supports_config</span>
 
-<div class="viewcode-block" id="Transform"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Transform.Transform">[docs]</a><span class="k">class</span> <span class="nc">Transform</span><span class="p">(</span><span class="n">Module</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="n">describe</span> <span class="o">=</span> <span class="n">describe</span><span class="o">.</span><span class="n">main_wrapper</span>
+
+<div class="viewcode-block" id="Transform"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Transform.Transform">[docs]</a><span class="k">class</span> <span class="nc">Transform</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="n">_consumes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_produces</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_of_parameters</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">set_of_parameters</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name_list</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    name_list: A list of the data product names that</span>
-<span class="sd">    the Transform will consume</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Transform.consumes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Transform.Transform.consumes">[docs]</a>    <span class="k">def</span> <span class="nf">consumes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_list</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Transform.consumes&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name_list</span> <span class="o">=</span> <span class="n">name_list</span></div>
-
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    name_schema_id_list: a list of dictionariescontaining</span>
-<span class="sd">    the data product name and a pointer to a schema</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="Transform.produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Transform.Transform.produces">[docs]</a>    <span class="k">def</span> <span class="nf">produces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_schema_id_list</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Transform.produces&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    decide: The action function for a Transform. Will</span>
@@ -201,8 +193,7 @@
 <span class="sd">    products promised in the produces list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Transform.transform"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Transform.Transform.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Transform.transform&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span></div></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Transform.transform&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

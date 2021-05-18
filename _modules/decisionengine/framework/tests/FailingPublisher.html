@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.FailingPublisher &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
+  <title>decisionengine.framework.tests.FailingPublisher &mdash; decisionengine 1.7.0rc0.post61+g0f60c4e documentation</title>
   
 
   
@@ -170,19 +170,15 @@
   <h1>Source code for decisionengine.framework.tests.FailingPublisher</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Publisher</span>
 
-<span class="n">CONSUMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bar&quot;</span><span class="p">]</span>
 
-
-<div class="viewcode-block" id="FailingPublisher"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.FailingPublisher.FailingPublisher">[docs]</a><span class="k">class</span> <span class="nc">FailingPublisher</span><span class="p">(</span><span class="n">Publisher</span><span class="o">.</span><span class="n">Publisher</span><span class="p">):</span>
+<div class="viewcode-block" id="FailingPublisher"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.FailingPublisher.FailingPublisher">[docs]</a><span class="nd">@Publisher</span><span class="o">.</span><span class="n">consumes</span><span class="p">(</span><span class="n">bar</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">FailingPublisher</span><span class="p">(</span><span class="n">Publisher</span><span class="o">.</span><span class="n">Publisher</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FailingPublisher.publish"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.FailingPublisher.FailingPublisher.publish">[docs]</a>    <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_block</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Test error-handling&quot;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="FailingPublisher.consumes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.FailingPublisher.FailingPublisher.consumes">[docs]</a>    <span class="k">def</span> <span class="nf">consumes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_list</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">CONSUMES</span></div></div>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Test error-handling&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

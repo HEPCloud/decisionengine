@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.Module &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
+  <title>decisionengine.framework.modules.Module &mdash; decisionengine 1.7.0rc0.post61+g0f60c4e documentation</title>
   
 
   
@@ -168,9 +168,14 @@
            <div itemprop="articleBody">
             
   <h1>Source code for decisionengine.framework.modules.Module</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="Module"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Module.Module">[docs]</a><span></span><span class="k">class</span> <span class="nc">Module</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace</span> <span class="kn">import</span> <span class="n">datablock</span>
+
+<div class="viewcode-block" id="Module"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Module.Module">[docs]</a><span class="k">class</span> <span class="nc">Module</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A skelaton of a module</span>
+<span class="sd">    A skeleton of a module</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_of_parameters</span><span class="p">):</span>
@@ -185,6 +190,81 @@
 
 <div class="viewcode-block" id="Module.set_data_block"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Module.Module.set_data_block">[docs]</a>    <span class="k">def</span> <span class="nf">set_data_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_block</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span> <span class="o">=</span> <span class="n">data_block</span></div></div>
+
+<span class="c1"># ====================================================================================</span>
+<span class="c1"># Auxiliary facilities for produces, consumes, and supports_config</span>
+
+<div class="viewcode-block" id="produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Module.produces">[docs]</a><span class="k">def</span> <span class="nf">produces</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">decorator_produces</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_produces</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;@produces has already been called for </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_produces</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="k">return</span> <span class="bp">cls</span>
+    <span class="k">return</span> <span class="n">decorator_produces</span></div>
+
+
+<div class="viewcode-block" id="consumes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Module.consumes">[docs]</a><span class="k">def</span> <span class="nf">consumes</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">decorator_consumes</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_consumes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;@consumes has already been called for </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_consumes</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="c1"># Now add product retrievers to class instance</span>
+        <span class="n">user_provided_new</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span>
+
+        <span class="k">def</span> <span class="nf">new_and_add_members</span><span class="p">(</span><span class="n">class_type</span><span class="p">,</span> <span class="n">module_parameters</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">consumer</span> <span class="o">=</span> <span class="n">user_provided_new</span><span class="p">(</span><span class="n">class_type</span><span class="p">)</span>
+            <span class="n">product_specifications</span> <span class="o">=</span> <span class="n">module_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;product_creators&#39;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">product_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_consumes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1"># FIXME: Need to adjust configuration usage in next line!</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">consumer</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span>
+                        <span class="n">datablock</span><span class="o">.</span><span class="n">ProductRetriever</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>
+                                                   <span class="n">product_type</span><span class="p">,</span>
+                                                   <span class="n">product_specifications</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">Any</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="n">consumer</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span> <span class="o">=</span> <span class="n">new_and_add_members</span>
+        <span class="k">return</span> <span class="bp">cls</span>
+    <span class="k">return</span> <span class="n">decorator_consumes</span></div>
+
+
+<div class="viewcode-block" id="verify_products"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Module.verify_products">[docs]</a><span class="k">def</span> <span class="nf">verify_products</span><span class="p">(</span><span class="n">producer</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">producer</span><span class="o">.</span><span class="n">_produces</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span><span class="n">name</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">())})</span>
+    <span class="k">if</span> <span class="n">expected</span> <span class="o">==</span> <span class="n">actual</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">expected_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">expected</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">actual_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">actual</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">missing_keys</span> <span class="o">=</span> <span class="n">expected_keys</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">actual_keys</span><span class="p">)</span>
+    <span class="n">extra_keys</span> <span class="o">=</span> <span class="n">actual_keys</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">expected_keys</span><span class="p">)</span>
+    <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">missing_keys</span><span class="p">:</span>
+        <span class="n">err_msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The following products were not produced:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">missing_keys</span><span class="p">:</span>
+            <span class="n">err_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; - &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; of type &#39;</span><span class="si">{</span><span class="n">expected</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">extra_keys</span><span class="p">:</span>
+        <span class="n">err_msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The following products were not declared:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">extra_keys</span><span class="p">:</span>
+            <span class="n">err_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; - &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; of type &#39;</span><span class="si">{</span><span class="n">actual</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">err_msg</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+
+    <span class="n">mismatched_types</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a_type</span><span class="p">),</span> <span class="n">b_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">expected</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">actual</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">a_type</span> <span class="o">==</span> <span class="n">Any</span> <span class="ow">or</span> <span class="n">b_type</span> <span class="o">==</span> <span class="n">Any</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">a_type</span> <span class="o">!=</span> <span class="n">b_type</span><span class="p">:</span>
+            <span class="n">a_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">a_type</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">b_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">b_type</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">mismatched_types</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">a_name</span><span class="p">,</span> <span class="n">b_name</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">mismatched_types</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The following products have the wrong types:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">a_type</span><span class="p">,</span> <span class="n">b_type</span> <span class="ow">in</span> <span class="n">mismatched_types</span><span class="p">:</span>
+        <span class="n">err_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; - &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; (expected &#39;</span><span class="si">{</span><span class="n">a_name</span><span class="si">}</span><span class="s2">&#39;, got &#39;</span><span class="si">{</span><span class="n">b_name</span><span class="si">}</span><span class="s2">&#39;)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

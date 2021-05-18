@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
+  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.0rc0.post61+g0f60c4e documentation</title>
   
 
   
@@ -178,9 +178,7 @@
 <span class="sd">dependencies.</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
-<span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">toposort</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.config</span> <span class="kn">import</span> <span class="n">ValidConfig</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="k">as</span> <span class="nn">de_logger</span>
@@ -232,63 +230,6 @@
                 <span class="n">missing_keys</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> module </span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2"> is missing one or more mandatory keys:</span><span class="se">\n</span><span class="si">{</span><span class="n">missing_keys</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="_modules_from"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._modules_from">[docs]</a><span class="k">def</span> <span class="nf">_modules_from</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">channel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">result</span></div>
-
-<div class="viewcode-block" id="_produced_products"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._produced_products">[docs]</a><span class="k">def</span> <span class="nf">_produced_products</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">_modules_from</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">produces</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;PRODUCES&#39;</span><span class="p">)</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">produces</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;module </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not have a PRODUCES list&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span></div>
-
-<div class="viewcode-block" id="_consumed_products"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._consumed_products">[docs]</a><span class="k">def</span> <span class="nf">_consumed_products</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">_modules_from</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;CONSUMES&#39;</span><span class="p">))</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;module </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not have a CONSUMES list&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span></div>
-
-<div class="viewcode-block" id="_validate"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._validate">[docs]</a><span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="n">channel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Validate channels</span>
-<span class="sd">    :type channel: :obj:`dict`</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_check_keys</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-
-
-    <span class="n">produced_products</span> <span class="o">=</span> <span class="n">_produced_products</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;sources&#39;</span><span class="p">)</span>
-    <span class="n">produced_products</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_produced_products</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;transforms&#39;</span><span class="p">))</span>
-
-    <span class="n">consumed_products</span> <span class="o">=</span> <span class="n">_consumed_products</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;transforms&#39;</span><span class="p">)</span>
-    <span class="n">consumed_products</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_consumed_products</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;publishers&#39;</span><span class="p">))</span>
-
-    <span class="c1"># Check that products to be consumed are actually produced</span>
-    <span class="n">all_consumes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-    <span class="n">all_consumes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">*</span><span class="n">consumed_products</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-    <span class="n">all_produces</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">produced_products</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">all_consumes</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">all_produces</span><span class="p">):</span>
-        <span class="n">extra_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_consumes</span> <span class="o">-</span> <span class="n">all_produces</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;consumes are not a subset of produce, extra keys </span><span class="si">{</span><span class="n">extra_keys</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">graph</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">products</span> <span class="ow">in</span> <span class="n">consumed_products</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">graph</span><span class="p">[</span><span class="n">consumer</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">produced_products</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">products</span><span class="p">))</span>
-
-    <span class="c1"># Do the check</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">toposort</span><span class="o">.</span><span class="n">toposort_flatten</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>  <span class="c1"># Flatten will trigger any potential circularity errors</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A produces/consumes circularity exists in the configuration:</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
-
 
 <div class="viewcode-block" id="ChannelConfigHandler"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler">[docs]</a><span class="k">class</span> <span class="nc">ChannelConfigHandler</span><span class="p">():</span>
 
@@ -296,13 +237,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">channel_config_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">_make_de_logger</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
-
-<div class="viewcode-block" id="ChannelConfigHandler.get_produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.get_produces">[docs]</a>    <span class="k">def</span> <span class="nf">get_produces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
-        <span class="n">produces</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;sources&#39;</span><span class="p">,</span> <span class="s1">&#39;transforms&#39;</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">_modules_from</span><span class="p">(</span><span class="n">channel_config</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">produces</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="s1">&#39;PRODUCES&#39;</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">produces</span></div>
 
 <div class="viewcode-block" id="ChannelConfigHandler.get_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.get_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span></div>
@@ -321,7 +255,7 @@
                     <span class="sa">f</span><span class="s2">&quot;contains error</span><span class="se">\n</span><span class="s2">-&gt; </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">_validate</span><span class="p">(</span><span class="n">channel_config</span><span class="p">)</span>
+            <span class="n">_check_keys</span><span class="p">(</span><span class="n">channel_config</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span>
                     <span class="sa">f</span><span class="s2">&quot;The channel configuration file </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> contains a &quot;</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.Source &mdash; decisionengine 1.7.0rc0.post60+g8191246 documentation</title>
+  <title>decisionengine.framework.modules.Source &mdash; decisionengine 1.7.0rc0.post61+g0f60c4e documentation</title>
   
 
   
@@ -168,25 +168,28 @@
            <div itemprop="articleBody">
             
   <h1>Source code for decisionengine.framework.modules.Source</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Module</span>
+<span></span><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Parameter&#39;</span><span class="p">,</span> <span class="s1">&#39;Source&#39;</span><span class="p">,</span> <span class="s1">&#39;describe&#39;</span><span class="p">,</span> <span class="s1">&#39;produces&#39;</span><span class="p">,</span> <span class="s1">&#39;supports_config&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.config.ValidConfig</span> <span class="kn">import</span> <span class="n">ValidConfig</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Module</span> <span class="kn">import</span> <span class="n">Module</span><span class="p">,</span> <span class="n">produces</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">describe</span> <span class="k">as</span> <span class="n">_describe</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.describe</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">supports_config</span>
 
 
-<div class="viewcode-block" id="Source"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Source.Source">[docs]</a><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Module</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="Source"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Source.Source">[docs]</a><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
+    <span class="n">_produces</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_of_parameters</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">set_of_parameters</span><span class="p">)</span>
-
-    <span class="c1"># name_schema_id_list: a list of dictionaries containing</span>
-    <span class="c1"># the data product name and a pointer to a schema</span>
-<div class="viewcode-block" id="Source.produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Source.Source.produces">[docs]</a>    <span class="k">def</span> <span class="nf">produces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_schema_id_list</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Source.produces&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># acquire: The action function for a source. Will</span>
     <span class="c1"># retrieve data from external sources and issue a</span>
     <span class="c1"># DataBlock &quot;put&quot; transaction.</span>
 <div class="viewcode-block" id="Source.acquire"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Source.Source.acquire">[docs]</a>    <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Source.acquires&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Called Source.acquires&quot;</span><span class="p">)</span></div>
 
     <span class="c1"># Expert-only - The post_create method will go away once the</span>
     <span class="c1"># source proxy has been reimplemented.  It exists now so the</span>
@@ -194,6 +197,63 @@
     <span class="c1"># configuration for creating a dataspace.</span>
 <div class="viewcode-block" id="Source.post_create"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Source.Source.post_create">[docs]</a>    <span class="k">def</span> <span class="nf">post_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_config</span><span class="p">):</span>
         <span class="k">pass</span></div></div>
+
+<span class="c1"># ===============================================================</span>
+<span class="c1"># Override standard module program options</span>
+<span class="k">def</span> <span class="nf">_find_one_config</span><span class="p">(</span><span class="n">config_filename</span><span class="p">,</span> <span class="n">module_spec</span><span class="p">):</span>
+    <span class="n">full_config</span> <span class="o">=</span> <span class="n">ValidConfig</span><span class="p">(</span><span class="n">config_filename</span><span class="p">)</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">full_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sources&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sources</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not locate &#39;sources&#39; configuration block in </span><span class="si">{</span><span class="n">config_filename</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">found_configs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sources</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">module_spec</span><span class="p">}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_configs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No configuration in </span><span class="si">{</span><span class="n">config_filename</span><span class="si">}</span><span class="s2"> is supported by </span><span class="si">{</span><span class="n">module_spec</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_configs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Located more than one configuration supported by </span><span class="si">{</span><span class="n">module_spec</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                 <span class="sa">f</span><span class="s2">&quot;Please choose one of </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">found_configs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">full_module_config</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">found_configs</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">full_module_config</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;parameters&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Configuration for &#39;</span><span class="si">{</span><span class="n">full_module_config</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; source in </span><span class="si">{</span><span class="n">config_filename</span><span class="si">}</span><span class="s2">&quot;</span>
+                 <span class="s2">&quot; does not contain a &#39;parameters&#39; table.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parameters</span>
+
+
+<div class="viewcode-block" id="describe"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Source.describe">[docs]</a><span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sample_config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">SourceProgramOptions</span><span class="p">(</span><span class="n">_describe</span><span class="o">.</span><span class="n">ModuleProgramOptions</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_spec</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">module_spec</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+                <span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--acquire-with-config&#39;</span><span class="p">,</span>
+                <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;channel config. file&gt;&quot;</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;run the &#39;acquire&#39; method of the source as configured in the &#39;sources&#39;&quot;</span>
+                <span class="s2">&quot; block of the full channel configuration&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sample_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+                    <span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;--acquire-with-sample-config&#39;</span><span class="p">,</span>
+                    <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;run the &#39;acquire&#39; method using the default configuration provided &quot;</span>
+                    <span class="s2">&quot;by the module&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">process_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">process_args</span><span class="p">()</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">acquire_with_config</span><span class="p">:</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="n">_find_one_config</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">acquire_with_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module_spec</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running acquire for source </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> using configuration from </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">acquire_with_config</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sample_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">acquire_with_sample_config</span><span class="p">:</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="n">sample_config</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running acquire for source </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> using default configuration:&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">()</span>
+                <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Produced products:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">acquire</span><span class="p">())</span>
+
+
+    <span class="k">return</span> <span class="n">_describe</span><span class="o">.</span><span class="n">main_wrapper</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">SourceProgramOptions</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
