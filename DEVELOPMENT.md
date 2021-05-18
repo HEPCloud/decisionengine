@@ -36,3 +36,16 @@ sudo localedef -v -c -i en_US -f UTF-8 C.UTF-8
 
 The code is expected to package as an RPM via `python3 setup.py bdist_rpm` or
 a python wheel.
+
+## Using the RPM
+
+The RPM should create the services you need.  But you may not have all the
+items you need in the `decisionengine` user's python area (ie not system packages).
+
+This should clean that up, provided you can write to the user home area.
+
+```shell
+su decisionengine -c /bin/bash
+python3 /path/to/setup.py develop --user
+python3 /path/to/setup.py develop --user --uninstall
+```
