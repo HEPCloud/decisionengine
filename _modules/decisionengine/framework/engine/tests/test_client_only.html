@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.tests.test_client_only &mdash; decisionengine 1.7.0rc0.post68+g95b0236 documentation</title>
+  <title>decisionengine.framework.engine.tests.test_client_only &mdash; decisionengine 1.7.0rc0.post69+gcd17223 documentation</title>
   
 
   
@@ -194,6 +194,12 @@
     <span class="k">assert</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s1">&#39;--status&#39;</span><span class="p">])</span> <span class="o">==</span> \
         <span class="s2">&quot;An error occurred while trying to access a DE server at &#39;http://localhost:8888&#39;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
         <span class="s2">&quot;Please ensure that the host and port names correspond to a running DE instance.&quot;</span></div>
+
+<div class="viewcode-block" id="test_client_with_no_command_says_use_help"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_client_only.test_client_with_no_command_says_use_help">[docs]</a><span class="k">def</span> <span class="nf">test_client_with_no_command_says_use_help</span><span class="p">():</span>
+    <span class="c1"># --verbose doesn&#39;t do anything without an action item</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s1">&#39;--verbose&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="s2">&quot;-h&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="test_client_with_no_server_verbose"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_client_only.test_client_with_no_server_verbose">[docs]</a><span class="k">def</span> <span class="nf">test_client_with_no_server_verbose</span><span class="p">():</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s1">&#39;--status&#39;</span><span class="p">,</span> <span class="s1">&#39;--verbose&#39;</span><span class="p">])</span>
