@@ -51,13 +51,21 @@ jobs:
           python3 -c 'import platform; print(platform.python_implementation())'
           python3 -m pip cache dir
 
-      - name: Install dependencies
+      - name: Ensure pip/setuptools is up to date
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade wheel setuptools
-          python3 -m pip install --upgrade pytest
+
+      - name: Install dependencies (runtime)
+        run: |
           python3 -m pip install -e . --user
+          python3 -m pip list --user
+
+      - name: Install dependencies (unit tests)
+        run: |
+          python3 -m pip install --upgrade pytest
           python3 -m pip install -e .[develop] --user
+          python3 -m pip list --user
 
       - name: Ensure version.py exists
         run: python3 setup.py bdist_wheel
