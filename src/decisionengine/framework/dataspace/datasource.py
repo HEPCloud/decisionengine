@@ -238,13 +238,13 @@ class DataSource(object, metaclass=abc.ABCMeta):  # pragma: no cover
         return
 
     @abc.abstractmethod
-    def get_last_generation_id(self, name, taskmanager_id=None):
+    def get_last_generation_id(self, taskmanager_name, taskmanager_id=None):
         """
         Return last generation id for current task manager
         or taskmanager w/ task_manager_id.
 
-        :type name: :obj:`string`
-        :arg name: task manager name
+        :type taskmanager_name: :obj:`string`
+        :arg taskmanager_name: task manager name
         :type taskmanager_id: :obj:`string`
         :arg taskmanager_id: task manager id
         """
