@@ -225,6 +225,7 @@ class Postgresql(ds.DataSource):
                       'key': key,
                       'create_time': header.get('create_time'),
                       'scheduled_create_time': header.get('scheduled_create_time'),
+                      'expiration_time': header.get('expiration_time'),
                       'creator': header.get('creator'),
                       'schema_id': header.get('schema_id')
                       })
