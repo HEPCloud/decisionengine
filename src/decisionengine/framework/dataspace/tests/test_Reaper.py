@@ -13,16 +13,10 @@ from decisionengine.framework.taskmanager.ProcessingState import State
 GLOBAL_CONFIG = {
     "dataspace": {
         "datasource": {
-            "module": "decisionengine.framework.dataspace.datasources.postgresql",
-            "name": "Postgresql",
+            "module": "just.a.string",
+            "name": "AnyString",
             "config": {
-                "user": "decisionengine",
-                "blocking": True,
-                "host": "decisionengine",
-                "port": 5435,
-                "database": "decisionengine",
-                "maxconnections": 100,
-                "maxcached": 10,
+                "key": "value",
             },
         },
     },
