@@ -270,6 +270,14 @@ class TaskManager:
         with self.loglevel.get_lock():
             return self.loglevel.value
 
+    def set_to_shutdown(self):
+        self.state.set(State.SHUTTINGDOWN)
+        logging.getLogger("decision_engine").debug('Shutting down. Will call '
+            'shutdown on all publishers')
+        for publisher_worker in self.channel.publishers.values():
+            publisher_worker.worker.shutdown()
+        self.state.set(State.SHUTDOWN)
+
     def take_offline(self, current_data_block):
         """
         offline and stop task manager
