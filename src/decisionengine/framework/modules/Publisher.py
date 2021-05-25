@@ -13,7 +13,7 @@ class Publisher(Module):
         super().__init__(set_of_parameters)
 
     def publish(self, data_block=None):
-        print("Called Publisher.publish")
+        pass
 
     def shutdown(self):
-        print("Called Publisher.shutdown")
+        pass
