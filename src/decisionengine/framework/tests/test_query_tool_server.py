@@ -4,7 +4,7 @@
 import pytest
 import re
 
-from datetime import datetime
+import datetime
 
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     PG_DE_DB_WITH_SCHEMA,
@@ -38,12 +38,14 @@ DEFAULT_OUTPUT = (
 @pytest.mark.usefixtures("deserver")
 def test_query_tool_default(deserver):
     # Test default output
+    deserver.de_client_run_cli('--block-while', 'BOOT'),
     output = deserver.de_query_tool_run_cli('foo')
     assert output == DEFAULT_OUTPUT
 
 @pytest.mark.usefixtures("deserver")
 def test_query_tool_csv(deserver):
     # Test csv output
+    deserver.de_client_run_cli('--block-while', 'BOOT'),
     output = deserver.de_query_tool_run_cli('foo', '--format=csv')
     assert output == (
         "Product foo:  Found in channel test_channel\n"
@@ -63,6 +65,7 @@ def test_query_tool_csv(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_query_tool_json(deserver):
     # Test json output
+    deserver.de_client_run_cli('--block-while', 'BOOT'),
     output = deserver.de_query_tool_run_cli('foo', '--format=json')
     assert re.match(
         r'Product foo:  Found in channel test_channel\n'
@@ -98,13 +101,16 @@ def test_query_tool_json(deserver):
 
 @pytest.mark.usefixtures("deserver")
 def test_query_tool_since(deserver):
-    # Test taskmanager start time
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    output = deserver.de_query_tool_run_cli('foo', f'--since="{current_time}"')
+    # Test taskmanager start time was very recent
+    just_a_moment_ago = datetime.datetime.now() - datetime.timedelta(seconds=1)
+    # give the channel a moment to complete setup
+    deserver.de_client_run_cli('--block-while', 'BOOT'),
+    output = deserver.de_query_tool_run_cli('foo', f'--since="{just_a_moment_ago.strftime("%Y-%m-%d %H:%M:%S")}"')
     assert output == DEFAULT_OUTPUT
 
 @pytest.mark.usefixtures("deserver")
 def test_query_tool_invalid_product(deserver):
     # Test invalid product output
+    deserver.de_client_run_cli('--block-while', 'BOOT'),
     output = deserver.de_query_tool_run_cli('not_foo')
     assert output == "Product not_foo: Not produced by any module\n"
