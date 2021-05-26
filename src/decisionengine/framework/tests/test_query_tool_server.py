@@ -6,10 +6,17 @@ import re
 
 from datetime import datetime
 
-from decisionengine.framework.tests.fixtures import DE_DB_HOST, DE_DB_USER, DE_DB_PASS, DE_DB_NAME, DE_SCHEMA # noqa: F401
-from decisionengine.framework.tests.fixtures import DE_DB, DE_HOST, PG_PROG, DEServer, TEST_CONFIG_PATH, TEST_CHANNEL_CONFIG_PATH # noqa: F401
+from decisionengine.framework.tests.fixtures import (  # noqa: F401
+    PG_DE_DB_WITH_SCHEMA,
+    PG_PROG,
+    DEServer,
+    TEST_CONFIG_PATH,
+    TEST_CHANNEL_CONFIG_PATH,
+)
 
-deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=TEST_CHANNEL_CONFIG_PATH) # pylint: disable=invalid-name
+deserver = DEServer(
+    conf_path=TEST_CONFIG_PATH, channel_conf_path=TEST_CHANNEL_CONFIG_PATH
+)  # pylint: disable=invalid-name
 
 DEFAULT_OUTPUT = (
     "Product foo:  Found in channel test_channel\n"

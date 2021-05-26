@@ -6,10 +6,18 @@ import pytest
 import re
 from logging import ERROR
 
-from decisionengine.framework.tests.fixtures import DE_DB, DE_HOST, PG_PROG, DEServer, TEST_CONFIG_PATH, TEST_CHANNEL_CONFIG_PATH  # noqa: F401
+from decisionengine.framework.tests.fixtures import (  # noqa: F401
+    PG_DE_DB_WITH_SCHEMA,
+    PG_PROG,
+    DEServer,
+    TEST_CONFIG_PATH,
+    TEST_CHANNEL_CONFIG_PATH,
+)
 
-_channel_config_dir = os.path.join(TEST_CONFIG_PATH, 'test-bad-channel')  # noqa: F405
-deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir)  # pylint: disable=invalid-name
+_channel_config_dir = os.path.join(TEST_CONFIG_PATH, "test-bad-channel")  # noqa: F405
+deserver = DEServer(
+    conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir
+)  # pylint: disable=invalid-name
 
 
 def _missing_produces(name):
