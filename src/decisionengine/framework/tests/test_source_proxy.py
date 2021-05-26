@@ -6,11 +6,21 @@ import re
 
 import pytest
 
-from decisionengine.framework.dataspace.datasources.tests.fixtures import mock_data_block  # noqa: F401
-from decisionengine.framework.tests.fixtures import DE_DB, DEServer, PG_PROG, TEST_CONFIG_PATH  # noqa: F401
+from decisionengine.framework.dataspace.datasources.tests.fixtures import (  # noqa: F401
+    mock_data_block,
+)
+from decisionengine.framework.tests.fixtures import (  # noqa: F401
+    PG_DE_DB_WITH_SCHEMA,
+    PG_PROG,
+    DEServer,
+    TEST_CONFIG_PATH,
+)
 
-_channel_config_dir = os.path.join(TEST_CONFIG_PATH, 'test-source-proxy')  # noqa: F405
-deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir)  # pylint: disable=invalid-name
+_channel_config_dir = os.path.join(TEST_CONFIG_PATH, "test-source-proxy")  # noqa: F405
+deserver = DEServer(
+    conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir
+)  # pylint: disable=invalid-name
+
 
 @pytest.mark.usefixtures("deserver")
 def test_working_source_proxy(deserver):

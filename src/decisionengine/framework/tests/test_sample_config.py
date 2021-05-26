@@ -3,9 +3,17 @@
 
 import pytest
 
-from decisionengine.framework.tests.fixtures import DE_DB, DE_HOST, PG_PROG, DEServer, TEST_CONFIG_PATH, TEST_CHANNEL_CONFIG_PATH  # noqa: F401
+from decisionengine.framework.tests.fixtures import (  # noqa: F401
+    PG_DE_DB_WITH_SCHEMA,
+    PG_PROG,
+    DEServer,
+    TEST_CONFIG_PATH,
+    TEST_CHANNEL_CONFIG_PATH,
+)
 
-deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=TEST_CHANNEL_CONFIG_PATH)  # pylint: disable=invalid-name
+deserver = DEServer(
+    conf_path=TEST_CONFIG_PATH, channel_conf_path=TEST_CHANNEL_CONFIG_PATH
+)  # pylint: disable=invalid-name
 
 
 @pytest.mark.usefixtures("deserver")
