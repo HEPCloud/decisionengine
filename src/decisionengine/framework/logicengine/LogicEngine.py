@@ -1,4 +1,4 @@
-import logging
+import structlog
 import pandas
 from itertools import chain
 
@@ -10,7 +10,8 @@ from decisionengine.framework.modules.Module import Module
 class LogicEngine(Module):
     def __init__(self, cfg):
         super().__init__(cfg)
-        self.logger = logging.getLogger()
+        self.logger = structlog.getLogger("decision_engine")
+        self.logger = self.logger.bind(module=__name__.split(".")[-1])
         self.facts = {name: BooleanExpression(expr) for name, expr in cfg["facts"].items()}
         self.rule_engine = RuleEngine(cfg["facts"].keys(), cfg["rules"])
 

@@ -21,7 +21,7 @@ The 'INACTIVE_CONDITIONS' list is a list of states that a thread may have when i
 
 import enum
 import multiprocessing
-import logging
+import structlog
 import threading
 
 class State(enum.Enum):
@@ -54,7 +54,8 @@ class ProcessingState:
         self._cv = multiprocessing.Condition()
         self._lock = multiprocessing.RLock()
         self._state = multiprocessing.Value('i', allowed_state.value)
-        self.logger = logging.getLogger()
+        self.logger = structlog.getLogger()
+        self.logger = self.logger.bind(module=__name__.split(".")[-1])
 
     @property
     def lock(self):

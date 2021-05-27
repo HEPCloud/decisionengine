@@ -2,7 +2,7 @@ from decisionengine.framework.logicengine.Rule import Rule
 
 from toposort import toposort_flatten
 
-import logging
+import structlog
 
 _TOP_LEVEL = ''  # Indicates facts not contained by rules
 
@@ -56,7 +56,9 @@ class FactLookup:
             for fact_name in rule_cfg.get("facts", []):
                 self.facts.setdefault(fact_name, []).append(rule_name)
 
-        logging.getLogger().debug(f"Registered the following facts:\n{self.facts}")
+        self.logger = structlog.getLogger("decision_engine")
+        self.logger = self.logger.bind(module=__name__.split(".")[-1])
+        self.logger.debug(f"Registered the following facts:\n{self.facts}")
 
     def sorted_rules(self, rules_cfg):
         """
@@ -81,10 +83,10 @@ class FactLookup:
 
             ordered_dependencies = toposort_flatten(dependencies)
         except Exception:  # pragma: no cover
-            logging.getLogger().exception("Unexpected error!")
+            self.logger.exception("Unexpected error!")
             raise
 
-        logging.getLogger().debug(f"Calculated the following order for evaluating rules:\n{ordered_dependencies}")
+        self.logger.debug(f"Calculated the following order for evaluating rules:\n{ordered_dependencies}")
         return [initial_rules[rule] for rule in ordered_dependencies]
 
     def rule_for(self, fact_name):

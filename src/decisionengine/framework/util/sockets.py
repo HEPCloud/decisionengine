@@ -1,5 +1,8 @@
 import socket
-import logging
+import structlog
+
+logger = structlog.getLogger("decision_engine")
+logger = logger.bind(module=__name__.split(".")[-1])
 
 def get_random_port():
     try:
@@ -9,8 +12,8 @@ def get_random_port():
             return s.getsockname()[1]
 
     except OSError:  # pragma: no cover
-        logging.getLogger().error("problem with get_random_port")
+        logger.exception("problem with get_random_port")
         raise
     except Exception:  # pragma: no cover
-        logging.getLogger().exception("Unexpected error!")
+        logger.exception("Unexpected error!")
         raise

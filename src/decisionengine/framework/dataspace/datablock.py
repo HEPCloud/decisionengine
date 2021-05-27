@@ -5,7 +5,7 @@ import threading
 import time
 import uuid
 import zlib
-import logging
+import structlog
 from collections import UserDict
 
 ###############################################################################
@@ -100,7 +100,7 @@ class Metadata(UserDict):
         """
         UserDict.__init__(self)
         if state not in Metadata.valid_states:
-            logging.getLogger().exception(f'Invalid Metadata state: {state}')
+            structlog.getLogger("decision_engine").exception(f'Invalid Metadata state: {state}')
             raise InvalidMetadataError()
         if not generation_time:
             generation_time = time.time()
@@ -121,7 +121,7 @@ class Metadata(UserDict):
         """
 
         if state not in Metadata.valid_states:
-            logging.getLogger().exception(f'{state} is not a valid Metadata state')
+            structlog.getLogger("decision_engine").exception(f'{state} is not a valid Metadata state')
             raise InvalidMetadataError()
         self.data['state'] = state
 
@@ -174,7 +174,7 @@ class Header(UserDict):
         try:
             return set(self.data.keys()).issubset(Header.required_keys)
         except Exception:  # pragma: no cover
-            logging.getLogger().exception("Unexpected error checking Header information")
+            structlog.getLogger("decision_engine").exception("Unexpected error checking Header information")
             raise
 
 
@@ -203,7 +203,8 @@ class DataBlock:
         :type generation_id: :obj:`int`
         """
 
-        self.logger = logging.getLogger()
+        self.logger = structlog.getLogger("decision_engine")
+        self.logger = self.logger.bind(module=__name__.split(".")[-1])
         self.logger.debug('Initializing a datablock')
         self.dataspace = dataspace
 

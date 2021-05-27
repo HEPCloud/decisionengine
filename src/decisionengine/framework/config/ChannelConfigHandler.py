@@ -67,6 +67,7 @@ class ChannelConfigHandler():
         self.channel_config_dir = channel_config_dir
         self.channels = {}
         self.logger = _make_de_logger(global_config)
+        self.logger = self.logger.bind(module=__name__.split(".")[-1])
 
     def get_channels(self):
         return self.channels
@@ -76,7 +77,7 @@ class ChannelConfigHandler():
 
     def _load_channel(self, channel_name, path):
         channel_config = None
-        self.logger.debug("Loading channel %s from %s.", channel_name, path)
+        self.logger.debug(f"Loading channel {channel_name} from {path}.")
         try:
             channel_config = ValidConfig.ValidConfig(path)
         except Exception as msg:
@@ -90,7 +91,7 @@ class ChannelConfigHandler():
             return (False,
                     f"The channel configuration file {path} contains a "
                     f"validation error\n{msg}\nSKIPPING channel")
-        self.logger.debug("Channel %s config is valid.", channel_name)
+        self.logger.debug(f"Channel {channel_name} config is valid.")
 
         self.channels[channel_name] = channel_config
         return (True, channel_config)
@@ -126,9 +127,9 @@ class ChannelConfigHandler():
         for channel_name, full_path in files:
             # Load only the channels that are not already in memory
             if channel_name in self.channels:
-                self.logger.info(f"Already loaded a channel called '{channel_name}', skipping {full_path}")
+                self.logger.info(f"Already loaded a channel called '{channel_name}'. Skipping {full_path}")
                 continue
 
             success, result = self._load_channel(channel_name, full_path)
             if not success:
-                self.logger.error(result)
+                self.logger.error(f"CHANNEL LOAD FAILURE: {result}")

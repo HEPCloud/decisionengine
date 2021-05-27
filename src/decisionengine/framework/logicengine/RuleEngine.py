@@ -1,5 +1,5 @@
 from decisionengine.framework.logicengine.FactLookup import FactLookup
-import logging
+import structlog
 
 class RuleEngine:
     '''
@@ -12,6 +12,8 @@ class RuleEngine:
     def __init__(self, fact_names, rules_cfg):
         self.fact_lookup = FactLookup(fact_names, rules_cfg)
         self.rules = self.fact_lookup.sorted_rules(rules_cfg)
+        self.logger = structlog.getLogger("decision_engine")
+        self.logger = self.logger.bind(module=__name__.split(".")[-1])
 
     def execute(self, evaluated_facts):
         """
@@ -39,6 +41,6 @@ class RuleEngine:
                     # First instance of a fact with a given name receives precedence
                     facts = {**new_facts_for_rule, **facts}
         except Exception:  # pragma: no cover
-            logging.getLogger.exception("Unexpected error!")
+            self.logger.exception("Unexpected error!")
             raise
         return actions, new_facts

@@ -9,6 +9,7 @@ if this environment variable is not defined the ``DE-Config.py`` file from the `
 import argparse
 import enum
 import logging
+import structlog
 import signal
 import sys
 import pandas as pd
@@ -54,7 +55,6 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                                                   logRequests=False,
                                                   requestHandler=RequestHandler)
 
-        self.logger = logging.getLogger("decision_engine")
         signal.signal(signal.SIGHUP, self.handle_sighup)
         self.workers = Workers()
         self.channel_config_loader = channel_config_loader
@@ -62,7 +62,9 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.dataspace = dataspace.DataSpace(self.global_config)
         self.reaper = Reaper(self.global_config)
         self.startup_complete = Event()
-        self.logger.info("DecisionEngine started on {}".format(server_address))
+        self.logger = structlog.getLogger("decision_engine")
+        self.logger = self.logger.bind(module=__name__.split(".")[-1])
+        self.logger.info(f"DecisionEngine started on {server_address}")
 
     def get_logger(self):
         return self.logger
