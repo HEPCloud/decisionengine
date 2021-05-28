@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.7.0rc0.post79+gdf98ecd documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.7.0rc0.post80+g622bfac documentation</title>
   
 
   
@@ -178,17 +178,26 @@
 
 <span class="kn">from</span> <span class="nn">pytest_postgresql</span> <span class="kn">import</span> <span class="n">factories</span>
 
-<span class="n">DE_DB_HOST</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
-<span class="n">DE_DB_USER</span> <span class="o">=</span> <span class="s2">&quot;postgres&quot;</span>
-<span class="n">DE_DB_PASS</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">DE_DB_NAME</span> <span class="o">=</span> <span class="s2">&quot;decisionengine&quot;</span>
-<span class="n">DE_SCHEMA</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/../postgresql.sql&quot;</span><span class="p">,</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;DATABASES_TO_TEST&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PG_PROG&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mock_data_block&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="c1"># DE_DB_PORT assigned at random</span>
-<span class="n">PG_PROG</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql_proc</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">DE_DB_USER</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">DE_DB_PASS</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">DE_DB_HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-<span class="n">DE_DB</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql</span><span class="p">(</span><span class="s2">&quot;PG_PROG&quot;</span><span class="p">,</span> <span class="n">dbname</span><span class="o">=</span><span class="n">DE_DB_NAME</span><span class="p">,</span> <span class="n">load</span><span class="o">=</span><span class="n">DE_SCHEMA</span><span class="p">)</span>
+<span class="n">PG_PROG</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql_proc</span><span class="p">(</span>
+    <span class="n">user</span><span class="o">=</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+<span class="n">PG_DE_DB_WITH_SCHEMA</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql</span><span class="p">(</span>
+    <span class="s2">&quot;PG_PROG&quot;</span><span class="p">,</span>
+    <span class="n">dbname</span><span class="o">=</span><span class="s2">&quot;decisionengine&quot;</span><span class="p">,</span>
+    <span class="n">load</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/../postgresql.sql&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,)</span>
 
 
 <div class="viewcode-block" id="mock_data_block"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.mock_data_block">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>

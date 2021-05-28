@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.0rc0.post79+gdf98ecd documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.0rc0.post80+g622bfac documentation</title>
   
 
   
@@ -169,24 +169,27 @@
             
   <h1>Source code for decisionengine.framework.engine.tests.fixtures</h1><div class="highlight"><pre>
 <span></span><span class="sd">&#39;&#39;&#39;pytest defaults&#39;&#39;&#39;</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">string</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 
-<span class="kn">import</span> <span class="nn">psycopg2</span>
 <span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">from</span> <span class="nn">pytest_postgresql.janitor</span> <span class="kn">import</span> <span class="n">DatabaseJanitor</span>
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.engine.de_client</span> <span class="k">as</span> <span class="nn">de_client</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.engine.de_query_tool</span> <span class="k">as</span> <span class="nn">de_query_tool</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.tests.fixtures</span> <span class="kn">import</span> <span class="n">DE_DB_HOST</span><span class="p">,</span> <span class="n">DE_DB_USER</span><span class="p">,</span> <span class="n">DE_DB_PASS</span><span class="p">,</span> <span class="n">DE_DB_NAME</span><span class="p">,</span> <span class="n">DE_SCHEMA</span><span class="p">,</span> <span class="n">PG_PROG</span><span class="p">,</span> <span class="n">DE_DB</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="kn">import</span> <span class="n">_get_de_conf_manager</span><span class="p">,</span> <span class="n">_create_de_server</span><span class="p">,</span> <span class="n">parse_program_options</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.tests.fixtures</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PG_DE_DB_WITH_SCHEMA</span><span class="p">,</span>
+    <span class="n">PG_PROG</span><span class="p">,</span>
+    <span class="n">DATABASES_TO_TEST</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_get_de_conf_manager</span><span class="p">,</span>
+    <span class="n">_create_de_server</span><span class="p">,</span>
+    <span class="n">parse_program_options</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.sockets</span> <span class="kn">import</span> <span class="n">get_random_port</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.TaskManager</span> <span class="kn">import</span> <span class="n">State</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DE_DB_HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_DB_USER&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_DB_PASS&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_DB_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_SCHEMA&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;PG_PROG&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_DB&#39;</span><span class="p">,</span> <span class="s1">&#39;DE_HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;DEServer&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DATABASES_TO_TEST&quot;</span><span class="p">,</span> <span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span> <span class="s2">&quot;PG_PROG&quot;</span><span class="p">,</span> <span class="s2">&quot;DEServer&quot;</span><span class="p">]</span>
 
 <span class="c1"># Not all test hosts are IPv6, generally IPv4 works fine some test</span>
 <span class="c1"># hosts use IPv6 for localhost by default, even when not configured!</span>
@@ -197,12 +200,22 @@
 <span class="k">class</span> <span class="nc">DETestWorker</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A DE Server process with our test config&#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf_path</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">server_address</span><span class="p">,</span> <span class="n">db_info</span><span class="p">,</span> <span class="n">conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">channel_conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">conf_path</span><span class="p">,</span>
+        <span class="n">channel_conf_path</span><span class="p">,</span>
+        <span class="n">server_address</span><span class="p">,</span>
+        <span class="n">db_info</span><span class="p">,</span>
+        <span class="n">conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">channel_conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;format of args should match what you set in conf_mamanger&#39;&#39;&#39;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;DETestWorker&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span> <span class="o">=</span> <span class="n">server_address</span>
 
-        <span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span> <span class="o">=</span> <span class="n">_get_de_conf_manager</span><span class="p">(</span><span class="n">conf_path</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">parse_program_options</span><span class="p">([]))</span>
+        <span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span> <span class="o">=</span> <span class="n">_get_de_conf_manager</span><span class="p">(</span>
+            <span class="n">conf_path</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">parse_program_options</span><span class="p">([])</span>
+        <span class="p">)</span>
 
         <span class="c1"># Override global configuration for testing</span>
         <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;shutdown_timeout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
@@ -210,7 +223,9 @@
         <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_info</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">de_server</span> <span class="o">=</span> <span class="n">_create_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper_start_delay_seconds</span> <span class="o">=</span> <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reaper_start_delay_seconds&#39;</span><span class="p">,</span> <span class="mi">1818</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reaper_start_delay_seconds</span> <span class="o">=</span> <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;reaper_start_delay_seconds&quot;</span><span class="p">,</span> <span class="mi">1818</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reaper_start_delay_seconds</span><span class="p">)</span>
@@ -222,9 +237,15 @@
 <span class="sd">        Run the DE Client CLI with these args</span>
 <span class="sd">        The DE Server host/port are automatically set for you</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s2">&quot;--host&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                               <span class="s2">&quot;--port&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-                               <span class="o">*</span><span class="n">args</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;--host&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;--port&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">de_query_tool_run_cli</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -234,84 +255,88 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            str: Query result</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">de_query_tool</span><span class="o">.</span><span class="n">main</span><span class="p">([</span><span class="s2">&quot;--host&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                                   <span class="s2">&quot;--port&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-                                   <span class="o">*</span><span class="n">args</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">de_query_tool</span><span class="o">.</span><span class="n">main</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;--host&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;--port&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
 
 
 <span class="c1"># pylint: disable=invalid-name</span>
-<div class="viewcode-block" id="DEServer"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.engine.tests.fixtures.DEServer">[docs]</a><span class="k">def</span> <span class="nf">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">channel_conf_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">channel_conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">host</span><span class="o">=</span><span class="n">DE_HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">pg_prog_name</span><span class="o">=</span><span class="s1">&#39;PG_PROG&#39;</span><span class="p">,</span> <span class="n">pg_db_conn_name</span><span class="o">=</span><span class="s1">&#39;DE_DB&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="DEServer"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.engine.tests.fixtures.DEServer">[docs]</a><span class="k">def</span> <span class="nf">DEServer</span><span class="p">(</span>
+    <span class="n">conf_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel_conf_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">channel_conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">host</span><span class="o">=</span><span class="n">DE_HOST</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;A DE Server using a private database&#39;&#39;&#39;</span>
 
-    <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">&#39;function&#39;</span><span class="p">)</span>
+    <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">DATABASES_TO_TEST</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">de_server_factory</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        actually make the fixture</span>
+<span class="sd">        This parameterized fixture will mock up various datasources.</span>
+
+<span class="sd">        Add datasource objects to DATABASES_TO_TEST once they&#39;ve got</span>
+<span class="sd">        our basic schema loaded.  Pytest should take it from there and</span>
+<span class="sd">        automatically run it throught all the below tests</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">port</span><span class="p">:</span>
             <span class="n">host_port</span> <span class="o">=</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">host_port</span> <span class="o">=</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">get_random_port</span><span class="p">())</span>
 
+        <span class="n">conn_fixture</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">param</span><span class="p">)</span>
+
         <span class="n">db_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># SQL Alchemy</span>
+            <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">url</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># psycopg2</span>
+                <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">host</span>
+                <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">port</span>
+                <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">user</span>
+                <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">password</span>
+                <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dbname</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c1"># psycopg2cffi</span>
+                <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">dsn</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+                    <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="s2">&quot;&#39;&#39;&quot;</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="s1">&#39;&quot;&quot;&#39;</span><span class="p">:</span>
+                        <span class="n">db_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-        <span class="n">proc_fixture</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span><span class="n">pg_prog_name</span><span class="p">)</span>
-        <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">host</span>
-        <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">port</span>
-        <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">user</span>
-        <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">proc_fixture</span><span class="o">.</span><span class="n">password</span>
+        <span class="n">server_proc</span> <span class="o">=</span> <span class="n">DETestWorker</span><span class="p">(</span>
+            <span class="n">conf_path</span><span class="p">,</span>
+            <span class="n">channel_conf_path</span><span class="p">,</span>
+            <span class="n">host_port</span><span class="p">,</span>
+            <span class="n">db_info</span><span class="p">,</span>
+            <span class="n">conf_override</span><span class="p">,</span>
+            <span class="n">channel_conf_override</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">server_proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="c1"># The following block only works if there are</span>
+        <span class="c1"># active workers; if it is called before any workers</span>
+        <span class="c1"># exist, then it will return and not block as requested.</span>
+        <span class="c1"># so long as your config contains at least one worker,</span>
+        <span class="c1"># this will work as you&#39;d expect.</span>
+        <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
 
-        <span class="c1"># used to find the version of postgres</span>
-        <span class="n">conn_fixture</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span><span class="n">pg_db_conn_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not start PrivateDEServer fixture&#39;</span><span class="p">)</span>
 
-        <span class="c1"># pseudo random database name for testing</span>
-        <span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DE_DB_NAME</span> <span class="o">+</span> <span class="s1">&#39;_test_&#39;</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">server_proc</span>
 
-        <span class="c1"># Due to the multi-threaded/connection pooled nature</span>
-        <span class="c1"># of the DE Server, it is cleaner to build out an</span>
-        <span class="c1"># unscoped database.  The one created by the `DE_DB`</span>
-        <span class="c1"># fixture is private to a single socket/connection</span>
-        <span class="c1"># and cannot be shared cleanly.</span>
-        <span class="c1">#</span>
-        <span class="c1"># And even if we could share it, then we wouldn&#39;t</span>
-        <span class="c1"># be testing the production data path or pooling</span>
-        <span class="c1"># with those tricks</span>
+        <span class="k">if</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">rpc_stop</span><span class="p">()</span>
 
-        <span class="c1"># DatabaseJanitor will create and drop the tablespace for us</span>
-        <span class="k">with</span> <span class="n">DatabaseJanitor</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">],</span> <span class="n">password</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">],</span>
-                             <span class="n">host</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">],</span> <span class="n">port</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">],</span>
-                             <span class="n">dbname</span><span class="o">=</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">],</span>
-                             <span class="n">version</span><span class="o">=</span><span class="n">conn_fixture</span><span class="o">.</span><span class="n">server_version</span><span class="p">):</span>
-            <span class="c1"># if you swap this for the `DE_DB` fixture, it will</span>
-            <span class="c1"># block and changes will not be visable to the connection</span>
-            <span class="c1"># fired up within the DE Server thread.</span>
-            <span class="k">with</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_info</span><span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">DE_SCHEMA</span><span class="p">:</span>  <span class="c1"># noqa: F405</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">_fd</span><span class="p">,</span> \
-                         <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
-                        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_fd</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-
-            <span class="n">server_proc</span> <span class="o">=</span> <span class="n">DETestWorker</span><span class="p">(</span><span class="n">conf_path</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">host_port</span><span class="p">,</span> <span class="n">db_info</span><span class="p">,</span> <span class="n">conf_override</span><span class="p">,</span> <span class="n">channel_conf_override</span><span class="p">)</span>
-            <span class="n">server_proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-            <span class="c1"># The following block only works if there are</span>
-            <span class="c1"># active workers; if it is called before any workers</span>
-            <span class="c1"># exist, then it will return and not block as requested.</span>
-            <span class="c1"># so long as your config contains at least one worker,</span>
-            <span class="c1"># this will work as you&#39;d expect.</span>
-            <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not start PrivateDEServer fixture&#39;</span><span class="p">)</span>
-
-            <span class="k">yield</span> <span class="n">server_proc</span>
-
-            <span class="k">if</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">rpc_stop</span><span class="p">()</span>
-
-            <span class="n">server_proc</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="n">server_proc</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">de_server_factory</span></div>
 </pre></div>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_sample_config &mdash; decisionengine 1.7.0rc0.post79+gdf98ecd documentation</title>
+  <title>decisionengine.framework.tests.test_sample_config &mdash; decisionengine 1.7.0rc0.post80+g622bfac documentation</title>
   
 
   
@@ -173,9 +173,17 @@
 
 <span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="n">DE_DB</span><span class="p">,</span> <span class="n">DE_HOST</span><span class="p">,</span> <span class="n">PG_PROG</span><span class="p">,</span> <span class="n">DEServer</span><span class="p">,</span> <span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">TEST_CHANNEL_CONFIG_PATH</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
+    <span class="n">PG_DE_DB_WITH_SCHEMA</span><span class="p">,</span>
+    <span class="n">PG_PROG</span><span class="p">,</span>
+    <span class="n">DEServer</span><span class="p">,</span>
+    <span class="n">TEST_CONFIG_PATH</span><span class="p">,</span>
+    <span class="n">TEST_CHANNEL_CONFIG_PATH</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">TEST_CHANNEL_CONFIG_PATH</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span>
+    <span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">TEST_CHANNEL_CONFIG_PATH</span>
+<span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
 <div class="viewcode-block" id="test_client_can_get_de_server_status"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_get_de_server_status">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
