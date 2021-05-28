@@ -1,5 +1,9 @@
 python3 setup.py install --single-version-externally-managed -O1 --root=%{buildroot} --record=INSTALLED_FILES
 
+# make sure we also own the top level and egg-info raw dir to make things easy on uninstall
+echo "%{python3_sitelib}/%{name}-*egg-info" >> INSTALLED_FILES
+echo "%{python3_sitelib}/%{name}" >> INSTALLED_FILES
+
 install -m 0644 -D package/systemd/decisionengine.service %{buildroot}/usr/lib/systemd/system/decisionengine.service
 echo "%attr(0644,root,root) /usr/lib/systemd/system/decisionengine.service" >> INSTALLED_FILES
 
