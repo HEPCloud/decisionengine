@@ -66,6 +66,15 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.logger = structlog.getLogger(LOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1])
         self.logger.info(f"DecisionEngine started on {server_address}")
+        self.start_metrics_server() # Make this dependent on flag
+
+    def start_metrics_server(self):
+        try:
+            from prometheus_client import start_http_server
+            start_http_server(8000)
+        except Exception as e:
+            self.logger.error('Unable to start metrics server.'
+                               ' Will proceed without metrics collection.')
 
     def get_logger(self):
         return self.logger
