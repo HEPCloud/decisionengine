@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.0rc0.post77+g3727b80 documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.0rc0.post79+gdf98ecd documentation</title>
   
 
   
@@ -439,6 +439,14 @@
 <div class="viewcode-block" id="TaskManager.get_loglevel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_loglevel">[docs]</a>    <span class="k">def</span> <span class="nf">get_loglevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="TaskManager.set_to_shutdown"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.set_to_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">set_to_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;decision_engine&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Shutting down. Will call &#39;</span>
+                                                   <span class="s1">&#39;shutdown on all publishers&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">publisher_worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">publishers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">publisher_worker</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTDOWN</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskManager.take_offline"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.take_offline">[docs]</a>    <span class="k">def</span> <span class="nf">take_offline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_data_block</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
