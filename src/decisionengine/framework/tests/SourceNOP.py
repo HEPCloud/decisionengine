@@ -1,6 +1,8 @@
 import pandas as pd
 
 from decisionengine.framework.modules import Source
+from prometheus_client import Gauge
+
 
 
 @Source.produces(foo=pd.DataFrame)
