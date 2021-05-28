@@ -33,6 +33,9 @@ from decisionengine.framework.dataspace.maintain import Reaper
 from decisionengine.framework.engine.Workers import Worker, Workers
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 
+from prometheus_client import multiprocess, REGISTRY
+from prometheus_client import CollectorRegistry, generate_latest, CONTENT_TYPE_LATEST
+
 
 class StopState(enum.Enum):
     NotFound = 1
@@ -47,7 +50,7 @@ def _channel_preamble(name):
 
 
 class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
-    rpc_paths = ("/RPC2",)
+    rpc_paths = ('/RPC2')
 
 
 class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServer):
@@ -55,7 +58,6 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         xmlrpc.server.SimpleXMLRPCServer.__init__(
             self, server_address, logRequests=False, requestHandler=RequestHandler
         )
-
         signal.signal(signal.SIGHUP, self.handle_sighup)
         self.workers = Workers()
         self.channel_config_loader = channel_config_loader
@@ -66,6 +68,36 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.logger = structlog.getLogger(LOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
         self.logger.info(f"DecisionEngine started on {server_address}")
+        os.environ['prometheus_multiproc_dir'] = "/tmp/prometheus_metrics"
+        self.register_function(self.rpc_metrics, name='metrics')
+        self.start_metrics_server()  # Make this dependent on flag
+
+    def start_metrics_server(self):
+        cherrypy.config.update({
+            'server.socket_port': 8000,
+            'server.socket_host': '0.0.0.0'
+        })
+        cherrypy.tree.mount(self)
+        cherrypy.engine.start()
+
+    @cherrypy.expose
+    def metrics(self):
+        return self.rpc_metrics()
+
+    def rpc_metrics(self):
+        try:
+            print('Called rpc_metrics')
+            self.logger.info(
+                f'prometheus_multiproc_dir is set to {os.environ.get("prometheus_multiproc_dir")}'
+            )
+            registry = CollectorRegistry()
+            multiprocess.MultiProcessCollector(registry)
+            data = generate_latest(registry=registry)
+            self.logger.info(data)
+            return data.decode()
+        except Exception as e:
+            self.logger.error(e)
+        # return Response(data, mimetype=CONTENT_TYPE_LATEST)
 
     def get_logger(self):
         return self.logger
@@ -200,7 +232,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                         column_names = columns.split(",")
                     if query:
                         if column_names:
-                            txt += dataframe_formatter(df.loc[:, column_names].query(query))
+                            txt += dataframe_formatter(
+                                df.loc[:, column_names].query(query))
                         else:
                             txt += dataframe_formatter(df.query(query))
 
@@ -255,7 +288,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         with self.workers.access() as workers:
             channel_keys = workers.keys()
             if not channel_keys:
-                return "No channels are currently active.\n" + self.reaper_status()
+                return "No channels are currently active.\n" + self.reaper_status(
+                )
 
             txt = ""
             width = max(len(x) for x in channel_keys) + 1
@@ -464,7 +498,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 txt += f" Found in channel {ch}\n"
 
                 if start_time:
-                    tms = self.dataspace.get_taskmanagers(ch, start_time=start_time)
+                    tms = self.dataspace.get_taskmanagers(
+                        ch, start_time=start_time)
                 else:
                     tms = [self.dataspace.get_taskmanager(ch)]
                 for tm in tms:
@@ -477,8 +512,10 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                             df = p["value"]
                             if df.shape[0] > 0:
                                 df["channel"] = [tm["name"]] * df.shape[0]
-                                df["taskmanager_id"] = [p["taskmanager_id"]] * df.shape[0]
-                                df["generation_id"] = [p["generation_id"]] * df.shape[0]
+                                df["taskmanager_id"] = [p["taskmanager_id"]
+                                                        ] * df.shape[0]
+                                df["generation_id"] = [p["generation_id"]
+                                                       ] * df.shape[0]
                                 result = result.append(df)
                     except Exception as e:  # pragma: no cover
                         txt += f"\t\t{e}\n"
@@ -537,7 +574,8 @@ def _get_de_conf_manager(global_config_dir, channel_config_dir, options):
         raise Exception(f"Config file '{config_file}' not found")
 
     global_config = _get_global_config(config_file, options)
-    conf_manager = ChannelConfigHandler.ChannelConfigHandler(global_config, channel_config_dir)
+    conf_manager = ChannelConfigHandler.ChannelConfigHandler(
+        global_config, channel_config_dir)
 
     return (global_config, conf_manager)
 
@@ -577,8 +615,10 @@ def main(args=None):
         global_config_dir, policies.channel_config_dir(), options
     )
     try:
+        # app.run()
         server = _create_de_server(global_config, channel_config_loader)
         _start_de_server(server)
+
     except Exception as e:  # pragma: no cover
         msg = f"""Config Dir: {global_config_dir}
               Fatal Error: {e}"""

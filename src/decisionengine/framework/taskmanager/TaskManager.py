@@ -132,7 +132,6 @@ class TaskManager(ComponentManager):
     """
     Task Manager
     """
-
     def __init__(self, name, generation_id, channel_dict, global_config):
         """
         :type name: :obj:`str`
@@ -154,6 +153,47 @@ class TaskManager(ComponentManager):
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=self.name)
         self.workflow = Workflow(channel_dict, self.name)
         self.lock = threading.Lock()
+
+        # Metrics
+        self.channel_state_gauge = prometheus_client.Gauge(
+            'de_channel_state',
+            'Channel state', [
+                'channel_name',
+            ],
+            multiprocess_mode='liveall')
+
+        self.source_acquire_gauge = prometheus_client.Gauge(
+            'de_source_last_acquire', "Last time a source "
+            'successfully ran its acquire function', [
+                'channel_name',
+                'source_name',
+            ],
+            multiprocess_mode='liveall')
+
+        self.logicengine_run_gauge = prometheus_client.Gauge(
+            'de_logicengine_last_run', 'Last time '
+            'a logicengine successfully ran', [
+                'channel_name',
+                'logicengine_name',
+            ],
+            multiprocess_mode='liveall')
+
+        self.transform_run_gauge = prometheus_client.Gauge(
+            'de_transform_last_run', 'Last time a '
+            'transform successfully ran', [
+                'channel_name',
+                'transform_name',
+            ],
+            multiprocess_mode='liveall')
+
+        self.publisher_run_gauge = prometheus_client.Gauge(
+            'de_publisher_last_run', 'Last time '
+            'a publisher successfully ran', [
+                'channel_name',
+                'publisher_name',
+            ],
+            multiprocess_mode='liveall')
+
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
         for src_worker in self.workflow.source_workers.values():
@@ -240,6 +280,7 @@ class TaskManager(ComponentManager):
                         # If we are signaled to stop, don't override that state
                         # otherwise the last decision_cycle completed without error
                         self.state.set(State.STEADY)
+			    self.channel_state_gauge.labels(self.name).set_function(self.get_state_value)
                 if not self.state.should_stop():
                     self.wait_for_any(done_events)
             except Exception:  # pragma: no cover
@@ -269,10 +310,46 @@ class TaskManager(ComponentManager):
 
     def set_to_shutdown(self):
         self.state.set(State.SHUTTINGDOWN)
+        self.channel_state_gauge.labels(self.name).set_function(
+            self.get_state_value)
         delogger.debug("Shutting down. Will call shutdown on all publishers")
         for worker in self.workflow.publisher_workers.values():
             worker.module_instance.shutdown()
         self.state.set(State.SHUTDOWN)
+        self.channel_state_gauge.labels(self.name).set_function(
+            self.get_state_value)
+
+    def take_offline(self, current_data_block):
+        """
+        offline and stop task manager
+        """
+        self.state.set(State.OFFLINE)
+        self.channel_state_gauge.labels(self.name).set(self.get_state_value())
+        # invalidate data block
+        # not implemented yet
+
+    def data_block_put(self, data, header, data_block):
+        """
+        Put data into data block
+
+        :type data: :obj:`dict`
+        :arg data: key, value pairs
+        :type header: :obj:`~datablock.Header`
+        :arg header: data header
+        :type data_block: :obj:`~datablock.DataBlock`
+        :arg data_block: data block
+        """
+
+        if not isinstance(data, dict):
+            self.logger.error(f"data_block put expecting {dict} type, got {type(data)}")
+            return
+        self.logger.debug(f"data_block_put {data}")
+        with data_block.lock:
+            metadata = datablock.Metadata(
+                data_block.taskmanager_id, state="END_CYCLE", generation_id=data_block.generation_id
+            )
+            for key, product in data.items():
+                data_block.put(key, product, header, metadata=metadata)
 
     def do_backup(self):
         """
@@ -333,6 +410,9 @@ class TaskManager(ComponentManager):
                 Module.verify_products(worker.module_instance, data)
                 self.logger.info(f"Src {worker.name} acquire returned")
                 self.logger.info(f"Src {worker.name} filling header")
+                self.source_acquire_gauge.labels(self.name, worker.name)
+                self.source_acquire_gauge.labels(
+                    self.name, worker.name).set_to_current_time()
                 if data:
                     t = time.time()
                     header = datablock.Header(self.data_block_t0.taskmanager_id, create_time=t, creator=worker.module)
@@ -479,6 +559,8 @@ class TaskManager(ComponentManager):
                     self.logger.debug(f"run publisher {name} {data_block}")
                     try:
                         worker.module_instance.publish(data_block)
+                        self.publisher_run_gauge.labels(
+                            self.name, name).set_to_current_time()
                     except KeyError as e:
                         if self.state.should_stop():
                             self.logger.warning(f"TaskManager stopping, ignore exception {name} publish() call: {e}")

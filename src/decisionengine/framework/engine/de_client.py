@@ -19,6 +19,14 @@ def create_parser():
     server.add_argument("--show-de-config", action="store_true", help="print server configuration")
     server.add_argument("--print-engine-loglevel", action="store_true", help="print engine log level")
     server.add_argument("--block-while", metavar="<state>")
+    server.add_argument(   
+        "--metrics",
+        action='store_true',
+        help="print metrics")
+    server.add_argument(  
+        "--list-rpc-methods",
+        action='store_true',
+        help="print all rpc methods")
 
     channels = parser.add_argument_group("Channel-specific options")
     channels.add_argument("--start-channels", action="store_true", help="start all channels")
@@ -91,6 +99,8 @@ def execute_command_from_args(argsparsed, de_socket):
         return de_socket.get_log_level()
     if argsparsed.block_while:
         return de_socket.block_while(argsparsed.block_while, argsparsed.timeout)
+    if argsparsed.metrics:
+        return de_socket.metrics()
 
     # Channel-specific options
     if argsparsed.stop_channel:
