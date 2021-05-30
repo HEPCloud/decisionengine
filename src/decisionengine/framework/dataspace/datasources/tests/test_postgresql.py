@@ -1,3 +1,4 @@
+import datetime
 import os
 import pytest
 
@@ -92,6 +93,8 @@ def test_create_tables(datasource):
 
 def test_store_taskmanager(datasource, taskmanager):
     result = datasource.store_taskmanager(taskmanager["name"], taskmanager["taskmanager_id"])
+    assert result > 0
+    result = datasource.store_taskmanager(taskmanager["name"], taskmanager["taskmanager_id"], datetime.datetime(2016, 3, 14))
     assert result > 0
 
 def test_get_taskmanager(datasource, taskmanager, data):
