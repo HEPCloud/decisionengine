@@ -14,6 +14,7 @@ from decisionengine.framework.dataspace.datasources.tests.fixtures import (
 from decisionengine.framework.engine.DecisionEngine import (
     _get_de_conf_manager,
     _create_de_server,
+    _start_de_server,
     parse_program_options,
 )
 from decisionengine.framework.util.sockets import get_random_port
@@ -43,24 +44,19 @@ class DETestWorker(threading.Thread):
         super().__init__(name='DETestWorker')
         self.server_address = server_address
 
-        global_config, channel_config_loader = _get_de_conf_manager(
+        self.global_config, self.channel_config_loader = _get_de_conf_manager(
             conf_path, channel_conf_path, parse_program_options([])
         )
 
         # Override global configuration for testing
-        global_config['shutdown_timeout'] = 1
-        global_config['server_address'] = self.server_address
-        global_config['dataspace']['datasource']['config'] = db_info
+        self.global_config['shutdown_timeout'] = 1
+        self.global_config['server_address'] = self.server_address
+        self.global_config['dataspace']['datasource']['config'] = db_info
 
-        self.de_server = _create_de_server(global_config, channel_config_loader)
-        self.reaper_start_delay_seconds = global_config['dataspace'].get(
-            "reaper_start_delay_seconds", 1818
-        )
+        self.de_server = _create_de_server(self.global_config, self.channel_config_loader)
 
     def run(self):
-        self.de_server.reaper_start(delay=self.reaper_start_delay_seconds)
-        self.de_server.start_channels()
-        self.de_server.serve_forever()
+        _start_de_server(self.de_server)
 
     def de_client_run_cli(self, *args):
         '''
@@ -163,8 +159,9 @@ def DEServer(
 
         yield server_proc
 
-        if server_proc.is_alive():
-            server_proc.de_server.rpc_stop()
+        # does not error out even if the server is stopped
+        # so this should be safe to call under all conditions
+        server_proc.de_server.rpc_stop()
 
         server_proc.join()
 

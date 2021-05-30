@@ -542,24 +542,23 @@ def _create_de_server(global_config, channel_config_loader):
     return DecisionEngine(global_config, channel_config_loader, server_address)
 
 
-def _start_de_server(global_config, channel_config_loader):
-    '''Create and start the DE server with the passed global configuration and config manager'''
+def _start_de_server(server):
+    '''Start the DE server and listen forever'''
     try:
-        server = _create_de_server(global_config, channel_config_loader)
-        server.reaper_start(delay=global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
+        server.reaper_start(delay=server.global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
         server.start_channels()
         server.serve_forever()
-    except Exception as e:  # pragma: no cover
-        msg = f"""Server Address: {global_config.get('server_address')}
-              Fatal Error: {e}"""
+    except Exception as __e:  # pragma: no cover
+        msg = f"""Server Address: {server.global_config.get('server_address')}
+              Fatal Error: {__e}"""
         print(msg, file=sys.stderr)
 
         try:
             server.get_logger().error(msg)
-        except Exception:
+        except Exception:  # pragma: no cover
             pass
 
-        raise e
+        raise __e
 
 
 
@@ -574,7 +573,8 @@ def main(args=None):
                                                                 policies.channel_config_dir(),
                                                                 options)
     try:
-        _start_de_server(global_config, channel_config_loader)
+        server = _create_de_server(global_config, channel_config_loader)
+        _start_de_server(server)
     except Exception as e:  # pragma: no cover
         msg = f"""Config Dir: {global_config_dir}
               Fatal Error: {e}"""
