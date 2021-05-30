@@ -260,13 +260,15 @@ class DataSource(object, metaclass=abc.ABCMeta):  # pragma: no cover
         return
 
     @abc.abstractmethod
-    def store_taskmanager(self, taskmanager_name, taskmanager_id):
+    def store_taskmanager(self, taskmanager_name, taskmanager_id, datestamp=None):
         """
         Store TaskManager
         :type taskmanager_name: :obj:`string`
         :arg taskmanager_name: name of taskmanager to retrieve
         :type taskmanager_id: :obj:`string`
         :arg taskmanager_id: id of taskmanager to retrieve
+        :type datestamp: :obj:`datetime`
+        :arg datestamp: datetime of created object, defaults to 'now'
         """
         self.logger.info('datasource is storing a taskmanager')
         return
