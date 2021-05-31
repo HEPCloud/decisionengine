@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.0rc0.post82+ga8241b6 documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.0rc0.post83+ge124532 documentation</title>
   
 
   
@@ -184,6 +184,7 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_get_de_conf_manager</span><span class="p">,</span>
     <span class="n">_create_de_server</span><span class="p">,</span>
+    <span class="n">_start_de_server</span><span class="p">,</span>
     <span class="n">parse_program_options</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.sockets</span> <span class="kn">import</span> <span class="n">get_random_port</span>
@@ -213,24 +214,19 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;DETestWorker&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span> <span class="o">=</span> <span class="n">server_address</span>
 
-        <span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span> <span class="o">=</span> <span class="n">_get_de_conf_manager</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span> <span class="o">=</span> <span class="n">_get_de_conf_manager</span><span class="p">(</span>
             <span class="n">conf_path</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">parse_program_options</span><span class="p">([])</span>
         <span class="p">)</span>
 
         <span class="c1"># Override global configuration for testing</span>
-        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;shutdown_timeout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;server_address&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span>
-        <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;shutdown_timeout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;server_address&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_info</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">de_server</span> <span class="o">=</span> <span class="n">_create_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper_start_delay_seconds</span> <span class="o">=</span> <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s2">&quot;reaper_start_delay_seconds&quot;</span><span class="p">,</span> <span class="mi">1818</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">de_server</span> <span class="o">=</span> <span class="n">_create_de_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">reaper_start_delay_seconds</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+        <span class="n">_start_de_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">de_server</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">de_client_run_cli</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -333,8 +329,9 @@
 
         <span class="k">yield</span> <span class="n">server_proc</span>
 
-        <span class="k">if</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-            <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">rpc_stop</span><span class="p">()</span>
+        <span class="c1"># does not error out even if the server is stopped</span>
+        <span class="c1"># so this should be safe to call under all conditions</span>
+        <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">rpc_stop</span><span class="p">()</span>
 
         <span class="n">server_proc</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
