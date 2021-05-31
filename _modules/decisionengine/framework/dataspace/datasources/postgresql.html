@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.0rc0.post83+ge124532 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.0rc0.post84+geb7907f documentation</title>
   
 
   
@@ -302,7 +302,11 @@
 <div class="viewcode-block" id="Postgresql.create_tables"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.create_tables">[docs]</a>    <span class="k">def</span> <span class="nf">create_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="Postgresql.store_taskmanager"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.store_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">store_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">):</span>
+<div class="viewcode-block" id="Postgresql.store_taskmanager"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.store_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">store_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">datestamp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">datestamp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_returning_result</span><span class="p">(</span><span class="s2">&quot;INSERT INTO taskmanager (name, taskmanager_id, datestamp) values (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
+                                                 <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">datestamp</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sequence_id&#39;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_returning_result</span><span class="p">(</span><span class="s2">&quot;INSERT INTO taskmanager (name, taskmanager_id) values (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
                                              <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sequence_id&#39;</span><span class="p">)</span></div>
 

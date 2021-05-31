@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.7.0rc0.post83+ge124532 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.7.0rc0.post84+geb7907f documentation</title>
   
 
   
@@ -169,6 +169,7 @@
             
   <h1>Source code for decisionengine.framework.dataspace.datasources.tests.fixtures</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;pytest fixtures/constants&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">UserDict</span>
@@ -177,6 +178,8 @@
 <span class="kn">import</span> <span class="nn">pytest</span>
 
 <span class="kn">from</span> <span class="nn">pytest_postgresql</span> <span class="kn">import</span> <span class="n">factories</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">Metadata</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;DATABASES_TO_TEST&quot;</span><span class="p">,</span>
@@ -218,6 +221,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span> <span class="nc">MockDataBlock</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Just a fake datablock&quot;&quot;&quot;</span>
+
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
@@ -229,14 +234,49 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Simple behavior&quot;&quot;&quot;</span>
             <span class="k">return</span> <span class="n">MockDataBlock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
+            <span class="sd">&quot;&quot;&quot;Simple behavior&quot;&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">product</span>
 
     <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;decisionengine.framework.dataspace.datablock.DataBlock&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">my_mock_data_block</span><span class="p">:</span>
         <span class="n">my_mock_data_block</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MockDataBlock</span><span class="p">()</span>
         <span class="k">yield</span></div>
+
+
+<span class="k">def</span> <span class="nf">load_sample_data_into_datasource</span><span class="p">(</span><span class="n">schema_only_db</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    load our sample test data into a dataspace</span>
+<span class="sd">    This is a function not a fixture so you can</span>
+<span class="sd">    run it on any datasource providing the right API.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_pk</span> <span class="o">=</span> <span class="n">schema_only_db</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span>
+        <span class="s2">&quot;taskmanager1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;11111111-1111-1111-1111-111111111111&quot;</span><span class="p">,</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2016</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span>
+    <span class="p">)</span>  <span class="c1"># _pk=1 probably</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">_pk</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">_pk</span><span class="p">)</span>
+    <span class="n">schema_only_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+        <span class="n">_pk</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;my_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;my_test_value&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span>
+    <span class="p">)</span>
+    <span class="n">schema_only_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+        <span class="n">_pk</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;a_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;a_test_value&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span>
+    <span class="p">)</span>
+
+    <span class="n">_pk</span> <span class="o">=</span> <span class="n">schema_only_db</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span>
+        <span class="s2">&quot;taskmanager2&quot;</span><span class="p">,</span> <span class="s2">&quot;22222222-2222-2222-2222-222222222222&quot;</span>
+    <span class="p">)</span>  <span class="c1"># _pk=2 probably</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">_pk</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">_pk</span><span class="p">)</span>
+    <span class="n">schema_only_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+        <span class="n">_pk</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;other_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;other_test_value&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span>
+    <span class="p">)</span>
+
+    <span class="c1"># return the connection now that it isn&#39;t just the schema</span>
+    <span class="k">return</span> <span class="n">schema_only_db</span>
 </pre></div>
 
            </div>
