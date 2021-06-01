@@ -45,9 +45,20 @@ def test_client_print_product(deserver):
         "|  1 | value2 | 2      |\n" \
         "|  2 | value3 | Test   |\n" \
         "+----+--------+--------+"
+
+@pytest.mark.usefixtures("deserver")
+def test_client_print_product_not_real(deserver):
     output = deserver.de_client_run_cli('--print-product', 'NO_SUCH_PRODUCT')
+
+    # Check individual elements
+    assert "Product NO_SUCH_PRODUCT:" in output
+    assert "Not produced by any module" in output
+
+    # Check for specific output
     assert output == "Product NO_SUCH_PRODUCT: Not produced by any module"
 
+@pytest.mark.usefixtures("deserver")
+def test_client_print_product_types(deserver):
     # Test --types
     output = deserver.de_client_run_cli('--print-product', 'foo', '--types')
     assert output == \
@@ -60,6 +71,8 @@ def test_client_print_product(deserver):
         "|  2 | value3 | str         | Test   | str         |\n" \
         "+----+--------+-------------+--------+-------------+"
 
+@pytest.mark.usefixtures("deserver")
+def test_client_print_product_columns(deserver):
     # Test specific columns only
     output = deserver.de_client_run_cli('--print-product', 'foo', '--columns', 'key1')
     assert output == \
@@ -83,6 +96,9 @@ def test_client_print_product(deserver):
         "|  2 | value3 | Test   |\n" \
         "+----+--------+--------+"
 
+@pytest.mark.usefixtures("deserver")
+def test_client_print_product_query(deserver):
+    # Test specific columns only
     # Test query
     output = deserver.de_client_run_cli('--print-product', 'foo', '--query', 'key2 == 2')
     assert output == \
@@ -93,6 +109,8 @@ def test_client_print_product(deserver):
         "|  1 | value2 |      2 |\n" \
         "+----+--------+--------+"
 
+@pytest.mark.usefixtures("deserver")
+def test_client_print_product_columns_query(deserver):
     # Test query and column names
     output = deserver.de_client_run_cli('--print-product', 'foo', '--query', 'key2 == 2', '--columns', 'key2')
     assert output == \
@@ -113,6 +131,8 @@ def test_client_print_product(deserver):
         "+----+--------+--------+"
 
 
+@pytest.mark.usefixtures("deserver")
+def test_client_print_product_vertical(deserver):
     # Test --format vertical
     output = deserver.de_client_run_cli('--print-product', 'foo', '--format', 'vertical')
     assert output == \
@@ -144,7 +164,9 @@ def test_client_print_product(deserver):
         "| key2      |\n" \
         "+-----------+"
 
-# Test --format json
+@pytest.mark.usefixtures("deserver")
+def test_client_print_product_json(deserver):
+    # Test --format json
     output = deserver.de_client_run_cli('--print-product', 'foo', '--format', 'json')
     assert output == \
         'Product foo:  Found in channel test_channel\n' \
