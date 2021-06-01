@@ -245,6 +245,15 @@ class Postgresql(ds.DataSource):
 
     def update(self, taskmanager_id, generation_id, key,
                value, header, metadata):
+        for table in (ds.DataSource.header_table, ds.DataSource.metadata_table,
+                      ds.DataSource.dataproduct_table):
+            q = SELECT_QUERY.format(table)
+            try:
+                self._select(q, (taskmanager_id, generation_id, key))[0]
+            except IndexError:
+                # do not log stack trace, Exception thrown is handled by the caller
+                raise KeyError("taskmanager_id={} or generation_id={} or key={} not found in {}".format(
+                    taskmanager_id, generation_id, key, table))
 
         q = """
             UPDATE {} SET value=%s
