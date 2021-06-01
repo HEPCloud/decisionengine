@@ -75,18 +75,22 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def block_until(self, state):
         with self.workers.unguarded_access() as workers:
             if not workers:
-                self.logger.info('No active channels.')
+                self.logger.info('No active channels to wait on.')
+                return 'No active channels.'
             for tm in workers.values():
                 if tm.is_alive():
                     tm.wait_until(state)
+        return f'No channels in {state} state.'
 
     def block_while(self, state):
         with self.workers.unguarded_access() as workers:
             if not workers:
-                self.logger.info('No active channels.')
+                self.logger.info('No active channels to wait on.')
+                return 'No active channels.'
             for tm in workers.values():
                 if tm.is_alive():
                     tm.wait_while(state)
+        return f'No channels in {state} state.'
 
     def _dataframe_to_table(self, df):
         return "{}\n".format(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
@@ -114,8 +118,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             allowed_state = ProcessingState.State[state_str]
         except Exception:
             return f'{state_str} is not a valid channel state.'
-        self.block_while(allowed_state)
-        return f'No channels in {state_str} state.'
+        return self.block_while(allowed_state)
 
     def rpc_show_config(self, channel):
         """
