@@ -174,8 +174,8 @@ class DataSpace():
     def close(self):
         self.datasource.close()
 
-    def store_taskmanager(self, name, id):
-        return self.datasource.store_taskmanager(name, id)
+    def store_taskmanager(self, name, taskmanager_id, datestamp=None):
+        return self.datasource.store_taskmanager(name, taskmanager_id, datestamp)
 
     def get_last_generation_id(self,
                                taskmanager_name,

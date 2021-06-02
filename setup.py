@@ -21,7 +21,9 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 # pull in runtime requirements
 runtime_require = ["jsonnet >= 0.17.0", "tabulate >= 0.8.7",
-                   "toposort >= 1.6", "wheel >= 0.36.2", "DBUtils >= 2.0",
+                   "toposort >= 1.6", "wheel >= 0.36.2",
+                   "DBUtils >= 2.0",
+                   "sqlalchemy >= 1.4.17",
                    "numpy == 1.19.5; python_version <= '3.6'",
                    "numpy >= 1.19.5; python_version >= '3.7'",
                    "pandas == 1.1.5; python_version <= '3.6'",
