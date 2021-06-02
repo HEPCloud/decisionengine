@@ -22,6 +22,7 @@ The 'INACTIVE_CONDITIONS' list is a list of states that a thread may have when i
 import enum
 import multiprocessing
 import logging
+import threading
 
 class State(enum.Enum):
     BOOT = 0
@@ -84,13 +85,17 @@ class ProcessingState:
         This function can be blocked using the `.lock` to force state
         sync between threads if need be.
         """
+        _id = f"{multiprocessing.current_process().name}-{threading.current_thread().name}"
         try:
             if not isinstance(state, State):
                 raise RuntimeError("Supplied value is not a State variable.")
             with self.lock:  # don't hold other locks if we can't get this one
+                self.logger.debug(f"Got ProcessingState.set (write) lock in {_id}")
                 with self._cv, self._state.get_lock():
+                    self.logger.debug(f"Got ProcessingState.set (read) lock in {_id}")
+                    self.logger.debug(f"ProcessingState.set to {state} in {_id}")
                     self._state.value = state.value
-                    self._cv.notify()
+                    self._cv.notify_all()  # alert everyone looking for state change
         except Exception:
             self.logger.exception("Unexpected error!")
             raise
