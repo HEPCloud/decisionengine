@@ -6,7 +6,7 @@ import pytest
 import decisionengine.framework.engine.de_client as de_client
 import decisionengine.framework.engine.de_query_tool as de_query_tool
 
-from decisionengine.framework.dataspace.datasources.tests.fixtures import (
+from decisionengine.framework.dataspace.tests.fixtures import (
     PG_DE_DB_WITH_SCHEMA,
     PG_PROG,
     DATABASES_TO_TEST,
