@@ -68,9 +68,6 @@ class DataSpace():
     to the database used to store the actual data
     """
 
-    #: Description of tables and their columns
-    _tables_created = False
-
     def __init__(self, config):
         """
         :type config: :obj:`dict`
@@ -110,15 +107,6 @@ class DataSpace():
         except DataSpaceConnectionError:
             self.logger.exception('Cannot connect to the datasource!')
             raise
-
-        # Create tables if not created
-        if not DataSpace._tables_created:
-            try:
-                self.datasource.create_tables()
-                DataSpace._tables_created = True
-            except Exception:
-                self.logger.exception('Cannot create datebase tables')
-                raise
 
     def __str__(self):  # pragma: no cover
         return '%s' % vars(self)
