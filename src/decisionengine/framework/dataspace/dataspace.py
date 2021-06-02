@@ -1,6 +1,14 @@
 import importlib
 import logging
 
+__all__ = [
+    "DataSpaceConfigurationError",
+    "DataSpaceConnectionError",
+    "DataSpaceError",
+    "DataSpaceExistsError",
+    "DataSpace",
+]
+
 
 class DataSpaceConfigurationError(Exception):
     """
