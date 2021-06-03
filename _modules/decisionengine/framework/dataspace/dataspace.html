@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.dataspace &mdash; decisionengine 1.7.0rc0.post93+g5511f69e documentation</title>
+  <title>decisionengine.framework.dataspace.dataspace &mdash; decisionengine 1.7.0rc0.post94+g4e36bfd2 documentation</title>
   
 
   
@@ -246,9 +246,6 @@
 <span class="sd">    to the database used to store the actual data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1">#: Description of tables and their columns</span>
-    <span class="n">_tables_created</span> <span class="o">=</span> <span class="kc">False</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :type config: :obj:`dict`</span>
@@ -288,15 +285,6 @@
         <span class="k">except</span> <span class="n">DataSpaceConnectionError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Cannot connect to the datasource!&#39;</span><span class="p">)</span>
             <span class="k">raise</span>
-
-        <span class="c1"># Create tables if not created</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">DataSpace</span><span class="o">.</span><span class="n">_tables_created</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">create_tables</span><span class="p">()</span>
-                <span class="n">DataSpace</span><span class="o">.</span><span class="n">_tables_created</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Cannot create datebase tables&#39;</span><span class="p">)</span>
-                <span class="k">raise</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
