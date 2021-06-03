@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.dataspace &mdash; decisionengine 1.7.0rc0.post86+g7158b42 documentation</title>
+  <title>decisionengine.framework.dataspace.dataspace &mdash; decisionengine 1.7.0rc0.post87+gf5d1a12 documentation</title>
   
 
   
@@ -171,6 +171,14 @@
 <span></span><span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;DataSpaceConfigurationError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DataSpaceConnectionError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DataSpaceError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DataSpaceExistsError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DataSpace&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
 
 <div class="viewcode-block" id="DataSpaceConfigurationError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpaceConfigurationError">[docs]</a><span class="k">class</span> <span class="nc">DataSpaceConfigurationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -200,7 +208,7 @@
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="Singleton"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.Singleton">[docs]</a><span class="k">class</span> <span class="nc">Singleton</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Singleton</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Singleton pattern using Metaclass</span>
 <span class="sd">    http://stackoverflow.com/questions/6760685/creating-a-singleton-in-python</span>
@@ -216,20 +224,20 @@
         <span class="c1"># else:</span>
         <span class="c1">#     cls._instances[cls].__init__(*args, **kwargs)</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span>
 
-<div class="viewcode-block" id="DataSourceLoader"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSourceLoader">[docs]</a><span class="k">class</span> <span class="nc">DataSourceLoader</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">Singleton</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">DataSourceLoader</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">Singleton</span><span class="p">):</span>
 
     <span class="n">_ds</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="DataSourceLoader.create_datasource"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSourceLoader.create_datasource">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">create_datasource</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="n">ds</span> <span class="o">=</span> <span class="n">DataSourceLoader</span><span class="o">.</span><span class="n">_ds</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ds</span><span class="p">:</span>
             <span class="n">py_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
             <span class="n">clazz</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">py_module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
             <span class="n">ds</span> <span class="o">=</span> <span class="n">clazz</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ds</span></div></div>
+        <span class="k">return</span> <span class="n">ds</span>
 
 
 <div class="viewcode-block" id="DataSpace"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace">[docs]</a><span class="k">class</span> <span class="nc">DataSpace</span><span class="p">():</span>
