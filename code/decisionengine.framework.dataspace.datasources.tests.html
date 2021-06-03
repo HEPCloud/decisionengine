@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests package &mdash; decisionengine 1.7.0rc0.post88+g5c023aa documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests package &mdash; decisionengine 1.7.0rc0.post90+g2d2feab documentation</title>
   
 
   
@@ -248,76 +248,153 @@ thus making this mock class unnecessary.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-decisionengine.framework.dataspace.datasources.tests.test_datasource_api">
+<span id="decisionengine-framework-dataspace-datasources-tests-test-datasource-api-module"></span><h2>decisionengine.framework.dataspace.datasources.tests.test_datasource_api module<a class="headerlink" href="#module-decisionengine.framework.dataspace.datasources.tests.test_datasource_api" title="Permalink to this headline">¶</a></h2>
+<p>This test plan covers a generic dataspace object via
+pytest parameters.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.datasource">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">datasource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#datasource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.datasource" title="Permalink to this definition">¶</a></dt>
+<dd><p>This parameterized fixture will mock up various datasources.</p>
+<p>Add datasource objects to DATASOURCES_TO_TEST once they’ve got
+our basic schema loaded.  And adjust our <cite>if</cite> statements here
+until we are SQLAlchemy only.</p>
+<p>Pytest should take it from there and automatically run it
+through all the below tests</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_create_tables">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_create_tables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_create_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_create_tables" title="Permalink to this definition">¶</a></dt>
+<dd><p>create_tables() should be safe to call multiple times</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_delete_data_older_than_arg">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_delete_data_older_than_arg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_delete_data_older_than_arg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_delete_data_older_than_arg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can we delete old entries</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_duplicate_datablock">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_duplicate_datablock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_duplicate_datablock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_duplicate_datablock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can we duplicate taskmanager1 and all its entries</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproduct">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_dataproduct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_dataproduct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproduct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can we get the dataproduct by uuid with key</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproduct_not_exist">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_dataproduct_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_dataproduct_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproduct_not_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does it error out if we ask for bogus information?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproducts">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_dataproducts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_dataproducts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproducts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can we get the dataproducts by uuid and uuid with key</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproducts_not_exist">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_dataproducts_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_dataproducts_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproducts_not_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does it error out if we ask for bogus information?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_header">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can we fetch a header?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_header_not_exist">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_header_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_header_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_header_not_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does it error out if we ask for a bogus header?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_last_generation_id">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_last_generation_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_last_generation_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_last_generation_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can we get the last generation id by name or name and uuid</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_last_generation_id_not_exist">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_last_generation_id_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_last_generation_id_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_last_generation_id_not_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does it error out if we ask for a bogus taskmanager?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_metadata">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can we fetch a metadata element?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_metadata_not_exist">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_metadata_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_metadata_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_metadata_not_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does it error out if we ask for a bogus metadata element?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanager_exists">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_taskmanager_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_taskmanager_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanager_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can I get a taskmanager by name or name and uuid</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanager_not_exists">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_taskmanager_not_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_taskmanager_not_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanager_not_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>This should error out</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanagers">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_taskmanagers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_taskmanagers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanagers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can I get multimple task managers</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanagers_not_exist">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_get_taskmanagers_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_get_taskmanagers_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanagers_not_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do I error out when asking for garbage</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_insert">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can we insert new elements</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_store_taskmanager">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_store_taskmanager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_store_taskmanager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_store_taskmanager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can we make new entries</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_update">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do updates work as expected</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_update_bad">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_update_bad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_update_bad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_update_bad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do updates fail to work as expected</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-decisionengine.framework.dataspace.datasources.tests.test_postgresql">
 <span id="decisionengine-framework-dataspace-datasources-tests-test-postgresql-module"></span><h2>decisionengine.framework.dataspace.datasources.tests.test_postgresql module<a class="headerlink" href="#module-decisionengine.framework.dataspace.datasources.tests.test_postgresql" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.data">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.dataproduct">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">dataproduct</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#dataproduct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.dataproduct" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.datasource">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">datasource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">postgresql</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#datasource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.datasource" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.header">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.header" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.metadata">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.metadata" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.taskmanager">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">taskmanager</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#taskmanager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.taskmanager" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_create_tables">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">test_create_tables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#test_create_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_create_tables" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_delete_data_older_than_arg">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">test_delete_data_older_than_arg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#test_delete_data_older_than_arg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_delete_data_older_than_arg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_generate_insert_query">
 <span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">test_generate_insert_query</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#test_generate_insert_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_generate_insert_query" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_get_dataproducts">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">test_get_dataproducts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taskmanager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#test_get_dataproducts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_get_dataproducts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_get_last_generation_id">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">test_get_last_generation_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taskmanager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#test_get_last_generation_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_get_last_generation_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_get_taskmanager">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">test_get_taskmanager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taskmanager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#test_get_taskmanager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_get_taskmanager" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_insert">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">test_insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataproduct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#test_insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_insert" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_store_taskmanager">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_postgresql.</span></span><span class="sig-name descname"><span class="pre">test_store_taskmanager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taskmanager</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_postgresql.html#test_store_taskmanager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_postgresql.test_store_taskmanager" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
