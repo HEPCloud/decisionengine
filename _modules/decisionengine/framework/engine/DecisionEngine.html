@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.0rc0.post90+g2d2feab documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.0rc0.post91+ge3b1f59 documentation</title>
   
 
   
@@ -245,18 +245,22 @@
 <div class="viewcode-block" id="DecisionEngine.block_until"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.block_until">[docs]</a>    <span class="k">def</span> <span class="nf">block_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="o">.</span><span class="n">unguarded_access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">workers</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No active channels.&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No active channels to wait on.&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s1">&#39;No active channels.&#39;</span>
             <span class="k">for</span> <span class="n">tm</span> <span class="ow">in</span> <span class="n">workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">tm</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                    <span class="n">tm</span><span class="o">.</span><span class="n">wait_until</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></div>
+                    <span class="n">tm</span><span class="o">.</span><span class="n">wait_until</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;No channels in </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s1"> state.&#39;</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.block_while"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.block_while">[docs]</a>    <span class="k">def</span> <span class="nf">block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="o">.</span><span class="n">unguarded_access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">workers</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No active channels.&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No active channels to wait on.&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s1">&#39;No active channels.&#39;</span>
             <span class="k">for</span> <span class="n">tm</span> <span class="ow">in</span> <span class="n">workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">tm</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                    <span class="n">tm</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></div>
+                    <span class="n">tm</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;No channels in </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s1"> state.&#39;</span></div>
 
 <div class="viewcode-block" id="DecisionEngine._dataframe_to_table"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dataframe_to_table">[docs]</a>    <span class="k">def</span> <span class="nf">_dataframe_to_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tabulate</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s1">&#39;keys&#39;</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">&#39;psql&#39;</span><span class="p">))</span></div>
@@ -284,8 +288,7 @@
             <span class="n">allowed_state</span> <span class="o">=</span> <span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="p">[</span><span class="n">state_str</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">state_str</span><span class="si">}</span><span class="s1"> is not a valid channel state.&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">allowed_state</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;No channels in </span><span class="si">{</span><span class="n">state_str</span><span class="si">}</span><span class="s1"> state.&#39;</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">allowed_state</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_show_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_show_config">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
