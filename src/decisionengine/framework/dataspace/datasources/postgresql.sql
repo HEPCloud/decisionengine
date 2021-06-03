@@ -1,4 +1,6 @@
 DROP INDEX IF EXISTS i_taskmanager_datestamp;
+DROP INDEX IF EXISTS i_taskmanager_sequence;
+DROP INDEX IF EXISTS i_taskmanager_taskmanager_id;
 DROP TABLE IF EXISTS taskmanager;
 CREATE TABLE taskmanager (
    sequence_id BIGSERIAL,
@@ -10,9 +12,13 @@ CREATE TABLE taskmanager (
 ALTER TABLE ONLY taskmanager
       ADD CONSTRAINT pk_taskmanager PRIMARY KEY (sequence_id);
 
-CREATE INDEX i_taskmanager_datestamp ON taskmanager(datestamp);
+CREATE INDEX i_taskmanager_datestamp ON taskmanager using BRIN (datestamp);
+CREATE INDEX i_taskmanager_sequence ON taskmanager(sequence_id);
+CREATE INDEX i_taskmanager_taskmanager_id ON taskmanager using HASH (taskmanager_id);
 
 DROP INDEX IF EXISTS i_header_taskmanager_id;
+DROP INDEX IF EXISTS i_header_generation_id;
+DROP INDEX IF EXISTS i_header_key;
 DROP TABLE IF EXISTS header;
 CREATE TABLE header (
     taskmanager_id BIGINT,
@@ -31,6 +37,8 @@ ALTER TABLE ONLY header
     ON UPDATE CASCADE ON DELETE CASCADE;
 
 CREATE INDEX i_header_taskmanager_id ON header(taskmanager_id);
+CREATE INDEX i_header_generation_id ON header(generation_id);
+CREATE INDEX i_header_key ON header using HASH (generation_id);
 
 DROP TABLE IF EXISTS schema;
 CREATE TABLE schema (
@@ -39,6 +47,8 @@ CREATE TABLE schema (
     );
 
 DROP INDEX IF EXISTS i_metadata_taskmanager_id;
+DROP INDEX IF EXISTS i_metadata_generation_id;
+DROP INDEX IF EXISTS i_metadata_key;
 DROP TABLE IF EXISTS metadata;
 CREATE TABLE metadata (
     taskmanager_id BIGINT,
@@ -55,8 +65,12 @@ ALTER TABLE ONLY metadata
     ON UPDATE CASCADE ON DELETE CASCADE;
 
 CREATE INDEX i_metadata_taskmanager_id ON metadata(taskmanager_id);
+CREATE INDEX i_metadata_generation_id ON metadata(generation_id);
+CREATE INDEX i_metadata_key ON metadata using HASH (generation_id);
 
 DROP INDEX IF EXISTS i_dataproduct_taskmanager_id;
+DROP INDEX IF EXISTS i_dataproduct_generation_id;
+DROP INDEX IF EXISTS i_dataproduct_key;
 DROP TABLE IF EXISTS dataproduct;
 CREATE TABLE dataproduct (
     taskmanager_id BIGINT,
@@ -71,6 +85,8 @@ ALTER TABLE ONLY dataproduct
     ON UPDATE CASCADE ON DELETE CASCADE;
 
 CREATE INDEX i_dataproduct_taskmanager_id ON dataproduct(taskmanager_id);
+CREATE INDEX i_dataproduct_generation_id ON dataproduct(generation_id);
+CREATE INDEX i_dataproduct_key ON dataproduct using HASH (generation_id);
 
 DROP FUNCTION IF EXISTS f_id2sequence;
 CREATE FUNCTION f_id2sequence(character varying) RETURNS BIGINT
