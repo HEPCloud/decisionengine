@@ -74,6 +74,7 @@ jobs:
         env:
           PYTEST_TIMEOUT: 90
           PYTHONPATH: ${{ github.workspace }}/src
+        shell: 'script -q -e -c "bash --noprofile --norc -eo pipefail {0}"'
         run: |
           pytest --cov-report term --cov-report xml --cov=decisionengine --no-cov-on-fail
 
