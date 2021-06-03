@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 1.7.0rc0.post95+g29a2c72d documentation</title>
+  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 1.7.0rc0.post96+g619021c2 documentation</title>
   
 
   
@@ -214,10 +214,21 @@
         <span class="s2">&quot;|  0 | value1 | 0.1    |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|  1 | value2 | 2      |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|  2 | value3 | Test   |</span><span class="se">\n</span><span class="s2">&quot;</span> \
-        <span class="s2">&quot;+----+--------+--------+&quot;</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;NO_SUCH_PRODUCT&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;Product NO_SUCH_PRODUCT: Not produced by any module&quot;</span>
+        <span class="s2">&quot;+----+--------+--------+&quot;</span></div>
 
+<div class="viewcode-block" id="test_client_print_product_not_real"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product_not_real">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_print_product_not_real</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;NO_SUCH_PRODUCT&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Check individual elements</span>
+    <span class="k">assert</span> <span class="s2">&quot;Product NO_SUCH_PRODUCT:&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">&quot;Not produced by any module&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+
+    <span class="c1"># Check for specific output</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;Product NO_SUCH_PRODUCT: Not produced by any module&quot;</span></div>
+
+<div class="viewcode-block" id="test_client_print_product_types"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product_types">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_print_product_types</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Test --types</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--types&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
@@ -228,8 +239,10 @@
         <span class="s2">&quot;|  0 | value1 | str         | 0.1    | float       |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|  1 | value2 | str         | 2      | int         |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|  2 | value3 | str         | Test   | str         |</span><span class="se">\n</span><span class="s2">&quot;</span> \
-        <span class="s2">&quot;+----+--------+-------------+--------+-------------+&quot;</span>
+        <span class="s2">&quot;+----+--------+-------------+--------+-------------+&quot;</span></div>
 
+<div class="viewcode-block" id="test_client_print_product_columns"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product_columns">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_print_product_columns</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Test specific columns only</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--columns&#39;</span><span class="p">,</span> <span class="s1">&#39;key1&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
@@ -251,8 +264,11 @@
         <span class="s2">&quot;|  0 | value1 | 0.1    |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|  1 | value2 | 2      |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|  2 | value3 | Test   |</span><span class="se">\n</span><span class="s2">&quot;</span> \
-        <span class="s2">&quot;+----+--------+--------+&quot;</span>
+        <span class="s2">&quot;+----+--------+--------+&quot;</span></div>
 
+<div class="viewcode-block" id="test_client_print_product_query"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product_query">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_print_product_query</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="c1"># Test specific columns only</span>
     <span class="c1"># Test query</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--query&#39;</span><span class="p">,</span> <span class="s1">&#39;key2 == 2&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
@@ -261,8 +277,10 @@
         <span class="s2">&quot;|    | key1   |   key2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|----+--------+--------|</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|  1 | value2 |      2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
-        <span class="s2">&quot;+----+--------+--------+&quot;</span>
+        <span class="s2">&quot;+----+--------+--------+&quot;</span></div>
 
+<div class="viewcode-block" id="test_client_print_product_columns_query"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product_columns_query">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_print_product_columns_query</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Test query and column names</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--query&#39;</span><span class="p">,</span> <span class="s1">&#39;key2 == 2&#39;</span><span class="p">,</span> <span class="s1">&#39;--columns&#39;</span><span class="p">,</span> <span class="s1">&#39;key2&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
@@ -280,9 +298,11 @@
         <span class="s2">&quot;|    | key1   |   key2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|----+--------+--------|</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;|  1 | value2 |      2 |</span><span class="se">\n</span><span class="s2">&quot;</span> \
-        <span class="s2">&quot;+----+--------+--------+&quot;</span>
+        <span class="s2">&quot;+----+--------+--------+&quot;</span></div>
 
 
+<div class="viewcode-block" id="test_client_print_product_vertical"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product_vertical">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_print_product_vertical</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Test --format vertical</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--format&#39;</span><span class="p">,</span> <span class="s1">&#39;vertical&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
@@ -312,9 +332,11 @@
         <span class="s2">&quot;|-----------|</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;| key1      |</span><span class="se">\n</span><span class="s2">&quot;</span> \
         <span class="s2">&quot;| key2      |</span><span class="se">\n</span><span class="s2">&quot;</span> \
-        <span class="s2">&quot;+-----------+&quot;</span>
+        <span class="s2">&quot;+-----------+&quot;</span></div>
 
-<span class="c1"># Test --format json</span>
+<div class="viewcode-block" id="test_client_print_product_json"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product_json">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_print_product_json</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="c1"># Test --format json</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-product&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--format&#39;</span><span class="p">,</span> <span class="s1">&#39;json&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> \
         <span class="s1">&#39;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s1">&#39;</span> \
