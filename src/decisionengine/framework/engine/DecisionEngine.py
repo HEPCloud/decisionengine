@@ -305,7 +305,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             try:
                 self.start_channel(name, config)
             except Exception as e:
-                self.logger.error(f"Channel {name} failed to start : {e}")
+                self.logger.exception(f"Channel {name} failed to start : {e}")
 
     def rpc_start_channel(self, channel_name):
         with self.workers.access() as workers:

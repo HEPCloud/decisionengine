@@ -1,4 +1,5 @@
 '''pytest defaults'''
+import logging
 import threading
 
 import pytest
@@ -112,6 +113,7 @@ def DEServer(
         our basic schema loaded.  Pytest should take it from there and
         automatically run it throught all the below tests
         '''
+        logger = logging.getLogger()
         if port:
             host_port = (host, port)
         else:
@@ -137,7 +139,7 @@ def DEServer(
                     (key, value) = element.split('=')
                     if value != "''" and value != '""':
                         db_info[key] = value
-
+        logger.debug(f"DE Fixture has db_info: {db_info}")
         server_proc = DETestWorker(
             conf_path,
             channel_conf_path,
@@ -146,6 +148,7 @@ def DEServer(
             conf_override,
             channel_conf_override,
         )
+        logger.debug("Starting DE Fixture")
         server_proc.start()
         # The following block only works if there are
         # active workers; if it is called before any workers
