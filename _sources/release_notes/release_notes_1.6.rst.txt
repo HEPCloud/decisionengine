@@ -8,8 +8,8 @@ Issues fixed in this release
 
 Bugs fixed
 
-- `DEM 200 (part of it) <https://github.com/HEPCloud/decisionengine_modules/issues/200>`_: Invoke correctly channels shutdown: (`75eaa90 <https://github.com/HEPCloud/decisionengine/commit/75eaa90d4585e82d0569d79d0d59a7078450a9df>`_)
-- - : Use regular expression to support fail_on_error feature (`1386d20 <https://github.com/HEPCloud/decisionengine/commit/1386d20b26f02fcbf7c50c7cddfbff6ff7da8934>`_)
+- `DEM 200 <https://github.com/HEPCloud/decisionengine_modules/issues/200>`_ (part of it): Invoke correctly channels shutdown: (`75eaa90 <https://github.com/HEPCloud/decisionengine/commit/75eaa90d4585e82d0569d79d0d59a7078450a9df>`_)
+- no issue: Use regular expression to support fail_on_error feature (`1386d20 <https://github.com/HEPCloud/decisionengine/commit/1386d20b26f02fcbf7c50c7cddfbff6ff7da8934>`_)
 
 Enhancements:
 
