@@ -8,13 +8,13 @@ Issues fixed in this release
 
 Bugs fixed
 
-- : Invoke correctly channels shutdown (This is part of `DEM 200 <https://github.com/HEPCloud/decisionengine_modules/issues/200>`_: (`75eaa90 <https://github.com/HEPCloud/decisionengine/commit/75eaa90d4585e82d0569d79d0d59a7078450a9df>`)
-- ` <>`_: Use regular expression to support fail_on_error feature (`1386d20 <https://github.com/HEPCloud/decisionengine/commit/1386d20b26f02fcbf7c50c7cddfbff6ff7da8934>`)
+- `DEM 200 (part of it) <https://github.com/HEPCloud/decisionengine_modules/issues/200>`_: Invoke correctly channels shutdown: (`75eaa90 <https://github.com/HEPCloud/decisionengine/commit/75eaa90d4585e82d0569d79d0d59a7078450a9df>`_)
+- - : Use regular expression to support fail_on_error feature (`1386d20 <https://github.com/HEPCloud/decisionengine/commit/1386d20b26f02fcbf7c50c7cddfbff6ff7da8934>`_)
 
 Enhancements:
 
 - Improved CI support (e.g. added pylint tests)
-- `217 <https://github.com/HEPCloud/decisionengine/issues/217>`_: Add option to de-client --print-product to only print the column names in a data block and-or to print one or more records in key/value format. (`c4c7681 <https://github.com/HEPCloud/decisionengine/commit/c4c7681ccb391acdca1da79a972f2cbf8b31b87a>`)
+- `217 <https://github.com/HEPCloud/decisionengine/issues/217>`_: Add option to de-client --print-product to only print the column names in a data block and-or to print one or more records in key/value format. (`c4c7681 <https://github.com/HEPCloud/decisionengine/commit/c4c7681ccb391acdca1da79a972f2cbf8b31b87a>`_)
 
 
 
