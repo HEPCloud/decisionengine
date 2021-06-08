@@ -10,6 +10,7 @@ import multiprocessing
 import uuid
 
 import pandas
+import prometheus_client
 
 from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
@@ -147,10 +148,23 @@ class TaskManager:
         self.state = ProcessingState()
         self.loglevel = multiprocessing.Value("i", logging.WARNING)
         self.lock = threading.Lock()
+
+        # Metrics
+        self.channel_state_gauge = prometheus_client.Gauge('channel_state',
+                                                           'Channel state',
+                                                           ['name',]).\
+                                                               labels(self.name)
+
+        self.channel_state_gauge.set_function(self.get_state_value)
+        self.source_acquire_gauge = prometheus_client.Gauge('source_last_acquire', "Last time a source "
+                                    'successfully ran its acquire function',
+                                    ['channel_name', 'source_name',])
+        # self.source_acquire_gauge.labels('test1', 'test2').set_to_current_time()
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
         for src_worker in self.channel.sources.values():
             src_worker.worker.post_create(global_config)
+
 
     def wait_for_all(self, events_done):
         """
@@ -219,6 +233,9 @@ class TaskManager:
                         # otherwise the last decision_cycle completed without error
                         self.state.set(State.STEADY)
                 if not self.state.should_stop():
+                    # the last decision_cycle completed without error
+                    self.state.set(State.STEADY)
+                    self.channel_state_gauge.set_function(self.get_state_value)
                     self.wait_for_any(done_events)
             except Exception:  # pragma: no cover
                 self.logger.exception("Exception in the task manager main loop")
@@ -235,11 +252,11 @@ class TaskManager:
         for thread in source_threads:
             thread.join()
 
-    def get_state_value(self):
-        return self.state.get().value
-
     def get_state(self):
         return self.state.get()
+
+    def get_state_value(self):
+        return self.get_state().value
 
     def get_state_name(self):
         return self.get_state().name
@@ -276,15 +293,18 @@ class TaskManager:
     def set_to_shutdown(self):
         self.state.set(State.SHUTTINGDOWN)
         delogger.debug("Shutting down. Will call shutdown on all publishers")
+        self.channel_state_gauge.set_function(self.get_state_value)
         for publisher_worker in self.channel.publishers.values():
             publisher_worker.worker.shutdown()
         self.state.set(State.SHUTDOWN)
+        self.channel_state_gauge.set_function(self.get_state_value)
 
     def take_offline(self, current_data_block):
         """
         offline and stop task manager
         """
         self.state.set(State.OFFLINE)
+        self.channel_state_gauge.set_function(self.get_state_value)
         # invalidate data block
         # not implemented yet
 
@@ -362,6 +382,8 @@ class TaskManager:
         :arg src: source Worker
         """
 
+        self.source_acquire_gauge.labels(self.name, src.name)
+
         # If task manager is in offline state, do not keep executing sources.
         while not self.state.should_stop():
             try:
@@ -370,6 +392,8 @@ class TaskManager:
                 Module.verify_products(src.worker, data)
                 self.logger.info(f"Src {src.name} acquire returned")
                 self.logger.info(f"Src {src.name} filling header")
+                self.source_acquire_gauge.labels(self.name, src.name)
+                self.source_acquire_gauge.labels(self.name, src.name).set_to_current_time()
                 if data:
                     t = time.time()
                     header = datablock.Header(self.data_block_t0.taskmanager_id, create_time=t, creator=src.module)
@@ -442,6 +466,7 @@ class TaskManager:
         :type data_block: :obj:`~datablock.DataBlock`
         :arg data_block: data block
         """
+<<<<<<< HEAD
         consume_keys = list(transform.worker._consumes.keys())
 
         self.logger.info(
@@ -457,6 +482,47 @@ class TaskManager:
         except Exception:  # pragma: no cover
             self.logger.exception(f"exception from transform {transform.name} ")
             self.take_offline(data_block)
+=======
+        g = prometheus_client.Gauge('transform_last_run', 'Last time a '
+                                    'transform successfully ran',
+                                    ['channel_name', 'transform_name',])\
+                                    .labels(self.name, transform.name)
+        data_to = self.channel.task_manager.get('data_TO', _TRANSFORMS_TO)
+        consume_keys = list(transform.worker._consumes.keys())
+
+        logging.getLogger().info('transform: %s expected keys: %s provided keys: %s',
+                                 transform.name, consume_keys, list(data_block.keys()))
+        loop_counter = 0
+        while not self.state.should_stop():
+            # Check if data is ready
+            if set(consume_keys) <= set(data_block.keys()):
+                # data is ready -  may run transform()
+                logging.getLogger().info('run transform %s', transform.name)
+                try:
+                    with data_block.lock:
+                        data = transform.worker.transform(data_block)
+                    logging.getLogger().debug(f'transform returned {data}')
+                    t = time.time()
+                    header = datablock.Header(data_block.taskmanager_id,
+                                              create_time=t,
+                                              creator=transform.name)
+                    self.data_block_put(data, header, data_block)
+                    g.set(t)
+                    logging.getLogger().info('transform put data')
+                except Exception:  # pragma: no cover
+                    logging.getLogger().exception(f'exception from transform {transform.name} ')
+                    self.take_offline(data_block)
+                break
+            s = transform.stop_running.wait(1)
+            if s:
+                logging.getLogger().info(f'received stop_running signal for {transform.name}')
+                break
+            loop_counter += 1
+            if loop_counter == data_to:
+                logging.getLogger().info(f'transform {transform.name} did not get consumes data'
+                                         f'in {data_to} seconds. Exiting')
+                break
+        transform.data_updated.set()
 
     def run_logic_engine(self, data_block=None):
         """
@@ -471,6 +537,7 @@ class TaskManager:
 
         try:
             for le in self.channel.le_s:
+<<<<<<< HEAD
                 self.logger.info("run logic engine %s", self.channel.le_s[le].name)
                 self.logger.debug("run logic engine %s %s", self.channel.le_s[le].name, data_block)
                 rc = self.channel.le_s[le].worker.evaluate(data_block)
@@ -482,6 +549,26 @@ class TaskManager:
                     rc["newfacts"].to_dict(orient="records"),
                 )
                 self.logger.info("logic engine %s generated actions: %s", self.channel.le_s[le].name, rc["actions"])
+=======
+
+                g = prometheus_client.Gauge('logicengine_last_run', 'Last time '
+                                            'a logicengine successfully ran',
+                                            ['channel_name', 'logicengine_name',])\
+                                            .labels(self.name,
+                                                    self.channel.le_s[le].name)
+                logging.getLogger().info('run logic engine %s',
+                                         self.channel.le_s[le].name)
+                logging.getLogger().debug('run logic engine %s %s',
+                                          self.channel.le_s[le].name, data_block)
+                rc = self.channel.le_s[le].worker.evaluate(data_block)
+                le_list.append(rc)
+                g.set_to_current_time()
+                logging.getLogger().info('run logic engine %s done',
+                                         self.channel.le_s[le].name)
+                logging.getLogger().info('logic engine %s generated newfacts: %s',
+                                         self.channel.le_s[le].name, rc['newfacts'].to_dict(orient='records'))
+                logging.getLogger().info('logic engine %s generated actions: %s',
+                                         self.channel.le_s[le].name, rc['actions'])
 
             # Add new facts to the datablock
             # Add empty dataframe if nothing is available
@@ -518,8 +605,14 @@ class TaskManager:
                     name = publisher.name
                     self.logger.info(f"run publisher {name}")
                     self.logger.debug(f"run publisher {name} {data_block}")
+
+                    g = prometheus_client.Gauge('publisher_last_run', 'Last time '
+                                                'a publisher successfully ran',
+                                                ['channel_name', 'publisher_name',])\
+                                                .labels(self.name, name)
                     try:
                         publisher.worker.publish(data_block)
+                        g.set_to_current_time()
                     except KeyError as e:
                         if self.state.should_stop():
                             self.logger.warning(f"TaskManager stopping, ignore exception {name} publish() call: {e}")
