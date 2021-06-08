@@ -159,6 +159,8 @@ class TaskManager:
         self.source_acquire_gauge = prometheus_client.Gauge('source_last_acquire', "Last time a source "
                                     'successfully ran its acquire function',
                                     ['channel_name', 'source_name',])
+
+        self.source_acquire_gauge.labels(self.name, 'test__init__').set(42) # TODO
         # self.source_acquire_gauge.labels('test1', 'test2').set_to_current_time()
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
@@ -382,7 +384,7 @@ class TaskManager:
         :arg src: source Worker
         """
 
-        self.source_acquire_gauge.labels(self.name, src.name)
+        # self.source_acquire_gauge.labels(self.name, src.name)
 
         # If task manager is in offline state, do not keep executing sources.
         while not self.state.should_stop():
@@ -432,6 +434,7 @@ class TaskManager:
         for key, source in self.channel.sources.items():
             self.logger.info(f"starting loop for {key}")
             event_list.append(source.data_updated)
+            self.source_acquire_gauge.labels(self.name, source.name)
             thread = threading.Thread(target=self.run_source, name=source.name, args=(source,))
             source_threads.append(thread)
             # Cannot catch exception from function called in separate thread
@@ -466,7 +469,10 @@ class TaskManager:
         :type data_block: :obj:`~datablock.DataBlock`
         :arg data_block: data block
         """
-<<<<<<< HEAD
+        g = prometheus_client.Gauge('transform_last_run', 'Last time a '
+                                    'transform successfully ran',
+                                    ['channel_name', 'transform_name',])\
+                                    .labels(self.name, transform.name)
         consume_keys = list(transform.worker._consumes.keys())
 
         self.logger.info(
@@ -479,50 +485,10 @@ class TaskManager:
             header = datablock.Header(data_block.taskmanager_id, create_time=time.time(), creator=transform.name)
             self.data_block_put(data, header, data_block)
             self.logger.info("transform put data")
+	    g.set(time.time())
         except Exception:  # pragma: no cover
             self.logger.exception(f"exception from transform {transform.name} ")
             self.take_offline(data_block)
-=======
-        g = prometheus_client.Gauge('transform_last_run', 'Last time a '
-                                    'transform successfully ran',
-                                    ['channel_name', 'transform_name',])\
-                                    .labels(self.name, transform.name)
-        data_to = self.channel.task_manager.get('data_TO', _TRANSFORMS_TO)
-        consume_keys = list(transform.worker._consumes.keys())
-
-        logging.getLogger().info('transform: %s expected keys: %s provided keys: %s',
-                                 transform.name, consume_keys, list(data_block.keys()))
-        loop_counter = 0
-        while not self.state.should_stop():
-            # Check if data is ready
-            if set(consume_keys) <= set(data_block.keys()):
-                # data is ready -  may run transform()
-                logging.getLogger().info('run transform %s', transform.name)
-                try:
-                    with data_block.lock:
-                        data = transform.worker.transform(data_block)
-                    logging.getLogger().debug(f'transform returned {data}')
-                    t = time.time()
-                    header = datablock.Header(data_block.taskmanager_id,
-                                              create_time=t,
-                                              creator=transform.name)
-                    self.data_block_put(data, header, data_block)
-                    g.set(t)
-                    logging.getLogger().info('transform put data')
-                except Exception:  # pragma: no cover
-                    logging.getLogger().exception(f'exception from transform {transform.name} ')
-                    self.take_offline(data_block)
-                break
-            s = transform.stop_running.wait(1)
-            if s:
-                logging.getLogger().info(f'received stop_running signal for {transform.name}')
-                break
-            loop_counter += 1
-            if loop_counter == data_to:
-                logging.getLogger().info(f'transform {transform.name} did not get consumes data'
-                                         f'in {data_to} seconds. Exiting')
-                break
-        transform.data_updated.set()
 
     def run_logic_engine(self, data_block=None):
         """
@@ -537,7 +503,11 @@ class TaskManager:
 
         try:
             for le in self.channel.le_s:
-<<<<<<< HEAD
+                g = prometheus_client.Gauge('logicengine_last_run', 'Last time '
+                                            'a logicengine successfully ran',
+                                            ['channel_name', 'logicengine_name',])\
+                                            .labels(self.name,
+                                                    self.channel.le_s[le].name)
                 self.logger.info("run logic engine %s", self.channel.le_s[le].name)
                 self.logger.debug("run logic engine %s %s", self.channel.le_s[le].name, data_block)
                 rc = self.channel.le_s[le].worker.evaluate(data_block)
@@ -549,26 +519,6 @@ class TaskManager:
                     rc["newfacts"].to_dict(orient="records"),
                 )
                 self.logger.info("logic engine %s generated actions: %s", self.channel.le_s[le].name, rc["actions"])
-=======
-
-                g = prometheus_client.Gauge('logicengine_last_run', 'Last time '
-                                            'a logicengine successfully ran',
-                                            ['channel_name', 'logicengine_name',])\
-                                            .labels(self.name,
-                                                    self.channel.le_s[le].name)
-                logging.getLogger().info('run logic engine %s',
-                                         self.channel.le_s[le].name)
-                logging.getLogger().debug('run logic engine %s %s',
-                                          self.channel.le_s[le].name, data_block)
-                rc = self.channel.le_s[le].worker.evaluate(data_block)
-                le_list.append(rc)
-                g.set_to_current_time()
-                logging.getLogger().info('run logic engine %s done',
-                                         self.channel.le_s[le].name)
-                logging.getLogger().info('logic engine %s generated newfacts: %s',
-                                         self.channel.le_s[le].name, rc['newfacts'].to_dict(orient='records'))
-                logging.getLogger().info('logic engine %s generated actions: %s',
-                                         self.channel.le_s[le].name, rc['actions'])
 
             # Add new facts to the datablock
             # Add empty dataframe if nothing is available
