@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Release 1.7.0 &mdash; decisionengine 1.7.0rc0.post102+g871af08b documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> decisionengine
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.6.html">Release 1.6.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.6.html#release-1-6-1">Release 1.6.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.6.html#release-1-6-0">Release 1.6.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.5.html">Release 1.5.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.4.html">Release 1.4.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.4.html#release-1-4-0">Release 1.4.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.3.html">Release 1.3.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.2.html">Release 1.2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.1.html">Release 1.1.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">decisionengine</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Release 1.7.0</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/release_notes/release_notes_1.7.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="release-1-7-0">
+<h1>Release 1.7.0<a class="headerlink" href="#release-1-7-0" title="Permalink to this headline">¶</a></h1>
+<p>In this release:
+* Added structured logging. Improved python logging and adoption of structured logs format that will increase the semantinc content of the messages and ease the export of information for dashboards and Elastic Search.
+* New produces-consumes structure using decorators. This will improve the code quality, improving static checks and reducing the lines of code by removing repetitive boilerplates, especially in the modules.</p>
+<p>Planned:</p>
+<div class="section" id="issues-fixed-in-this-release">
+<h2>Issues fixed in this release<a class="headerlink" href="#issues-fixed-in-this-release" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/253">253</a> : Decision engine can sometimes start up at boot time before network name resolution is working (<a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/ae04db544599c6777d63cb315ddac169e586809d">ae04db5</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="full-list-of-commits-since-version-1-6-0">
+<h2>Full list of commits since version 1.6.0<a class="headerlink" href="#full-list-of-commits-since-version-1-6-0" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a25a4a3064c879b9e415ec8ece8cc813a3cf7c51">a25a4a3</a>:   Fix ABC to match our actual usage</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1510b2d134165b9752101c9b981514ba5b4f8093">1510b2d</a>:   Address minor linting issues</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/945e4b16a8246d72a65a023501b84258e3d10e66">945e4b1</a>:   Fix missing attribute insert</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/5eace9d51c4032585cc8821ccba1c59b36b8a730">5eace9d</a>:   Add note for how to get modules in place</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/50a8e2688987152523d83d4a8ac2e4d9435fb192">50a8e26</a>:   Add list of packages in the CI env to output</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/b9cb197d102f4755fb6ad074903ef1ceda983aa9">b9cb197</a>:   Sanity check the home directory</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/cd17223c367ca692a94a3481c91b1c4d3b081abc">cd17223</a>:   Have client provide a hint when you ask for no behavior</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/95b02365d88e7d3a9f3a69f62491a4016ac77fc5">95b0236</a>:   Fix de-query-tool to support produce/consume model</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e660ca726b3457d4aecf4ae2f18b3e03419cc2f3">e660ca7</a>:   Update required versions for bugfixes</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/6863cb81174aff1598ac51b723070a1f1bd851f8">6863cb8</a>:   Fix path error</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/bb52e8b1659dea39aa3b853056893d7d85c343e0">bb52e8b</a>:   Merge pull request #340 from jcpunk/service-stop</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/6d7aba953ffce34d27685029b05f03977c4baf5f">6d7aba9</a>:   Drop obsolete files</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/168ae7aa0cc136a56b064e2a4d4f81aab746fa92">168ae7a</a>:   Name the tests better</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/0f60c4e3911686a47a12819c2276801e7868fa8e">0f60c4e</a>:   Support new produces/consumes/configuration-description infrastructure.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/819124695fbf8cb75ccbd7bf861d07b85fa1ab32">8191246</a>:   Add de-query-tool</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/2a26c9442938a376aa070c03fe6e12d4f744c9f0">2a26c94</a>:   ExecStopPre is not supported on all systemd instances</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/67a54d5cceeb9d4e5c6c7eaff8fa0e312d252f7a">67a54d5</a>:   Merge pull request #338 from jcpunk/fix-pytest-postgres</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/70ab133ff92a82972bcefd36e989c1b373688b74">70ab133</a>:   Fixup use of pytest_postgresql for version 3.0.0</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/f8f4255eb3dee4ab92e20df7f72e840c643f02a5">f8f4255</a>:   Merge pull request #337 from jcpunk/thread-names</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/5f49a4f63a1bd24e24ef91e2d870b8af5585f943">5f49a4f</a>:   Set names for the various parallel code</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/64da77c6de71787386911e41b120627427c87fc8">64da77c</a>:   Merge pull request #327 from jcpunk/datablock-expire</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/de33a60a19510d1cbfea47c01c19eea7aef78e1c">de33a60</a>:   Merge pull request #336 from knoepfel/use-toposort</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/31a8a9053a2067c6a14485bcaf96fb3724a42547">31a8a90</a>:   Merge pull request #328 from knoepfel/de-class-inference</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/410e383de712bdd5fcd5a6cc6e04deca8ce923bb">410e383</a>:   Merge pull request #331 from jcpunk/reaper-interval-tests</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/719ff0c85a77376c19d7681bdf18c7abfc1f9c5d">719ff0c</a>:   Test datablock expire funtions</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e14c49d80537b549fea884546378fc5917c1591b">e14c49d</a>:   The ‘name’ parameter is optional.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/7846c9f3f9a0a83b0de168b30569138763691a21">7846c9f</a>:   Enable DE class inference based on configuration.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/32ab7e44c4c748938d7837ac96d12bf7a92525fc">32ab7e4</a>:   Use third-party topological sort.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/01aa8ae678f598f0b1b1941b63dcc6df66852304">01aa8ae</a>:   Merge pull request #325 from jcpunk/channel-tests</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/52b48479094c37acc5422301cc0ebce721db65bc">52b4847</a>:   Merge pull request #326 from jcpunk/valid-config-tests</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/8c4749e7d61727b820fee8b86ca572b4fe68585f">8c4749e</a>:   Merge pull request #330 from jcpunk/pylint-actions</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a37770c9527932f81d754119524ffff6f8406c4d">a37770c</a>:   Ensure validation testing is tested</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/d8ab5eb6fd0998167635923a391d94785ab6a53f">d8ab5eb</a>:   Add missing test to ensure the run interval is actually used</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/0cd9c42b708179a25cb4998466a39c86db66e069">0cd9c42</a>:   Also run pylint for extra sanity checks</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c5cf1fff9e5b191c4fd913d185805b5d3dbabecd">c5cf1ff</a>:   Ensure our errors error out</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/baf01700d8bb6cf4f8aca28e7fdd0726e3f617e0">baf0170</a>:   Merge pull request #324 from jcpunk/cleanup-trivial-tests</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/2a0133aadfba0fef2a70fcf43528bb60b7ed01bb">2a0133a</a>:   Try to cleanup trivial missing coverage</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/44e0ad6f039dc2982f8e72cd56bcf0caf6737e5c">44e0ad6</a>:   Merge pull request #323 from jcpunk/about-coverage</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/d811f6174ecd77e40e84fac8b5eabe1d24aaa69d">d811f61</a>:   Merge pull request #322 from knoepfel/fix-fail-on-error</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/cb42626213ffed843eae5916c2b1fd535d9883f1">cb42626</a>:   Merge pull request #312 from jcpunk/finish-setuptools</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/8f6d407de53f95602a3dce29603d23ab0ea4390c">8f6d407</a>:   Merge pull request #316 from jcpunk/abc-coverage</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/4d0676bbe82d9b3adf89b0b660734755b5f14168">4d0676b</a>:   Merge pull request #317 from vitodb/pylint</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/d7c43b961dbc4f092fdd39a73277be5d73dc9c2c">d7c43b9</a>:   Use regular expression to support fail_on_error feature.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/ada6692533280d4171804ae2cc26f5337d721f0f">ada6692</a>:   add support to run pylint tests</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/efb1e57bfdb7c03420440d34ad679eb5da618bc4">efb1e57</a>:   Finish migration to pure setuptools</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/bc4720cf0e65f1df2b73958cbd64c5dabf84764c">bc4720c</a>:   We aren’t testing ‘unversioned” releases</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e4dc35e36f75b14c71e0626afc7e1376adbac3df">e4dc35e</a>:   Merge pull request #314 from jcpunk/jsonnet_syntax</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/87e32c228376bbe5a3cf513ac2890b2a8b7b793b">87e32c2</a>:   Merge pull request #294 from jcpunk/move-reaper</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/dec85d5ebb7cf9b8fb19c73ac5a68e9855503dba">dec85d5</a>:   Merge pull request #319 from jcpunk/task-loop</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/4108472afc04def8c35f7aaa569fd76568cf162f">4108472</a>:   Merge pull request #320 from jcpunk/container-swig</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/920af1c985f84896d92a1f5fe28ee8072d654247">920af1c</a>:   Merge pull request #321 from knoepfel/include-init-files</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/650dffa70ea4bcca0022adb79823d53d81849d70">650dffa</a>:   Don’t forget __init__.py files.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1b412e03067216451d0552f434277d6069300ae3">1b412e0</a>:   The latest m2crypto seems to need swig now</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a6e3ab1c283e5ec596cde771db9fd3fc6d97125d">a6e3ab1</a>:   Merge pull request #313 from jcpunk/conf-test</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1205636a69763ef71d1baa273c92d0dbc51e46db">1205636</a>:   Simplify run loop</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/30e59dc967285d13221dfee7b807f446f9fbfac2">30e59dc</a>:   fix test_client_with_no_server_verbose unit test for Jenkins CI (#315)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/10384a8cf3167bbadc0bfea08291c9eeb20cb01c">10384a8</a>:   Move reaper into its own place and reuse state logic</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/940584e446d9841e006b87dc5a0446cc52e664d8">940584e</a>:   No real way to test abstract base classes</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/250c14b151ba273417c09306556e591e9981d768">250c14b</a>:   The <cite>_validate</cite> function doesn’t permit missing ‘PRODUCES’</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/5ae1ce9fc748a146777dd8f5bd63a96a7bc09fac">5ae1ce9</a>:   Make sure syntax error in config names the problem</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/b899fa237d20f949f1adf147fa7d6da55381b4b2">b899fa2</a>:   Add SourceProxy module test. (#307)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/7b3df14c7a26c9d3ba2b0e56ac4598ed8d3c4d80">7b3df14</a>:   Increae coverage of utils (#304)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/ddba2a312884208b80682c7ecf3162234cf434e7">ddba2a3</a>:   Fix duplicate entry warning (#311)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/915673fac5b37ccce0804fb2c2df969a92726f6b">915673f</a>:   Test modules minimally (#298)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/bc0c21a924e097bfda51769228c787f69ae474e6">bc0c21a</a>:   Some repos may error out, don’t let them kill the build (#297)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/924a7047a31d2fe69de04f5c97ef89eefc600fa3">924a704</a>:   doc: add 1.6.1 release notes</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/b1ab4d31d3b935929b39c553dd71135732bb9922">b1ab4d3</a>:   doc: fix typo</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/85e5d71454c018c84e30a81edd256f24c23e9fd9">85e5d71</a>:   postgresql: do not print stack trace for low level library (#309)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/255c641505fce253ac3c854cbda3287e15e0524b">255c641</a>:   Setuptools uses entry return value as an error msg (#303)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/2fd8db454e1329b72eac292df9176c2a4c820261">2fd8db4</a>:   Fix name to match expectations (#305)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/9cddb70a5a6d74553868b8940139db00d59f2429">9cddb70</a>:   updated release notes</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/7fe0358eedae19e2bb0d33a5fa6a908a17424e28">7fe0358</a>:   Error in more clean methods (#300)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/84aa506cfa8d3838a30039eb7d47b62f64d23db9">84aa506</a>:   Fix a bug in setup.py parsing of requirements. (#301)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a58b61bb421e41404532e9182ab3f28da8a77837">a58b61b</a>:   fix typo in release notes</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Fermilab.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
