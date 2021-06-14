@@ -4,6 +4,7 @@ Release 1.7.0
 In this release:
 * Added structured logging. Improved python logging and adoption of structured logs format that will increase the semantinc content of the messages and ease the export of information for dashboards and Elastic Search.
 * New produces-consumes structure using decorators. This will improve the code quality, improving static checks and reducing the lines of code by removing repetitive boilerplates, especially in the modules. 
+* Added requirement on SQLAlchemy (for test framework)
 
 Planned:
 
