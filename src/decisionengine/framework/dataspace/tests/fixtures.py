@@ -1,7 +1,12 @@
+import pytest
+
+from decisionengine.framework.dataspace import dataspace as ds
+
 from decisionengine.framework.dataspace.datasources.tests.fixtures import (  # noqa: F401
     PG_DE_DB_WITH_SCHEMA,
     PG_PROG,
     DATABASES_TO_TEST,
+    datasource,
     load_sample_data_into_datasource,
 )
 
@@ -9,5 +14,55 @@ __all__ = [
     "PG_DE_DB_WITH_SCHEMA",
     "PG_PROG",
     "DATABASES_TO_TEST",
+    "datasource",
+    "dataspace",
     "load_sample_data_into_datasource",
 ]
+
+@pytest.fixture(params=DATABASES_TO_TEST)
+def dataspace(request):
+    """
+    This parameterized fixture will setup up various datasources.
+    Add datasource objects to DATASOURCES_TO_TEST once they've got
+    our basic schema loaded.  And adjust our `if` statements here
+    until we are SQLAlchemy only.
+
+    Pytest should take it from there and automatically run it
+    through all the tests using this fixture.
+    """
+    conn_fixture = request.getfixturevalue(request.param)
+
+    db_info = {}
+    try:
+        # SQL Alchemy
+        db_info["url"] = conn_fixture["url"]
+    except TypeError:
+        try:
+            # psycopg2
+            db_info["host"] = conn_fixture.info.host
+            db_info["port"] = conn_fixture.info.port
+            db_info["user"] = conn_fixture.info.user
+            db_info["password"] = conn_fixture.info.password
+            db_info["database"] = conn_fixture.info.dbname
+        except AttributeError:
+            # psycopg2cffi
+            for element in conn_fixture.dsn.split():
+                (key, value) = element.split("=")
+                if value != "''" and value != '""':
+                    db_info[key] = value
+
+    config = {}
+    config["dataspace"] = {}
+    config["dataspace"]["datasource"] = {}
+    config["dataspace"]["datasource"]["config"] = db_info
+
+    if request.param == "PG_DE_DB_WITH_SCHEMA":
+        config["dataspace"]["datasource"][
+            "module"
+        ] = "decisionengine.framework.dataspace.datasources.postgresql"
+        config["dataspace"]["datasource"]["name"] = "Postgresql"
+
+    my_ds = ds.DataSpace(config)
+    load_sample_data_into_datasource(my_ds)
+
+    return my_ds
