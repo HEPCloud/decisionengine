@@ -9,6 +9,8 @@ __all__ = [
     "DataSpace",
 ]
 
+from decisionengine.framework.util.singleton import Singleton
+
 
 class DataSpaceConfigurationError(Exception):
     """
@@ -37,24 +39,6 @@ class DataSpaceExistsError(Exception):
     """
     pass
 
-
-class Singleton(type):
-    """
-    Singleton pattern using Metaclass
-    http://stackoverflow.com/questions/6760685/creating-a-singleton-in-python
-    """
-
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super().__call__(*args,
-                                                   **kwargs)
-        # Uncomment following to run __init__ everytime class is called
-        # else:
-        #     cls._instances[cls].__init__(*args, **kwargs)
-
-        return cls._instances[cls]
 
 class DataSourceLoader(object, metaclass=Singleton):
 
