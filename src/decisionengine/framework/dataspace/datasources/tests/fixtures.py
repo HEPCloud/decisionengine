@@ -1,5 +1,6 @@
 """pytest fixtures/constants"""
 import datetime
+import logging
 import os
 import threading
 from collections import UserDict
@@ -11,10 +12,15 @@ from pytest_postgresql import factories
 
 from decisionengine.framework.dataspace.datablock import Header, Metadata
 
+from decisionengine.framework.dataspace.datasources.postgresql import (
+    Postgresql as Postgresql_datasource,
+)
+
 __all__ = [
     "DATABASES_TO_TEST",
     "PG_PROG",
     "PG_DE_DB_WITH_SCHEMA",
+    "datasource",
     "mock_data_block",
 ]
 
@@ -31,6 +37,48 @@ PG_DE_DB_WITH_SCHEMA = factories.postgresql(
 )
 
 DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA",)
+
+
+@pytest.fixture(params=DATABASES_TO_TEST)
+def datasource(request):
+    """
+    This parameterized fixture will setup up various datasources.
+
+    Add datasource objects to DATASOURCES_TO_TEST once they've got
+    our basic schema loaded.  And adjust our `if` statements here
+    until we are SQLAlchemy only.
+
+    Pytest should take it from there and automatically run it
+    through all the tests using this fixture.
+    """
+    conn_fixture = request.getfixturevalue(request.param)
+
+    db_info = {}
+    try:
+        # SQL Alchemy
+        db_info["url"] = conn_fixture["url"]
+        db_info["echo"] = True  # put SQLAlchemy into extra chatty mode
+    except TypeError:
+        try:
+            # psycopg2
+            db_info["host"] = conn_fixture.info.host
+            db_info["port"] = conn_fixture.info.port
+            db_info["user"] = conn_fixture.info.user
+            db_info["password"] = conn_fixture.info.password
+            db_info["database"] = conn_fixture.info.dbname
+        except AttributeError:
+            # psycopg2cffi
+            for element in conn_fixture.dsn.split():
+                (key, value) = element.split("=")
+                if value != "''" and value != '""':
+                    db_info[key] = value
+
+    if request.param == "PG_DE_DB_WITH_SCHEMA":
+        my_ds = Postgresql_datasource(db_info)
+
+    load_sample_data_into_datasource(my_ds)
+
+    return my_ds
 
 
 @pytest.fixture
@@ -82,6 +130,8 @@ def load_sample_data_into_datasource(schema_only_db):
     This is a function not a fixture so you can
     run it on any datasource providing the right API.
     """
+    logging.getLogger().debug("Loading Sample data for tests")
+
     _pk = schema_only_db.store_taskmanager(
         "taskmanager1",
         "11111111-1111-1111-1111-111111111111",
