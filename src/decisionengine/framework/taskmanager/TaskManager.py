@@ -24,6 +24,9 @@ from decisionengine.framework.taskmanager.ProcessingState import ProcessingState
 from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
 from decisionengine.framework.util.subclasses import all_subclasses
 from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.util.prometheus import get_registry
+
+import os  # TODO
 
 _TRANSFORMS_TO = 300  # 5 minutes
 _DEFAULT_SCHEDULE = 300  # ""
@@ -74,7 +77,6 @@ class Worker:
     Provides interface to loadable modules an events to sycronise
     execution
     """
-
     def __init__(self, conf_dict, base_class):
         """
         :type conf_dict: :obj:`dict`
@@ -102,7 +104,6 @@ class Channel:
     Decision Channel.
     Instantiates workers according to channel configuration
     """
-
     def __init__(self, channel_dict):
         """
         :type channel_dict: :obj:`dict`
@@ -126,7 +127,6 @@ class TaskManager:
     """
     Task Manager
     """
-
     def __init__(self, name, generation_id, channel_dict, global_config):
         """
         :type name: :obj:`str`
@@ -152,21 +152,37 @@ class TaskManager:
         # Metrics
         self.channel_state_gauge = prometheus_client.Gauge('channel_state',
                                                            'Channel state',
-                                                           ['name',]).\
-                                                               labels(self.name)
+                                                           ['name', ],
+                                                           multiprocess_mode='liveall',
+                                                           registry=get_registry()).\
+            labels(self.name)
 
         self.channel_state_gauge.set_function(self.get_state_value)
-        self.source_acquire_gauge = prometheus_client.Gauge('source_last_acquire', "Last time a source "
-                                    'successfully ran its acquire function',
-                                    ['channel_name', 'source_name',])
+        # self.channel_state_gauge.set(9)
+        self.source_acquire_gauge = prometheus_client.Gauge(
+            'source_last_acquire', "Last time a source "
+            'successfully ran its acquire function', [
+                'channel_name',
+                'source_name',
+            ],
+            multiprocess_mode='liveall')
 
-        self.source_acquire_gauge.labels(self.name, 'test__init__').set(42) # TODO
+        self.source_acquire_gauge.labels(self.name,
+                                         'test__init__').set(42)  # TODO
+
+        self.pid_gauge = prometheus_client.Gauge(
+            'pid_gague', "source "
+            'successfully ran its acquire function',
+            multiprocess_mode='liveall')
+        self.pid_gauge.set(os.getpid())
+
+        logging.getLogger().info('Debug:  log pid __init__:  {}'.format(
+            os.getpid()))
         # self.source_acquire_gauge.labels('test1', 'test2').set_to_current_time()
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
         for src_worker in self.channel.sources.values():
             src_worker.worker.post_create(global_config)
-
 
     def wait_for_all(self, events_done):
         """
@@ -395,7 +411,8 @@ class TaskManager:
                 self.logger.info(f"Src {src.name} acquire returned")
                 self.logger.info(f"Src {src.name} filling header")
                 self.source_acquire_gauge.labels(self.name, src.name)
-                self.source_acquire_gauge.labels(self.name, src.name).set_to_current_time()
+                self.source_acquire_gauge.labels(
+                    self.name, src.name).set_to_current_time()
                 if data:
                     t = time.time()
                     header = datablock.Header(self.data_block_t0.taskmanager_id, create_time=t, creator=src.module)
