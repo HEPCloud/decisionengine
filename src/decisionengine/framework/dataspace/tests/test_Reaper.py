@@ -1,41 +1,34 @@
 import logging
-import mock
 import time
-import unittest
 
+import mock
 import pytest
+import unittest
 
 import decisionengine.framework.dataspace.dataspace as dataspace
 from decisionengine.framework.dataspace.maintain import Reaper
 from decisionengine.framework.taskmanager.ProcessingState import State
+from decisionengine.framework.dataspace.datasources.null import NullDataSource
 
-
-GLOBAL_CONFIG = {
-    "dataspace": {
-        "datasource": {
-            "module": "just.a.string",
-            "name": "AnyString",
-            "config": {
-                "key": "value",
-            },
-        },
-    },
-}
-
-
-class MockSource(object):
-
-    def delete_data_older_than(self, day):
-        time.sleep(3)
 
 class TestReaper(unittest.TestCase):
     logger = logging.getLogger()
 
     def setUp(self):
-        with mock.patch.object(dataspace.DataSourceLoader, "create_datasource") as source:
-            source.return_value = MockSource()
-            GLOBAL_CONFIG["dataspace"]["retention_interval_in_days"] = 365
-            self.reaper = Reaper(GLOBAL_CONFIG)
+        # use the null datasource so we don't have to patch out the behavior
+        self.config = {
+            "dataspace": {
+                "retention_interval_in_days": 365,
+                "datasource": {
+                    "module": "decisionengine.framework.dataspace.datasources.null",
+                    "name": "NullDataSource",
+                    "config": {
+                        "key": "value",
+                    },
+                },
+            },
+        }
+        self.reaper = Reaper(self.config)
 
     def tearDown(self):
         # Make sure there are no dangling reapers
@@ -74,21 +67,29 @@ class TestReaper(unittest.TestCase):
         self.assertIn(self.reaper.state.get(), (State.SHUTTINGDOWN, State.SHUTDOWN))
 
     def test_state_can_be_active(self):
-        self.reaper.start()
-        time.sleep(0.5)  # make sure reaper has a chance to get the lock
-        self.assertEqual(self.reaper.state.get(), State.ACTIVE)
+        def sleepnow(arg1=None, arg2=None):
+            time.sleep(3)
+
+        with mock.patch.object(NullDataSource, "delete_data_older_than", new=sleepnow):
+            self.reaper.start()
+            time.sleep(0.5)  # make sure reaper has a chance to get the lock
+            self.assertEqual(self.reaper.state.get(), State.ACTIVE)
 
     @pytest.mark.timeout(20)
     def test_state_sets_timer_and_uses_it(self):
-        self.reaper.MIN_SECONDS_BETWEEN_RUNS = 1
-        self.reaper.seconds_between_runs = 1
-        self.reaper.start(delay=2)
-        self.assertEqual(self.reaper.seconds_between_runs, 1)
-        self.reaper.state.wait_while(State.IDLE)  # Make sure the reaper started
-        self.assertEqual(self.reaper.state.get(), State.ACTIVE)
-        self.reaper.state.wait_while(State.ACTIVE)  # let the reaper finish its scan
-        self.reaper.state.wait_while(State.IDLE)  # Make sure the reaper started a second time
-        self.reaper.state.wait_while(State.ACTIVE)  # let the reaper finish its scan
+        def sleepnow(arg1=None, arg2=None):
+            time.sleep(3)
+
+        with mock.patch.object(NullDataSource, "delete_data_older_than", new=sleepnow):
+            self.reaper.MIN_SECONDS_BETWEEN_RUNS = 1
+            self.reaper.seconds_between_runs = 1
+            self.reaper.start(delay=2)
+            self.assertEqual(self.reaper.seconds_between_runs, 1)
+            self.reaper.state.wait_while(State.IDLE)  # Make sure the reaper started
+            self.assertEqual(self.reaper.state.get(), State.ACTIVE)
+            self.reaper.state.wait_while(State.ACTIVE)  # let the reaper finish its scan
+            self.reaper.state.wait_while(State.IDLE)    # Make sure the reaper started a second time
+            self.reaper.state.wait_while(State.ACTIVE)  # let the reaper finish its scan
 
     def test_start_delay(self):
         self.reaper.start(delay=90)
@@ -120,39 +121,31 @@ class TestReaper(unittest.TestCase):
 
     def test_fail_missing_config(self):
         with self.assertRaises(dataspace.DataSpaceConfigurationError):
-            with mock.patch.object(dataspace.DataSourceLoader, "create_datasource") as source:
-                source.return_value = MockSource()
-                test_config = GLOBAL_CONFIG.copy()
-                del test_config["dataspace"]
-                Reaper(test_config)
+            test_config = self.config.copy()
+            del test_config["dataspace"]
+            Reaper(test_config)
 
     def test_fail_bad_config(self):
         with self.assertRaises(dataspace.DataSpaceConfigurationError):
-            with mock.patch.object(dataspace.DataSourceLoader, "create_datasource") as source:
-                source.return_value = MockSource()
-                test_config = GLOBAL_CONFIG.copy()
-                test_config["dataspace"] = 'somestring'
-                Reaper(test_config)
+            test_config = self.config.copy()
+            test_config["dataspace"] = "somestring"
+            Reaper(test_config)
 
     def test_fail_missing_config_key(self):
         with self.assertRaises(dataspace.DataSpaceConfigurationError):
-            with mock.patch.object(dataspace.DataSourceLoader, "create_datasource") as source:
-                source.return_value = MockSource()
-                test_config = GLOBAL_CONFIG.copy()
-                del test_config["dataspace"]["retention_interval_in_days"]
-                Reaper(test_config)
+            test_config = self.config.copy()
+            del test_config["dataspace"]["retention_interval_in_days"]
+            Reaper(test_config)
 
     def test_fail_wrong_config_key(self):
         with self.assertRaises(ValueError):
-            with mock.patch.object(dataspace.DataSourceLoader, "create_datasource") as source:
-                source.return_value = MockSource()
-                test_config = GLOBAL_CONFIG.copy()
-                test_config["dataspace"]["retention_interval_in_days"] = "abc"
-                Reaper(test_config)
+            test_config = self.config.copy()
+            test_config["dataspace"]["retention_interval_in_days"] = "abc"
+            Reaper(test_config)
 
     @pytest.mark.timeout(20)
     def test_source_fail_can_be_fixed(self):
-        with mock.patch.object(MockSource, "delete_data_older_than") as function:
+        with mock.patch.object(NullDataSource, "delete_data_older_than") as function:
             function.side_effect = KeyError
             self.reaper.start()
             time.sleep(1)  # make sure stack trace bubbles up before checking state
@@ -167,7 +160,3 @@ class TestReaper(unittest.TestCase):
 
             self.reaper.stop()
             self.assertEqual(self.reaper.state.get(), State.SHUTDOWN)
-
-
-if __name__ == '__main__':
-    unittest.main()
