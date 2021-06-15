@@ -11,6 +11,7 @@ import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 from decisionengine.framework.modules import Source
 from decisionengine.framework.modules.Source import Parameter
+from decisionengine.framework.modules.translate_product_name import translate_all
 
 RETRIES = 10
 RETRY_TO = 60
@@ -27,7 +28,7 @@ class SourceProxy(Source.Source):
             raise RuntimeError(
                 'SourceProxy misconfigured. Must have {} defined'.format(must_have))
         self.source_channel = config['channel_name']
-        self.data_keys = config['Dataproducts']
+        self.data_keys = translate_all(config['Dataproducts'])
         self.retries = config.get('retries', RETRIES)
         self.retry_to = config.get('retry_timeout', RETRY_TO)
         self.logger = logging.getLogger()
@@ -35,7 +36,7 @@ class SourceProxy(Source.Source):
         # Hack - it is possible for a subclass to declare @produces,
         #        in which case, we do not want to override that.
         if not self._produces:
-            self._produces = {k: Any for k in self.data_keys}
+            self._produces = {new_name: Any for new_name in self.data_keys.values()}
 
     def post_create(self, global_config):
         self.dataspace = dataspace.DataSpace(global_config)
@@ -85,18 +86,12 @@ class SourceProxy(Source.Source):
         filled_keys = []
         for _ in range(self.retries):
             if len(filled_keys) != len(self.data_keys):
-                for k in self.data_keys:
-                    if isinstance(k, tuple) or isinstance(k, list):
-                        k_in = k[0]
-                        k_out = k[1]
-                    else:
-                        k_in = k
-                        k_out = k
+                for k_in, k_out in self.data_keys.items():
                     if k_in not in filled_keys:
                         try:
                             rc[k_out] = pd.DataFrame(
                                 self._get_data(data_block, k_in))
-                            filled_keys.append(k)
+                            filled_keys.append(k_in)
                         except KeyError as ke:
                             self.logger.debug("KEYERROR %s", ke)
             if len(filled_keys) == len(self.data_keys):
