@@ -303,6 +303,8 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         if not self.channel_config_loader.get_channels():
             self.logger.info("No channel configurations available in " +
                              f"{self.channel_config_loader.channel_config_dir}")
+        else:
+            self.logger.debug(f"Found channels: {self.channel_config_loader.get_channels().items()}")
 
         for name, config in self.channel_config_loader.get_channels().items():
             try:

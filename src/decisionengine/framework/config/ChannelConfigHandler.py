@@ -120,6 +120,8 @@ class ChannelConfigHandler():
             self.channels = {}
             self.logger.info("All channel configurations have been removed and are being reloaded.")
 
+        self.logger.info(f"Loading channel configs from:{self.channel_config_dir}")
+
         files = fs.files_with_extensions(self.channel_config_dir, '.conf', '.jsonnet')
         for channel_name, full_path in files:
             # Load only the channels that are not already in memory
