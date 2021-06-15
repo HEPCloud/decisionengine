@@ -148,7 +148,7 @@ class TestDatablock(unittest.TestCase):
         result = str(self.datablock)
         self.assertEqual(
             result,
-            "{'taskamanger_id': '1', 'generation_id': 1, 'sequence_id': 2, "
+            "{'taskmanger_id': '1', 'generation_id': 1, 'sequence_id': 2, "
             "'keys': ['%s'], 'dataproducts': {'%s': '%s'}}"
             % (dataproduct["key"], dataproduct["key"], dataproduct["value"])
         )
