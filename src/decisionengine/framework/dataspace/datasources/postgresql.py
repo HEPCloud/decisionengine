@@ -122,12 +122,17 @@ class Postgresql(ds.DataSource):
 
     def __init__(self, config_dict):
         super().__init__(config_dict)
+        self.logger = logging.getLogger('decision_engine')
+        self.logger.debug('Initializing a Postgresql datasource')
+
+        # account for differences between psycopg2 and psycopg2cffi
+        dbname = config_dict.get('database', config_dict.get('dbname', None))
+        self.logger.debug(f"Trying to connect as {config_dict['user']}@{config_dict['host']}:{config_dict['port']}/{dbname}")
+
         self.connection_pool = pooled_db.PooledDB(psycopg2,
                                                   **config_dict)
         self.retries = MAX_NUMBER_OF_RETRIES
         self.timeout = TIME_TO_SLEEP
-        self.logger = logging.getLogger()
-        self.logger.debug('Initializing a Postgresql datasource')
 
     def create_tables(self):
         return True
