@@ -19,6 +19,8 @@ import json
 import socketserver
 import xmlrpc.server
 
+from threading import Event
+
 from decisionengine.framework.config import ChannelConfigHandler, ValidConfig, policies
 from decisionengine.framework.dataspace.maintain import Reaper
 from decisionengine.framework.engine.Workers import Worker, Workers
@@ -59,6 +61,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.global_config = global_config
         self.dataspace = dataspace.DataSpace(self.global_config)
         self.reaper = Reaper(self.global_config)
+        self.startup_complete = Event()
         self.logger.info("DecisionEngine started on {}".format(server_address))
 
     def get_logger(self):
@@ -550,6 +553,7 @@ def _start_de_server(server):
     try:
         server.reaper_start(delay=server.global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
         server.start_channels()
+        server.startup_complete.set()
         server.serve_forever()
     except Exception as __e:  # pragma: no cover
         msg = f"""Server Address: {server.global_config.get('server_address')}

@@ -101,11 +101,10 @@ def test_query_tool_json(deserver):
 
 @pytest.mark.usefixtures("deserver")
 def test_query_tool_since(deserver):
-    # Test taskmanager start time was very recent
-    just_a_moment_ago = datetime.datetime.now() - datetime.timedelta(seconds=1)
+    recently = datetime.datetime.now() - datetime.timedelta(minutes=3)
     # give the channel a moment to complete setup
     deserver.de_client_run_cli('--block-while', 'BOOT'),
-    output = deserver.de_query_tool_run_cli('foo', f'--since="{just_a_moment_ago.strftime("%Y-%m-%d %H:%M:%S")}"')
+    output = deserver.de_query_tool_run_cli('foo', f'--since="{recently.strftime("%Y-%m-%d %H:%M:%S")}"')
     assert output == DEFAULT_OUTPUT
 
 @pytest.mark.usefixtures("deserver")
