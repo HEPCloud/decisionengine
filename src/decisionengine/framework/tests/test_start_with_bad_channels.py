@@ -42,7 +42,9 @@ def test_client_can_get_products_no_channels(deserver, caplog):
     output = deserver.de_client_run_cli('--print-products')
     assert 'No channels are currently active.' in output
 
-    error_msgs = [entry.message for entry in caplog.records if entry.levelno == ERROR]
+    error_msgs = []
+    for when in ("setup", "call"):  # log may show up in either pytest 'when'
+        error_msgs.extend([entry.message for entry in caplog.get_records(when) if entry.levelno == ERROR])
     assert len(error_msgs) == 5
 
     # Find missing product erro
