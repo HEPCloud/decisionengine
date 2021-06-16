@@ -2,15 +2,20 @@ Release 1.7.0
 -------------
 
 In this release:
-* Added structured logging. Improved python logging and adoption of structured logs format that will increase the semantinc content of the messages and ease the export of information for dashboards and Elastic Search.
-* New produces-consumes structure using decorators. This will improve the code quality, improving static checks and reducing the lines of code by removing repetitive boilerplates, especially in the modules. 
-* Added requirement on SQLAlchemy (for test framework)
+
+- New produces-consumes structure using decorators. This will improve the code quality, improving static checks and reducing the lines of code by removing repetitive boilerplates, especially in the modules. 
 
 Planned:
+- Added structured logging. Improved python logging and adoption of structured logs format that will increase the semantinc content of the messages and ease the export of information for dashboards and Elastic Search.
+- Addedf SQLAlchemy object-relational mapper to allow different database backends.
+- Packaging via setuptools for both decisionengine and decisionengine_modules: RPM packages correctly install also all dependencies.
+
+.. note::
+    Added requirement on SQLAlchemy (for test framework)
 
 
 Issues fixed in this release
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 - `253 <https://github.com/HEPCloud/decisionengine/issues/253>`_ : Decision engine can sometimes start up at boot time before network name resolution is working (`ae04db5 <https://github.com/HEPCloud/decisionengine/commit/ae04db544599c6777d63cb315ddac169e586809d>`_)
