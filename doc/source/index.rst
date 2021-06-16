@@ -9,35 +9,10 @@ Release Notes
 =============
 
 .. toctree::
-   :maxdepth: 2
-
-   release_notes/release_notes_1.6
-   release_notes/release_notes_1.5
-   release_notes/release_notes_1.4
-   release_notes/release_notes_1.3
-   release_notes/release_notes_1.2
-   release_notes/release_notes_1.1
-
-Release Notes v2
-===============
-
-.. toctree::
    :maxdepth: 1
 
-   release_notes/release_notes_1.6
-   release_notes/release_notes_1.5
-   release_notes/release_notes_1.4
-   release_notes/release_notes_1.3
-   release_notes/release_notes_1.2
-   release_notes/release_notes_1.1
-
-Release Notes v3
-================
-
-.. toctree::
-   :maxdepth: 1
-
-   release_notes.rst
+   release_notes
+   Latest<release_notes/release_notes_1.6>
 
 Developer Documentation
 =======================
@@ -60,7 +35,7 @@ Source code
 .. toctree::
    :maxdepth: 1
 
-   Code documentation <code/index>
+   Code documentation<code/index>
    code/decisionengine
 
 Indices and tables
