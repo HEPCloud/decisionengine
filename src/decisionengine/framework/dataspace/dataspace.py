@@ -101,6 +101,7 @@ class DataSpace():
             self.logger.exception("Error in initializing DataSpace!")
             raise DataSpaceConfigurationError('Invalid dataspace configuration')
 
+        # Connect to the datasource/database
         self.datasource = DataSourceLoader().create_datasource(self._db_driver_module,
                                                                self._db_driver_name,
                                                                self._db_driver_config)
@@ -108,13 +109,6 @@ class DataSpace():
         # Datablocks, current and previous, keyed by taskmanager_ids
         self.curr_datablocks = {}
         self.prev_datablocks = {}
-
-        # Connect to the database
-        try:
-            self.datasource.connect()
-        except DataSpaceConnectionError:
-            self.logger.exception('Cannot connect to the datasource!')
-            raise
 
     def __str__(self):  # pragma: no cover
         return '%s' % vars(self)
