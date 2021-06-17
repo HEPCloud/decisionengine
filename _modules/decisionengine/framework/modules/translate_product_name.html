@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.FailingSourceProxy &mdash; decisionengine 1.7.0rc0.post108+g6991f65f documentation</title>
+  <title>decisionengine.framework.modules.translate_product_name &mdash; decisionengine 1.7.0rc0.post108+g6991f65f documentation</title>
   
 
   
@@ -148,7 +148,7 @@
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
-      <li>decisionengine.framework.tests.FailingSourceProxy</li>
+      <li>decisionengine.framework.modules.translate_product_name</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -163,16 +163,46 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for decisionengine.framework.tests.FailingSourceProxy</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">SourceProxy</span>
+  <h1>Source code for decisionengine.framework.modules.translate_product_name</h1><div class="highlight"><pre>
+<span></span><span class="c1"># The functionality provided here supports the translation of one</span>
+<span class="c1"># string to another using the syntax &#39;old -&gt; new&#39;, subject to the</span>
+<span class="c1"># following constraints:</span>
+<span class="c1">#</span>
+<span class="c1">#   - The &#39;old&#39; and &#39;new&#39; strings may contain the following</span>
+<span class="c1">#     characters: a-z, A-Z, 0-9, and _ (underscore).</span>
+<span class="c1">#</span>
+<span class="c1">#   - If &#39;-&gt;&#39; is provided, it must be surrounded by at least one space</span>
+<span class="c1">#     on either side.</span>
+<span class="c1">#</span>
+<span class="c1"># The behavior is the following:</span>
+<span class="c1">#</span>
+<span class="c1">#   - translate(&quot;old&quot;) == (&quot;old&quot;, None)</span>
+<span class="c1">#   - translate(&quot;old -&gt; new&quot;) == (&quot;old&quot;, &quot;new&quot;)</span>
+<span class="c1">#   - translate_all([&quot;old&quot;, &quot;old1 -&gt; new1&quot;]) == {&quot;old&quot;: &quot;old&quot;, &quot;old1&quot;: &quot;new1&quot;}</span>
 
-<div class="viewcode-block" id="FailingSourceProxy"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.FailingSourceProxy.FailingSourceProxy">[docs]</a><span class="k">class</span> <span class="nc">FailingSourceProxy</span><span class="p">(</span><span class="n">SourceProxy</span><span class="o">.</span><span class="n">SourceProxy</span><span class="p">):</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
-<div class="viewcode-block" id="FailingSourceProxy.acquire"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.FailingSourceProxy.FailingSourceProxy.acquire">[docs]</a>    <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Failing source proxy test&quot;</span><span class="p">)</span></div></div>
+<div class="viewcode-block" id="translate"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.translate_product_name.translate">[docs]</a><span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="n">spec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Break apart the string &#39;old -&gt; new&#39; into a tuple (&#39;old&#39;, &#39;new&#39;)&quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">R</span><span class="s1">&#39;(\w+)(\s+\-&gt;\s+(\w+))?&#39;</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The specification &#39;</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2">&#39; does not match the supported pattern &quot;</span>
+                           <span class="s1">&#39;&quot;old_name[ -&gt; new_name]&quot;,</span><span class="se">\n</span><span class="s1">&#39;</span>
+                           <span class="s2">&quot;where the product names can consist of the characters a-z, a-Z, 0-9, &quot;</span>
+                           <span class="s2">&quot;and an underscore &#39;_&#39;.</span><span class="se">\n</span><span class="s2">If an optional new name is specified, the &#39;-&gt;&#39; &quot;</span>
+                           <span class="s2">&quot;token must be surrounded by at least</span><span class="se">\n</span><span class="s2">one space on either side.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="translate_all"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.translate_product_name.translate_all">[docs]</a><span class="k">def</span> <span class="nf">translate_all</span><span class="p">(</span><span class="n">specs</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">specs</span><span class="p">:</span>
+        <span class="n">old</span><span class="p">,</span> <span class="n">new</span> <span class="o">=</span> <span class="n">translate</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">old</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">old</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span>
+    <span class="k">return</span> <span class="n">result</span></div>
 </pre></div>
 
            </div>
