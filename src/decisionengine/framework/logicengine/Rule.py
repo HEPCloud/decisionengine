@@ -23,8 +23,8 @@ class Rule:
         return self.expr.evaluate(evaluated_facts)
 
     def __str__(self):  # pragma: no cover
-        return f"name: {self.name}\n"
-        f"expression: '{self.expr}'\n"
-        f"actions: {self.actions}\n"
-        f"false_actions: {self.false_actions}\n"
-        f"facts: {self.new_facts}"
+        return (f"name: {self.name}\n"
+                f"expression: '{self.expr}'\n"
+                f"actions: {self.actions}\n"
+                f"false_actions: {self.false_actions}\n"
+                f"facts: {self.new_facts}")
