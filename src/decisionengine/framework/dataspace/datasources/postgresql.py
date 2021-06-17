@@ -183,7 +183,6 @@ class Postgresql(ds.DataSource):
                 SELECT_TASKMANAGERS += " AND "
             else:
                 SELECT_TASKMANAGERS += " WHERE "
-                have_where = True
             SELECT_TASKMANAGERS += " tm.datestamp <=  '" + end_time + "'"
         try:
             return self._select_dictresult(SELECT_TASKMANAGERS +
