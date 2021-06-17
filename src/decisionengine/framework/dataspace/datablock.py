@@ -445,7 +445,6 @@ class DataBlock:
         Check if the dataproduct for a given key or any key is expired
         """
         self.logger.info('datablock is checking for expired dataproducts')
-        pass
 
     def mark_expired(self, expiration_time):
         """
@@ -453,4 +452,3 @@ class DataBlock:
         and mark it as expired if expiration_time <= current time
         """
         self.logger.info('datablock is marking expired dataproducts')
-        pass
