@@ -470,10 +470,6 @@ class Postgresql(ds.DataSource):
             except psycopg2.Error:  # pragma: no cover
                 pass
             raise
-        except psycopg2.Error:
-            if db:
-                db.rollback()
-            raise
         finally:
             list([x.close if x else None for x in (cursor, db)])
 
@@ -496,10 +492,6 @@ class Postgresql(ds.DataSource):
                     db.rollback()
             except psycopg2.Error:  # pragma: no cover
                 pass
-            raise
-        except psycopg2.Error:
-            if db:
-                db.rollback()
             raise
         finally:
             list([x.close if x else None for x in (cursor, db)])
