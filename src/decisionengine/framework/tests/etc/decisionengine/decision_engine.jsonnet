@@ -6,8 +6,8 @@
     'rotation_time_unit':'D',
     'rotation_time_interval':1,
     'file_rotate_by':"size",
-    'log_level': "INFO",
-    'global_channel_log_level':"WARNING",
+    'log_level': "DEBUG",
+    'global_channel_log_level':"DEBUG",
   },
 
   'server_address' : ["localhost",8888],
