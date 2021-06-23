@@ -19,6 +19,12 @@ NOTE: The python dependencies of this project may require
       additional OS features for build if python wheels
       are not available for your platform.
 
+Make sure you have up to date versions of `pip`, `setuptools`, and `wheel`.
+
+`python3 -m pip install --upgrade pip setuptools wheel --user`
+
+Now you can perform an editable install of the code base.
+
 `python3 setup.py develop --user`
 
 The development environment has a number of extra requirements you can load
@@ -46,6 +52,7 @@ This should clean that up, provided you can write to the user home area.
 
 ```shell
 su decisionengine -c /bin/bash
+python3 -m pip install --upgrade pip setuptools wheel --user
 python3 /path/to/setup.py develop --user
 python3 /path/to/setup.py develop --user --uninstall
 ```
