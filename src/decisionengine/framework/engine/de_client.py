@@ -164,8 +164,8 @@ def execute_command_from_args(argsparsed, de_socket):
         if argsparsed.force:
             timeout = 0
         elif argsparsed.timeout:
-            timeout = argsparsed.timeout
-        return de_socket.kill_chaannel(argsparsed.kill_channel, timeout)
+            timeout = int(argsparsed.timeout)
+        return de_socket.kill_channel(argsparsed.kill_channel, timeout)
     if argsparsed.start_channel:
         return de_socket.start_channel(argsparsed.start_channel)
     if argsparsed.stop_channels:
