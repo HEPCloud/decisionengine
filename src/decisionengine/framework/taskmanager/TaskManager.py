@@ -384,6 +384,7 @@ class TaskManager:
             except Exception:
                 logging.getLogger().exception(f'Exception running source {src.name} ')
                 self.take_offline(self.data_block_t0)
+                break
             if src.schedule > 0:
                 s = src.stop_running.wait(src.schedule)
                 if s:
