@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.0rc0.post113+g66bd81f2 documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.0rc0.post114+g4c5564d4 documentation</title>
   
 
   
@@ -316,11 +316,18 @@
         <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting DE Fixture&quot;</span><span class="p">)</span>
         <span class="n">server_proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="c1"># Ensure the channels have started</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture: Waiting on startup state is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture: startup state is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="c1"># The following block only works if there are</span>
         <span class="c1"># active workers; if it is called before any workers</span>
         <span class="c1"># exist, then it will return and not block as requested.</span>
         <span class="c1"># so long as your config contains at least one worker,</span>
         <span class="c1"># this will work as you&#39;d expect.</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DE Fixture: Waiting on channels to start&quot;</span><span class="p">)</span>
         <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 1.7.0rc0.post113+g66bd81f2 documentation</title>
+  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 1.7.0rc0.post114+g4c5564d4 documentation</title>
   
 
   
@@ -208,7 +208,9 @@
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-products&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;No channels are currently active.&#39;</span> <span class="ow">in</span> <span class="n">output</span>
 
-    <span class="n">error_msgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry</span><span class="o">.</span><span class="n">message</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">caplog</span><span class="o">.</span><span class="n">records</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">ERROR</span><span class="p">]</span>
+    <span class="n">error_msgs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">when</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;setup&quot;</span><span class="p">,</span> <span class="s2">&quot;call&quot;</span><span class="p">):</span>  <span class="c1"># log may show up in either pytest &#39;when&#39;</span>
+        <span class="n">error_msgs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">entry</span><span class="o">.</span><span class="n">message</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">caplog</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">when</span><span class="p">)</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">ERROR</span><span class="p">])</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">error_msgs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span>
 
     <span class="c1"># Find missing product erro</span>
