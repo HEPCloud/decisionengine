@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.dataspace &mdash; decisionengine 1.7.0rc0.post120+g5e03b6fe documentation</title>
+  <title>decisionengine.framework.dataspace.dataspace &mdash; decisionengine 1.7.0rc0.post121+g38034b2c documentation</title>
   
 
   
@@ -267,6 +267,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing DataSpace!&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration&#39;</span><span class="p">)</span>
 
+        <span class="c1"># Connect to the datasource/database</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">DataSourceLoader</span><span class="p">()</span><span class="o">.</span><span class="n">create_datasource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_module</span><span class="p">,</span>
                                                                <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_name</span><span class="p">,</span>
                                                                <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_config</span><span class="p">)</span>
@@ -274,13 +275,6 @@
         <span class="c1"># Datablocks, current and previous, keyed by taskmanager_ids</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">curr_datablocks</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prev_datablocks</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="c1"># Connect to the database</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-        <span class="k">except</span> <span class="n">DataSpaceConnectionError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Cannot connect to the datasource!&#39;</span><span class="p">)</span>
-            <span class="k">raise</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
