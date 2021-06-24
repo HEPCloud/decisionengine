@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.0rc0.post122+gafe7f7d7 documentation</title>
+  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.0rc0.post124+gfb5b177e documentation</title>
   
 
   
@@ -285,6 +285,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;All channel configurations have been removed and are being reloaded.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading channel configs from:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">files</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">files_with_extensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="s1">&#39;.conf&#39;</span><span class="p">,</span> <span class="s1">&#39;.jsonnet&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">full_path</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>

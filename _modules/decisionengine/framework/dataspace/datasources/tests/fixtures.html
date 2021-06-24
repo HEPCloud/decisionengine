@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.7.0rc0.post122+gafe7f7d7 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.7.0rc0.post124+gfb5b177e documentation</title>
   
 
   
@@ -166,6 +166,7 @@
   <h1>Source code for decisionengine.framework.dataspace.datasources.tests.fixtures</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;pytest fixtures/constants&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">UserDict</span>
@@ -177,10 +178,15 @@
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">Metadata</span>
 
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.postgresql</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Postgresql</span> <span class="k">as</span> <span class="n">Postgresql_datasource</span><span class="p">,</span>
+<span class="p">)</span>
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;DATABASES_TO_TEST&quot;</span><span class="p">,</span>
     <span class="s2">&quot;PG_PROG&quot;</span><span class="p">,</span>
     <span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;datasource&quot;</span><span class="p">,</span>
     <span class="s2">&quot;mock_data_block&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
@@ -197,6 +203,48 @@
 <span class="p">)</span>
 
 <span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,)</span>
+
+
+<div class="viewcode-block" id="datasource"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.datasource">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">DATABASES_TO_TEST</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">datasource</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This parameterized fixture will setup up various datasources.</span>
+
+<span class="sd">    Add datasource objects to DATASOURCES_TO_TEST once they&#39;ve got</span>
+<span class="sd">    our basic schema loaded.  And adjust our `if` statements here</span>
+<span class="sd">    until we are SQLAlchemy only.</span>
+
+<span class="sd">    Pytest should take it from there and automatically run it</span>
+<span class="sd">    through all the tests using this fixture.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">conn_fixture</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">param</span><span class="p">)</span>
+
+    <span class="n">db_info</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># SQL Alchemy</span>
+        <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
+        <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;echo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># put SQLAlchemy into extra chatty mode</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># psycopg2</span>
+            <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">host</span>
+            <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">port</span>
+            <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">user</span>
+            <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">password</span>
+            <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dbname</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># psycopg2cffi</span>
+            <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">dsn</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+                <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="s2">&quot;&#39;&#39;&quot;</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="s1">&#39;&quot;&quot;&#39;</span><span class="p">:</span>
+                    <span class="n">db_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span> <span class="o">==</span> <span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">:</span>
+        <span class="n">my_ds</span> <span class="o">=</span> <span class="n">Postgresql_datasource</span><span class="p">(</span><span class="n">db_info</span><span class="p">)</span>
+
+    <span class="n">load_sample_data_into_datasource</span><span class="p">(</span><span class="n">my_ds</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">my_ds</span></div>
 
 
 <div class="viewcode-block" id="mock_data_block"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.mock_data_block">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
@@ -248,6 +296,8 @@
 <span class="sd">    This is a function not a fixture so you can</span>
 <span class="sd">    run it on any datasource providing the right API.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading Sample data for tests&quot;</span><span class="p">)</span>
+
     <span class="n">_pk</span> <span class="o">=</span> <span class="n">schema_only_db</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span>
         <span class="s2">&quot;taskmanager1&quot;</span><span class="p">,</span>
         <span class="s2">&quot;11111111-1111-1111-1111-111111111111&quot;</span><span class="p">,</span>

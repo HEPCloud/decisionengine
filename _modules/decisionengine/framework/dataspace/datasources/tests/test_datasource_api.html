@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests.test_datasource_api &mdash; decisionengine 1.7.0rc0.post122+gafe7f7d7 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.test_datasource_api &mdash; decisionengine 1.7.0rc0.post124+gfb5b177e documentation</title>
   
 
   
@@ -179,61 +179,19 @@
     <span class="n">PG_DE_DB_WITH_SCHEMA</span><span class="p">,</span>
     <span class="n">PG_PROG</span><span class="p">,</span>
     <span class="n">DATABASES_TO_TEST</span><span class="p">,</span>
-    <span class="n">load_sample_data_into_datasource</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.postgresql</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Postgresql</span> <span class="k">as</span> <span class="n">Postgresql_datasource</span><span class="p">,</span>
+    <span class="n">datasource</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">Metadata</span>
 
 
-<div class="viewcode-block" id="datasource"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.datasource">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">DATABASES_TO_TEST</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">datasource</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This parameterized fixture will mock up various datasources.</span>
-
-<span class="sd">    Add datasource objects to DATASOURCES_TO_TEST once they&#39;ve got</span>
-<span class="sd">    our basic schema loaded.  And adjust our `if` statements here</span>
-<span class="sd">    until we are SQLAlchemy only.</span>
-
-<span class="sd">    Pytest should take it from there and automatically run it</span>
-<span class="sd">    through all the below tests</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">conn_fixture</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">param</span><span class="p">)</span>
-
-    <span class="n">db_info</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># SQL Alchemy</span>
-        <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">url</span>
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># psycopg2</span>
-            <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">host</span>
-            <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">port</span>
-            <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">user</span>
-            <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">password</span>
-            <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dbname</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="c1"># psycopg2cffi</span>
-            <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">dsn</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
-                <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="s2">&quot;&#39;&#39;&quot;</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="s1">&#39;&quot;&quot;&#39;</span><span class="p">:</span>
-                    <span class="n">db_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span> <span class="o">==</span> <span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">:</span>
-        <span class="n">my_ds</span> <span class="o">=</span> <span class="n">Postgresql_datasource</span><span class="p">(</span><span class="n">db_info</span><span class="p">)</span>
-        <span class="n">load_sample_data_into_datasource</span><span class="p">(</span><span class="n">my_ds</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">my_ds</span></div>
-
-
 <div class="viewcode-block" id="test_create_tables"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_create_tables">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_create_tables</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_create_tables</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;create_tables() should be safe to call multiple times&quot;&quot;&quot;</span>
     <span class="n">datasource</span><span class="o">.</span><span class="n">create_tables</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="test_get_taskmanager_exists"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanager_exists">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_taskmanager_exists</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_taskmanager_exists</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can I get a taskmanager by name or name and uuid&quot;&quot;&quot;</span>
     <span class="c1"># should return the &#39;newest&#39; instance</span>
     <span class="n">result1</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">)</span>
@@ -251,7 +209,7 @@
 
 
 <div class="viewcode-block" id="test_get_taskmanager_not_exists"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanager_not_exists">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_taskmanager_not_exists</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_taskmanager_not_exists</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;This should error out&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">)):</span>
         <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;no_such_task_manager&quot;</span><span class="p">)</span>
@@ -263,7 +221,7 @@
 
 
 <div class="viewcode-block" id="test_get_taskmanagers"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanagers">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_taskmanagers</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_taskmanagers</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can I get multimple task managers&quot;&quot;&quot;</span>
     <span class="n">yesterday</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">two_years_future</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">730</span><span class="p">))</span>
@@ -316,7 +274,7 @@
 
 
 <div class="viewcode-block" id="test_get_taskmanagers_not_exist"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_taskmanagers_not_exist">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_taskmanagers_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_taskmanagers_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Do I error out when asking for garbage&quot;&quot;&quot;</span>
     <span class="n">last_year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">365</span><span class="p">))</span>
     <span class="n">two_years_future</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">730</span><span class="p">))</span>
@@ -334,7 +292,7 @@
 
 
 <div class="viewcode-block" id="test_store_taskmanager"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_store_taskmanager">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_store_taskmanager</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_store_taskmanager</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can we make new entries&quot;&quot;&quot;</span>
     <span class="n">primary_key</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;taskmanager3&quot;</span><span class="p">,</span>
@@ -344,7 +302,7 @@
 
 
 <div class="viewcode-block" id="test_get_last_generation_id"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_last_generation_id">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_last_generation_id</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_last_generation_id</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can we get the last generation id by name or name and uuid&quot;&quot;&quot;</span>
     <span class="n">result1</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">result1</span> <span class="o">==</span> <span class="mi">1</span>
@@ -362,7 +320,7 @@
 
 
 <div class="viewcode-block" id="test_get_last_generation_id_not_exist"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_last_generation_id_not_exist">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_last_generation_id_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_last_generation_id_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Does it error out if we ask for a bogus taskmanager?&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">)):</span>
         <span class="n">datasource</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;no_such_task_manager&quot;</span><span class="p">)</span>
@@ -374,7 +332,7 @@
 
 
 <div class="viewcode-block" id="test_get_header"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_header">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_header</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_header</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can we fetch a header?&quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span>
         <span class="n">taskmanager_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -390,7 +348,7 @@
 
 
 <div class="viewcode-block" id="test_get_header_not_exist"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_header_not_exist">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_header_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_header_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Does it error out if we ask for a bogus header?&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">)):</span>
         <span class="n">datasource</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span>
@@ -415,7 +373,7 @@
 
 
 <div class="viewcode-block" id="test_get_metadata"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_metadata">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_metadata</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_metadata</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can we fetch a metadata element?&quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span>
         <span class="n">taskmanager_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -430,7 +388,7 @@
 
 
 <div class="viewcode-block" id="test_get_metadata_not_exist"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_metadata_not_exist">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_metadata_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_metadata_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Does it error out if we ask for a bogus metadata element?&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">)):</span>
         <span class="n">datasource</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span>
@@ -455,7 +413,7 @@
 
 
 <div class="viewcode-block" id="test_get_dataproducts"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproducts">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_dataproducts</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_dataproducts</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can we get the dataproducts by uuid and uuid with key&quot;&quot;&quot;</span>
     <span class="n">result1</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_dataproducts</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
@@ -486,7 +444,7 @@
 
 
 <div class="viewcode-block" id="test_get_dataproducts_not_exist"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproducts_not_exist">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_dataproducts_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_dataproducts_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Does it error out if we ask for bogus information?&quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_dataproducts</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
@@ -496,7 +454,7 @@
 
 
 <div class="viewcode-block" id="test_get_dataproduct"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproduct">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_dataproduct</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_dataproduct</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can we get the dataproduct by uuid with key&quot;&quot;&quot;</span>
     <span class="n">result2</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_dataproduct</span><span class="p">(</span>
         <span class="n">taskmanager_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -508,7 +466,7 @@
 
 
 <div class="viewcode-block" id="test_get_dataproduct_not_exist"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_dataproduct_not_exist">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_get_dataproduct_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_get_dataproduct_not_exist</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Does it error out if we ask for bogus information?&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">)):</span>
         <span class="n">datasource</span><span class="o">.</span><span class="n">get_dataproduct</span><span class="p">(</span>
@@ -519,7 +477,7 @@
 
 
 <div class="viewcode-block" id="test_insert"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_insert">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_insert</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_insert</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can we insert new elements&quot;&quot;&quot;</span>
     <span class="n">primary_key</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span>
         <span class="s2">&quot;taskmanager3&quot;</span><span class="p">,</span> <span class="s2">&quot;33333333-3333-3333-3333-333333333333&quot;</span>
@@ -556,7 +514,7 @@
 
 
 <div class="viewcode-block" id="test_update"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_update">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_update</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_update</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Do updates work as expected&quot;&quot;&quot;</span>
     <span class="n">metadata_row</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span>
         <span class="n">taskmanager_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -600,7 +558,7 @@
 
 
 <div class="viewcode-block" id="test_update_bad"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_update_bad">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_update_bad</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_update_bad</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Do updates fail to work as expected&quot;&quot;&quot;</span>
     <span class="n">metadata_row</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span>
         <span class="n">taskmanager_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -637,7 +595,7 @@
 
 
 <div class="viewcode-block" id="test_delete_data_older_than_arg"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_delete_data_older_than_arg">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_delete_data_older_than_arg</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_delete_data_older_than_arg</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can we delete old entries&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">))</span> <span class="k">as</span> <span class="n">__e</span><span class="p">:</span>
         <span class="n">datasource</span><span class="o">.</span><span class="n">delete_data_older_than</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -657,7 +615,7 @@
 
 
 <div class="viewcode-block" id="test_duplicate_datablock"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_duplicate_datablock">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_duplicate_datablock</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_duplicate_datablock</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can we duplicate taskmanager1 and all its entries&quot;&quot;&quot;</span>
     <span class="n">result1</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span>
         <span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">,</span>
