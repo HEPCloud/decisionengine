@@ -226,7 +226,7 @@ class DataBlock:
 
     def __str__(self):
         value = {
-            'taskamanger_id': self.taskmanager_id,
+            'taskmanager_id': self.taskmanager_id,
             'generation_id': self.generation_id,
             'sequence_id': self.sequence_id,
             'keys': self._keys,
