@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_sample_config &mdash; decisionengine 1.7.0rc0.post115+g3b104eba documentation</title>
+  <title>decisionengine.framework.tests.test_sample_config &mdash; decisionengine 1.7.0rc0.post117+g90e2baad documentation</title>
   
 
   
@@ -181,6 +181,11 @@
     <span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">TEST_CHANNEL_CONFIG_PATH</span>
 <span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
+<span class="n">_STOPPED_CHANNEL_OPTS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;Channel test_channel stopped cleanly.&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Channel test_channel has been killed due to shutdown timeout (1 second).&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Channel test_channel has been killed.&#39;</span>
+<span class="p">]</span>
 
 <div class="viewcode-block" id="test_client_can_get_de_server_status"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_get_de_server_status">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_get_de_server_status</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
@@ -286,8 +291,9 @@
     <span class="k">assert</span> <span class="s1">&#39;test_channel&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s1">&#39;state = STEADY&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--kill-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">_STOPPED_CHANNEL_OPTS</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s1">&#39;No channels are currently active.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output</span></div>
+    <span class="k">assert</span> <span class="s1">&#39;No channels are currently active.&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
 
 
 <div class="viewcode-block" id="test_client_can_kill_one_channel_force"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_kill_one_channel_force">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">35</span><span class="p">)</span>
@@ -299,8 +305,9 @@
     <span class="k">assert</span> <span class="s1">&#39;test_channel&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s1">&#39;state = STEADY&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--kill-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">,</span> <span class="s1">&#39;--force&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">_STOPPED_CHANNEL_OPTS</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s1">&#39;No channels are currently active.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output</span></div>
+    <span class="k">assert</span> <span class="s1">&#39;No channels are currently active.&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
 
 
 <div class="viewcode-block" id="test_client_can_kill_one_channel_timeout"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_kill_one_channel_timeout">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">35</span><span class="p">)</span>
@@ -312,8 +319,9 @@
     <span class="k">assert</span> <span class="s1">&#39;test_channel&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s1">&#39;state = STEADY&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--kill-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">,</span> <span class="s1">&#39;--timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">_STOPPED_CHANNEL_OPTS</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s1">&#39;No channels are currently active.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output</span></div>
+    <span class="k">assert</span> <span class="s1">&#39;No channels are currently active.&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
 
 
 <div class="viewcode-block" id="test_client_can_get_de_server_show_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_get_de_server_show_config">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
