@@ -1,0 +1,20 @@
+---
+# For more information see
+#  https://pre-commit.com/index.html#install
+#  https://pre-commit.com/index.html#automatically-enabling-pre-commit-on-repositories
+- repo: 'https://github.com/pre-commit/pre-commit-hooks'
+  rev: v4.0.1
+  hooks:
+    - id: check-ast
+    - id: check-merge-conflict
+    - id: end-of-file-fixer
+    - id: fix-byte-order-marker
+    - id: mixed-line-ending
+    - id: trailing-whitespace
+      args: [--markdown-linebreak-ext=md]
+- repo: 'https://github.com/pre-commit/pygrep-hooks'
+  rev: v1.9.0
+  hooks:
+    - id: python-check-blanket-noqa
+    - id: python-check-blanket-type-ignore
+    - id: python-use-type-annotations

@@ -19,6 +19,9 @@ NOTE: The python dependencies of this project may require
       additional OS features for build if python wheels
       are not available for your platform.
 
+NOTE: This project has a pre-commit config.
+      To install it run `pre-commit install` from the repository root.
+
 Make sure you have up to date versions of `pip`, `setuptools`, and `wheel`.
 
 `python3 -m pip install --upgrade pip setuptools wheel --user`
