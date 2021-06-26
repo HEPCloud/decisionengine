@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.dataspace &mdash; decisionengine 1.7.0rc0.post124+gfb5b177e documentation</title>
+  <title>decisionengine.framework.dataspace.dataspace &mdash; decisionengine 1.7.0rc0.post125+g3b65e5e2 documentation</title>
   
 
   
@@ -175,6 +175,8 @@
     <span class="s2">&quot;DataSpace&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
+<span class="kn">from</span> <span class="nn">decisionengine.framework.util.singleton</span> <span class="kn">import</span> <span class="n">Singleton</span>
+
 
 <div class="viewcode-block" id="DataSpaceConfigurationError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpaceConfigurationError">[docs]</a><span class="k">class</span> <span class="nc">DataSpaceConfigurationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -203,24 +205,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 
-
-<span class="k">class</span> <span class="nc">Singleton</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Singleton pattern using Metaclass</span>
-<span class="sd">    http://stackoverflow.com/questions/6760685/creating-a-singleton-in-python</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">_instances</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instances</span><span class="p">:</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span>
-                                                   <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># Uncomment following to run __init__ everytime class is called</span>
-        <span class="c1"># else:</span>
-        <span class="c1">#     cls._instances[cls].__init__(*args, **kwargs)</span>
-
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span>
 
 <span class="k">class</span> <span class="nc">DataSourceLoader</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">Singleton</span><span class="p">):</span>
 
