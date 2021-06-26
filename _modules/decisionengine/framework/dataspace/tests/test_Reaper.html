@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.tests.test_Reaper &mdash; decisionengine 1.7.0rc0.post125+g3b65e5e2 documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_Reaper &mdash; decisionengine 1.7.0rc0.post126+g72c5725f documentation</title>
   
 
   
@@ -165,43 +165,36 @@
             
   <h1>Source code for decisionengine.framework.dataspace.tests.test_Reaper</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">mock</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">unittest</span>
 
+<span class="kn">import</span> <span class="nn">mock</span>
 <span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.maintain</span> <span class="kn">import</span> <span class="n">Reaper</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">State</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.null</span> <span class="kn">import</span> <span class="n">NullDataSource</span>
 
-
-<span class="n">GLOBAL_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;dataspace&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;datasource&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;just.a.string&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;AnyString&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">},</span>
-    <span class="p">},</span>
-<span class="p">}</span>
-
-
-<div class="viewcode-block" id="MockSource"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.MockSource">[docs]</a><span class="k">class</span> <span class="nc">MockSource</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-
-<div class="viewcode-block" id="MockSource.delete_data_older_than"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.MockSource.delete_data_older_than">[docs]</a>    <span class="k">def</span> <span class="nf">delete_data_older_than</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></div></div>
 
 <div class="viewcode-block" id="TestReaper"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.TestReaper">[docs]</a><span class="k">class</span> <span class="nc">TestReaper</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TestReaper.setUp"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.TestReaper.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSourceLoader</span><span class="p">,</span> <span class="s2">&quot;create_datasource&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">source</span><span class="p">:</span>
-            <span class="n">source</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MockSource</span><span class="p">()</span>
-            <span class="n">GLOBAL_CONFIG</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;retention_interval_in_days&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">365</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span> <span class="o">=</span> <span class="n">Reaper</span><span class="p">(</span><span class="n">GLOBAL_CONFIG</span><span class="p">)</span></div>
+        <span class="c1"># use the null datasource so we don&#39;t have to patch out the behavior</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;dataspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;retention_interval_in_days&quot;</span><span class="p">:</span> <span class="mi">365</span><span class="p">,</span>
+                <span class="s2">&quot;datasource&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.null&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;NullDataSource&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">},</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span> <span class="o">=</span> <span class="n">Reaper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestReaper.tearDown"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.TestReaper.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Make sure there are no dangling reapers</span>
@@ -240,21 +233,29 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="p">,</span> <span class="n">State</span><span class="o">.</span><span class="n">SHUTDOWN</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TestReaper.test_state_can_be_active"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.TestReaper.test_state_can_be_active">[docs]</a>    <span class="k">def</span> <span class="nf">test_state_can_be_active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># make sure reaper has a chance to get the lock</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span></div>
+        <span class="k">def</span> <span class="nf">sleepnow</span><span class="p">(</span><span class="n">arg1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">arg2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">NullDataSource</span><span class="p">,</span> <span class="s2">&quot;delete_data_older_than&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">sleepnow</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># make sure reaper has a chance to get the lock</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestReaper.test_state_sets_timer_and_uses_it"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.TestReaper.test_state_sets_timer_and_uses_it">[docs]</a>    <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_state_sets_timer_and_uses_it</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">MIN_SECONDS_BETWEEN_RUNS</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">seconds_between_runs</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">seconds_between_runs</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">IDLE</span><span class="p">)</span>  <span class="c1"># Make sure the reaper started</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span>  <span class="c1"># let the reaper finish its scan</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">IDLE</span><span class="p">)</span>  <span class="c1"># Make sure the reaper started a second time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span>  <span class="c1"># let the reaper finish its scan</span></div>
+        <span class="k">def</span> <span class="nf">sleepnow</span><span class="p">(</span><span class="n">arg1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">arg2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">NullDataSource</span><span class="p">,</span> <span class="s2">&quot;delete_data_older_than&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">sleepnow</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">MIN_SECONDS_BETWEEN_RUNS</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">seconds_between_runs</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">seconds_between_runs</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">IDLE</span><span class="p">)</span>  <span class="c1"># Make sure the reaper started</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span>  <span class="c1"># let the reaper finish its scan</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">IDLE</span><span class="p">)</span>    <span class="c1"># Make sure the reaper started a second time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span>  <span class="c1"># let the reaper finish its scan</span></div>
 
 <div class="viewcode-block" id="TestReaper.test_start_delay"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.TestReaper.test_start_delay">[docs]</a>    <span class="k">def</span> <span class="nf">test_start_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
@@ -286,39 +287,31 @@
 
 <div class="viewcode-block" id="TestReaper.test_fail_missing_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.TestReaper.test_fail_missing_config">[docs]</a>    <span class="k">def</span> <span class="nf">test_fail_missing_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">):</span>
-            <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSourceLoader</span><span class="p">,</span> <span class="s2">&quot;create_datasource&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">source</span><span class="p">:</span>
-                <span class="n">source</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MockSource</span><span class="p">()</span>
-                <span class="n">test_config</span> <span class="o">=</span> <span class="n">GLOBAL_CONFIG</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="k">del</span> <span class="n">test_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span>
-                <span class="n">Reaper</span><span class="p">(</span><span class="n">test_config</span><span class="p">)</span></div>
+            <span class="n">test_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">del</span> <span class="n">test_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span>
+            <span class="n">Reaper</span><span class="p">(</span><span class="n">test_config</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestReaper.test_fail_bad_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.TestReaper.test_fail_bad_config">[docs]</a>    <span class="k">def</span> <span class="nf">test_fail_bad_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">):</span>
-            <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSourceLoader</span><span class="p">,</span> <span class="s2">&quot;create_datasource&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">source</span><span class="p">:</span>
-                <span class="n">source</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MockSource</span><span class="p">()</span>
-                <span class="n">test_config</span> <span class="o">=</span> <span class="n">GLOBAL_CONFIG</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="n">test_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;somestring&#39;</span>
-                <span class="n">Reaper</span><span class="p">(</span><span class="n">test_config</span><span class="p">)</span></div>
+            <span class="n">test_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">test_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;somestring&quot;</span>
+            <span class="n">Reaper</span><span class="p">(</span><span class="n">test_config</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestReaper.test_fail_missing_config_key"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.TestReaper.test_fail_missing_config_key">[docs]</a>    <span class="k">def</span> <span class="nf">test_fail_missing_config_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">):</span>
-            <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSourceLoader</span><span class="p">,</span> <span class="s2">&quot;create_datasource&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">source</span><span class="p">:</span>
-                <span class="n">source</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MockSource</span><span class="p">()</span>
-                <span class="n">test_config</span> <span class="o">=</span> <span class="n">GLOBAL_CONFIG</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="k">del</span> <span class="n">test_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;retention_interval_in_days&quot;</span><span class="p">]</span>
-                <span class="n">Reaper</span><span class="p">(</span><span class="n">test_config</span><span class="p">)</span></div>
+            <span class="n">test_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">del</span> <span class="n">test_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;retention_interval_in_days&quot;</span><span class="p">]</span>
+            <span class="n">Reaper</span><span class="p">(</span><span class="n">test_config</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestReaper.test_fail_wrong_config_key"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.TestReaper.test_fail_wrong_config_key">[docs]</a>    <span class="k">def</span> <span class="nf">test_fail_wrong_config_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-            <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSourceLoader</span><span class="p">,</span> <span class="s2">&quot;create_datasource&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">source</span><span class="p">:</span>
-                <span class="n">source</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MockSource</span><span class="p">()</span>
-                <span class="n">test_config</span> <span class="o">=</span> <span class="n">GLOBAL_CONFIG</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="n">test_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;retention_interval_in_days&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
-                <span class="n">Reaper</span><span class="p">(</span><span class="n">test_config</span><span class="p">)</span></div>
+            <span class="n">test_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">test_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;retention_interval_in_days&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
+            <span class="n">Reaper</span><span class="p">(</span><span class="n">test_config</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestReaper.test_source_fail_can_be_fixed"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.TestReaper.test_source_fail_can_be_fixed">[docs]</a>    <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">test_source_fail_can_be_fixed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">MockSource</span><span class="p">,</span> <span class="s2">&quot;delete_data_older_than&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">function</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">mock</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">NullDataSource</span><span class="p">,</span> <span class="s2">&quot;delete_data_older_than&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">function</span><span class="p">:</span>
             <span class="n">function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">KeyError</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># make sure stack trace bubbles up before checking state</span>
@@ -333,10 +326,6 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">State</span><span class="o">.</span><span class="n">SHUTDOWN</span><span class="p">)</span></div></div>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 
            </div>
