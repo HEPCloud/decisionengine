@@ -9,8 +9,6 @@ __all__ = [
     "DataSpace",
 ]
 
-from decisionengine.framework.util.singleton import Singleton
-
 
 class DataSpaceConfigurationError(Exception):
     """
@@ -40,18 +38,12 @@ class DataSpaceExistsError(Exception):
     pass
 
 
-class DataSourceLoader(object, metaclass=Singleton):
-
-    _ds = None
-
-    @staticmethod
-    def create_datasource(module_name, class_name, config):
-        ds = DataSourceLoader._ds
-        if not ds:
-            py_module = importlib.import_module(module_name)
-            clazz = getattr(py_module, class_name)
-            ds = clazz(config)
-        return ds
+def create_datasource(module_name, class_name, config):
+    logger = logging.getLogger()
+    logger.debug(f"Importing '{class_name}' from '{module_name}'")
+    py_module = importlib.import_module(module_name)
+    klass = getattr(py_module, class_name)
+    return klass(config)
 
 
 class DataSpace():
@@ -86,9 +78,10 @@ class DataSpace():
             raise DataSpaceConfigurationError('Invalid dataspace configuration')
 
         # Connect to the datasource/database
-        self.datasource = DataSourceLoader().create_datasource(self._db_driver_module,
-                                                               self._db_driver_name,
-                                                               self._db_driver_config)
+        self.datasource = create_datasource(self._db_driver_module,
+                                            self._db_driver_name,
+                                            self._db_driver_config)
+
 
         # Datablocks, current and previous, keyed by taskmanager_ids
         self.curr_datablocks = {}

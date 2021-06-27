@@ -40,18 +40,13 @@ class Reaper():
             raise dataspace.DataSpaceConfigurationError('Invalid dataspace configuration: '
                                                         'dataspace key must correspond to a dictionary')
         try:
-            db_driver_name = config['dataspace']['datasource']['name']
-            db_driver_module = config['dataspace']['datasource']['module']
-            db_driver_config = config['dataspace']['datasource']['config']
             self.retention_interval = config['dataspace']['retention_interval_in_days']
             self.seconds_between_runs = config['dataspace'].get('reaper_run_interval', 24 * 60 * 60)
         except KeyError:
             self.logger.exception("Error in initializing Reaper!")
             raise dataspace.DataSpaceConfigurationError('Invalid dataspace configuration')
 
-        self.datasource = dataspace.DataSourceLoader().create_datasource(db_driver_module,
-                                                                         db_driver_name,
-                                                                         db_driver_config)
+        self.dataspace = dataspace.DataSpace(config)
 
         self.thread = None
         self.state = ProcessingState()
@@ -95,7 +90,7 @@ class Reaper():
                 return
             self.logger.info("Reaper.reap() started.")
             self.state.set(State.ACTIVE)
-            self.datasource.delete_data_older_than(self.retention_interval)
+            self.dataspace.datasource.delete_data_older_than(self.retention_interval)
             self.state.set(State.STEADY)
             self.logger.info("Reaper.reap() completed.")
 

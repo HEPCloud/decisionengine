@@ -1,8 +1,10 @@
 import abc
 import logging
 
+from decisionengine.framework.util.singleton import ScopedSingletonABC
 
-class DataSource(object, metaclass=abc.ABCMeta):  # pragma: no cover
+
+class DataSource(object, metaclass=ScopedSingletonABC):  # pragma: no cover
 
     #: Name of the taskmanager table
     taskmanager_table = 'taskmanager'
