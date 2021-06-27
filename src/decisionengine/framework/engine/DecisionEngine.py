@@ -75,24 +75,24 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             raise Exception(f'method "{method}" is not supported')
         return func(*params)
 
-    def block_until(self, state):
+    def block_until(self, state, timeout=None):
         with self.workers.unguarded_access() as workers:
             if not workers:
                 self.logger.info('No active channels to wait on.')
                 return 'No active channels.'
             for tm in workers.values():
                 if tm.is_alive():
-                    tm.wait_until(state)
+                    tm.wait_until(state, timeout)
         return f'No channels in {state} state.'
 
-    def block_while(self, state):
+    def block_while(self, state, timeout=None):
         with self.workers.unguarded_access() as workers:
             if not workers:
                 self.logger.info('No active channels to wait on.')
                 return 'No active channels.'
             for tm in workers.values():
                 if tm.is_alive():
-                    tm.wait_while(state)
+                    tm.wait_while(state, timeout)
         return f'No channels in {state} state.'
 
     def _dataframe_to_table(self, df):
@@ -115,13 +115,13 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def _dataframe_to_csv(self, df):
         return "{}\n".format(df.to_csv())
 
-    def rpc_block_while(self, state_str):
+    def rpc_block_while(self, state_str, timeout=None):
         allowed_state = None
         try:
             allowed_state = ProcessingState.State[state_str]
         except Exception:
             return f'{state_str} is not a valid channel state.'
-        return self.block_while(allowed_state)
+        return self.block_while(allowed_state, timeout)
 
     def rpc_show_config(self, channel):
         """
