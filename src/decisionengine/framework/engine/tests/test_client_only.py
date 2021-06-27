@@ -42,7 +42,7 @@ def test_exclusive_options():
     assert de_client.main(['--force']) == \
         "The --force (-f) option may be used only with --kill-channel."
     assert de_client.main(['--timeout', '2']) == \
-        "The --timeout option may be used only with --kill-channel."
+        "The --timeout option may be used only with --kill-channel or --block-while."
 
 def test_client_err_returned_as_rc():
     """no de server is running, so --status should error"""

@@ -31,11 +31,11 @@ class Worker(multiprocessing.Process):
         self.task_manager_id = task_manager.id
         self.logger_config = logger_config
 
-    def wait_until(self, state):
-        return self.task_manager.state.wait_until(state)
+    def wait_until(self, state, timeout=None):
+        return self.task_manager.state.wait_until(state, timeout)
 
-    def wait_while(self, state):
-        return self.task_manager.state.wait_while(state)
+    def wait_while(self, state, timeout=None):
+        return self.task_manager.state.wait_while(state, timeout)
 
     def get_state_name(self):
         return self.task_manager.get_state_name()

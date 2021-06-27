@@ -161,8 +161,8 @@ def DEServer(
         # exist, then it will return and not block as requested.
         # so long as your config contains at least one worker,
         # this will work as you'd expect.
-        logger.debug("DE Fixture: Waiting on channels to start")
-        server_proc.de_server.block_while(State.BOOT)
+        logger.debug("DE Fixture: Waiting on channels to start, timeout=3")
+        server_proc.de_server.block_while(State.BOOT, timeout=3)
 
         if not server_proc.is_alive():
             raise RuntimeError('Could not start PrivateDEServer fixture')

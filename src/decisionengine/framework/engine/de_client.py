@@ -70,8 +70,9 @@ def create_parser():
         help="May be used with --kill-channel to immediately kill the channel process")
     kill_options.add_argument(
         '--timeout',
+        default=None,
         metavar="<seconds>",
-        help="May be specified with --kill-channel to override the DE server's configured timeout window.")
+        help="May be specified with --kill-channel to override the DE server's configured timeout window or max time to wait for --block-while.")
     channels.add_argument(
         "--show-config",
         action='store_true',
@@ -148,7 +149,7 @@ def execute_command_from_args(argsparsed, de_socket):
     if argsparsed.print_engine_loglevel:
         return de_socket.get_log_level()
     if argsparsed.block_while:
-        return de_socket.block_while(argsparsed.block_while)
+        return de_socket.block_while(argsparsed.block_while, argsparsed.timeout)
 
     # Channel-specific options
     if argsparsed.stop_channel:
@@ -157,8 +158,8 @@ def execute_command_from_args(argsparsed, de_socket):
         if not argsparsed.kill_channel:
             return "The --force (-f) option may be used only with --kill-channel."
     if argsparsed.timeout:
-        if not argsparsed.kill_channel:
-            return "The --timeout option may be used only with --kill-channel."
+        if not argsparsed.kill_channel and not argsparsed.block_while:
+            return "The --timeout option may be used only with --kill-channel or --block-while."
     if argsparsed.kill_channel:
         timeout = None  # Use server-configured timeout
         if argsparsed.force:

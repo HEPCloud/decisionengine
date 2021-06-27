@@ -28,6 +28,15 @@ def test_client_can_get_de_server_status(deserver):
     output = deserver.de_client_run_cli('--status')
     assert 'state = STEADY' in output
 
+@pytest.mark.timeout(10)
+@pytest.mark.usefixtures("deserver")
+def test_client_wait_timeout_works(deserver):
+    '''Verify channel enters stable state and timeout works too'''
+    deserver.de_client_run_cli('--block-while', 'BOOT')
+    deserver.de_client_run_cli('--block-while', 'STABLE', '--timeout', '3')
+    output = deserver.de_client_run_cli('--status')
+    assert 'state = STEADY' in output
+
 
 @pytest.mark.usefixtures("deserver")
 def test_client_can_stop_server(deserver):
