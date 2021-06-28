@@ -32,19 +32,19 @@ import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
 # from decisionengine.framework.util.prometheus import get_registry
 
-from flask import Flask, Response
+# from flask import Flask, Response
+import cherrypy
 from prometheus_client import multiprocess, REGISTRY
 from prometheus_client import CollectorRegistry, generate_latest, CONTENT_TYPE_LATEST
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
-
-@app.route('/metrics')
-def metrics2():
-    registry = CollectorRegistry()
-    multiprocess.MultiProcessCollector(registry)
-    data = generate_latest(registry=registry)
-    return data.decode()
+# @app.route('/metrics')
+# def metrics2():
+#     registry = CollectorRegistry()
+#     multiprocess.MultiProcessCollector(registry)
+#     data = generate_latest(registry=registry)
+#     return data.decode()
 
 
 class StopState(enum.Enum):
@@ -85,18 +85,15 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.logger.info(f"DecisionEngine started on {server_address}")
         os.environ['prometheus_multiproc_dir'] = "/tmp/prometheus_metrics"
         self.register_function(self.rpc_metrics, name='metrics')
+        self.start_metrics_server()  # Make this dependent on flag
 
     def start_metrics_server(self):
-        try:
-            from prometheus_client import start_http_server
-            # from prometheus_client import start_http_server, multiprocess
-            # from prometheus_client import CollectorRegistry
-            # registry = CollectorRegistry()
-            # multiprocess.MultiProcessCollector(registry)
-            start_http_server(8000)
-        except Exception as e:
-            self.logger.error('Unable to start metrics server.'
-                              ' Will proceed without metrics collection.')
+        cherrypy.tree.mount(self)
+        cherrypy.engine.start()
+
+    @cherrypy.expose
+    def metrics(self):
+        return self.rpc_metrics()
 
     def rpc_metrics(self):
         try:
