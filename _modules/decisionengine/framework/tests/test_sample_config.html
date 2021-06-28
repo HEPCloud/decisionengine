@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_sample_config &mdash; decisionengine 1.7.0rc0.post127+gbfd6689e documentation</title>
+  <title>decisionengine.framework.tests.test_sample_config &mdash; decisionengine 1.7.0rc0.post128+ge063f82a documentation</title>
   
 
   
@@ -190,7 +190,7 @@
 <div class="viewcode-block" id="test_client_can_get_de_server_status"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_get_de_server_status">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_get_de_server_status</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify channel enters stable state&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;state = STEADY&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
 
@@ -198,7 +198,7 @@
 <div class="viewcode-block" id="test_client_can_stop_server"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_stop_server">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_stop_server</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify de-client can run --stop&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;state = STEADY&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--stop&#39;</span><span class="p">)</span>
@@ -208,7 +208,7 @@
 <div class="viewcode-block" id="test_client_can_get_products"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_get_products">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_get_products</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify client can get channel products&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-products&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;source1&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s1">&#39;transform1&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
@@ -217,7 +217,7 @@
 <div class="viewcode-block" id="test_client_can_get_products_no_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_get_products_no_channels">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_get_products_no_channels</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify client can get channel products even when none are run&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--stop-channels&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-products&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;No channels are currently active.&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
@@ -226,7 +226,7 @@
 <div class="viewcode-block" id="test_client_cannot_double_start"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_cannot_double_start">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_cannot_double_start</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify client cannot double start channels&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--show-config&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;decisionengine.framework.tests.SourceNOP&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s1">&#39;decisionengine.framework.tests.TransformNOP&#39;</span> <span class="ow">in</span> <span class="n">output</span>
@@ -237,7 +237,7 @@
 <div class="viewcode-block" id="test_client_can_stop_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_stop_channels">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_stop_channels</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify client can stop channels&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--show-config&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;decisionengine.framework.tests.SourceNOP&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s1">&#39;decisionengine.framework.tests.TransformNOP&#39;</span> <span class="ow">in</span> <span class="n">output</span>
@@ -249,7 +249,7 @@
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_stop_one_channel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify client can stop a single channel&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--stop-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;Channel test_channel stopped cleanly.&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
@@ -260,7 +260,7 @@
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_start_one_channel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify client can start a single channel&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--stop-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;Channel test_channel stopped cleanly.&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
@@ -273,7 +273,7 @@
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_start_all_channel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify client can start all channel&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--stop-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;Channel test_channel stopped cleanly.&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
@@ -286,7 +286,7 @@
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_kill_one_channel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify client can kill a single channel&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;test_channel&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s1">&#39;state = STEADY&#39;</span> <span class="ow">in</span> <span class="n">output</span>
@@ -300,7 +300,7 @@
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_kill_one_channel_force</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify client can kill a single channel with force&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;test_channel&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s1">&#39;state = STEADY&#39;</span> <span class="ow">in</span> <span class="n">output</span>
@@ -314,7 +314,7 @@
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_kill_one_channel_timeout</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify client can kill a single channel with timeout&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;test_channel&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s1">&#39;state = STEADY&#39;</span> <span class="ow">in</span> <span class="n">output</span>
@@ -327,7 +327,7 @@
 <div class="viewcode-block" id="test_client_can_get_de_server_show_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_get_de_server_show_config">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_get_de_server_show_config</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify config has expected items&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--show-config&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;decisionengine.framework.tests.SourceNOP&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s1">&#39;decisionengine.framework.tests.TransformNOP&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
@@ -336,7 +336,7 @@
 <div class="viewcode-block" id="test_client_can_get_de_server_channel_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_get_de_server_channel_config">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_get_de_server_channel_config</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify config has expected items&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--show-channel-config&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;test_channel&#39;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s1">&#39;decisionengine.framework.tests.SourceNOP&#39;</span> <span class="ow">in</span> <span class="n">output</span>
@@ -346,7 +346,7 @@
 <div class="viewcode-block" id="test_client_get_non_real_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_get_non_real_channel">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_get_non_real_channel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify config for missing channel does what it should&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--show-channel-config&#39;</span><span class="p">,</span> <span class="s1">&#39;ISNT_REAL&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;There is no active channel named ISNT_REAL.&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
 
@@ -354,7 +354,7 @@
 <div class="viewcode-block" id="test_client_start_non_real_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_start_non_real_channel">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_start_non_real_channel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify start for missing channel does what it should&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--start-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;ISNT_REAL&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;Failed to open channel configuration file&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
 
@@ -362,7 +362,7 @@
 <div class="viewcode-block" id="test_client_stop_non_real_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_stop_non_real_channel">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_stop_non_real_channel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify stop for missing channel does what it should&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--stop-channel&#39;</span><span class="p">,</span> <span class="s1">&#39;ISNT_REAL&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;No channel found with the name ISNT_REAL.&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
 
@@ -370,7 +370,7 @@
 <div class="viewcode-block" id="test_client_can_get_de_server_show_logger_level"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_get_de_server_show_logger_level">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_get_de_server_show_logger_level</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify can fetch log level&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-engine-loglevel&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;CRITICAL&#39;</span><span class="p">]</span></div>
 
@@ -378,7 +378,7 @@
 <div class="viewcode-block" id="test_client_can_get_de_server_channel_log_level"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_get_de_server_channel_log_level">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_get_de_server_channel_log_level</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify can fetch log level for a channel&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--get-channel-loglevel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;CRITICAL&#39;</span><span class="p">]</span></div>
 
@@ -386,7 +386,7 @@
 <div class="viewcode-block" id="test_client_can_set_de_server_channel_log_level"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_set_de_server_channel_log_level">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_set_de_server_channel_log_level</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify set log level for a channel&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--set-channel-loglevel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">,</span> <span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--get-channel-loglevel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;DEBUG&#39;</span></div>
@@ -395,7 +395,7 @@
 <div class="viewcode-block" id="test_client_can_double_set_de_server_channel_log_level"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_can_double_set_de_server_channel_log_level">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_double_set_de_server_channel_log_level</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify set log level to current level isn&#39;t an error&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--set-channel-loglevel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">,</span> <span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--get-channel-loglevel&#39;</span><span class="p">,</span> <span class="s1">&#39;test_channel&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;DEBUG&#39;</span>
@@ -407,7 +407,7 @@
 <div class="viewcode-block" id="test_client_get_channel_log_fails_cleanly"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_get_channel_log_fails_cleanly">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_get_channel_log_fails_cleanly</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify graceful fail on bogus channel&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--get-channel-loglevel&#39;</span><span class="p">,</span> <span class="s1">&#39;ISNT_REAL&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;No channel found with the name ISNT_REAL.&#39;</span></div>
 
@@ -415,7 +415,7 @@
 <div class="viewcode-block" id="test_client_set_channel_log_fails_cleanly"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_set_channel_log_fails_cleanly">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_set_channel_log_fails_cleanly</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify graceful fail on bogus channel&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--set-channel-loglevel&#39;</span><span class="p">,</span> <span class="s1">&#39;ISNT_REAL&#39;</span><span class="p">,</span> <span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;No channel found with the name ISNT_REAL.&#39;</span></div>
 </pre></div>
