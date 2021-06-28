@@ -4,16 +4,22 @@ from decisionengine.framework.dataspace import dataspace as ds
 
 from decisionengine.framework.dataspace.datasources.tests.fixtures import (  # noqa: F401
     PG_DE_DB_WITH_SCHEMA,
+    PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     DATABASES_TO_TEST,
+    SQLALCHEMY_PG_WITH_SCHEMA,
+    SQLALCHEMY_IN_MEMORY_SQLITE,
     datasource,
     load_sample_data_into_datasource,
 )
 
 __all__ = [
     "PG_DE_DB_WITH_SCHEMA",
+    "PG_DE_DB_WITHOUT_SCHEMA",
     "PG_PROG",
     "DATABASES_TO_TEST",
+    "SQLALCHEMY_PG_WITH_SCHEMA",
+    "SQLALCHEMY_IN_MEMORY_SQLITE",
     "datasource",
     "dataspace",
     "load_sample_data_into_datasource",
@@ -36,6 +42,7 @@ def dataspace(request):
     try:
         # SQL Alchemy
         db_info["url"] = conn_fixture["url"]
+        db_info["echo"] = True  # put into extra chatty mode for tests
     except TypeError:
         try:
             # psycopg2

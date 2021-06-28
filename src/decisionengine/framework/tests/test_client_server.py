@@ -35,7 +35,7 @@ def test_client_status_msg_to_stdout(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_print_product(deserver):
     # Test default options
-    output = deserver.de_client_run_cli('--print-product', 'foo')
+    output = deserver.de_client_run_cli('--print-product', 'foo', '--verbose')
     assert output == \
         "Product foo:  Found in channel test_channel\n" \
         "+----+--------+--------+\n" \

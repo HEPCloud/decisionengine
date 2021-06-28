@@ -20,6 +20,9 @@ __all__ = [
     "DATABASES_TO_TEST",
     "PG_PROG",
     "PG_DE_DB_WITH_SCHEMA",
+    "PG_DE_DB_WITHOUT_SCHEMA",
+    "SQLALCHEMY_PG_WITH_SCHEMA",
+    "SQLALCHEMY_IN_MEMORY_SQLITE",
     "datasource",
     "mock_data_block",
 ]
@@ -35,9 +38,55 @@ PG_DE_DB_WITH_SCHEMA = factories.postgresql(
         os.path.dirname(os.path.abspath(__file__)) + "/../postgresql.sql",
     ],
 )
+PG_DE_DB_WITHOUT_SCHEMA = factories.postgresql(
+    "PG_PROG",
+    dbname="decisionengine",
+)
 
 DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA",)
 
+
+@pytest.fixture
+def SQLALCHEMY_PG_WITH_SCHEMA(request):
+    """
+    Get a blank database from pytest_postgresql.
+    Then setup the SQLAlchemy style URL with that DB.
+    The SQLAlchemyDS will create the schema as needed.
+    """
+    conn_fixture = request.getfixturevalue("PG_DE_DB_WITHOUT_SCHEMA")
+
+    db_info = {}
+    try:
+        # psycopg2
+        db_info["host"] = conn_fixture.info.host
+        db_info["port"] = conn_fixture.info.port
+        db_info["user"] = conn_fixture.info.user
+        db_info["password"] = conn_fixture.info.password
+        db_info["database"] = conn_fixture.info.dbname
+    except AttributeError:
+        # psycopg2cffi
+        for element in conn_fixture.dsn.split():
+            (key, value) = element.split("=")
+            if value != "''" and value != '""':
+                db_info[key] = value
+            else:
+                db_info[key] = ''
+
+    # echo will log all the sql commands to log.debug
+    return {
+        "url": f"postgresql://{db_info['user']}:{db_info['password']}@{db_info['host']}:{db_info['port']}/{db_info['database']}",
+        "echo": True,
+    }
+
+
+@pytest.fixture
+def SQLALCHEMY_IN_MEMORY_SQLITE(request):
+    """
+    Setup an SQLite database in memory
+    Then setup the SQLAlchemy style URL with that DB.
+    The SQLAlchemyDS will create the schema as needed.
+    """
+    return {"url": "sqlite:///:memory:", "echo": True}
 
 @pytest.fixture(params=DATABASES_TO_TEST)
 def datasource(request):
