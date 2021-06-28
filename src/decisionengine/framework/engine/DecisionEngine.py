@@ -30,30 +30,21 @@ import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
+# from decisionengine.framework.util.prometheus import get_registry
 
 from flask import Flask, Response
 from prometheus_client import multiprocess, REGISTRY
 from prometheus_client import CollectorRegistry, generate_latest, CONTENT_TYPE_LATEST
 
-# app = Flask(__name__)
-
-# @app.route('/metrics')
+app = Flask(__name__)
 
 
+@app.route('/metrics')
 def metrics2():
     registry = CollectorRegistry()
     multiprocess.MultiProcessCollector(registry)
     data = generate_latest(registry=registry)
-    return data
-
-
-def get_registry():
-    if 'prometheus_multiproc_dir' in os.environ:
-        registry = CollectorRegistry()
-        multiprocess.MultiProcessCollector(registry)
-    else:
-        registry = REGISTRY
-    return registry
+    return data.decode()
 
 
 class StopState(enum.Enum):
@@ -69,7 +60,7 @@ def _channel_preamble(name):
 
 
 class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
-    rpc_paths = ('/RPC2', )
+    rpc_paths = ('/RPC2', '/metrics')
 
 
 class DecisionEngine(socketserver.ThreadingMixIn,
@@ -78,7 +69,8 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         xmlrpc.server.SimpleXMLRPCServer.__init__(
             self,
             server_address,
-            logRequests=False,
+            # logRequests=False,
+            logRequests=True,
             requestHandler=RequestHandler)
 
         signal.signal(signal.SIGHUP, self.handle_sighup)
@@ -92,7 +84,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.logger = self.logger.bind(module=__name__.split(".")[-1])
         self.logger.info(f"DecisionEngine started on {server_address}")
         os.environ['prometheus_multiproc_dir'] = "/tmp/prometheus_metrics"
-        self.start_metrics_server() # Make this dependent on flag
+        self.register_function(self.rpc_metrics, name='metrics')
 
     def start_metrics_server(self):
         try:
@@ -108,10 +100,13 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
     def rpc_metrics(self):
         try:
+            print('Called rpc_metrics')
             self.logger.info(
                 f'prometheus_multiproc_dir is set to {os.environ.get("prometheus_multiproc_dir")}'
             )
-            data = generate_latest(registry=get_registry())
+            registry = CollectorRegistry()
+            multiprocess.MultiProcessCollector(registry)
+            data = generate_latest(registry=registry)
             self.logger.info(data)
             return data.decode()
         except Exception as e:
@@ -671,8 +666,10 @@ def main(args=None):
     global_config, channel_config_loader = _get_de_conf_manager(
         global_config_dir, policies.channel_config_dir(), options)
     try:
+        # app.run()
         server = _create_de_server(global_config, channel_config_loader)
         _start_de_server(server)
+
     except Exception as e:  # pragma: no cover
         msg = f"""Config Dir: {global_config_dir}
               Fatal Error: {e}"""

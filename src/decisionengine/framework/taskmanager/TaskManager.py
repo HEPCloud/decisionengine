@@ -150,35 +150,45 @@ class TaskManager:
         self.lock = threading.Lock()
 
         # Metrics
-        self.channel_state_gauge = prometheus_client.Gauge('channel_state',
-                                                           'Channel state',
-                                                           ['name', ],
-                                                           multiprocess_mode='liveall',
-                                                           registry=get_registry()).\
-            labels(self.name)
+        self.channel_state_gauge = prometheus_client.Gauge(
+            'de_channel_state',
+            'Channel state', [
+                'channel_name',
+            ],
+            multiprocess_mode='liveall')
 
-        self.channel_state_gauge.set_function(self.get_state_value)
-        # self.channel_state_gauge.set(9)
         self.source_acquire_gauge = prometheus_client.Gauge(
-            'source_last_acquire', "Last time a source "
+            'de_source_last_acquire', "Last time a source "
             'successfully ran its acquire function', [
                 'channel_name',
                 'source_name',
             ],
             multiprocess_mode='liveall')
 
-        self.source_acquire_gauge.labels(self.name,
-                                         'test__init__').set(42)  # TODO
-
-        self.pid_gauge = prometheus_client.Gauge(
-            'pid_gague', "source "
-            'successfully ran its acquire function',
+        self.logicengine_run_gauge = prometheus_client.Gauge(
+            'de_logicengine_last_run', 'Last time '
+            'a logicengine successfully ran', [
+                'channel_name',
+                'logicengine_name',
+            ],
             multiprocess_mode='liveall')
-        self.pid_gauge.set(os.getpid())
 
-        logging.getLogger().info('Debug:  log pid __init__:  {}'.format(
-            os.getpid()))
-        # self.source_acquire_gauge.labels('test1', 'test2').set_to_current_time()
+        self.transform_run_gauge = prometheus_client.Gauge(
+            'de_transform_last_run', 'Last time a '
+            'transform successfully ran', [
+                'channel_name',
+                'transform_name',
+            ],
+            multiprocess_mode='liveall')
+
+        self.publisher_run_gauge = prometheus_client.Gauge(
+            'de_publisher_last_run', 'Last time '
+            'a publisher successfully ran', [
+                'channel_name',
+                'publisher_name',
+            ],
+            multiprocess_mode='liveall')
+
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
         for src_worker in self.channel.sources.values():
@@ -253,7 +263,8 @@ class TaskManager:
                 if not self.state.should_stop():
                     # the last decision_cycle completed without error
                     self.state.set(State.STEADY)
-                    self.channel_state_gauge.set_function(self.get_state_value)
+                    self.channel_state_gauge.labels(self.name).set_function(
+                        self.get_state_value)
                     self.wait_for_any(done_events)
             except Exception:  # pragma: no cover
                 self.logger.exception("Exception in the task manager main loop")
@@ -311,18 +322,20 @@ class TaskManager:
     def set_to_shutdown(self):
         self.state.set(State.SHUTTINGDOWN)
         delogger.debug("Shutting down. Will call shutdown on all publishers")
-        self.channel_state_gauge.set_function(self.get_state_value)
+        self.channel_state_gauge.labels(self.name).set_function(
+            self.get_state_value)
         for publisher_worker in self.channel.publishers.values():
             publisher_worker.worker.shutdown()
         self.state.set(State.SHUTDOWN)
-        self.channel_state_gauge.set_function(self.get_state_value)
+        self.channel_state_gauge.labels(self.name).set_function(
+            self.get_state_value)
 
     def take_offline(self, current_data_block):
         """
         offline and stop task manager
         """
         self.state.set(State.OFFLINE)
-        self.channel_state_gauge.set_function(self.get_state_value)
+        self.channel_state_gauge.labels(self.name).set(self.get_state_value())
         # invalidate data block
         # not implemented yet
 
@@ -579,7 +592,8 @@ class TaskManager:
                                                 .labels(self.name, name)
                     try:
                         publisher.worker.publish(data_block)
-                        g.set_to_current_time()
+                        self.publisher_run_gauge.labels(
+                            self.name, name).set_to_current_time()
                     except KeyError as e:
                         if self.state.should_stop():
                             self.logger.warning(f"TaskManager stopping, ignore exception {name} publish() call: {e}")
