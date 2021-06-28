@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.taskmanager.module_graph &mdash; decisionengine 1.7.0rc0.post128+ge063f82a documentation</title>
+  <title>decisionengine.framework.taskmanager.module_graph &mdash; decisionengine 1.7.0rc0.post129+gc6032e5f documentation</title>
   
 
   
@@ -169,6 +169,7 @@
 <span class="sd">&#39;&#39;&#39;</span>
 
 <span class="kn">import</span> <span class="nn">toposort</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <div class="viewcode-block" id="_produced_products"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.module_graph._produced_products">[docs]</a><span class="k">def</span> <span class="nf">_produced_products</span><span class="p">(</span><span class="o">*</span><span class="n">worker_lists</span><span class="p">):</span>
     <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
@@ -196,7 +197,7 @@
 
 <div class="viewcode-block" id="ensure_no_circularities"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.module_graph.ensure_no_circularities">[docs]</a><span class="k">def</span> <span class="nf">ensure_no_circularities</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">transforms</span><span class="p">,</span> <span class="n">publishers</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    DOCSTRING</span>
+<span class="sd">    Ensures no circularities among data products.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">produced</span><span class="p">,</span> <span class="n">missing_produces</span> <span class="o">=</span> <span class="n">_produced_products</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">transforms</span><span class="p">)</span>
     <span class="n">consumed</span><span class="p">,</span> <span class="n">missing_consumes</span> <span class="o">=</span> <span class="n">_consumed_products</span><span class="p">(</span><span class="n">transforms</span><span class="p">,</span> <span class="n">publishers</span><span class="p">)</span>
@@ -227,10 +228,14 @@
         <span class="n">graph</span><span class="p">[</span><span class="n">consumer</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">produced</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">products</span><span class="p">))</span>
 
     <span class="c1"># Do the check</span>
+    <span class="n">sorted_modules</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">toposort</span><span class="o">.</span><span class="n">toposort_flatten</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>  <span class="c1"># Flatten will trigger any circularity errors</span>
+        <span class="n">sorted_modules</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">toposort</span><span class="o">.</span><span class="n">toposort_flatten</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>  <span class="c1"># Flatten will trigger any circularity errors</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A produces/consumes circularity exists in the configuration:</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A produces/consumes circularity exists in the configuration:</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">sorted_transform_names</span> <span class="o">=</span> <span class="n">sorted_modules</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">name</span><span class="p">,</span> <span class="n">transforms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">sorted_transform_names</span><span class="p">])</span></div>
 </pre></div>
 
            </div>
