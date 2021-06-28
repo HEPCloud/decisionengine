@@ -9,8 +9,11 @@ import decisionengine.framework.engine.de_query_tool as de_query_tool
 
 from decisionengine.framework.dataspace.tests.fixtures import (
     PG_DE_DB_WITH_SCHEMA,
+    PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     DATABASES_TO_TEST,
+    SQLALCHEMY_PG_WITH_SCHEMA,
+    SQLALCHEMY_IN_MEMORY_SQLITE,
 )
 from decisionengine.framework.engine.DecisionEngine import (
     _get_de_conf_manager,
@@ -21,7 +24,9 @@ from decisionengine.framework.engine.DecisionEngine import (
 from decisionengine.framework.util.sockets import get_random_port
 from decisionengine.framework.taskmanager.TaskManager import State
 
-__all__ = ["DATABASES_TO_TEST", "PG_DE_DB_WITH_SCHEMA", "PG_PROG", "DEServer"]
+__all__ = ["DATABASES_TO_TEST", "PG_DE_DB_WITH_SCHEMA", "PG_DE_DB_WITHOUT_SCHEMA",
+           "SQLALCHEMY_PG_WITH_SCHEMA", "SQLALCHEMY_IN_MEMORY_SQLITE", "PG_PROG",
+           "DEServer"]
 
 # Not all test hosts are IPv6, generally IPv4 works fine some test
 # hosts use IPv6 for localhost by default, even when not configured!
@@ -37,7 +42,7 @@ class DETestWorker(threading.Thread):
         conf_path,
         channel_conf_path,
         server_address,
-        db_info,
+        datasource,
         conf_override=None,
         channel_conf_override=None,
     ):
@@ -52,7 +57,7 @@ class DETestWorker(threading.Thread):
         # Override global configuration for testing
         self.global_config['shutdown_timeout'] = 1
         self.global_config['server_address'] = self.server_address
-        self.global_config['dataspace']['datasource']['config'] = db_info
+        self.global_config['dataspace']['datasource'] = datasource
 
         self.de_server = _create_de_server(self.global_config, self.channel_config_loader)
 
@@ -121,30 +126,39 @@ def DEServer(
 
         conn_fixture = request.getfixturevalue(request.param)
 
-        db_info = {}
+        datasource = {}
         try:
             # SQL Alchemy
-            db_info['url'] = conn_fixture.url
-        except AttributeError:
+            datasource["config"] = {}
+            datasource["module"] = "decisionengine.framework.dataspace.datasources.sqlalchemy_ds"
+            datasource["name"] = "SQLAlchemyDS"
+            datasource["config"]["url"] = conn_fixture["url"]
+            datasource["config"]["echo"] = True
+        except TypeError:
+            datasource["module"] = "decisionengine.framework.dataspace.datasources.postgresql"
+            datasource["name"] = "Postgresql"
+            datasource["config"] = {}
             try:
                 # psycopg2
-                db_info['host'] = conn_fixture.info.host
-                db_info['port'] = conn_fixture.info.port
-                db_info['user'] = conn_fixture.info.user
-                db_info['password'] = conn_fixture.info.password
-                db_info['database'] = conn_fixture.info.dbname
+                datasource["config"]['host'] = conn_fixture.info.host
+                datasource["config"]['port'] = conn_fixture.info.port
+                datasource["config"]['user'] = conn_fixture.info.user
+                datasource["config"]['password'] = conn_fixture.info.password
+                datasource["config"]['database'] = conn_fixture.info.dbname
             except AttributeError:
                 # psycopg2cffi
                 for element in conn_fixture.dsn.split():
                     (key, value) = element.split('=')
                     if value != "''" and value != '""':
-                        db_info[key] = value
-        logger.debug(f"DE Fixture has db_info: {db_info}")
+                        datasource["config"][key] = value
+
+        logger.debug(f"DE Fixture has datasource config: {datasource}")
+
         server_proc = DETestWorker(
             conf_path,
             channel_conf_path,
             host_port,
-            db_info,
+            datasource,
             conf_override,
             channel_conf_override,
         )
