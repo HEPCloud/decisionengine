@@ -1,3 +1,4 @@
+import gc
 import pytest
 
 from decisionengine.framework.dataspace import dataspace as ds
@@ -72,4 +73,7 @@ def dataspace(request):
     my_ds = ds.DataSpace(config)
     load_sample_data_into_datasource(my_ds)
 
-    return my_ds
+    yield my_ds
+
+    del my_ds
+    gc.collect()

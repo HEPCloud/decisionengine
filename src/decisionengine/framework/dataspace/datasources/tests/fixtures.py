@@ -1,5 +1,6 @@
 """pytest fixtures/constants"""
 import datetime
+import gc
 import logging
 import os
 import threading
@@ -127,7 +128,10 @@ def datasource(request):
 
     load_sample_data_into_datasource(my_ds)
 
-    return my_ds
+    yield my_ds
+
+    del my_ds
+    gc.collect()
 
 
 @pytest.fixture

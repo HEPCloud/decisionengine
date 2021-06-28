@@ -1,4 +1,5 @@
 '''pytest defaults'''
+import gc
 import logging
 import threading
 
@@ -188,5 +189,8 @@ def DEServer(
         server_proc.de_server.rpc_stop()
 
         server_proc.join()
+
+        del server_proc
+        gc.collect()
 
     return de_server_factory
