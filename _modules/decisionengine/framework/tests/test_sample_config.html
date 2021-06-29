@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_sample_config &mdash; decisionengine 1.7.0rc0.post140+g970faf92 documentation</title>
+  <title>decisionengine.framework.tests.test_sample_config &mdash; decisionengine 1.7.0rc0.post141+gbaf07973 documentation</title>
   
 
   
@@ -191,6 +191,15 @@
 <span class="k">def</span> <span class="nf">test_client_can_get_de_server_status</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Verify channel enters stable state&#39;&#39;&#39;</span>
     <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s1">&#39;state = STEADY&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="test_client_wait_timeout_works"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_sample_config.test_client_wait_timeout_works">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_wait_timeout_works</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Verify channel enters stable state and timeout works too&#39;&#39;&#39;</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">)</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;STABLE&#39;</span><span class="p">,</span> <span class="s1">&#39;--timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--status&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s1">&#39;state = STEADY&#39;</span> <span class="ow">in</span> <span class="n">output</span></div>
 

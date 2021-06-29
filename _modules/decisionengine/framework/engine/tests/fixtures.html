@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.0rc0.post140+g970faf92 documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.0rc0.post141+gbaf07973 documentation</title>
   
 
   
@@ -342,8 +342,8 @@
         <span class="c1"># exist, then it will return and not block as requested.</span>
         <span class="c1"># so long as your config contains at least one worker,</span>
         <span class="c1"># this will work as you&#39;d expect.</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DE Fixture: Waiting on channels to start&quot;</span><span class="p">)</span>
-        <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DE Fixture: Waiting on channels to start, timeout=3&quot;</span><span class="p">)</span>
+        <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not start PrivateDEServer fixture&#39;</span><span class="p">)</span>
