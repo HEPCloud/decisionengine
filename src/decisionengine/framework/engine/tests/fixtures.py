@@ -178,10 +178,15 @@ def DEServer(
         # this will work as you'd expect.
         logger.debug("DE Fixture: Waiting on channels to start, timeout=3")
         server_proc.de_server.block_while(State.BOOT, timeout=3)
+        logger.debug("DE Fixture: Waiting on channel to stop being IDLE, timeout=2")
+        server_proc.de_server.block_while(State.IDLE, timeout=2)
+        logger.debug("DE Fixture: Waiting on channel run one cycle, timeout=2")
+        server_proc.de_server.block_while(State.ACTIVE, timeout=2)
 
         if not server_proc.is_alive():
             raise RuntimeError('Could not start PrivateDEServer fixture')
 
+        logger.debug("DE Fixture: Private DE Test Server should be running now")
         yield server_proc
 
         # does not error out even if the server is stopped

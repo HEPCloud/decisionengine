@@ -194,15 +194,22 @@ class TaskManager:
         done_events, source_threads = self.start_sources(self.data_block_t0)
         # This is a boot phase
         # Wait until all sources run at least one time
+        # go IDLE until all sources run at least one time
+        # unless we got an error starting the sources
+        if self.state.has_value(State.BOOT):
+            self.state.set(State.IDLE)
         self.wait_for_all(done_events)
         logging.getLogger().info('All sources finished')
-        if not self.state.has_value(State.BOOT):
+        if not self.state.has_value(State.IDLE):
             for thread in source_threads:
                 thread.join()
             logging.getLogger().error(
                 f'Error occured during initial run of sources. Task Manager {self.name} exits')
             return
 
+        # go ACTIVE when starting the first decision cycle
+        # then STEADY unless the Task stops/errors
+        self.state.set(State.ACTIVE)
         while not self.state.should_stop():
             try:
                 self.decision_cycle()
