@@ -19,3 +19,22 @@ flake8-statistics = "True"
 
 [tool.black]
 line-length = 120
+
+[tool.isort]
+line_length = 120
+
+[tool.coverage.run]
+branch = true
+concurrency = ["multiprocessing", ]
+omit = ["*/tests/*", ]
+source = ["src", ]
+
+[tool.coverage.report]
+skip_empty = true
+
+# Regexes for lines to exclude from consideration
+exclude_lines = [ "pragma: no cover", # Have to re-enable the standard pragma
+                  "raise AssertionError",
+                  "raise NotImplementedError", # Don't complain if tests don't hit defensive assertion code:
+                  "if __name__ == .__main__.:", # Don't complain if non-runnable code isn't run:
+ ]
