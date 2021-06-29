@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.tests.fixtures &mdash; decisionengine 1.7.0rc0.post136+g0ba135d2 documentation</title>
+  <title>decisionengine.framework.dataspace.tests.fixtures &mdash; decisionengine 1.7.0rc0.post137+g88611d90 documentation</title>
   
 
   
@@ -164,7 +164,8 @@
            <div itemprop="articleBody">
             
   <h1>Source code for decisionengine.framework.dataspace.tests.fixtures</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<span></span><span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace</span> <span class="kn">import</span> <span class="n">dataspace</span> <span class="k">as</span> <span class="n">ds</span>
 
@@ -238,7 +239,10 @@
     <span class="n">my_ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="n">load_sample_data_into_datasource</span><span class="p">(</span><span class="n">my_ds</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">my_ds</span></div>
+    <span class="k">yield</span> <span class="n">my_ds</span>
+
+    <span class="k">del</span> <span class="n">my_ds</span>
+    <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>
 </pre></div>
 
            </div>
