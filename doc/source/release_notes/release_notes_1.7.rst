@@ -3,7 +3,7 @@ Release 1.7.0
 
 In this release:
 
-- New produces-consumes structure using decorators. This will improve the code quality, improving static checks and reducing the lines of code by removing repetitive boilerplates, especially in the modules. 
+- New produces-consumes structure using decorators. This will improve the code quality, improving static checks and reducing the lines of code by removing repetitive boilerplates, especially in the modules.
 
 Planned:
 - Added structured logging. Improved python logging and adoption of structured logs format that will increase the semantinc content of the messages and ease the export of information for dashboards and Elastic Search.
@@ -171,4 +171,3 @@ Full list of commits since version 1.6.0
 `84aa506 <https://github.com/HEPCloud/decisionengine/commit/84aa506cfa8d3838a30039eb7d47b62f64d23db9>`_:   Fix a bug in setup.py parsing of requirements. (#301)
 
 `a58b61b <https://github.com/HEPCloud/decisionengine/commit/a58b61bb421e41404532e9182ab3f28da8a77837>`_:   fix typo in release notes
-
