@@ -10,6 +10,9 @@ pipeline {
                             customWorkspace "${WORKSPACE}/${STAGE_NAME}"
                         }
                     }
+                    options {
+                        timeout(time: "${STAGE_TIMEOUT}", activity: false, unit: 'MINUTES')
+                    }
                     steps {
                         script {
                             // DOCKER_IMAGE is defined through Jenkins project
@@ -61,6 +64,9 @@ pipeline {
                             customWorkspace "${WORKSPACE}/${STAGE_NAME}"
                         }
                     }
+                    options {
+                        timeout(time: "${STAGE_TIMEOUT}", activity: false, unit: 'MINUTES')
+                    }
                     steps {
                         script {
                             // DOCKER_IMAGE is defined through Jenkins project
@@ -102,6 +108,9 @@ pipeline {
                             customWorkspace "${WORKSPACE}/${STAGE_NAME}"
                         }
                     }
+                    options {
+                        timeout(time: "${STAGE_TIMEOUT}", activity: false, unit: 'MINUTES')
+                    }
                     steps {
                         script {
                             // DOCKER_IMAGE is defined through Jenkins project
@@ -142,6 +151,9 @@ pipeline {
                             label 'docker'
                             customWorkspace "${WORKSPACE}/${STAGE_NAME}"
                         }
+                    }
+                    options {
+                        timeout(time: "${STAGE_TIMEOUT}", activity: false, unit: 'MINUTES')
                     }
                     steps {
                         script {
