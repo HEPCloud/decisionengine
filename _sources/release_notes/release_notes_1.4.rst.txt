@@ -3,7 +3,7 @@ Release 1.4.1
 
 In this release:
 
-* Bug fixes to 1.4.0 release 
+* Bug fixes to 1.4.0 release
 
 Issues fixed in this release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
