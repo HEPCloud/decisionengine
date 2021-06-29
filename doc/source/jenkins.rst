@@ -79,5 +79,3 @@ The nightly CI build for Decisionengine framework uses this `Jenkins project <ht
 |
 
 .. image:: jenkins_pic/DE_nightly_ci_build_schedule_cfg.png
-
-

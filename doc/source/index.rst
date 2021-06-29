@@ -25,10 +25,10 @@ Developer Documentation
 Jenkins CI pipeline
 ===================
 
-.. toctree::                                                                                
-   :maxdepth: 1        
+.. toctree::
+   :maxdepth: 1
 
-   jenkins.rst     
+   jenkins.rst
 
 Source code
 ===========
