@@ -7,4 +7,3 @@ which may have a cost or a restricted allocation of cycles
 # Getting Started with development
 
 There is a specfic document on this at  https://github.com/HEPCloud/decisionengine/blob/master/DEVELOPMENT.md
-

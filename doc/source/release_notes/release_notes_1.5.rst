@@ -134,23 +134,3 @@ Full list of commits since version 1.4.1
 
 `ff3d491 <https://github.com/HEPCloud/decisionengine/commit/ff3d4914acc22d48940298095d4a6dbda32fe767>`_
 :   force docker pull when building the docker container to make sure to use an updated base layer (#210)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

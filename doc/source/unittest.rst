@@ -14,7 +14,7 @@ Build & test
 
 .. code-block::
 
-  
+
    git clone https://github.com/HEPCloud/decisionengine
 
    cd decisionengine
@@ -25,7 +25,7 @@ Build & test
    export PATH=/usr/pgsql-13/bin:$PATH
    python3 -m pytest  # (or just pytest at this point)
 
-   
+
 
 
 Decisionengine_modules
@@ -47,4 +47,3 @@ Test
 
    git clone https://github.com/HEPCloud/decisionengine_modules
    ./decisionengine_modules/.github/actions/unittest-in-sl7-docker/entrypoint.sh
-

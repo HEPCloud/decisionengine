@@ -110,5 +110,3 @@ CREATE FUNCTION f_get_current_task_id(character varying) RETURNS CHARACTER VARYI
                 SELECT taskmanager_id FROM taskmanager
 		WHERE sequence_id  = f_get_current_task_sequence($1);
             $_$;
-
-
