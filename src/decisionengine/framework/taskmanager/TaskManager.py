@@ -206,9 +206,12 @@ class TaskManager:
         while not self.state.should_stop():
             try:
                 self.decision_cycle()
+                with self.state.lock:
+                    if not self.state.should_stop():
+                        # If we are signaled to stop, don't override that state
+                        # otherwise the last decision_cycle completed without error
+                        self.state.set(State.STEADY)
                 if not self.state.should_stop():
-                    # the last decision_cycle completed without error
-                    self.state.set(State.STEADY)
                     self.wait_for_any(done_events)
             except Exception:  # pragma: no cover
                 logging.getLogger().exception("Exception in the task manager main loop")
