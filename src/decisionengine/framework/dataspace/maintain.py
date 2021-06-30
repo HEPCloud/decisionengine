@@ -171,10 +171,12 @@ class Reaper():
         """
         if isinstance(self.thread, threading.Thread):
             if self.thread.is_alive():
-                self.logger.debug("Sending reaper State.SHUTTINGDOWN signal")
                 with self.state.lock:
-                    self.state.set(State.SHUTTINGDOWN)
-                self.state.wait_while(State.SHUTTINGDOWN)
+                    if not self.state.should_stop():
+                        self.logger.debug("Sending reaper State.SHUTTINGDOWN signal")
+                        self.state.set(State.SHUTTINGDOWN)
+                if self.state.has_value(State.SHUTTINGDOWN):
+                    self.state.wait_while(State.SHUTTINGDOWN)
                 self.logger.info(f"Reaper shutdown : {self.state.get()}.")
             else:
                 self.logger.debug(f"Reaper tried to stop but is stopped already: {self.state.get()}.")
