@@ -8,10 +8,11 @@ version_scheme = "post-release"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-l -v --durations=0"
+addopts = "-l -v --durations=30 --durations-min=0.05 --strict-config --strict-markers"
 log_level = "debug"
 testpaths = "src/decisionengine"
-timeout = 120
+required_plugins = "pytest-timeout>=1.4.2"
+timeout = 90
 flake8-max-line-length = "120"
 flake8-ignore = "E501 E303 E302 E261 E265 W503 W504"
 flake8-show-source = "True"
