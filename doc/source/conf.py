@@ -18,7 +18,9 @@ import time
 sys.path.insert(0, os.path.abspath('../../src'))
 
 # -- Project information -----------------------------------------------------
-from decisionengine.framework.about import __version__, __title__, __author__  # noqa
+# isort: off
+from decisionengine.framework.about import __version__, __title__, __author__  # noqa: F401, E402
+# isort: on
 
 project = __title__
 copyright = '{}, {}'.format(time.localtime().tm_year, __author__)
