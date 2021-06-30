@@ -2,7 +2,7 @@ import gc
 import logging
 import time
 
-import mock
+from unittest import mock
 import pytest
 
 import decisionengine.framework.dataspace.dataspace as dataspace
