@@ -6,7 +6,7 @@ import os
 import threading
 from collections import UserDict
 
-import mock
+from unittest import mock
 import pytest
 
 from pytest_postgresql import factories
