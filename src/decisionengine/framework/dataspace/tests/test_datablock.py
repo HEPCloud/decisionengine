@@ -242,6 +242,17 @@ def test_Metadata_constructor(dataspace):  # noqa: F811
     assert metadata.data["generation_time"] == genTime
     assert metadata.data["missed_update_count"] == missCount
 
+    with pytest.raises(datablock.InvalidMetadataError):
+        metadata = datablock.Metadata(
+            my_tm["taskmanager_id"],
+            state="NO SUCH STATE EXISTS",
+            generation_id=dataspace.get_last_generation_id(
+                my_tm["name"], my_tm["taskmanager_id"]
+            ),
+            generation_time=genTime,
+            missed_update_count=missCount,
+        )
+
 
 @pytest.mark.usefixtures("dataspace")
 def test_Metadata_set_state(dataspace):  # noqa: F811
