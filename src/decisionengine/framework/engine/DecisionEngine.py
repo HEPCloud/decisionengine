@@ -60,7 +60,7 @@ def _channel_preamble(name):
 
 
 class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
-    rpc_paths = ('/RPC2', '/metrics')
+    rpc_paths = ('/RPC2')
 
 
 class DecisionEngine(socketserver.ThreadingMixIn,
@@ -88,6 +88,10 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.start_metrics_server()  # Make this dependent on flag
 
     def start_metrics_server(self):
+        cherrypy.config.update({
+            'server.socket_port': 8000,
+            'server.socket_host': '0.0.0.0'
+        })
         cherrypy.tree.mount(self)
         cherrypy.engine.start()
 
