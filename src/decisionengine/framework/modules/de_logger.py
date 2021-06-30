@@ -13,13 +13,16 @@ MB = 1000000
 logger = structlog.getLogger("decision_engine")
 logger = logger.bind(module=__name__.split(".")[-1])
 
-def set_logging(log_level,
-                file_rotate_by,
-                rotation_time_unit='D',
-                rotation_interval=1,
-                max_backup_count=6,
-                max_file_size=200 * MB,
-                log_file_name='/tmp/decision_engine_logs/decision_engine_log'):
+
+def set_logging(
+    log_level,
+    file_rotate_by,
+    rotation_time_unit="D",
+    rotation_interval=1,
+    max_backup_count=6,
+    max_file_size=200 * MB,
+    log_file_name="/tmp/decision_engine_logs/decision_engine_log",
+):
     """
 
     :type log_level: :obj:`str`
@@ -48,24 +51,39 @@ def set_logging(log_level,
 
     configDict.pylogconfig["handlers"]["de_file_debug"].update({"filename": "{}_debug".format(log_file_name)})
     configDict.pylogconfig["handlers"]["de_file_info"].update({"filename": "{}".format(log_file_name)})
-    configDict.pylogconfig["handlers"]["file_structlog_debug"].update({"filename": "{}_structlog_debug".format(log_file_name)})
+    configDict.pylogconfig["handlers"]["file_structlog_debug"].update(
+        {"filename": "{}_structlog_debug".format(log_file_name)}
+    )
 
     if file_rotate_by == "size":
-        configDict.pylogconfig["handlers"]["de_file_debug"].update({"class": "logging.handlers.RotatingFileHandler",
-                                                                    "maxBytes": max_file_size,
-                                                                    "backupCount": max_backup_count})
-        configDict.pylogconfig["handlers"]["de_file_info"].update({"class": "logging.handlers.RotatingFileHandler",
-                                                                   "maxBytes": max_file_size,
-                                                                   "backupCount": max_backup_count})
-        configDict.pylogconfig["handlers"]["file_structlog_debug"].update({"class": "logging.handlers.RotatingFileHandler",
-                                                                           "maxBytes": max_file_size,
-                                                                           "backupCount": max_backup_count})
+        configDict.pylogconfig["handlers"]["de_file_debug"].update(
+            {
+                "class": "logging.handlers.RotatingFileHandler",
+                "maxBytes": max_file_size,
+                "backupCount": max_backup_count,
+            }
+        )
+        configDict.pylogconfig["handlers"]["de_file_info"].update(
+            {
+                "class": "logging.handlers.RotatingFileHandler",
+                "maxBytes": max_file_size,
+                "backupCount": max_backup_count,
+            }
+        )
+        configDict.pylogconfig["handlers"]["file_structlog_debug"].update(
+            {
+                "class": "logging.handlers.RotatingFileHandler",
+                "maxBytes": max_file_size,
+                "backupCount": max_backup_count,
+            }
+        )
 
     else:
         raise ValueError(f"Incorrect 'file_rotate_by':'{file_rotate_by}:'")
 
     logging.config.dictConfig(configDict.pylogconfig)
     logger.debug("de logging setup complete")
+
 
 def get_logger():
     """
@@ -75,14 +93,36 @@ def get_logger():
     return logger
 
 
-if __name__ == '__main__':
-    set_logging("ERROR",
-                "size",
-                'D',
-                1,
-                max_backup_count=5,
-                max_file_size=100000,
-                log_file_name='%s/de_log/decision_engine_log0' % (os.environ.get('HOME')))
+def set_stream_logging(logger_name="decision_engine"):
+    """
+    This is for debugging.
+    Set stream logging for logger.
+    :type logger_name: :obj:`str`
+    :arg logger_name: logger name
+    :rtype: :class:`logging.Logger`
+    """
+
+    stlogger = logging.getLogger(logger_name)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%dT%H:%M:%S%z"
+    )
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    stlogger.addHandler(handler)
+    stlogger.setLevel(logging.DEBUG)
+    return stlogger
+
+
+if __name__ == "__main__":
+    set_logging(
+        "ERROR",
+        "size",
+        "D",
+        1,
+        max_backup_count=5,
+        max_file_size=100000,
+        log_file_name="%s/de_log/decision_engine_log0" % (os.environ.get("HOME")),
+    )
     logger.error("THIS IS ERROR")
     logger.info("THIS IS INFO")
     logger.debug("THIS IS DEBUG")
