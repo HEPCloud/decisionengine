@@ -1,6 +1,7 @@
 '''Fixture based DE Server tests of invalid channel configs'''
 # pylint: disable=redefined-outer-name
 
+import json
 import os
 import pytest
 import re
@@ -44,7 +45,7 @@ def test_client_can_get_products_no_channels(deserver, caplog):
 
     error_msgs = []
     for when in ("setup", "call"):  # log may show up in either pytest 'when'
-        error_msgs.extend([entry.message for entry in caplog.get_records(when) if entry.levelno == ERROR])
+        error_msgs.extend([json.loads(entry.message)['event'] for entry in caplog.get_records(when) if entry.levelno == ERROR])
     assert len(error_msgs) == 5
 
     # Find missing product erro
