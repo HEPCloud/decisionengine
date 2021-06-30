@@ -167,9 +167,9 @@ def DEServer(
         server_proc.start()
 
         # Ensure the channels have started
-        logger.debug(f"DE Fixture: Waiting on startup state is_set={server_proc.de_server.startup_complete.is_set()}")
-        server_proc.de_server.startup_complete.wait(timeout=3)
-        logger.debug(f"DE Fixture: startup state is_set={server_proc.de_server.startup_complete.is_set()}")
+        logger.debug(f"DE Fixture: Wait on startup state: is_set={server_proc.de_server.startup_complete.is_set()}")
+        server_proc.de_server.startup_complete.wait()
+        logger.debug(f"DE Fixture: Done waiting for startup state: is_set={server_proc.de_server.startup_complete.is_set()}")
 
         # The following block only works if there are
         # active workers; if it is called before any workers
