@@ -12,13 +12,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     strategy:
       matrix:
         python-version:
           - '3.6'
           - '3.9'
-          - 'pypy-3.6'
+          - 'pypy-3.7'
 
     name: Python ${{ matrix.python-version }} unit tests
     steps:
@@ -38,9 +37,9 @@ jobs:
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-${{ matrix.python-version }}
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('setup.py') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
@@ -71,6 +70,7 @@ jobs:
         run: python3 setup.py bdist_wheel
 
       - name: Run Unit Tests on Python ${{ matrix.python-version }}
+        timeout-minutes: 20
         env:
           PYTEST_TIMEOUT: 90
           PYTHONPATH: ${{ github.workspace }}/src
