@@ -25,6 +25,7 @@ from decisionengine.framework.taskmanager.module_graph import ensure_no_circular
 from decisionengine.framework.util.subclasses import all_subclasses
 from decisionengine.framework.modules.de_logger import LOGGERNAME
 from decisionengine.framework.util.prometheus import get_registry
+from decisionengine.framework.util.prometheus import *
 
 import os  # TODO
 
@@ -150,44 +151,44 @@ class TaskManager:
         self.lock = threading.Lock()
 
         # Metrics
-        self.channel_state_gauge = prometheus_client.Gauge(
-            'de_channel_state',
-            'Channel state', [
-                'channel_name',
-            ],
-            multiprocess_mode='liveall')
+        # self.channel_state_gauge = prometheus_client.Gauge(
+        #     'de_channel_state',
+        #     'Channel state', [
+        #         'channel_name',
+        #     ],
+        #     multiprocess_mode='liveall')
 
-        self.source_acquire_gauge = prometheus_client.Gauge(
-            'de_source_last_acquire', "Last time a source "
-            'successfully ran its acquire function', [
-                'channel_name',
-                'source_name',
-            ],
-            multiprocess_mode='liveall')
+        # self.source_acquire_gauge = prometheus_client.Gauge(
+        #     'de_source_last_acquire', "Last time a source "
+        #     'successfully ran its acquire function', [
+        #         'channel_name',
+        #         'source_name',
+        #     ],
+        #     multiprocess_mode='liveall')
 
-        self.logicengine_run_gauge = prometheus_client.Gauge(
-            'de_logicengine_last_run', 'Last time '
-            'a logicengine successfully ran', [
-                'channel_name',
-                'logicengine_name',
-            ],
-            multiprocess_mode='liveall')
+        # self.logicengine_run_gauge = prometheus_client.Gauge(
+        #     'de_logicengine_last_run', 'Last time '
+        #     'a logicengine successfully ran', [
+        #         'channel_name',
+        #         'logicengine_name',
+        #     ],
+        #     multiprocess_mode='liveall')
 
-        self.transform_run_gauge = prometheus_client.Gauge(
-            'de_transform_last_run', 'Last time a '
-            'transform successfully ran', [
-                'channel_name',
-                'transform_name',
-            ],
-            multiprocess_mode='liveall')
+        # self.transform_run_gauge = prometheus_client.Gauge(
+        #     'de_transform_last_run', 'Last time a '
+        #     'transform successfully ran', [
+        #         'channel_name',
+        #         'transform_name',
+        #     ],
+        #     multiprocess_mode='liveall')
 
-        self.publisher_run_gauge = prometheus_client.Gauge(
-            'de_publisher_last_run', 'Last time '
-            'a publisher successfully ran', [
-                'channel_name',
-                'publisher_name',
-            ],
-            multiprocess_mode='liveall')
+        # self.publisher_run_gauge = prometheus_client.Gauge(
+        #     'de_publisher_last_run', 'Last time '
+        #     'a publisher successfully ran', [
+        #         'channel_name',
+        #         'publisher_name',
+        #     ],
+        #     multiprocess_mode='liveall')
 
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
@@ -263,7 +264,7 @@ class TaskManager:
                 if not self.state.should_stop():
                     # the last decision_cycle completed without error
                     self.state.set(State.STEADY)
-                    self.channel_state_gauge.labels(self.name).set_function(
+                    CHANNEL_STATE_GAUGE.labels(self.name).set_function(
                         self.get_state_value)
                     self.wait_for_any(done_events)
             except Exception:  # pragma: no cover
@@ -322,12 +323,12 @@ class TaskManager:
     def set_to_shutdown(self):
         self.state.set(State.SHUTTINGDOWN)
         delogger.debug("Shutting down. Will call shutdown on all publishers")
-        self.channel_state_gauge.labels(self.name).set_function(
+        CHANNEL_STATE_GAUGE.labels(self.name).set_function(
             self.get_state_value)
         for publisher_worker in self.channel.publishers.values():
             publisher_worker.worker.shutdown()
         self.state.set(State.SHUTDOWN)
-        self.channel_state_gauge.labels(self.name).set_function(
+        CHANNEL_STATE_GAUGE.labels(self.name).set_function(
             self.get_state_value)
 
     def take_offline(self, current_data_block):
@@ -335,7 +336,7 @@ class TaskManager:
         offline and stop task manager
         """
         self.state.set(State.OFFLINE)
-        self.channel_state_gauge.labels(self.name).set(self.get_state_value())
+        CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
         # invalidate data block
         # not implemented yet
 
@@ -425,6 +426,7 @@ class TaskManager:
                 self.logger.info(f"Src {src.name} filling header")
                 self.source_acquire_gauge.labels(self.name, src.name)
                 self.source_acquire_gauge.labels(
+                SOURCE_ACQUIRE_GAUGE.labels(
                     self.name, src.name).set_to_current_time()
                 if data:
                     t = time.time()
@@ -512,10 +514,11 @@ class TaskManager:
         try:
             data = transform.worker.transform(data_block)
             self.logger.debug(f"transform returned {data}")
+            t = time.time()
             header = datablock.Header(data_block.taskmanager_id, create_time=time.time(), creator=transform.name)
             self.data_block_put(data, header, data_block)
             self.logger.info("transform put data")
-	    g.set(time.time())
+	    TRANFORM_RUN_GAUGE.set(t)
         except Exception:  # pragma: no cover
             self.logger.exception(f"exception from transform {transform.name} ")
             self.take_offline(data_block)
@@ -543,6 +546,9 @@ class TaskManager:
                 rc = self.channel.le_s[le].worker.evaluate(data_block)
                 le_list.append(rc)
                 self.logger.info("run logic engine %s done", self.channel.le_s[le].name)
+                LOGICENGINE_RUN_GAUGE.labels(
+                    self.name,
+                    self.channel.le_s[le].name).set_to_current_time()
                 self.logger.info(
                     "logic engine %s generated newfacts: %s",
                     self.channel.le_s[le].name,
@@ -592,7 +598,7 @@ class TaskManager:
                                                 .labels(self.name, name)
                     try:
                         publisher.worker.publish(data_block)
-                        self.publisher_run_gauge.labels(
+                        PUBLISHER_RUN_GAUGE.labels(
                             self.name, name).set_to_current_time()
                     except KeyError as e:
                         if self.state.should_stop():
