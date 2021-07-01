@@ -52,6 +52,17 @@ pipeline {
                     post {
                         always {
                             archiveArtifacts artifacts: "decisionengine/flake8.log"
+                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // eventually kill the python process that spawn the test to cleanup CI processes left behind
+                            sh '''
+                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${DOCKERID} ]]; then
+                                    docker exec ${DOCKERID} ps -xww && \
+                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
+                                    docker exec ${DOCKERID} ps -xww  || true
+                                fi
+                            '''
                             echo "cleanup docker image ${flake8StageDockerImage}"
                             sh "docker rmi ${flake8StageDockerImage}"
                         }
@@ -96,9 +107,20 @@ pipeline {
                     post {
                         always {
                             archiveArtifacts artifacts: "decisionengine/pylint.log"
+                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // eventually kill the python process that spawn the test to cleanup CI processes left behind
+                            sh '''
+                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${DOCKERID} ]]; then
+                                    docker exec ${DOCKERID} ps -xww && \
+                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
+                                    docker exec ${DOCKERID} ps -xww  || true
+                                fi
+                            '''
                             echo "cleanup docker image ${pylintStageDockerImage}"
                             sh "docker rmi ${pylintStageDockerImage}"
-                            }
+                        }
                     }
                 }
                 stage('unit_tests') {
@@ -140,9 +162,20 @@ pipeline {
                     post {
                         always {
                             archiveArtifacts artifacts: "decisionengine/pytest.log"
+                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // eventually kill the python process that spawn the test to cleanup CI processes left behind
+                            sh '''
+                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${DOCKERID} ]]; then
+                                    docker exec ${DOCKERID} ps -xww && \
+                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
+                                    docker exec ${DOCKERID} ps -xww  || true
+                                fi
+                            '''
                             echo "cleanup docker image ${unit_testsStageDockerImage}"
                             sh "docker rmi ${unit_testsStageDockerImage}"
-                            }
+                        }
                     }
                 }
                 stage('rpmbuild') {
@@ -184,6 +217,17 @@ pipeline {
                     post {
                         always {
                             archiveArtifacts artifacts: "decisionengine/rpmbuild.log,decisionengine/dist/*.rpm"
+                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // eventually kill the python process that spawn the test to cleanup CI processes left behind
+                            sh '''
+                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${DOCKERID} ]]; then
+                                    docker exec ${DOCKERID} ps -xww && \
+                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
+                                    docker exec ${DOCKERID} ps -xww  || true
+                                fi
+                            '''
                             echo "cleanup docker image ${rpmbuildStageDockerImage}"
                             sh "docker rmi ${rpmbuildStageDockerImage}"
                         }
