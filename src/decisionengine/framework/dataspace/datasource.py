@@ -2,7 +2,7 @@ import abc
 import logging
 
 
-class DataSource(object, metaclass=abc.ABCMeta):  # pragma: no cover
+class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
 
     #: Name of the taskmanager table
     taskmanager_table = 'taskmanager'
