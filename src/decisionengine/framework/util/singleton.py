@@ -38,7 +38,7 @@ class Singleton(type):
                 return klass
 
             logging.getLogger().debug(f"Making instance of {cls}")
-            klass = super(Singleton, cls).__call__(*args, **kwargs)  # make a strong ref
+            klass = super().__call__(*args, **kwargs)  # make a strong ref
             cls._instances[cls] = klass
 
         return klass
@@ -59,7 +59,7 @@ class ScopedSingleton(Singleton):
         # pypy uses delayed garbage collection
         # so we need to do an explicit garbage collection here
         gc.collect()
-        return super(ScopedSingleton, cls).__call__(*args, **kwargs)
+        return super().__call__(*args, **kwargs)
 
 
 class ScopedSingletonABC(abc.ABCMeta, ScopedSingleton):

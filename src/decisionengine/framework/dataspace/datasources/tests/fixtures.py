@@ -193,10 +193,10 @@ def load_sample_data_into_datasource(schema_only_db):
     header = Header(_pk)
     metadata = Metadata(_pk)
     schema_only_db.insert(
-        _pk, 1, "my_test_key", "my_test_value".encode(), header, metadata
+        _pk, 1, "my_test_key", b"my_test_value", header, metadata
     )
     schema_only_db.insert(
-        _pk, 1, "a_test_key", "a_test_value".encode(), header, metadata
+        _pk, 1, "a_test_key", b"a_test_value", header, metadata
     )
 
     _pk = schema_only_db.store_taskmanager(
@@ -205,7 +205,7 @@ def load_sample_data_into_datasource(schema_only_db):
     header = Header(_pk)
     metadata = Metadata(_pk)
     schema_only_db.insert(
-        _pk, 2, "other_test_key", "other_test_value".encode(), header, metadata
+        _pk, 2, "other_test_key", b"other_test_value", header, metadata
     )
 
     # return the connection now that it isn't just the schema

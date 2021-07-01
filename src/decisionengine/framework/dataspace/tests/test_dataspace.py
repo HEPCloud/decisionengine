@@ -326,7 +326,7 @@ def test_insert(dataspace):  # noqa: F811
         primary_key,
         1,
         "sample_test_key",
-        "sample_test_value".encode(),
+        b"sample_test_value",
         header,
         metadata,
     )

@@ -452,7 +452,7 @@ class Postgresql(ds.DataSource):
             raise
         finally:
             try:
-                list([x.close if x else None for x in (cursor, db)])
+                list(x.close if x else None for x in (cursor, db))
             except psycopg2.Error:  # pragma: no cover
                 # do not log stack trace, Exception thrown is handled by the caller
                 pass
@@ -475,7 +475,7 @@ class Postgresql(ds.DataSource):
                 pass
             raise
         finally:
-            list([x.close if x else None for x in (cursor, db)])
+            list(x.close if x else None for x in (cursor, db))
 
     def _update_returning_result(self, query_string, values=None):
         db, cursor = None, None
@@ -498,7 +498,7 @@ class Postgresql(ds.DataSource):
                 pass
             raise
         finally:
-            list([x.close if x else None for x in (cursor, db)])
+            list(x.close if x else None for x in (cursor, db))
 
     def _insert(self, table_name_or_sql_query, record=None):
         try:

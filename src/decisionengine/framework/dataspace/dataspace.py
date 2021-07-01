@@ -40,7 +40,7 @@ class DataSpaceExistsError(Exception):
     pass
 
 
-class DataSourceLoader(object, metaclass=Singleton):
+class DataSourceLoader(metaclass=Singleton):
 
     _ds = None
 

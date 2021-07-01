@@ -211,7 +211,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             if not channel_keys:
                 return "No channels are currently active.\n"
 
-            width = max([len(x) for x in channel_keys]) + 1
+            width = max(len(x) for x in channel_keys) + 1
             txt = ""
             for ch, worker in workers.items():
                 if not worker.is_alive():
@@ -256,7 +256,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                 return "No channels are currently active.\n" + self.reaper_status()
 
             txt = ""
-            width = max([len(x) for x in channel_keys]) + 1
+            width = max(len(x) for x in channel_keys) + 1
             for ch, worker in workers.items():
                 txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
                                                                                           worker.task_manager_id,
