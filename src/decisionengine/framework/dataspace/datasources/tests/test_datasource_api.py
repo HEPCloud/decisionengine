@@ -11,6 +11,7 @@ from sqlalchemy.exc import NoResultFound
 
 from decisionengine.framework.dataspace.datasources.tests.fixtures import (  # noqa: F401
     PG_DE_DB_WITH_SCHEMA,
+    PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     DATABASES_TO_TEST,
     datasource,
