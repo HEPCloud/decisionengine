@@ -42,6 +42,10 @@ def generate_insert_query(table_name, keys):
     return query
 
 
+PING_QUERY = """
+SELECT 1;
+"""
+
 SELECT_QUERY = """
 SELECT tm.taskmanager_id, foo.* FROM {} foo, taskmanager tm
 WHERE tm.sequence_id = foo.taskmanager_id
@@ -133,6 +137,8 @@ class Postgresql(ds.DataSource):
                                                   **config_dict)
         self.retries = MAX_NUMBER_OF_RETRIES
         self.timeout = TIME_TO_SLEEP
+
+        self._select(PING_QUERY)
 
     def create_tables(self):
         return True
