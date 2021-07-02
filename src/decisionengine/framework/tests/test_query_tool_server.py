@@ -8,6 +8,7 @@ import datetime
 
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     PG_DE_DB_WITH_SCHEMA,
+    PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     DEServer,
     TEST_CONFIG_PATH,

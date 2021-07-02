@@ -4,6 +4,7 @@ import pytest
 
 from decisionengine.framework.dataspace.tests.fixtures import (  # noqa: F401
     PG_DE_DB_WITH_SCHEMA,
+    PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     DATABASES_TO_TEST,
     dataspace,

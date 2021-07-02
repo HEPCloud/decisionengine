@@ -30,14 +30,7 @@ __all__ = [
 
 # DE_DB_PORT assigned at random
 PG_PROG = factories.postgresql_proc(
-    user="postgres", password=None, host="127.0.0.1", port=None
-)
-PG_DE_DB_WITH_SCHEMA = factories.postgresql(
-    "PG_PROG",
-    dbname="decisionengine",
-    load=[
-        os.path.dirname(os.path.abspath(__file__)) + "/../postgresql.sql",
-    ],
+    user="postgres", password=None, host="127.0.0.1", port=None, postgres_options="-N 1000",
 )
 PG_DE_DB_WITHOUT_SCHEMA = factories.postgresql(
     "PG_PROG",
@@ -46,6 +39,26 @@ PG_DE_DB_WITHOUT_SCHEMA = factories.postgresql(
 
 DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA",)
 
+
+@pytest.fixture
+@pytest.mark.usefixtures("PG_DE_DB_WITHOUT_SCHEMA")
+def PG_DE_DB_WITH_SCHEMA(request):
+    """
+    Load our PG schema into the database via this fixture
+    so pytest knows the limitations on parallel usage of this
+    databse scope.
+    """
+    connection = request.getfixturevalue("PG_DE_DB_WITHOUT_SCHEMA")
+    with open(os.path.dirname(os.path.abspath(__file__)) + "/../postgresql.sql", 'r') as _fd:
+        with connection.cursor() as cursor:
+            cursor.execute(_fd.read())
+    connection.commit()
+    yield connection
+
+    connection.close()
+    del connection
+
+    gc.collect()
 
 @pytest.fixture
 def SQLALCHEMY_PG_WITH_SCHEMA(request):

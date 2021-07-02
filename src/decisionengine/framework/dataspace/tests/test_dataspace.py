@@ -7,6 +7,7 @@ from sqlalchemy.exc import NoResultFound
 from decisionengine.framework.dataspace import dataspace as ds
 from decisionengine.framework.dataspace.tests.fixtures import (  # noqa: F401
     PG_DE_DB_WITH_SCHEMA,
+    PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     DATABASES_TO_TEST,
     dataspace,
