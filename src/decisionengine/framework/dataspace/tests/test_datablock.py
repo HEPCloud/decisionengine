@@ -16,15 +16,16 @@ from decisionengine.framework.dataspace import datablock
 def test_DataBlock_constructor(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
 
+    dblock = datablock.DataBlock(dataspace, my_tm["name"])
+    assert dblock.generation_id == 1
+
     dblock = datablock.DataBlock(dataspace, my_tm["name"], my_tm["taskmanager_id"])
     assert dblock.generation_id == 1
 
     dblock = datablock.DataBlock(dataspace, my_tm["name"], generation_id=1)
     assert dblock.generation_id == 1
 
-    dblock = datablock.DataBlock(
-        dataspace, my_tm["name"], my_tm["taskmanager_id"], sequence_id=1
-    )
+    dblock = datablock.DataBlock(dataspace, my_tm["name"], sequence_id=1)
     assert dblock.generation_id == 1
 
 
