@@ -69,6 +69,11 @@ def dataspace(request):
             "module"
         ] = "decisionengine.framework.dataspace.datasources.postgresql"
         config["dataspace"]["datasource"]["name"] = "Postgresql"
+    elif "SQLALCHEMY" in request.param:
+        config["dataspace"]["datasource"][
+            "module"
+        ] = "decisionengine.framework.dataspace.datasources.sqlalchemy_ds"
+        config["dataspace"]["datasource"]["name"] = "SQLAlchemyDS"
 
     my_ds = ds.DataSpace(config)
     load_sample_data_into_datasource(my_ds)
