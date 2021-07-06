@@ -27,7 +27,8 @@ runtime_require = ["jsonnet >= 0.17.0", "tabulate >= 0.8.7",
                    "numpy == 1.19.5; python_version <= '3.6'",
                    "numpy >= 1.19.5; python_version >= '3.7'",
                    "pandas == 1.1.5; python_version <= '3.6'",
-                   "pandas >= 1.1.5; python_version >= '3.7'",
+                   "pandas >= 1.1.5; python_version >= '3.7' and platform_python_implementation == 'CPython'",
+                   "pandas == 1.2.5; platform_python_implementation == 'PyPy'",  # For pypy3.7
                    "psycopg2-binary >= 2.8.6; platform_python_implementation == 'CPython'",  # noqa: E501
                    "psycopg2cffi >= 2.9.0; platform_python_implementation == 'PyPy'"]  # noqa: E501
 
