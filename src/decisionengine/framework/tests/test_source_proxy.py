@@ -2,6 +2,7 @@
 # pylint: disable=redefined-outer-name
 
 import os
+import platform
 import re
 
 import pytest
@@ -22,8 +23,11 @@ deserver = DEServer(
 )  # pylint: disable=invalid-name
 
 
+# FIXME:
+#  Figure out why this hangs on PyPy
 @pytest.mark.timeout(20)
 @pytest.mark.usefixtures("deserver")
+@pytest.mark.skipif(platform.python_implementation() == 'PyPy', reason="test hangs on PyPy")
 def test_working_source_proxy(deserver):
     # The following 'block-while' call be unnecessary once the
     # deserver fixture can reliably block when no workers have yet
@@ -39,8 +43,11 @@ def test_working_source_proxy(deserver):
 _fail_channel_config_dir = os.path.join(TEST_CONFIG_PATH, 'test-failing-source-proxy')  # noqa: F405
 deserver_fail = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_fail_channel_config_dir)  # pylint: disable=invalid-name
 
+# FIXME:
+#  Figure out why this hangs on PyPy
 @pytest.mark.timeout(20)
 @pytest.mark.usefixtures("deserver_fail")
+@pytest.mark.skipif(platform.python_implementation() == 'PyPy', reason="test hangs on PyPy")
 def test_stop_failing_source_proxy(deserver_fail):
     # The following 'block-while' call be unnecessary once the
     # deserver fixture can reliably block when no workers have yet
