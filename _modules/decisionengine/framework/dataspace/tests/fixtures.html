@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.tests.fixtures &mdash; decisionengine 1.7.0rc0.post157+g0f5fb129 documentation</title>
+  <title>decisionengine.framework.dataspace.tests.fixtures &mdash; decisionengine 1.6.99.post2.post2+gaccef50a documentation</title>
   
 
   
@@ -235,6 +235,11 @@
             <span class="s2">&quot;module&quot;</span>
         <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.postgresql&quot;</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Postgresql&quot;</span>
+    <span class="k">elif</span> <span class="s2">&quot;SQLALCHEMY&quot;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span><span class="p">:</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">][</span>
+            <span class="s2">&quot;module&quot;</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.sqlalchemy_ds&quot;</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;SQLAlchemyDS&quot;</span>
 
     <span class="n">my_ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="n">load_sample_data_into_datasource</span><span class="p">(</span><span class="n">my_ds</span><span class="p">)</span>

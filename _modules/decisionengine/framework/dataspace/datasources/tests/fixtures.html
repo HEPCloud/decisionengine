@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.7.0rc0.post157+g0f5fb129 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.6.99.post2.post2+gaccef50a documentation</title>
   
 
   
@@ -196,14 +196,7 @@
 
 <span class="c1"># DE_DB_PORT assigned at random</span>
 <span class="n">PG_PROG</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql_proc</span><span class="p">(</span>
-    <span class="n">user</span><span class="o">=</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span>
-<span class="p">)</span>
-<span class="n">PG_DE_DB_WITH_SCHEMA</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql</span><span class="p">(</span>
-    <span class="s2">&quot;PG_PROG&quot;</span><span class="p">,</span>
-    <span class="n">dbname</span><span class="o">=</span><span class="s2">&quot;decisionengine&quot;</span><span class="p">,</span>
-    <span class="n">load</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/../postgresql.sql&quot;</span><span class="p">,</span>
-    <span class="p">],</span>
+    <span class="n">user</span><span class="o">=</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">postgres_options</span><span class="o">=</span><span class="s2">&quot;-N 1000&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql</span><span class="p">(</span>
     <span class="s2">&quot;PG_PROG&quot;</span><span class="p">,</span>
@@ -212,6 +205,26 @@
 
 <span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,)</span>
 
+
+<div class="viewcode-block" id="PG_DE_DB_WITH_SCHEMA"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.PG_DE_DB_WITH_SCHEMA">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITHOUT_SCHEMA&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">PG_DE_DB_WITH_SCHEMA</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load our PG schema into the database via this fixture</span>
+<span class="sd">    so pytest knows the limitations on parallel usage of this</span>
+<span class="sd">    databse scope.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">connection</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITHOUT_SCHEMA&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/../postgresql.sql&quot;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">_fd</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_fd</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="k">yield</span> <span class="n">connection</span>
+
+    <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">del</span> <span class="n">connection</span>
+
+    <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SQLALCHEMY_PG_WITH_SCHEMA"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_PG_WITH_SCHEMA">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <span class="k">def</span> <span class="nf">SQLALCHEMY_PG_WITH_SCHEMA</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
