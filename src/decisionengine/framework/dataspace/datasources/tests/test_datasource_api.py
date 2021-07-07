@@ -28,6 +28,12 @@ def test_create_tables(datasource):  # noqa: F811
 
 
 @pytest.mark.usefixtures("datasource")
+def test_has_config(datasource):  # noqa: F811
+    """This should have a `config` dict we can pass to jsonnet"""
+    assert isinstance(datasource.config, dict)
+
+
+@pytest.mark.usefixtures("datasource")
 def test_get_taskmanager_exists(datasource):  # noqa: F811
     """Can I get a taskmanager by name or name and uuid"""
     # should return the 'newest' instance
