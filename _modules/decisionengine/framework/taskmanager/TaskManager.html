@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.0rc0.post152+ga581cd2b documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.0rc0.post153+g9ae9ad13 documentation</title>
   
 
   
@@ -372,9 +372,12 @@
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">decision_cycle</span><span class="p">()</span>
+                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
+                        <span class="c1"># If we are signaled to stop, don&#39;t override that state</span>
+                        <span class="c1"># otherwise the last decision_cycle completed without error</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
-                    <span class="c1"># the last decision_cycle completed without error</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_any</span><span class="p">(</span><span class="n">done_events</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Exception in the task manager main loop&quot;</span><span class="p">)</span>
