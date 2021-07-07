@@ -385,7 +385,7 @@ class DataBlock:
 
         if not value:
             self.logger.exception(f"No key '{key}' in datablock __getitem__")
-            raise KeyError
+            raise KeyError(f"No key '{key}' in datablock __getitem__")
 
         if value.get('pickled'):
             return_value = zloads(value.get('value'))
