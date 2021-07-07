@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.tests.test_datablock &mdash; decisionengine 1.7.0rc0.post153+g9ae9ad13 documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_datablock &mdash; decisionengine 1.7.0rc0.post154+g5ddaff8f documentation</title>
   
 
   
@@ -406,7 +406,18 @@
         <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;generation_time&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">genTime</span>
-    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;missed_update_count&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">missCount</span></div>
+    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;missed_update_count&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">missCount</span>
+
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">datablock</span><span class="o">.</span><span class="n">InvalidMetadataError</span><span class="p">):</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
+            <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span>
+            <span class="n">state</span><span class="o">=</span><span class="s2">&quot;NO SUCH STATE EXISTS&quot;</span><span class="p">,</span>
+            <span class="n">generation_id</span><span class="o">=</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span>
+                <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span>
+            <span class="p">),</span>
+            <span class="n">generation_time</span><span class="o">=</span><span class="n">genTime</span><span class="p">,</span>
+            <span class="n">missed_update_count</span><span class="o">=</span><span class="n">missCount</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_Metadata_set_state"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_Metadata_set_state">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">)</span>
