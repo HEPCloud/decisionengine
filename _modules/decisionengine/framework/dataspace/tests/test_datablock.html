@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.tests.test_datablock &mdash; decisionengine 1.7.0rc0.post155+g9af4c144 documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_datablock &mdash; decisionengine 1.7.0rc0.post156+ga7d18a41 documentation</title>
   
 
   
@@ -182,15 +182,16 @@
 <span class="k">def</span> <span class="nf">test_DataBlock_constructor</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
 
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="mi">1</span>
+
     <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
     <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="mi">1</span>
 
     <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">generation_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="mi">1</span>
 
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span>
-        <span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span> <span class="n">sequence_id</span><span class="o">=</span><span class="mi">1</span>
-    <span class="p">)</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">sequence_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="mi">1</span></div>
 
 

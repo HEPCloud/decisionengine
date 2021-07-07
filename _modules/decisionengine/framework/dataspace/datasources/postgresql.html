@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.0rc0.post155+g9af4c144 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.0rc0.post156+ga7d18a41 documentation</title>
   
 
   
@@ -221,9 +221,10 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">SELECT_LAST_GENERATION_ID_BY_NAME</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">SELECT max(generation_id)</span>
-<span class="s2">FROM dataproduct</span>
-<span class="s2">WHERE taskmanager_id = (select  max(sequence_id) from taskmanager where name = </span><span class="si">%s</span><span class="s2">)</span>
+<span class="s2">SELECT max(dp.generation_id) as generation_id</span>
+<span class="s2">FROM dataproduct dp</span>
+<span class="s2">JOIN taskmanager tm ON dp.taskmanager_id=tm.sequence_id</span>
+<span class="s2">WHERE tm.name=</span><span class="si">%s</span><span class="s2"></span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
