@@ -17,6 +17,12 @@ from decisionengine.framework.dataspace.tests.fixtures import (  # noqa: F401
 from decisionengine.framework.dataspace.datablock import Header, Metadata
 
 
+@pytest.mark.usefixtures("dataspace")
+def test_has_config(dataspace):  # noqa: F811
+    """verify our config entry exists"""
+    assert isinstance(dataspace.config, dict)
+
+
 def test_dataspace_config_finds_bad():
     with pytest.raises(ds.DataSpaceConfigurationError) as e:
         ds.DataSpace({})
