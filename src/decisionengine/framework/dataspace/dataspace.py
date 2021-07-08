@@ -85,6 +85,8 @@ class DataSpace():
             self.logger.exception("Error in initializing DataSpace!")
             raise DataSpaceConfigurationError('Invalid dataspace configuration')
 
+        self.config = config
+
         # Connect to the datasource/database
         self.datasource = DataSourceLoader().create_datasource(self._db_driver_module,
                                                                self._db_driver_name,
