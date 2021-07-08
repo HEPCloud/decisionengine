@@ -14,9 +14,9 @@ logger = logging.getLogger()
 
 
 @pytest.fixture
-def config(request):
+def config():
 
-    return {
+    yield {
         "dataspace": {
             "retention_interval_in_days": 365,
             "datasource": {

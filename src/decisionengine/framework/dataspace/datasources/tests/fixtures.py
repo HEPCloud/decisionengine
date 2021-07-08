@@ -87,7 +87,7 @@ def SQLALCHEMY_PG_WITH_SCHEMA(request):
                 db_info[key] = ''
 
     # echo will log all the sql commands to log.debug
-    return {
+    yield {
         "url": f"postgresql://{db_info['user']}:{db_info['password']}@{db_info['host']}:{db_info['port']}/{db_info['database']}",
         "echo": True,
     }
@@ -100,7 +100,7 @@ def SQLALCHEMY_IN_MEMORY_SQLITE(request):
     Then setup the SQLAlchemy style URL with that DB.
     The SQLAlchemyDS will create the schema as needed.
     """
-    return {"url": "sqlite:///:memory:", "echo": True}
+    yield {"url": "sqlite:///:memory:", "echo": True}
 
 @pytest.fixture(params=DATABASES_TO_TEST)
 def datasource(request):

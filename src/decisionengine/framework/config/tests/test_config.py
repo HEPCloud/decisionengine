@@ -29,7 +29,7 @@ def load():
         handler = ChannelConfigHandler(global_config, channel_config_dir)
         handler.load_all_channels()
         return handler
-    return _call
+    yield _call
 
 
 # --------------------------------------------------------------------

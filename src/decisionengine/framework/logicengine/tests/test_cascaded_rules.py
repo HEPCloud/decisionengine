@@ -11,7 +11,7 @@ def myengine():
     rules["r3"] = {"expression": "f3", "facts": ["f4"]}
     rules["r4"] = {"expression": "f4", "actions": ["a4"], "false_actions": ["fa4"]}
 
-    return LogicEngine({"facts": facts, "rules": rules})
+    yield LogicEngine({"facts": facts, "rules": rules})
 
 def test_rule_that_fires(myengine):
     db = {"val": 20}

@@ -8,7 +8,7 @@ def myengine():
     rules = {}
     rules["r1"] = {"expression": "not f1", "actions": ["a1"]}
     rules["r2"] = {"expression": "not (f1)", "actions": ["a2"]}
-    return LogicEngine({"facts": facts, "rules": rules})
+    yield LogicEngine({"facts": facts, "rules": rules})
 
 
 def test_rule_that_fires(myengine):
