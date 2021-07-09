@@ -1,11 +1,11 @@
 {
-  'sources': {
-    source1: {
-      name: "SourceNOP",
-      parameters: {},
+  "sources": {
+    "source1": {
+      "name": "SourceNOP",
+      "parameters": {}
      }
-},
-  'transforms': {},
-  'logicengines': {},
-  'publishers': {}
+  },
+  "transforms": {},
+  "logicengines": {},
+  "publishers": {}
 }

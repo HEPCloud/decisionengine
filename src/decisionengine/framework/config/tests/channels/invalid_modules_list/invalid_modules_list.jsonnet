@@ -1,6 +1,6 @@
 {
-  'sources': [],
-  'transforms': {},
-  'logicengines': {},
-  'publishers': {}
+  "sources": [],
+  "transforms": {},
+  "logicengines": {},
+  "publishers": {}
 }
