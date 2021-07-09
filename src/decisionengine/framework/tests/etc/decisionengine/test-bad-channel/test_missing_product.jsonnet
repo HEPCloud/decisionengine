@@ -1,11 +1,11 @@
 {
-  sources: {},
-  transforms: {
-    a_uses_b: {
-      module: 'decisionengine.framework.tests.ABTransform',
-      parameters: {}
+  "sources": {},
+  "transforms": {
+    "a_uses_b": {
+      "module": "decisionengine.framework.tests.ABTransform",
+      "parameters": {}
     }
   },
-  logicengines: {},
-  publishers: {}
+  "logicengines": {},
+  "publishers": {}
 }

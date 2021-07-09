@@ -1,8 +1,8 @@
 {
-  'sources': {
-    source1: {}
+  "sources": {
+    "source1": {}
   },
-  'transforms': {},
-  'logicengines': {},
-  'publishers': {}
+  "transforms": {},
+  "logicengines": {},
+  "publishers": {}
 }

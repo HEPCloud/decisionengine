@@ -4,14 +4,14 @@
 # the channel offline.
 
 {
-  sources: {
-    source1: {
-      module: "decisionengine.framework.tests.ErrorOnAcquire",
-      parameters: {},
-      schedule: 10000
+  "sources": {
+    "source1": {
+      "module": "decisionengine.framework.tests.ErrorOnAcquire",
+      "parameters": {},
+      "schedule": 10000
     }
   },
-  transforms: {},
-  logicengines: {},
-  publishers: {}
+  "transforms": {},
+  "logicengines": {},
+  "publishers": {}
 }
