@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.6.99.post2.post2+gaccef50a documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.6.99.post2.post3+gd2732816 documentation</title>
   
 
   
@@ -253,7 +253,7 @@
                 <span class="n">db_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
     <span class="c1"># echo will log all the sql commands to log.debug</span>
-    <span class="k">return</span> <span class="p">{</span>
+    <span class="k">yield</span> <span class="p">{</span>
         <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;postgresql://</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="s2">&quot;echo&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">}</span></div>
@@ -266,7 +266,7 @@
 <span class="sd">    Then setup the SQLAlchemy style URL with that DB.</span>
 <span class="sd">    The SQLAlchemyDS will create the schema as needed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;sqlite:///:memory:&quot;</span><span class="p">,</span> <span class="s2">&quot;echo&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span></div>
+    <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;sqlite:///:memory:&quot;</span><span class="p">,</span> <span class="s2">&quot;echo&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="datasource"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.datasource">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">DATABASES_TO_TEST</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">datasource</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
