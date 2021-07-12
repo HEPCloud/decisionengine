@@ -42,44 +42,42 @@ DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA",)
 
 @pytest.fixture
 @pytest.mark.usefixtures("PG_DE_DB_WITHOUT_SCHEMA")
-def PG_DE_DB_WITH_SCHEMA(request):
+def PG_DE_DB_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
     """
     Load our PG schema into the database via this fixture
     so pytest knows the limitations on parallel usage of this
-    databse scope.
+    database scope.
     """
-    connection = request.getfixturevalue("PG_DE_DB_WITHOUT_SCHEMA")
     with open(os.path.dirname(os.path.abspath(__file__)) + "/../postgresql.sql", 'r') as _fd:
-        with connection.cursor() as cursor:
+        with PG_DE_DB_WITHOUT_SCHEMA.cursor() as cursor:
             cursor.execute(_fd.read())
-    connection.commit()
-    yield connection
+    PG_DE_DB_WITHOUT_SCHEMA.commit()
+    yield PG_DE_DB_WITHOUT_SCHEMA
 
-    connection.close()
-    del connection
+    PG_DE_DB_WITHOUT_SCHEMA.close()
 
     gc.collect()
 
+
 @pytest.fixture
-def SQLALCHEMY_PG_WITH_SCHEMA(request):
+@pytest.mark.usefixtures("PG_DE_DB_WITHOUT_SCHEMA")
+def SQLALCHEMY_PG_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
     """
     Get a blank database from pytest_postgresql.
     Then setup the SQLAlchemy style URL with that DB.
     The SQLAlchemyDS will create the schema as needed.
     """
-    conn_fixture = request.getfixturevalue("PG_DE_DB_WITHOUT_SCHEMA")
-
     db_info = {}
     try:
         # psycopg2
-        db_info["host"] = conn_fixture.info.host
-        db_info["port"] = conn_fixture.info.port
-        db_info["user"] = conn_fixture.info.user
-        db_info["password"] = conn_fixture.info.password
-        db_info["database"] = conn_fixture.info.dbname
+        db_info["host"] = PG_DE_DB_WITHOUT_SCHEMA.info.host
+        db_info["port"] = PG_DE_DB_WITHOUT_SCHEMA.info.port
+        db_info["user"] = PG_DE_DB_WITHOUT_SCHEMA.info.user
+        db_info["password"] = PG_DE_DB_WITHOUT_SCHEMA.info.password
+        db_info["database"] = PG_DE_DB_WITHOUT_SCHEMA.info.dbname
     except AttributeError:
         # psycopg2cffi
-        for element in conn_fixture.dsn.split():
+        for element in PG_DE_DB_WITHOUT_SCHEMA.dsn.split():
             (key, value) = element.split("=")
             if value != "''" and value != '""':
                 db_info[key] = value
@@ -92,6 +90,10 @@ def SQLALCHEMY_PG_WITH_SCHEMA(request):
         "echo": True,
     }
 
+    PG_DE_DB_WITHOUT_SCHEMA.close()
+
+    gc.collect()
+
 
 @pytest.fixture
 def SQLALCHEMY_IN_MEMORY_SQLITE(request):
@@ -101,6 +103,9 @@ def SQLALCHEMY_IN_MEMORY_SQLITE(request):
     The SQLAlchemyDS will create the schema as needed.
     """
     yield {"url": "sqlite:///:memory:", "echo": True}
+
+    gc.collect()  # free any in-memory DBs or cached connections
+
 
 @pytest.fixture(params=DATABASES_TO_TEST)
 def datasource(request):
