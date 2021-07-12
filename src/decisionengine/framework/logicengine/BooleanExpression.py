@@ -10,8 +10,10 @@
 #   "np.sum(vals) > 40" # WRONG, illegal call to np.sum
 
 import ast
-import logging
+import structlog
 import re
+
+from decisionengine.framework.modules.de_logger import LOGGERNAME
 
 # If support for direct use of numpy and pandas functions is desired,
 # import the numpy and pandas modules and adjust the facts_globals:
@@ -19,7 +21,10 @@ import re
 
 
 _facts_globals = {}
-_re = re.compile(r'fail_on_error\s*\(\s*(.*)\s*\)')
+_re = re.compile(r"fail_on_error\s*\(\s*(.*)\s*\)")
+
+logger = structlog.getLogger(LOGGERNAME)
+logger = logger.bind(module=__name__.split(".")[-1])
 
 
 def maybe_fail_on_error(expr):
@@ -46,8 +51,9 @@ def function_name_from_call(callnode):
         else:
             raise LogicError("unknown node type")
     except Exception:  # pragma: no cover
-        logging.getLogger().exception("Unexpected error!")
+        logger.exception("Unexpected error!")
         raise
+
 
 class BooleanExpression:
     def __init__(self, expr):
@@ -58,8 +64,7 @@ class BooleanExpression:
         try:
             syntax_tree = ast.parse(self.expr_str, source, mode)
         except Exception:
-            logging.getLogger().exception("The following expression string could not be parsed:\n"
-                                          f"'{self.expr_str}'")
+            logger.exception("The following expression string could not be parsed:\n" f"'{self.expr_str}'")
             raise
         all_names = [n.id for n in ast.walk(syntax_tree) if isinstance(n, ast.Name)]
         func_names = [function_name_from_call(n) for n in ast.walk(syntax_tree) if isinstance(n, ast.Call)]
@@ -70,13 +75,13 @@ class BooleanExpression:
     def evaluate(self, d):
         """Return the evaluated Boolen value of this expression in the context
         of the given data 'd'."""
-        logging.getLogger().debug("calling BooleanExpression::evaluate()")
+        logger.debug("calling BooleanExpression::evaluate()")
         try:
             return bool(eval(self.expr, _facts_globals, d))
         except Exception:
             if self.fail_on_error:
-                logging.getLogger().exception("The following exception was suppressed, and the "
-                                              "Boolean expression will evaluate to False.")
+                logger.exception("The following exception was suppressed, and the "
+                                 "Boolean expression will evaluate to False.")
                 return False
             raise
 

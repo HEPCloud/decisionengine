@@ -4,16 +4,27 @@ Logger to use in all modules
 import os
 import logging
 import logging.handlers
+import logging.config
+import structlog
+from decisionengine.framework.modules.logging_configDict import pylogconfig as logconf
 
 MB = 1000000
 
-def set_logging(log_level,
-                file_rotate_by,
-                rotation_time_unit='D',
-                rotation_interval=1,
-                max_backup_count=6,
-                max_file_size=200 * MB,
-                log_file_name='/tmp/decision_engine_logs/decision_engine_log'):
+LOGGERNAME = "decisionengine"
+
+logger = structlog.getLogger(LOGGERNAME)
+logger = logger.bind(module=__name__.split(".")[-1])
+
+
+def set_logging(
+    log_level,
+    file_rotate_by,
+    rotation_time_unit="D",
+    rotation_interval=1,
+    max_backup_count=6,
+    max_file_size=200 * MB,
+    log_file_name="/tmp/decision_engine_logs/decisionengine.log",
+):
     """
 
     :type log_level: :obj:`str`
@@ -30,99 +41,93 @@ def set_logging(log_level,
     :arg  max_file_size: maximal size of log file. If reached save and start new log.
     :type  max_backup_count: :obj:`int`
     :arg  max_backup_count: start rotaion after this number is reached
-    :rtype: :class:`logging.Logger` - rotating file logger
+    :rtype: None
     """
     dirname = os.path.dirname(log_file_name)
     if dirname and not os.path.exists(dirname):
         os.makedirs(dirname)
-    logger = logging.getLogger("decision_engine")
-    logger.setLevel(getattr(logging, log_level.upper()))
 
+    logger.setLevel(getattr(logging, log_level.upper()))
     if logger.handlers:
         logger.debug('Reusing existing logging handlers')
-        return logger
+        return None
 
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(module)s - %(threadName)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%dT%H:%M:%S%z")
-    file_handler = None
+    # logconf is our global object edited in global space on purpose
+
+    logconf["handlers"]["de_file_debug"].update({"filename": "{}_debug.log".format(log_file_name)})
+    logconf["handlers"]["de_file_info"].update({"filename": "{}.log".format(log_file_name)})
+    logconf["handlers"]["file_structlog_debug"].update({"filename": "{}_structlog_debug.log".format(log_file_name)})
 
     if file_rotate_by == "size":
-        file_handler = logging.handlers.RotatingFileHandler(log_file_name,
-                                                            maxBytes=max_file_size,
-                                                            backupCount=max_backup_count)
+        logconf["handlers"]["de_file_debug"].update(
+            {
+                "class": "logging.handlers.RotatingFileHandler",
+                "maxBytes": max_file_size,
+                "backupCount": max_backup_count,
+            }
+        )
+        logconf["handlers"]["de_file_info"].update(
+            {
+                "class": "logging.handlers.RotatingFileHandler",
+                "maxBytes": max_file_size,
+                "backupCount": max_backup_count,
+            }
+        )
+        logconf["handlers"]["file_structlog_debug"].update(
+            {
+                "class": "logging.handlers.RotatingFileHandler",
+                "maxBytes": max_file_size,
+                "backupCount": max_backup_count,
+            }
+        )
+
     elif file_rotate_by == "time":
-        file_handler = logging.handlers.TimedRotatingFileHandler(log_file_name,
-                                                                 when=rotation_time_unit,
-                                                                 interval=rotation_interval)
+        logconf["handlers"]["de_file_debug"].update(
+            {
+                "class": "logging.handlers.TimedRotatingFileHandler",
+                "when": rotation_time_unit,
+                "interval": rotation_interval,
+            }
+        )
+        logconf["handlers"]["de_file_info"].update(
+            {
+                "class": "logging.handlers.TimedRotatingFileHandler",
+                "when": rotation_time_unit,
+                "interval": rotation_interval,
+            }
+        )
+        logconf["handlers"]["file_structlog_debug"].update(
+            {
+                "class": "logging.handlers.TimedRotatingFileHandler",
+                "when": rotation_time_unit,
+                "interval": rotation_interval,
+            }
+        )
     else:
         raise ValueError(f"Incorrect 'file_rotate_by':'{file_rotate_by}:'")
 
-    file_handler.setFormatter(formatter)
-    file_handler.setLevel(logging.INFO)
-    logger.addHandler(file_handler)
-
-    if log_file_name != '/dev/null':
-        if file_rotate_by == "size":
-            debug_handler = logging.handlers.RotatingFileHandler("{}_debug".format(log_file_name),
-                                                                 maxBytes=max_file_size,
-                                                                 backupCount=max_backup_count)
-        elif file_rotate_by == "time":
-            debug_handler = logging.handlers.TimedRotatingFileHandler("{}_debug".format(log_file_name),
-                                                                      when=rotation_time_unit,
-                                                                      interval=rotation_interval)
-
-        # already validated file_rotate_by is a known value
-
-        debug_handler.setFormatter(formatter)
-        debug_handler.setLevel(logging.DEBUG)
-        logger.addHandler(debug_handler)
-
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    console_handler.setLevel(logging.ERROR)
-    logger.addHandler(console_handler)
-
-    return logger
+    logging.config.dictConfig(logconf)
+    logger.debug("de logging setup complete")
 
 
 def get_logger():
     """
-    get default logger - "decision_engine"
+    get default logger - "decisionengine"
     :rtype: :class:`logging.Logger` - rotating file logger
     """
-    return logging.getLogger("decision_engine")
-
-
-def set_stream_logging(logger_name='decision_engine'):
-    """
-    This is for debugging.
-    Set stream logging for logger.
-
-    :type logger_name: :obj:`str`
-    :arg logger_name: logger name
-    :rtype: :class:`logging.Logger`
-    """
-    logger = logging.getLogger(logger_name)
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%dT%H:%M:%S%z")
-    handler = logging.StreamHandler()
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG)
     return logger
 
 
-if __name__ == '__main__':
-    my_logger = logging.getLogger("decision_engine")
-    set_logging("ERROR",
-                "size",
-                'D',
-                1,
-                max_backup_count=5,
-                max_file_size=100000,
-                log_file_name='%s/de_log/decision_engine_log0' % (os.environ.get('HOME')))
-    my_logger.info("THIS IS INFO")
-    my_logger.info("THIS IS INFO")
-    my_logger.debug("THIS IS DEBUG")
+if __name__ == "__main__":
+    set_logging(
+        "ERROR",
+        "size",
+        "D",
+        1,
+        max_backup_count=5,
+        max_file_size=100000,
+        log_file_name="%s/de_log/decision_engine_log0" % (os.environ.get("HOME")),
+    )
+    logger.error("THIS IS ERROR")
+    logger.info("THIS IS INFO")
+    logger.debug("THIS IS DEBUG")

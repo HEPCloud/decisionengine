@@ -1,6 +1,6 @@
 import abc
-import logging
-
+import structlog
+from decisionengine.framework.modules.de_logger import LOGGERNAME
 
 class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
 
@@ -23,7 +23,8 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         """
 
         self.config = config
-        self.logger = logging.getLogger()
+        self.logger = structlog.getLogger(LOGGERNAME)
+        self.logger = self.logger.bind(module=__name__.split(".")[-1])
         self.logger.debug('Initializing a datasource')
 
     def __repr__(self):  # pragma: no cover
