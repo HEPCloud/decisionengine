@@ -1,9 +1,10 @@
-import logging
+import structlog
 import threading
 
 import decisionengine.framework.dataspace.dataspace as dataspace
 from decisionengine.framework.taskmanager.ProcessingState import State, STOPPING_CONDITIONS
 from decisionengine.framework.taskmanager.ProcessingState import ProcessingState
+from decisionengine.framework.modules.de_logger import LOGGERNAME
 
 
 class Reaper():
@@ -23,7 +24,8 @@ class Reaper():
         :arg config: Configuration dictionary
         """
         # Validate configuration
-        self.logger = logging.getLogger()
+        self.logger = structlog.getLogger(LOGGERNAME)
+        self.logger = self.logger.bind(module=__name__.split(".")[-1])
         self.logger.debug('Initializing a reaper')
 
         # since we must validate this, have a private store space
@@ -55,7 +57,6 @@ class Reaper():
 
         self.thread = None
         self.state = ProcessingState()
-        self.logger = logging.getLogger()
 
     @property
     def retention_interval(self):

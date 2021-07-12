@@ -184,10 +184,14 @@ def DEServer(
 
         yield server_proc
 
+        logger.debug("DE Fixture: beginning cleanup")
+
         # does not error out even if the server is stopped
         # so this should be safe to call under all conditions
+        logger.debug("DE Fixture: running rpc_stop()")
         server_proc.de_server.rpc_stop()
 
+        logger.debug("DE Fixture: waiting for server_proc.join()")
         server_proc.join()
 
         del server_proc

@@ -1,9 +1,11 @@
 import abc
 import gc
-import logging
+import structlog
 
 from threading import Lock
 from weakref import WeakValueDictionary
+
+from decisionengine.framework.modules.de_logger import LOGGERNAME
 
 LOCK = Lock()
 
@@ -13,6 +15,9 @@ __all__ = [
     "ScopedSingletonABC",
     "SingletonABC",
 ]
+
+logger = structlog.getLogger(LOGGERNAME)
+logger = logger.bind(module=__name__.split(".")[-1])
 
 
 class Singleton(type):
@@ -26,7 +31,7 @@ class Singleton(type):
         klass = cls._instances.get(cls, None)  # get a strong ref if it exists
 
         if klass is not None:
-            logging.getLogger().debug(f"found instance of {cls}")
+            logger.debug(f"found instance of {cls}")
             return klass
 
         with LOCK:  # so that threads can't make parallel versions
@@ -34,10 +39,10 @@ class Singleton(type):
             if klass is not None:  # pragma: no cover
                 # this case can be very hard to hit if cls inits super fast
                 # with trivial unit tests, it isn't going to happen
-                logging.getLogger().debug(f"found instance of {cls} after lock")
+                logger.debug(f"found instance of {cls} after lock")
                 return klass
 
-            logging.getLogger().debug(f"Making instance of {cls}")
+            logger.debug(f"Making instance of {cls}")
             klass = super().__call__(*args, **kwargs)  # make a strong ref
             cls._instances[cls] = klass
 
