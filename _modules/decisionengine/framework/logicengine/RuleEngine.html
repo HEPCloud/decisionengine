@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.logicengine.RuleEngine &mdash; decisionengine 1.6.99.post2.post6+g23a4b770 documentation</title>
+  <title>decisionengine.framework.logicengine.RuleEngine &mdash; decisionengine 1.6.99.post2.post8+g308343e9 documentation</title>
   
 
   
@@ -165,7 +165,8 @@
             
   <h1>Source code for decisionengine.framework.logicengine.RuleEngine</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.FactLookup</span> <span class="kn">import</span> <span class="n">FactLookup</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
+<span class="kn">import</span> <span class="nn">structlog</span>
 
 <div class="viewcode-block" id="RuleEngine"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.RuleEngine.RuleEngine">[docs]</a><span class="k">class</span> <span class="nc">RuleEngine</span><span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -178,6 +179,8 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fact_names</span><span class="p">,</span> <span class="n">rules_cfg</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fact_lookup</span> <span class="o">=</span> <span class="n">FactLookup</span><span class="p">(</span><span class="n">fact_names</span><span class="p">,</span> <span class="n">rules_cfg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fact_lookup</span><span class="o">.</span><span class="n">sorted_rules</span><span class="p">(</span><span class="n">rules_cfg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 <div class="viewcode-block" id="RuleEngine.execute"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.RuleEngine.RuleEngine.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evaluated_facts</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -205,7 +208,7 @@
                     <span class="c1"># First instance of a fact with a given name receives precedence</span>
                     <span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">new_facts_for_rule</span><span class="p">,</span> <span class="o">**</span><span class="n">facts</span><span class="p">}</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
             <span class="k">raise</span>
         <span class="k">return</span> <span class="n">actions</span><span class="p">,</span> <span class="n">new_facts</span></div></div>
 </pre></div>

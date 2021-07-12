@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.6.99.post2.post6+g23a4b770 documentation</title>
+  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.6.99.post2.post8+g308343e9 documentation</title>
   
 
   
@@ -233,6 +233,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">channel_config_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">_make_de_logger</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 <div class="viewcode-block" id="ChannelConfigHandler.get_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.get_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span></div>
@@ -242,7 +243,7 @@
 
 <div class="viewcode-block" id="ChannelConfigHandler._load_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler._load_channel">[docs]</a>    <span class="k">def</span> <span class="nf">_load_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="n">channel_config</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading channel </span><span class="si">%s</span><span class="s2"> from </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">channel_config</span> <span class="o">=</span> <span class="n">ValidConfig</span><span class="o">.</span><span class="n">ValidConfig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
@@ -256,7 +257,7 @@
             <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span>
                     <span class="sa">f</span><span class="s2">&quot;The channel configuration file </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> contains a &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;validation error</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Channel </span><span class="si">%s</span><span class="s2"> config is valid.&quot;</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2"> config is valid.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel_config</span>
         <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">)</span></div>
@@ -292,12 +293,12 @@
         <span class="k">for</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">full_path</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
             <span class="c1"># Load only the channels that are not already in memory</span>
             <span class="k">if</span> <span class="n">channel_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Already loaded a channel called &#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39;, skipping </span><span class="si">{</span><span class="n">full_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Already loaded a channel called &#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39;. Skipping </span><span class="si">{</span><span class="n">full_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="n">success</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">full_path</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CHANNEL LOAD FAILURE: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

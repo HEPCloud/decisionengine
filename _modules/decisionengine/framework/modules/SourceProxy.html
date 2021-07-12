@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.SourceProxy &mdash; decisionengine 1.6.99.post2.post6+g23a4b770 documentation</title>
+  <title>decisionengine.framework.modules.SourceProxy &mdash; decisionengine 1.6.99.post2.post8+g308343e9 documentation</title>
   
 
   
@@ -167,7 +167,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Fill in data from another channel data block</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">structlog</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -178,6 +178,7 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Source</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Source</span> <span class="kn">import</span> <span class="n">Parameter</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.translate_product_name</span> <span class="kn">import</span> <span class="n">translate_all</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
 
 <span class="n">RETRIES</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">RETRY_TO</span> <span class="o">=</span> <span class="mi">60</span>
@@ -197,7 +198,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span> <span class="o">=</span> <span class="n">translate_all</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;Dataproducts&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retries&#39;</span><span class="p">,</span> <span class="n">RETRIES</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retry_timeout&#39;</span><span class="p">,</span> <span class="n">RETRY_TO</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="c1"># Hack - it is possible for a subclass to declare @produces,</span>
         <span class="c1">#        in which case, we do not want to override that.</span>

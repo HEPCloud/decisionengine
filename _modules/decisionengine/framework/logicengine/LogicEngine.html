@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.logicengine.LogicEngine &mdash; decisionengine 1.6.99.post2.post6+g23a4b770 documentation</title>
+  <title>decisionengine.framework.logicengine.LogicEngine &mdash; decisionengine 1.6.99.post2.post8+g308343e9 documentation</title>
   
 
   
@@ -164,19 +164,20 @@
            <div itemprop="articleBody">
             
   <h1>Source code for decisionengine.framework.logicengine.LogicEngine</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span> <span class="nn">structlog</span>
 <span class="kn">import</span> <span class="nn">pandas</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.RuleEngine</span> <span class="kn">import</span> <span class="n">RuleEngine</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.BooleanExpression</span> <span class="kn">import</span> <span class="n">BooleanExpression</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Module</span> <span class="kn">import</span> <span class="n">Module</span>
-
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
 
 <div class="viewcode-block" id="LogicEngine"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine">[docs]</a><span class="k">class</span> <span class="nc">LogicEngine</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">BooleanExpression</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">expr</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;facts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rule_engine</span> <span class="o">=</span> <span class="n">RuleEngine</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;facts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;rules&quot;</span><span class="p">])</span>
 

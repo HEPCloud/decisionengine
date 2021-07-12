@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.util.singleton &mdash; decisionengine 1.6.99.post2.post6+g23a4b770 documentation</title>
+  <title>decisionengine.framework.util.singleton &mdash; decisionengine 1.6.99.post2.post8+g308343e9 documentation</title>
   
 
   
@@ -166,10 +166,12 @@
   <h1>Source code for decisionengine.framework.util.singleton</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">gc</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">structlog</span>
 
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Lock</span>
 <span class="kn">from</span> <span class="nn">weakref</span> <span class="kn">import</span> <span class="n">WeakValueDictionary</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
 
 <span class="n">LOCK</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
 
@@ -179,6 +181,9 @@
     <span class="s2">&quot;ScopedSingletonABC&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SingletonABC&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 
 <div class="viewcode-block" id="Singleton"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.singleton.Singleton">[docs]</a><span class="k">class</span> <span class="nc">Singleton</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
@@ -192,7 +197,7 @@
         <span class="n">klass</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instances</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># get a strong ref if it exists</span>
 
         <span class="k">if</span> <span class="n">klass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;found instance of </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;found instance of </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">klass</span>
 
         <span class="k">with</span> <span class="n">LOCK</span><span class="p">:</span>  <span class="c1"># so that threads can&#39;t make parallel versions</span>
@@ -200,10 +205,10 @@
             <span class="k">if</span> <span class="n">klass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
                 <span class="c1"># this case can be very hard to hit if cls inits super fast</span>
                 <span class="c1"># with trivial unit tests, it isn&#39;t going to happen</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;found instance of </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2"> after lock&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;found instance of </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2"> after lock&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">klass</span>
 
-            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Making instance of </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Making instance of </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">klass</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># make a strong ref</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_instances</span><span class="p">[</span><span class="bp">cls</span><span class="p">]</span> <span class="o">=</span> <span class="n">klass</span>
 

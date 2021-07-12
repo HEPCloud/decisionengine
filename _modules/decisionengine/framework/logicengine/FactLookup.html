@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.logicengine.FactLookup &mdash; decisionengine 1.6.99.post2.post6+g23a4b770 documentation</title>
+  <title>decisionengine.framework.logicengine.FactLookup &mdash; decisionengine 1.6.99.post2.post8+g308343e9 documentation</title>
   
 
   
@@ -165,10 +165,11 @@
             
   <h1>Source code for decisionengine.framework.logicengine.FactLookup</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.Rule</span> <span class="kn">import</span> <span class="n">Rule</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
 
 <span class="kn">from</span> <span class="nn">toposort</span> <span class="kn">import</span> <span class="n">toposort_flatten</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">structlog</span>
 
 <span class="n">_TOP_LEVEL</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># Indicates facts not contained by rules</span>
 
@@ -222,7 +223,9 @@
             <span class="k">for</span> <span class="n">fact_name</span> <span class="ow">in</span> <span class="n">rule_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;facts&quot;</span><span class="p">,</span> <span class="p">[]):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">fact_name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule_name</span><span class="p">)</span>
 
-        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registered the following facts:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registered the following facts:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FactLookup.sorted_rules"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup.sorted_rules">[docs]</a>    <span class="k">def</span> <span class="nf">sorted_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rules_cfg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -247,10 +250,10 @@
 
             <span class="n">ordered_dependencies</span> <span class="o">=</span> <span class="n">toposort_flatten</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
             <span class="k">raise</span>
 
-        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculated the following order for evaluating rules:</span><span class="se">\n</span><span class="si">{</span><span class="n">ordered_dependencies</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculated the following order for evaluating rules:</span><span class="se">\n</span><span class="si">{</span><span class="n">ordered_dependencies</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">initial_rules</span><span class="p">[</span><span class="n">rule</span><span class="p">]</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">ordered_dependencies</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="FactLookup.rule_for"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup.rule_for">[docs]</a>    <span class="k">def</span> <span class="nf">rule_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fact_name</span><span class="p">):</span>

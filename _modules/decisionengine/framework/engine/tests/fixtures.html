@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.6.99.post2.post6+g23a4b770 documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.6.99.post2.post8+g308343e9 documentation</title>
   
 
   
@@ -350,10 +350,14 @@
 
         <span class="k">yield</span> <span class="n">server_proc</span>
 
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DE Fixture: beginning cleanup&quot;</span><span class="p">)</span>
+
         <span class="c1"># does not error out even if the server is stopped</span>
         <span class="c1"># so this should be safe to call under all conditions</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DE Fixture: running rpc_stop()&quot;</span><span class="p">)</span>
         <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">rpc_stop</span><span class="p">()</span>
 
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DE Fixture: waiting for server_proc.join()&quot;</span><span class="p">)</span>
         <span class="n">server_proc</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
         <span class="k">del</span> <span class="n">server_proc</span>

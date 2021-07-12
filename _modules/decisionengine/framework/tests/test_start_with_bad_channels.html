@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 1.6.99.post2.post6+g23a4b770 documentation</title>
+  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 1.6.99.post2.post8+g308343e9 documentation</title>
   
 
   
@@ -167,6 +167,7 @@
 <span></span><span class="sd">&#39;&#39;&#39;Fixture based DE Server tests of invalid channel configs&#39;&#39;&#39;</span>
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">import</span> <span class="nn">re</span>
@@ -213,7 +214,7 @@
 
     <span class="n">error_msgs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">when</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;setup&quot;</span><span class="p">,</span> <span class="s2">&quot;call&quot;</span><span class="p">):</span>  <span class="c1"># log may show up in either pytest &#39;when&#39;</span>
-        <span class="n">error_msgs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">entry</span><span class="o">.</span><span class="n">message</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">caplog</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">when</span><span class="p">)</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">ERROR</span><span class="p">])</span>
+        <span class="n">error_msgs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">message</span><span class="p">)[</span><span class="s1">&#39;event&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">caplog</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">when</span><span class="p">)</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">ERROR</span><span class="p">])</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">error_msgs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span>
 
     <span class="c1"># Find missing product erro</span>
