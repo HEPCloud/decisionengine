@@ -20,10 +20,11 @@ about = importlib.import_module('decisionengine.framework.about')
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
 # pull in runtime requirements
-runtime_require = ["jsonnet >= 0.17.0", "tabulate >= 0.8.7",
-                   "toposort >= 1.6", "wheel >= 0.36.2",
-                   "DBUtils >= 2.0",
-                   "sqlalchemy >= 1.4.17",
+runtime_require = ["DBUtils >= 2.0",
+                   "jsonnet >= 0.17.0",
+                   "tabulate >= 0.8.7",
+                   "toposort >= 1.6",
+                   "sqlalchemy >= 1.4.20",
                    "structlog >= 21.1.0",
                    "numpy == 1.19.5; python_version <= '3.6'",
                    "numpy >= 1.19.5; python_version >= '3.7'",
@@ -36,10 +37,10 @@ runtime_require = ["jsonnet >= 0.17.0", "tabulate >= 0.8.7",
 
 devel_req = ["setuptools >= 51.2", "setuptools-scm >= 6.0.1",
              "setuptools-scm[toml] >= 6.0.1", "toml >= 0.10.2",
-             "packaging >= 20.4",
+             "packaging >= 20.4", "wheel >= 0.36.2",
              "pytest >= 6.2.2", "pytest-cov >= 2.11.1",
              "pytest-flake8 >= 1.0.7", "pytest-postgresql >= 3.0.0",
-             "pytest-timeout >= 1.4.2",
+             "pytest-timeout >= 1.4.2", "pytest-xdist[psutil] >= 2.3.0",
              "pre-commit >= 2.13.0",
              "pylint >= 2.7.4",
              "importlib_resources >= 5.1.2; python_version <= '3.8'",

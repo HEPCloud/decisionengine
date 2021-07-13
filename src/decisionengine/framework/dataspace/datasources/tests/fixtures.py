@@ -3,6 +3,7 @@ import datetime
 import gc
 import logging
 import os
+import sys
 import threading
 from collections import UserDict
 
@@ -16,6 +17,9 @@ from decisionengine.framework.dataspace.datablock import Header, Metadata
 from decisionengine.framework.dataspace.datasources.postgresql import (
     Postgresql as Postgresql_datasource,
 )
+from decisionengine.framework.dataspace.datasources.sqlalchemy_ds import (
+    SQLAlchemyDS as SQLAlchemy_datasource
+)
 
 __all__ = [
     "DATABASES_TO_TEST",
@@ -23,7 +27,7 @@ __all__ = [
     "PG_DE_DB_WITH_SCHEMA",
     "PG_DE_DB_WITHOUT_SCHEMA",
     "SQLALCHEMY_PG_WITH_SCHEMA",
-    "SQLALCHEMY_IN_MEMORY_SQLITE",
+    "SQLALCHEMY_TEMPFILE_SQLITE",
     "datasource",
     "mock_data_block",
 ]
@@ -37,7 +41,11 @@ PG_DE_DB_WITHOUT_SCHEMA = factories.postgresql(
     dbname="decisionengine",
 )
 
-DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA",)
+if sys.version_info.major == 3 and sys.version_info.minor > 6:
+    # sqlite on EL7 is too old for efficient testing
+    DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA", "SQLALCHEMY_PG_WITH_SCHEMA", "SQLALCHEMY_TEMPFILE_SQLITE")
+else:
+    DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA", "SQLALCHEMY_PG_WITH_SCHEMA")
 
 
 @pytest.fixture
@@ -74,7 +82,7 @@ def SQLALCHEMY_PG_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
         db_info["port"] = PG_DE_DB_WITHOUT_SCHEMA.info.port
         db_info["user"] = PG_DE_DB_WITHOUT_SCHEMA.info.user
         db_info["password"] = PG_DE_DB_WITHOUT_SCHEMA.info.password
-        db_info["database"] = PG_DE_DB_WITHOUT_SCHEMA.info.dbname
+        db_info["dbname"] = PG_DE_DB_WITHOUT_SCHEMA.info.dbname
     except AttributeError:
         # psycopg2cffi
         for element in PG_DE_DB_WITHOUT_SCHEMA.dsn.split():
@@ -86,7 +94,7 @@ def SQLALCHEMY_PG_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
 
     # echo will log all the sql commands to log.debug
     yield {
-        "url": f"postgresql://{db_info['user']}:{db_info['password']}@{db_info['host']}:{db_info['port']}/{db_info['database']}",
+        "url": f"postgresql://{db_info['user']}:{db_info['password']}@{db_info['host']}:{db_info['port']}/{db_info['dbname']}",
         "echo": True,
     }
 
@@ -96,13 +104,14 @@ def SQLALCHEMY_PG_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
 
 
 @pytest.fixture
-def SQLALCHEMY_IN_MEMORY_SQLITE(request):
+def SQLALCHEMY_TEMPFILE_SQLITE(tmp_path):
     """
-    Setup an SQLite database in memory
+    Setup an SQLite database with the pytest tmp_path fixture.
     Then setup the SQLAlchemy style URL with that DB.
     The SQLAlchemyDS will create the schema as needed.
     """
-    yield {"url": "sqlite:///:memory:", "echo": True}
+    sqlite_file = tmp_path / "test.sqlite"
+    yield {"url": f"sqlite:///{sqlite_file}", "echo": True}
 
     gc.collect()  # free any in-memory DBs or cached connections
 
@@ -143,6 +152,8 @@ def datasource(request):
 
     if request.param == "PG_DE_DB_WITH_SCHEMA":
         my_ds = Postgresql_datasource(db_info)
+    else:
+        my_ds = SQLAlchemy_datasource(db_info)
 
     load_sample_data_into_datasource(my_ds)
 

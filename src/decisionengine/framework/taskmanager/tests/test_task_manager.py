@@ -13,7 +13,7 @@ from decisionengine.framework.taskmanager.tests.fixtures import (  # noqa: F401
     PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
-    SQLALCHEMY_IN_MEMORY_SQLITE,
+    SQLALCHEMY_TEMPFILE_SQLITE,
     SQLALCHEMY_PG_WITH_SCHEMA,
     dataspace,
 )

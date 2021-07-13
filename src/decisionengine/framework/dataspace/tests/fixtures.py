@@ -9,7 +9,7 @@ from decisionengine.framework.dataspace.datasources.tests.fixtures import (  # n
     PG_PROG,
     DATABASES_TO_TEST,
     SQLALCHEMY_PG_WITH_SCHEMA,
-    SQLALCHEMY_IN_MEMORY_SQLITE,
+    SQLALCHEMY_TEMPFILE_SQLITE,
     datasource,
     load_sample_data_into_datasource,
 )
@@ -20,7 +20,7 @@ __all__ = [
     "PG_PROG",
     "DATABASES_TO_TEST",
     "SQLALCHEMY_PG_WITH_SCHEMA",
-    "SQLALCHEMY_IN_MEMORY_SQLITE",
+    "SQLALCHEMY_TEMPFILE_SQLITE",
     "datasource",
     "dataspace",
     "load_sample_data_into_datasource",

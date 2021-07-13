@@ -93,6 +93,14 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         return
 
     @abc.abstractmethod
+    def reset_connections(self):
+        """
+        Drop any cached connections and reconnect to the database
+        """
+        self.logger.info('datasource is resetting database the connections')
+        return
+
+    @abc.abstractmethod
     def create_tables(self):
         """
         Create database tables

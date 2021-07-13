@@ -413,6 +413,9 @@ class Postgresql(ds.DataSource):
     def connect(self):
         pass
 
+    def reset_connections(self):
+        pass
+
     def get_schema(self, table=None):
         return {}
 
