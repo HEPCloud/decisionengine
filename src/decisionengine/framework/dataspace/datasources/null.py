@@ -58,5 +58,8 @@ class NullDataSource(ds.DataSource):  # pragma: no cover
     def connect(self):
         super().connect()
 
+    def reset_connections(self):
+        super().reset_connections()
+
     def get_schema(self, table=None):
         super().get_schema(table)

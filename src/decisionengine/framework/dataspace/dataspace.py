@@ -9,8 +9,8 @@ __all__ = [
     "DataSpace",
 ]
 
-from decisionengine.framework.util.singleton import Singleton
 from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.util.singleton import ScopedSingleton
 
 class DataSpaceConfigurationError(Exception):
     """
@@ -40,7 +40,7 @@ class DataSpaceExistsError(Exception):
     pass
 
 
-class DataSourceLoader(metaclass=Singleton):
+class DataSourceLoader(metaclass=ScopedSingleton):
 
     _ds = None
 
@@ -51,6 +51,10 @@ class DataSourceLoader(metaclass=Singleton):
             py_module = importlib.import_module(module_name)
             clazz = getattr(py_module, class_name)
             ds = clazz(config)
+        else:
+            # There is a good chance we are forked off to another process
+            # and already have cached connections, so reset the connections.
+            ds.reset_connections()
         return ds
 
 

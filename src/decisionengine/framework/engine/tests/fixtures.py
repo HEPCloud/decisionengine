@@ -14,7 +14,7 @@ from decisionengine.framework.dataspace.tests.fixtures import (
     PG_PROG,
     DATABASES_TO_TEST,
     SQLALCHEMY_PG_WITH_SCHEMA,
-    SQLALCHEMY_IN_MEMORY_SQLITE,
+    SQLALCHEMY_TEMPFILE_SQLITE,
 )
 from decisionengine.framework.engine.DecisionEngine import (
     _get_de_conf_manager,
@@ -26,7 +26,7 @@ from decisionengine.framework.util.sockets import get_random_port
 from decisionengine.framework.taskmanager.TaskManager import State
 
 __all__ = ["DATABASES_TO_TEST", "PG_DE_DB_WITH_SCHEMA", "PG_DE_DB_WITHOUT_SCHEMA",
-           "SQLALCHEMY_PG_WITH_SCHEMA", "SQLALCHEMY_IN_MEMORY_SQLITE", "PG_PROG",
+           "SQLALCHEMY_PG_WITH_SCHEMA", "SQLALCHEMY_TEMPFILE_SQLITE", "PG_PROG",
            "DEServer"]
 
 # Not all test hosts are IPv6, generally IPv4 works fine some test
@@ -176,8 +176,12 @@ def DEServer(
         # exist, then it will return and not block as requested.
         # so long as your config contains at least one worker,
         # this will work as you'd expect.
-        logger.debug("DE Fixture: Waiting on channels to start, timeout=3")
-        server_proc.de_server.block_while(State.BOOT, timeout=3)
+        #
+        # Some unit tests will hang forver under some unknown conditions
+        # if there is no timeout.  30 seconds should easily cover any working
+        # tests and not block forever on any non-working ones.
+        logger.debug("DE Fixture: Waiting on channels to start, timeout=30")
+        server_proc.de_server.block_while(State.BOOT, timeout=30)
 
         if not server_proc.is_alive():
             raise RuntimeError('Could not start PrivateDEServer fixture')

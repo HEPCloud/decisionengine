@@ -289,6 +289,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.shutdown()
         self.stop_channels()
         self.reaper_stop()
+        self.dataspace.close()
         return "OK"
 
     def start_channel(self, channel_name, channel_config):

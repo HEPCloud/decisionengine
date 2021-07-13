@@ -13,7 +13,7 @@ from decisionengine.framework.dataspace.datasources.tests.fixtures import (  # n
     PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     SQLALCHEMY_PG_WITH_SCHEMA,
-    SQLALCHEMY_IN_MEMORY_SQLITE,
+    SQLALCHEMY_TEMPFILE_SQLITE,
     PG_PROG,
     DATABASES_TO_TEST,
     datasource,
@@ -25,6 +25,12 @@ from decisionengine.framework.dataspace.datablock import Header, Metadata
 def test_create_tables(datasource):  # noqa: F811
     """create_tables() should be safe to call multiple times"""
     datasource.create_tables()
+
+
+@pytest.mark.usefixtures("datasource")
+def test_reset_connections(datasource):  # noqa: F811
+    """reset_connections() should be safe to call any time"""
+    datasource.reset_connections()
 
 
 @pytest.mark.usefixtures("datasource")

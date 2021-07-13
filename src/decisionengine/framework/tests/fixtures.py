@@ -10,7 +10,7 @@ from decisionengine.framework.engine.tests.fixtures import (
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     SQLALCHEMY_PG_WITH_SCHEMA,
-    SQLALCHEMY_IN_MEMORY_SQLITE,
+    SQLALCHEMY_TEMPFILE_SQLITE,
     DEServer,
 )
 
@@ -25,7 +25,7 @@ __all__ = [
     "PG_DE_DB_WITHOUT_SCHEMA",
     "PG_PROG",
     "SQLALCHEMY_PG_WITH_SCHEMA",
-    "SQLALCHEMY_IN_MEMORY_SQLITE",
+    "SQLALCHEMY_TEMPFILE_SQLITE",
     "DEServer",
     "TEST_CONFIG_PATH",
     "TEST_CHANNEL_CONFIG_PATH",
