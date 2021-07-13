@@ -19,11 +19,39 @@ from decisionengine.framework.modules.Transform import Transform
 from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
 from decisionengine.framework.taskmanager.ProcessingState import State
 from decisionengine.framework.util.subclasses import all_subclasses
-from decisionengine.framework.util.prometheus import get_registry
-from decisionengine.framework.util.prometheus import *
+from decisionengine.framework.util.metrics import *
 
 
 _DEFAULT_SCHEDULE = 300  # 5 minutes
+
+# Metrics for monitoring TaskManager
+CHANNEL_STATE_GAUGE = Gauge('de_channel_state', 'Channel state', [
+    'channel_name',
+])
+
+SOURCE_ACQUIRE_GAUGE = Gauge('de_source_last_acquire', 'Last time a source '
+                             'successfully ran its acquire function', [
+                                 'channel_name',
+                                 'source_name',
+                             ])
+
+LOGICENGINE_RUN_GAUGE = Gauge('de_logicengine_last_run', 'Last time '
+                              'a logicengine successfully ran', [
+                                  'channel_name',
+                                  'logicengine_name',
+                              ])
+
+TRANSFORM_RUN_GAUGE = Gauge('de_transform_last_run', 'Last time a '
+                            'transform successfully ran', [
+                                'channel_name',
+                                'transform_name',
+                            ])
+
+PUBLISHER_RUN_GAUGE = Gauge('de_publisher_last_run', 'Last time '
+                            'a publisher successfully ran', [
+                                'channel_name',
+                                'publisher_name',
+                            ])
 
 delogger = structlog.getLogger(LOGGERNAME)
 delogger = delogger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
@@ -135,6 +163,7 @@ class TaskManager(ComponentManager):
     """
     Task Manager
     """
+
     def __init__(self, name, generation_id, channel_dict, global_config):
         """
         :type name: :obj:`str`
@@ -156,46 +185,6 @@ class TaskManager(ComponentManager):
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=self.name)
         self.workflow = Workflow(channel_dict, self.name)
         self.lock = threading.Lock()
-
-        # Metrics
-        # self.channel_state_gauge = prometheus_client.Gauge(
-        #     'de_channel_state',
-        #     'Channel state', [
-        #         'channel_name',
-        #     ],
-        #     multiprocess_mode='liveall')
-
-        # self.source_acquire_gauge = prometheus_client.Gauge(
-        #     'de_source_last_acquire', "Last time a source "
-        #     'successfully ran its acquire function', [
-        #         'channel_name',
-        #         'source_name',
-        #     ],
-        #     multiprocess_mode='liveall')
-
-        # self.logicengine_run_gauge = prometheus_client.Gauge(
-        #     'de_logicengine_last_run', 'Last time '
-        #     'a logicengine successfully ran', [
-        #         'channel_name',
-        #         'logicengine_name',
-        #     ],
-        #     multiprocess_mode='liveall')
-
-        # self.transform_run_gauge = prometheus_client.Gauge(
-        #     'de_transform_last_run', 'Last time a '
-        #     'transform successfully ran', [
-        #         'channel_name',
-        #         'transform_name',
-        #     ],
-        #     multiprocess_mode='liveall')
-
-        # self.publisher_run_gauge = prometheus_client.Gauge(
-        #     'de_publisher_last_run', 'Last time '
-        #     'a publisher successfully ran', [
-        #         'channel_name',
-        #         'publisher_name',
-        #     ],
-        #     multiprocess_mode='liveall')
 
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
@@ -455,7 +444,7 @@ class TaskManager(ComponentManager):
         for key, source in self.workflow.source_workers.items():
             self.logger.info(f"starting loop for {key}")
             event_list.append(source.data_updated)
-            self.source_acquire_gauge.labels(self.name, source.name)
+            SOURCE_ACQUIRE_GAUGE.labels(self.name, source.name)
             thread = threading.Thread(target=self.run_source, name=source.name, args=(source,))
             source_threads.append(thread)
             # Cannot catch exception from function called in separate thread
@@ -502,7 +491,7 @@ class TaskManager(ComponentManager):
             header = datablock.Header(data_block.taskmanager_id, create_time=time.time(), creator=worker.name)
             self.data_block_put(data, header, data_block)
             self.logger.info("transform put data")
-            TRANSFORM_RUN_GAUGE.set(t)
+            TRANSFORM_RUN_GAUGE.labels(self.name, transform.name).set(t)
         except Exception:  # pragma: no cover
             self.logger.exception(f"exception from transform {worker.name} ")
             self.take_offline()
