@@ -10,7 +10,6 @@ import multiprocessing
 import uuid
 
 import pandas
-import prometheus_client
 
 from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
@@ -24,13 +23,42 @@ from decisionengine.framework.taskmanager.ProcessingState import ProcessingState
 from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
 from decisionengine.framework.util.subclasses import all_subclasses
 from decisionengine.framework.modules.de_logger import LOGGERNAME
-from decisionengine.framework.util.prometheus import get_registry
-from decisionengine.framework.util.prometheus import *
+from decisionengine.framework.util.metrics import *
 
 import os  # TODO
 
 _TRANSFORMS_TO = 300  # 5 minutes
 _DEFAULT_SCHEDULE = 300  # ""
+
+# Metrics for monitoring TaskManager
+CHANNEL_STATE_GAUGE = Gauge('de_channel_state', 'Channel state', [
+    'channel_name',
+])
+
+SOURCE_ACQUIRE_GAUGE = Gauge(
+    'de_source_last_acquire', "Last time a source "
+    'successfully ran its acquire function', [
+        'channel_name',
+        'source_name',
+    ])
+
+LOGICENGINE_RUN_GAUGE = Gauge('de_logicengine_last_run', 'Last time '
+                              'a logicengine successfully ran', [
+                                  'channel_name',
+                                  'logicengine_name',
+                              ])
+
+TRANSFORM_RUN_GAUGE = Gauge('de_transform_last_run', 'Last time a '
+                            'transform successfully ran', [
+                                'channel_name',
+                                'transform_name',
+                            ])
+
+PUBLISHER_RUN_GAUGE = Gauge('de_publisher_last_run', 'Last time '
+                            'a publisher successfully ran', [
+                                'channel_name',
+                                'publisher_name',
+                            ])
 
 delogger = structlog.getLogger(LOGGERNAME)
 delogger = delogger.bind(module=__name__.split(".")[-1])
@@ -518,10 +546,6 @@ class TaskManager:
         :type data_block: :obj:`~datablock.DataBlock`
         :arg data_block: data block
         """
-        g = prometheus_client.Gauge('transform_last_run', 'Last time a '
-                                    'transform successfully ran',
-                                    ['channel_name', 'transform_name',])\
-                                    .labels(self.name, transform.name)
         consume_keys = list(transform.worker._consumes.keys())
 
         self.logger.info("transform: %s expected keys: %s provided keys: %s",
@@ -536,7 +560,7 @@ class TaskManager:
                                       creator=transform.name)
             self.data_block_put(data, header, data_block)
             self.logger.info("transform put data")
-            TRANSFORM_RUN_GAUGE.set(t)
+            TRANSFORM_RUN_GAUGE.labels(self.name, transform.name).set(t)
         except Exception:  # pragma: no cover
             self.logger.exception(
                 f"exception from transform {transform.name} ")
@@ -555,11 +579,6 @@ class TaskManager:
 
         try:
             for le in self.channel.le_s:
-                g = prometheus_client.Gauge('logicengine_last_run', 'Last time '
-                                            'a logicengine successfully ran',
-                                            ['channel_name', 'logicengine_name',])\
-                                            .labels(self.name,
-                                                    self.channel.le_s[le].name)
                 self.logger.info("run logic engine %s",
                                  self.channel.le_s[le].name)
                 self.logger.debug("run logic engine %s %s",
@@ -619,10 +638,6 @@ class TaskManager:
                     self.logger.info(f"run publisher {name}")
                     self.logger.debug(f"run publisher {name} {data_block}")
 
-                    g = prometheus_client.Gauge('publisher_last_run', 'Last time '
-                                                'a publisher successfully ran',
-                                                ['channel_name', 'publisher_name',])\
-                                                .labels(self.name, name)
                     try:
                         publisher.worker.publish(data_block)
                         PUBLISHER_RUN_GAUGE.labels(self.name,
