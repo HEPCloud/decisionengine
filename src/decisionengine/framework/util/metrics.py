@@ -65,12 +65,11 @@ class Gauge(prometheus_client.Gauge):
                              *args,
                              **kwargs)
 
-    @staticmethod
-    def __determine_multiprocess_mode_existence(*args, **kwargs):
+    def __determine_multiprocess_mode_existence(self, *args, **kwargs):
         if 'multiprocess_mode' in kwargs:
             return True
         for arg in args:
-            if arg in super()._MULTIPROC_MODES:
+            if isinstance(arg, str) and arg in self._MULTIPROC_MODES:
                 return True
         return False
 
