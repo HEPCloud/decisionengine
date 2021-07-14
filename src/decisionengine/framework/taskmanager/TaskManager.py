@@ -509,7 +509,7 @@ class TaskManager:
         for key, source in self.channel.sources.items():
             self.logger.info(f"starting loop for {key}")
             event_list.append(source.data_updated)
-            self.source_acquire_gauge.labels(self.name, source.name)
+            SOURCE_ACQUIRE_GAUGE.labels(self.name, source.name)
             thread = threading.Thread(target=self.run_source,
                                       name=source.name,
                                       args=(source, ))
