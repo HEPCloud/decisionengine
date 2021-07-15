@@ -62,11 +62,13 @@ def ensure_no_circularities(sources, transforms, publishers):
         graph[consumer] = set(map(lambda p: produced.get(p), products))
 
     # Do the check
-    sorted_modules = None
+    sorted_module_names = None
     try:
-        sorted_modules = set(toposort.toposort_flatten(graph))  # Flatten will trigger any circularity errors
+        sorted_module_names = toposort.toposort_flatten(graph)  # Flatten will trigger any circularity errors
     except Exception as e:
         raise RuntimeError(f"A produces/consumes circularity exists in the configuration:\n{e}")
 
-    sorted_transform_names = sorted_modules.intersection(transforms.keys())
-    return OrderedDict([(name, transforms.get(name)) for name in sorted_transform_names])
+    # Keep only transforms
+    for name in set(sorted_module_names).difference(transforms.keys()):
+        sorted_module_names.remove(name)
+    return OrderedDict([(name, transforms.get(name)) for name in sorted_module_names])
