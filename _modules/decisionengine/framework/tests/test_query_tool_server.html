@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_query_tool_server &mdash; decisionengine 1.6.99.post2.post9+g33f9ade1 documentation</title>
+  <title>decisionengine.framework.tests.test_query_tool_server &mdash; decisionengine 1.6.99.post3.post1+gfbfae499 documentation</title>
   
 
   
@@ -167,8 +167,8 @@
 <span></span><span class="sd">&#39;&#39;&#39;Fixture based DE Server for the de-query-tool tests&#39;&#39;&#39;</span>
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">pytest</span>
-<span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">import</span> <span class="nn">datetime</span>
 
@@ -198,10 +198,6 @@
     <span class="s2">&quot;|  3 | value1 | 0.1    | test_channel |                1 |               2 |</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="s2">&quot;|  4 | value2 | 2      | test_channel |                1 |               2 |</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="s2">&quot;|  5 | value3 | Test   | test_channel |                1 |               2 |</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="s2">&quot;|  6 | value1 | 0.1    | test_channel |                1 |               3 |</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="s2">&quot;|  7 | value2 | 2      | test_channel |                1 |               3 |</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="s2">&quot;|  8 | value3 | Test   | test_channel |                1 |               3 |</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="s2">&quot;+----+--------+--------+--------------+------------------+-----------------+</span><span class="se">\n</span><span class="s2">&quot;</span>
 <span class="p">)</span>
 
 <div class="viewcode-block" id="test_query_tool_default"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_default">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
@@ -209,14 +205,14 @@
     <span class="c1"># Test default output</span>
     <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="n">DEFAULT_OUTPUT</span></div>
+    <span class="k">assert</span> <span class="n">output</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">DEFAULT_OUTPUT</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="test_query_tool_csv"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_csv">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_query_tool_csv</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Test csv output</span>
     <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--format=csv&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="p">(</span>
+    <span class="k">assert</span> <span class="n">output</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
         <span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;,key1,key2,channel,taskmanager_id,generation_id</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;0,value1,0.1,test_channel,1,1</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -225,10 +221,6 @@
         <span class="s2">&quot;3,value1,0.1,test_channel,1,2</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;4,value2,2,test_channel,1,2</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;5,value3,Test,test_channel,1,2</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="s2">&quot;6,value1,0.1,test_channel,1,3</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="s2">&quot;7,value2,2,test_channel,1,3</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="s2">&quot;8,value3,Test,test_channel,1,3</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="p">)</span></div>
 
 <div class="viewcode-block" id="test_query_tool_json"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_json">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
@@ -236,37 +228,32 @@
     <span class="c1"># Test json output</span>
     <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--format=json&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
-        <span class="sa">r</span><span class="s1">&#39;Product foo:  Found in channel test_channel\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;{\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;key1&quot;:\s*{\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;0&quot;:\s*&quot;value1&quot;,\n\s*&quot;1&quot;:\s*&quot;value2&quot;,\n\s*&quot;2&quot;:\s*&quot;value3&quot;,\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;3&quot;:\s*&quot;value1&quot;,\n\s*&quot;4&quot;:\s*&quot;value2&quot;,\n\s*&quot;5&quot;:\s*&quot;value3&quot;,\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;6&quot;:\s*&quot;value1&quot;,\n\s*&quot;7&quot;:\s*&quot;value2&quot;,\n\s*&quot;8&quot;:\s*&quot;value3&quot;\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*},\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;key2&quot;:\s*{\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;0&quot;:\s*0.1,\n\s*&quot;1&quot;:\s*2,\n\s*&quot;2&quot;:\s*&quot;Test&quot;,\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;3&quot;:\s*0.1,\n\s*&quot;4&quot;:\s*2,\n\s*&quot;5&quot;:\s*&quot;Test&quot;,\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;6&quot;:\s*0.1,\n\s*&quot;7&quot;:\s*2,\n\s*&quot;8&quot;:\s*&quot;Test&quot;\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*},\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;channel&quot;:\s*{\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;0&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;1&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;2&quot;:\s*&quot;test_channel&quot;,\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;3&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;4&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;5&quot;:\s*&quot;test_channel&quot;,\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;6&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;7&quot;:\s*&quot;test_channel&quot;,\n\s*&quot;8&quot;:\s*&quot;test_channel&quot;\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*},\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;taskmanager_id&quot;:\s*{\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;0&quot;:\s*1,\n\s*&quot;1&quot;:\s*1,\n\s*&quot;2&quot;:\s*1,\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;3&quot;:\s*1,\n\s*&quot;4&quot;:\s*1,\n\s*&quot;5&quot;:\s*1,\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;6&quot;:\s*1,\n\s*&quot;7&quot;:\s*1,\n\s*&quot;8&quot;:\s*1\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*},\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;generation_id&quot;:\s*{\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;0&quot;:\s*1,\n\s*&quot;1&quot;:\s*1,\n\s*&quot;2&quot;:\s*1,\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;3&quot;:\s*2,\n\s*&quot;4&quot;:\s*2,\n\s*&quot;5&quot;:\s*2,\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*&quot;6&quot;:\s*3,\n\s*&quot;7&quot;:\s*3,\n\s*&quot;8&quot;:\s*3\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;\s*}\n&#39;</span>
-        <span class="sa">r</span><span class="s1">&#39;}\n&#39;</span><span class="p">,</span>
-        <span class="n">output</span>
-    <span class="p">)</span></div>
+    <span class="k">assert</span> <span class="n">output</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">as_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">as_json</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">elements</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="k">assert</span> <span class="n">elements</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">,</span> <span class="s1">&#39;generation_id&#39;</span><span class="p">,</span> <span class="s1">&#39;key1&#39;</span><span class="p">,</span> <span class="s1">&#39;key2&#39;</span><span class="p">,</span> <span class="s1">&#39;taskmanager_id&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">as_json</span><span class="p">[</span><span class="n">element</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;test_channel&#39;</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">][</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;test_channel&#39;</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;generation_id&#39;</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;generation_id&#39;</span><span class="p">][</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;generation_id&#39;</span><span class="p">][</span><span class="s1">&#39;2&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;generation_id&#39;</span><span class="p">][</span><span class="s1">&#39;3&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;taskmanager_id&#39;</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;taskmanager_id&#39;</span><span class="p">][</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;key1&#39;</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;value1&#39;</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;key2&#39;</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.1</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;key1&#39;</span><span class="p">][</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;value2&#39;</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;key2&#39;</span><span class="p">][</span><span class="s1">&#39;1&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;key1&#39;</span><span class="p">][</span><span class="s1">&#39;2&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;value3&#39;</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;key2&#39;</span><span class="p">][</span><span class="s1">&#39;2&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Test&#39;</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;key1&#39;</span><span class="p">][</span><span class="s1">&#39;3&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;value1&#39;</span>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s1">&#39;key2&#39;</span><span class="p">][</span><span class="s1">&#39;3&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.1</span></div>
 
 <div class="viewcode-block" id="test_query_tool_since"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_since">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_query_tool_since</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
@@ -274,7 +261,7 @@
     <span class="c1"># give the channel a moment to complete setup</span>
     <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;--since=&quot;</span><span class="si">{</span><span class="n">recently</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="n">DEFAULT_OUTPUT</span></div>
+    <span class="k">assert</span> <span class="n">output</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">DEFAULT_OUTPUT</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="test_query_tool_invalid_product"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_invalid_product">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_query_tool_invalid_product</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
