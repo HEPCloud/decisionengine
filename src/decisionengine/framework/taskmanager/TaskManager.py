@@ -25,7 +25,6 @@ from decisionengine.framework.util.subclasses import all_subclasses
 from decisionengine.framework.modules.de_logger import LOGGERNAME
 from decisionengine.framework.util.metrics import *
 
-import os  # TODO
 
 _TRANSFORMS_TO = 300  # 5 minutes
 _DEFAULT_SCHEDULE = 300  # ""
@@ -35,12 +34,11 @@ CHANNEL_STATE_GAUGE = Gauge('de_channel_state', 'Channel state', [
     'channel_name',
 ])
 
-SOURCE_ACQUIRE_GAUGE = Gauge(
-    'de_source_last_acquire', "Last time a source "
-    'successfully ran its acquire function', [
-        'channel_name',
-        'source_name',
-    ])
+SOURCE_ACQUIRE_GAUGE = Gauge('de_source_last_acquire', 'Last time a source '
+                             'successfully ran its acquire function', [
+                                 'channel_name',
+                                 'source_name',
+                             ])
 
 LOGICENGINE_RUN_GAUGE = Gauge('de_logicengine_last_run', 'Last time '
                               'a logicengine successfully ran', [
@@ -106,6 +104,7 @@ class Worker:
     Provides interface to loadable modules an events to sycronise
     execution
     """
+
     def __init__(self, conf_dict, base_class):
         """
         :type conf_dict: :obj:`dict`
@@ -133,6 +132,7 @@ class Channel:
     Decision Channel.
     Instantiates workers according to channel configuration
     """
+
     def __init__(self, channel_dict):
         """
         :type channel_dict: :obj:`dict`
@@ -159,6 +159,7 @@ class TaskManager:
     """
     Task Manager
     """
+
     def __init__(self, name, generation_id, channel_dict, global_config):
         """
         :type name: :obj:`str`
@@ -182,46 +183,6 @@ class TaskManager:
         self.state = ProcessingState()
         self.loglevel = multiprocessing.Value("i", logging.WARNING)
         self.lock = threading.Lock()
-
-        # Metrics
-        # self.channel_state_gauge = prometheus_client.Gauge(
-        #     'de_channel_state',
-        #     'Channel state', [
-        #         'channel_name',
-        #     ],
-        #     multiprocess_mode='liveall')
-
-        # self.source_acquire_gauge = prometheus_client.Gauge(
-        #     'de_source_last_acquire', "Last time a source "
-        #     'successfully ran its acquire function', [
-        #         'channel_name',
-        #         'source_name',
-        #     ],
-        #     multiprocess_mode='liveall')
-
-        # self.logicengine_run_gauge = prometheus_client.Gauge(
-        #     'de_logicengine_last_run', 'Last time '
-        #     'a logicengine successfully ran', [
-        #         'channel_name',
-        #         'logicengine_name',
-        #     ],
-        #     multiprocess_mode='liveall')
-
-        # self.transform_run_gauge = prometheus_client.Gauge(
-        #     'de_transform_last_run', 'Last time a '
-        #     'transform successfully ran', [
-        #         'channel_name',
-        #         'transform_name',
-        #     ],
-        #     multiprocess_mode='liveall')
-
-        # self.publisher_run_gauge = prometheus_client.Gauge(
-        #     'de_publisher_last_run', 'Last time '
-        #     'a publisher successfully ran', [
-        #         'channel_name',
-        #         'publisher_name',
-        #     ],
-        #     multiprocess_mode='liveall')
 
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
