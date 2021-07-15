@@ -82,7 +82,7 @@ setup(
     license=about.__license__,
     package_dir={"": "src"},
     packages=find_packages(
-        where="src", exclude=("*.tests", "*.tests.*", "build.*", "doc.*")
+        where="src", exclude=("tests", "*.tests", "*.tests.*", "build.*", "doc.*")
     ),
     install_requires=runtime_require,
     extras_require={
