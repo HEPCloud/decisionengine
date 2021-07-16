@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests package &mdash; decisionengine 1.6.99.post3.post4+g3353aa00 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests package &mdash; decisionengine 1.6.99.post3.post5+g084f74e1 documentation</title>
   
 
   
@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="decisionengine.framework.dataspace.tests package" href="decisionengine.framework.dataspace.tests.html" />
-    <link rel="prev" title="decisionengine.framework.dataspace.datasources package" href="decisionengine.framework.dataspace.datasources.html" /> 
+    <link rel="prev" title="decisionengine.framework.dataspace.datasources.sqlalchemy_ds package" href="decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -237,17 +237,17 @@ database scope.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_IN_MEMORY_SQLITE">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.fixtures.</span></span><span class="sig-name descname"><span class="pre">SQLALCHEMY_IN_MEMORY_SQLITE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/fixtures.html#SQLALCHEMY_IN_MEMORY_SQLITE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_IN_MEMORY_SQLITE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Setup an SQLite database in memory
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_PG_WITH_SCHEMA">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.fixtures.</span></span><span class="sig-name descname"><span class="pre">SQLALCHEMY_PG_WITH_SCHEMA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PG_DE_DB_WITHOUT_SCHEMA</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/fixtures.html#SQLALCHEMY_PG_WITH_SCHEMA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_PG_WITH_SCHEMA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a blank database from pytest_postgresql.
 Then setup the SQLAlchemy style URL with that DB.
 The SQLAlchemyDS will create the schema as needed.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_PG_WITH_SCHEMA">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.fixtures.</span></span><span class="sig-name descname"><span class="pre">SQLALCHEMY_PG_WITH_SCHEMA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PG_DE_DB_WITHOUT_SCHEMA</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/fixtures.html#SQLALCHEMY_PG_WITH_SCHEMA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_PG_WITH_SCHEMA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a blank database from pytest_postgresql.
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_TEMPFILE_SQLITE">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.fixtures.</span></span><span class="sig-name descname"><span class="pre">SQLALCHEMY_TEMPFILE_SQLITE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmp_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/fixtures.html#SQLALCHEMY_TEMPFILE_SQLITE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_TEMPFILE_SQLITE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup an SQLite database with the pytest tmp_path fixture.
 Then setup the SQLAlchemy style URL with that DB.
 The SQLAlchemyDS will create the schema as needed.</p>
 </dd></dl>
@@ -398,6 +398,12 @@ pytest parameters.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_reset_connections">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_reset_connections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_reset_connections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_reset_connections" title="Permalink to this definition">¶</a></dt>
+<dd><p>reset_connections() should be safe to call any time</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_store_taskmanager">
 <span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.tests.test_datasource_api.</span></span><span class="sig-name descname"><span class="pre">test_store_taskmanager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasource</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/test_datasource_api.html#test_store_taskmanager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_store_taskmanager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Can we make new entries</p>
@@ -436,7 +442,7 @@ pytest parameters.</p>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="decisionengine.framework.dataspace.tests.html" class="btn btn-neutral float-right" title="decisionengine.framework.dataspace.tests package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="decisionengine.framework.dataspace.datasources.html" class="btn btn-neutral float-left" title="decisionengine.framework.dataspace.datasources package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html" class="btn btn-neutral float-left" title="decisionengine.framework.dataspace.datasources.sqlalchemy_ds package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

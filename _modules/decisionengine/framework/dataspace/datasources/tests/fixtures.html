@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.6.99.post3.post4+g3353aa00 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.6.99.post3.post5+g084f74e1 documentation</title>
   
 
   
@@ -169,6 +169,7 @@
 <span class="kn">import</span> <span class="nn">gc</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">UserDict</span>
 
@@ -182,6 +183,9 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.postgresql</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Postgresql</span> <span class="k">as</span> <span class="n">Postgresql_datasource</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.sqlalchemy_ds</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SQLAlchemyDS</span> <span class="k">as</span> <span class="n">SQLAlchemy_datasource</span>
+<span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;DATABASES_TO_TEST&quot;</span><span class="p">,</span>
@@ -189,7 +193,7 @@
     <span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span>
     <span class="s2">&quot;PG_DE_DB_WITHOUT_SCHEMA&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SQLALCHEMY_IN_MEMORY_SQLITE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SQLALCHEMY_TEMPFILE_SQLITE&quot;</span><span class="p">,</span>
     <span class="s2">&quot;datasource&quot;</span><span class="p">,</span>
     <span class="s2">&quot;mock_data_block&quot;</span><span class="p">,</span>
 <span class="p">]</span>
@@ -203,7 +207,11 @@
     <span class="n">dbname</span><span class="o">=</span><span class="s2">&quot;decisionengine&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,)</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">:</span>
+    <span class="c1"># sqlite on EL7 is too old for efficient testing</span>
+    <span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span> <span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">,</span> <span class="s2">&quot;SQLALCHEMY_TEMPFILE_SQLITE&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span> <span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="PG_DE_DB_WITH_SCHEMA"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.PG_DE_DB_WITH_SCHEMA">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
@@ -240,7 +248,7 @@
         <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">port</span>
         <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">user</span>
         <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">password</span>
-        <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dbname</span>
+        <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;dbname&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dbname</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
         <span class="c1"># psycopg2cffi</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="o">.</span><span class="n">dsn</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
@@ -252,7 +260,7 @@
 
     <span class="c1"># echo will log all the sql commands to log.debug</span>
     <span class="k">yield</span> <span class="p">{</span>
-        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;postgresql://</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;database&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;postgresql://</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">db_info</span><span class="p">[</span><span class="s1">&#39;dbname&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="s2">&quot;echo&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">}</span>
 
@@ -261,14 +269,15 @@
     <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="SQLALCHEMY_IN_MEMORY_SQLITE"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_IN_MEMORY_SQLITE">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
-<span class="k">def</span> <span class="nf">SQLALCHEMY_IN_MEMORY_SQLITE</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<div class="viewcode-block" id="SQLALCHEMY_TEMPFILE_SQLITE"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_TEMPFILE_SQLITE">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span> <span class="nf">SQLALCHEMY_TEMPFILE_SQLITE</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Setup an SQLite database in memory</span>
+<span class="sd">    Setup an SQLite database with the pytest tmp_path fixture.</span>
 <span class="sd">    Then setup the SQLAlchemy style URL with that DB.</span>
 <span class="sd">    The SQLAlchemyDS will create the schema as needed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;sqlite:///:memory:&quot;</span><span class="p">,</span> <span class="s2">&quot;echo&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="n">sqlite_file</span> <span class="o">=</span> <span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;test.sqlite&quot;</span>
+    <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;sqlite:///</span><span class="si">{</span><span class="n">sqlite_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;echo&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
     <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>  <span class="c1"># free any in-memory DBs or cached connections</span></div>
 
@@ -309,6 +318,8 @@
 
     <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span> <span class="o">==</span> <span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">:</span>
         <span class="n">my_ds</span> <span class="o">=</span> <span class="n">Postgresql_datasource</span><span class="p">(</span><span class="n">db_info</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">my_ds</span> <span class="o">=</span> <span class="n">SQLAlchemy_datasource</span><span class="p">(</span><span class="n">db_info</span><span class="p">)</span>
 
     <span class="n">load_sample_data_into_datasource</span><span class="p">(</span><span class="n">my_ds</span><span class="p">)</span>
 

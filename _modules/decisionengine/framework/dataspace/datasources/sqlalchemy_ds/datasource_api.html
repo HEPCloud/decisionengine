@@ -1,0 +1,821 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api &mdash; decisionengine 1.6.99.post3.post5+g084f74e1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../../_static/jquery.js"></script>
+        <script src="../../../../../../_static/underscore.js"></script>
+        <script src="../../../../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../../index.html" class="icon icon-home"> decisionengine
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../release_notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../release_notes/release_notes_1.6.html">Release 1.6.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../release_notes/release_notes_1.6.html#release-1-6-1">Release 1.6.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../release_notes/release_notes_1.6.html#release-1-6-0">Release 1.6.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">decisionengine</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The datasource layer for our abstraction</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">import</span> <span class="nn">sqlalchemy</span>
+<span class="kn">import</span> <span class="nn">sqlalchemy.sql</span> <span class="k">as</span> <span class="nn">sql</span>
+<span class="kn">import</span> <span class="nn">structlog</span>
+
+<span class="kn">from</span> <span class="nn">sqlalchemy.exc</span> <span class="kn">import</span> <span class="n">NoResultFound</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">scoped_session</span>
+
+<span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datasource</span> <span class="k">as</span> <span class="nn">ds</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">db_schema</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">add_engine_pidguard</span><span class="p">,</span> <span class="n">clone_model</span><span class="p">,</span> <span class="n">orm_as_dict</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;SQLAlchemyDS&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># setup queue hooks</span>
+<span class="n">add_engine_pidguard</span><span class="p">(</span><span class="n">sqlalchemy</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">QueuePool</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SQLAlchemyDS"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS">[docs]</a><span class="k">class</span> <span class="nc">SQLAlchemyDS</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A DecisionEngine data source via the SQL Alchemy ORM</span>
+
+<span class="sd">    {</span>
+<span class="sd">      &quot;dataspace&quot;: {</span>
+<span class="sd">        &quot;datasource&quot;: {</span>
+<span class="sd">          &quot;module&quot;: &quot;decisionengine.framework.dataspace.datasources.sqlalchemy_ds&quot;,</span>
+<span class="sd">          &quot;name&quot;: &quot;SQLAlchemyDS&quot;,</span>
+<span class="sd">          &quot;params&quot;: {</span>
+<span class="sd">            &quot;pool_size&quot;: 5,</span>
+<span class="sd">            &quot;max_overflow&quot;: 10,</span>
+<span class="sd">            &quot;timeout&quot;: 30,</span>
+
+<span class="sd">            # url is mandatory, but any `engine` keyword is accepted here.</span>
+<span class="sd">            &quot;url&quot;: &quot;dialect[+driver]://user:password@host/dbname&quot;</span>
+<span class="sd">          }</span>
+<span class="sd">        }</span>
+<span class="sd">      }</span>
+<span class="sd">    }</span>
+
+<span class="sd">    Exceptions should be caught and logged by the caller.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s2">&quot;echo&quot;</span> <span class="ow">in</span> <span class="n">config_dict</span> <span class="ow">and</span> <span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;echo&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initializing a SQLAlchemyDS datasource: </span><span class="si">{</span><span class="n">config_dict</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing a SQLAlchemyDS datasource&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_dict</span> <span class="o">=</span> <span class="n">config_dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;future&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># force 2.0 behavior</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessionmaker</span> <span class="o">=</span> <span class="n">db_schema</span><span class="o">.</span><span class="n">SessionMaker</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_tables</span><span class="p">()</span>
+
+        <span class="c1"># thread safe sessions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">scoped_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sessionmaker</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SQLAlchemyDS.create_tables"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.create_tables">[docs]</a>    <span class="k">def</span> <span class="nf">create_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create database tables</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource SQLAlchemyDS is creating the database tables&quot;</span><span class="p">)</span>
+
+        <span class="c1"># this is not smart enough to manage schema migrations</span>
+        <span class="n">db_schema</span><span class="o">.</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.store_taskmanager"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.store_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">store_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">datestamp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store TaskManager in database</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): name of taskmanager to retrieve</span>
+<span class="sd">            taskmanager_id (str/uuid): id of taskmanager to retrieve</span>
+<span class="sd">            datestamp (datetime): datetime of created object, defaults to &#39;now&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: the primary key of the row in the database</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">my_tm</span> <span class="o">=</span> <span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="n">taskmanager_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datestamp</span><span class="p">:</span>
+            <span class="n">my_tm</span><span class="o">.</span><span class="n">datestamp</span> <span class="o">=</span> <span class="n">datestamp</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">my_tm</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">my_tm</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">my_tm</span><span class="o">.</span><span class="n">sequence_id</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.get_taskmanager"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.get_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">get_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the task manager by name/uuid in the database</span>
+<span class="sd">        get back the primary key.</span>
+
+<span class="sd">        If multiples match, find highest primary key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_name (str): name of taskmanager to retrieve</span>
+<span class="sd">            taskmanager_id (str/uuid): id of taskmanager to retrieve</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: the matching row, column names as keys</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">taskmanager_name</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">taskmanager_id</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">max_id</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">sql</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;sequence_id&quot;</span><span class="p">))</span>
+                    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">taskmanager_name</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">cte</span><span class="p">()</span>
+                <span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">sequence_id</span> <span class="o">==</span> <span class="n">max_id</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">orm_as_dict</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">one</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.get_taskmanagers"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.get_taskmanagers">[docs]</a>    <span class="k">def</span> <span class="nf">get_taskmanagers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find taskmanagers that meet our search</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_name (str): name of taskmanager to retrieve</span>
+<span class="sd">            start_time (datetime): Datetime to confine against</span>
+<span class="sd">            end_time (datetime): Datetime to confine against</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: each element is a dict() matching row, column names as keys</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">datestamp</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">taskmanager_name</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">taskmanager_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">start_time</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">datestamp</span> <span class="o">&gt;=</span> <span class="n">start_time</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">end_time</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">datestamp</span> <span class="o">&lt;=</span> <span class="n">end_time</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">orm_as_dict</span><span class="p">,</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.get_last_generation_id"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.get_last_generation_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_last_generation_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return last generation id for current task manager</span>
+<span class="sd">        or taskmanager w/ task_manager_id.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_name (str): name of taskmanager to retrieve</span>
+<span class="sd">            taskmanager_id (str/uuid): id of taskmanager to retrieve</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: the largest generation stored within the database</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">sql</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">generation_id</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;generation_id&quot;</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">taskmanager_name</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">taskmanager_id</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NoResultFound</span><span class="p">(</span><span class="s2">&quot;No matching entries found&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.insert"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Insert data into respective tables for the given</span>
+<span class="sd">        taskmanager_id, generation_id, key</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_id (str/uuid): id of taskmanager to retrieve</span>
+<span class="sd">            generation_id (int): generation id to create</span>
+<span class="sd">            key (str): key for the value</span>
+<span class="sd">            value (obj): Value can be an object or dict or a binary</span>
+<span class="sd">            header (datablock.Header): Header for the value</span>
+<span class="sd">            metadata (datablock.Metadata): Metadata for the value</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">my_dataproduct</span> <span class="o">=</span> <span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="p">(</span>
+            <span class="n">taskmanager_id</span><span class="o">=</span><span class="n">taskmanager_id</span><span class="p">,</span>
+            <span class="n">generation_id</span><span class="o">=</span><span class="n">generation_id</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">my_header</span> <span class="o">=</span> <span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span>
+            <span class="n">taskmanager_id</span><span class="o">=</span><span class="n">taskmanager_id</span><span class="p">,</span>
+            <span class="n">generation_id</span><span class="o">=</span><span class="n">generation_id</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">create_time</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;create_time&quot;</span><span class="p">),</span>
+            <span class="n">scheduled_create_time</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scheduled_create_time&quot;</span><span class="p">),</span>
+            <span class="n">expiration_time</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;expiration_time&quot;</span><span class="p">),</span>
+            <span class="n">creator</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;creator&quot;</span><span class="p">),</span>
+            <span class="n">schema_id</span><span class="o">=</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema_id&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">my_metadata</span> <span class="o">=</span> <span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
+            <span class="n">taskmanager_id</span><span class="o">=</span><span class="n">taskmanager_id</span><span class="p">,</span>
+            <span class="n">generation_id</span><span class="o">=</span><span class="n">generation_id</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">state</span><span class="o">=</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">),</span>
+            <span class="n">generation_time</span><span class="o">=</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generation_time&quot;</span><span class="p">),</span>
+            <span class="n">missed_update_count</span><span class="o">=</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;missed_update_count&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">add_all</span><span class="p">([</span><span class="n">my_dataproduct</span><span class="p">,</span> <span class="n">my_header</span><span class="p">,</span> <span class="n">my_metadata</span><span class="p">])</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">my_dataproduct</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">my_header</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">my_metadata</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.update"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the data in respective tables for the given</span>
+<span class="sd">        taskmanager_id, generation_id, key</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_id (str/uuid): id of taskmanager to retrieve</span>
+<span class="sd">            generation_id (int): generation id to update</span>
+<span class="sd">            key (str): key for the value</span>
+<span class="sd">            value (obj): Value can be an object or dict or a binary</span>
+<span class="sd">            header (datablock.Header): Header for the value</span>
+<span class="sd">            metadata (datablock.Metadata): Metadata for the value</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># fetch the records</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">my_dataproduct</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="n">generation_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">my_header</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="n">generation_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">my_metadata</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="n">generation_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="p">)</span>
+
+        <span class="c1"># update the attribs</span>
+
+        <span class="c1"># dataproduct</span>
+        <span class="n">my_dataproduct</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># header</span>
+        <span class="n">my_header</span><span class="o">.</span><span class="n">create_time</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;create_time&quot;</span><span class="p">,</span> <span class="n">my_header</span><span class="o">.</span><span class="n">create_time</span><span class="p">)</span>
+        <span class="n">my_header</span><span class="o">.</span><span class="n">expiration_time</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;expiration_time&quot;</span><span class="p">,</span> <span class="n">my_header</span><span class="o">.</span><span class="n">expiration_time</span><span class="p">)</span>
+        <span class="n">my_header</span><span class="o">.</span><span class="n">scheduled_create_time</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scheduled_create_time&quot;</span><span class="p">,</span> <span class="n">my_header</span><span class="o">.</span><span class="n">scheduled_create_time</span><span class="p">)</span>
+        <span class="n">my_header</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;creator&quot;</span><span class="p">,</span> <span class="n">my_header</span><span class="o">.</span><span class="n">creator</span><span class="p">)</span>
+        <span class="n">my_header</span><span class="o">.</span><span class="n">schema_id</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema_id&quot;</span><span class="p">,</span> <span class="n">my_header</span><span class="o">.</span><span class="n">schema_id</span><span class="p">)</span>
+
+        <span class="c1"># metadata</span>
+        <span class="n">my_metadata</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="n">my_metadata</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+        <span class="n">my_metadata</span><span class="o">.</span><span class="n">generation_time</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generation_time&quot;</span><span class="p">,</span> <span class="n">my_metadata</span><span class="o">.</span><span class="n">generation_time</span><span class="p">)</span>
+        <span class="n">my_metadata</span><span class="o">.</span><span class="n">missed_update_count</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;missed_update_count&quot;</span><span class="p">,</span> <span class="n">my_metadata</span><span class="o">.</span><span class="n">missed_update_count</span><span class="p">)</span>
+
+        <span class="c1"># save the changes and validate we can fetch the results</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">add_all</span><span class="p">([</span><span class="n">my_dataproduct</span><span class="p">,</span> <span class="n">my_header</span><span class="p">,</span> <span class="n">my_metadata</span><span class="p">])</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">my_dataproduct</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">my_header</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">my_metadata</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.get_header"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.get_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the header from the header table for the given</span>
+<span class="sd">        taskmanager_id, generation_id, key</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_id (str/uuid): id of taskmanager to retrieve</span>
+<span class="sd">            generation_id (int): generation id to locate</span>
+<span class="sd">            key (str): key for the value</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: fields in order are:</span>
+<span class="sd">                   taskmanager.taskmanager_id,</span>
+<span class="sd">                   header.taskmanager_id,</span>
+<span class="sd">                   header.generation_id,</span>
+<span class="sd">                   header.key,</span>
+<span class="sd">                   header.create_time,</span>
+<span class="sd">                   header.expiration_time,</span>
+<span class="sd">                   header.scheduled_create_time,</span>
+<span class="sd">                   header.creator,</span>
+<span class="sd">                   header.schema_id</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">my_header</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;tm_uuid&quot;</span><span class="p">),</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">create_time</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">expiration_time</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">scheduled_create_time</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">creator</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">schema_id</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="n">generation_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">my_header</span><span class="o">.</span><span class="n">tm_uuid</span><span class="p">,</span>
+            <span class="n">my_header</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span>
+            <span class="n">my_header</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+            <span class="n">my_header</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">my_header</span><span class="o">.</span><span class="n">create_time</span><span class="p">,</span>
+            <span class="n">my_header</span><span class="o">.</span><span class="n">expiration_time</span><span class="p">,</span>
+            <span class="n">my_header</span><span class="o">.</span><span class="n">scheduled_create_time</span><span class="p">,</span>
+            <span class="n">my_header</span><span class="o">.</span><span class="n">creator</span><span class="p">,</span>
+            <span class="n">my_header</span><span class="o">.</span><span class="n">schema_id</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.get_metadata"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.get_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the metadata from the metadata table for the given</span>
+<span class="sd">        taskmanager_id, generation_id, key</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_id (str/uuid): id of taskmanager to retrieve</span>
+<span class="sd">            generation_id (int): generation id to locate</span>
+<span class="sd">            key (str): key for the value</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: fields in order are:</span>
+<span class="sd">                   taskmanager.taskmanager_id,</span>
+<span class="sd">                   metadata.taskmanager_id,</span>
+<span class="sd">                   metadata.generation_id,</span>
+<span class="sd">                   metadata.key,</span>
+<span class="sd">                   metadata.state,</span>
+<span class="sd">                   metadata.generation_time,</span>
+<span class="sd">                   metadata.missed_update_count</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">my_metadata</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="s2">&quot;tm_uuid&quot;</span><span class="p">),</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">generation_time</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">missed_update_count</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="n">generation_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">one</span><span class="p">()</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">my_metadata</span><span class="o">.</span><span class="n">tm_uuid</span><span class="p">,</span>
+            <span class="n">my_metadata</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span>
+            <span class="n">my_metadata</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+            <span class="n">my_metadata</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">my_metadata</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+            <span class="n">my_metadata</span><span class="o">.</span><span class="n">generation_time</span><span class="p">,</span>
+            <span class="n">my_metadata</span><span class="o">.</span><span class="n">missed_update_count</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.get_dataproducts"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.get_dataproducts">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataproducts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return list of all data products associated with</span>
+<span class="sd">        with taskmanager_id</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_id (str/uuid): id of taskmanager to retrieve</span>
+<span class="sd">            key (str): key for the value</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: each element is the matching row as a dict()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                    <span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">)</span>
+
+            <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;generation_id&quot;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+                        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+                        <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span>
+                        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">rows</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.get_dataproduct"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.get_dataproduct">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataproduct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the data from the dataproduct table for the given</span>
+<span class="sd">        taskmanager_id, generation_id, key</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_id (str/uuid): id of taskmanager to retrieve</span>
+<span class="sd">            generation_id (int): generation id to locate</span>
+<span class="sd">            key (str): key for the value</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            obj: The possibly binary value stored earlier</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+                <span class="n">my_dataproduct</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="n">generation_id</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">one</span><span class="p">()</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="n">NoResultFound</span> <span class="k">as</span> <span class="n">__e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Converted to implementation agnostic exception&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="n">__e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">my_dataproduct</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.get_datablock"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.get_datablock">[docs]</a>    <span class="k">def</span> <span class="nf">get_datablock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the entire datablock from the dataproduct table for the given</span>
+<span class="sd">        taskmanager_id, generation_id</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_id (str/uuid): id of taskmanager to retrieve</span>
+<span class="sd">            generation_id (int): generation id to locate</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: with all set keys and their associated values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="n">generation_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span>
+
+        <span class="n">datablock</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">datablock</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">datablock</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.duplicate_datablock"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.duplicate_datablock">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate_datablock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">new_generation_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For the given taskmanager_id, make a copy of the datablock with given</span>
+<span class="sd">        generation_id, set the generation_id for the datablock copy</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_id (str/uuid): id of taskmanager to retrieve</span>
+<span class="sd">            generation_id (int): generation id to clone</span>
+<span class="sd">            new_generation_id (int): generation id to create</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">existing_blocks</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># fetch the records</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">existing_blocks</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Dataproduct</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="n">generation_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">existing_blocks</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Header</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="n">generation_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">existing_blocks</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">==</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="n">generation_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span>
+
+        <span class="n">new_blocks</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># match content with new generation id</span>
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">existing_blocks</span><span class="p">:</span>
+            <span class="n">new_blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clone_model</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">generation_id</span><span class="o">=</span><span class="n">new_generation_id</span><span class="p">))</span>
+
+        <span class="c1"># save the new records and validate we can fetch the results</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span><span class="n">new_blocks</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="nb">map</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">,</span> <span class="n">existing_blocks</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.delete_data_older_than"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.delete_data_older_than">[docs]</a>    <span class="k">def</span> <span class="nf">delete_data_older_than</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">days</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete data older that interval</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            days (int): remove data older than this many days</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">days</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># do not log stack trace, Exception thrown is handled by the caller</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument has to be positive, non zero integer. Supplied f</span><span class="si">{days}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">to_old</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">days</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">db_schema</span><span class="o">.</span><span class="n">Taskmanager</span><span class="o">.</span><span class="n">datestamp</span> <span class="o">&lt;</span> <span class="n">to_old</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+                <span class="n">synchronize_session</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.close"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close all connections to the database</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Terminating a SQLAlchemyDS datasource&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.reset_connections"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.reset_connections">[docs]</a>    <span class="k">def</span> <span class="nf">reset_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the connection to the database.</span>
+<span class="sd">        So long as self.engine isn&#39;t undef, the engine can still</span>
+<span class="sd">        make new connections if new db actions happen.</span>
+<span class="sd">        It just wont have any open at this time.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Resetting the SQLAlchemyDS database connections&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.connect"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a pool of database connections</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># sqlite doesn&#39;t support the QueuePool connection class</span>
+        <span class="n">poolclass</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">QueuePool</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;sqlite:/&quot;</span><span class="p">):</span>
+            <span class="n">poolclass</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">NullPool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">poolclass</span><span class="o">=</span><span class="n">poolclass</span><span class="p">)</span>
+        <span class="n">add_engine_pidguard</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Trying to connect as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">drivername</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">database</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sessionmaker</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SQLAlchemyDS.get_schema"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.get_schema">[docs]</a>    <span class="k">def</span> <span class="nf">get_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given the table name return it&#39;s schema</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This doesn&#39;t seem to be used&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Fermilab.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
