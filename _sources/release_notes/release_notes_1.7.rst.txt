@@ -1,13 +1,11 @@
 Release 1.7.0
 -------------
 
-In this release:
+This release features:
 
 - New produces-consumes structure using decorators. This will improve the code quality, improving static checks and reducing the lines of code by removing repetitive boilerplates, especially in the modules.
-
-Planned:
 - Added structured logging. Improved python logging and adoption of structured logs format that will increase the semantinc content of the messages and ease the export of information for dashboards and Elastic Search.
-- Addedf SQLAlchemy object-relational mapper to allow different database backends.
+- Added SQLAlchemy object-relational mapper to increase the testability of DB interactions and to allow different database backends.
 - Packaging via setuptools for both decisionengine and decisionengine_modules: RPM packages correctly install also all dependencies.
 
 .. note::
@@ -18,156 +16,356 @@ Issues fixed in this release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+- `367 <https://github.com/HEPCloud/decisionengine/issues/367>`_: Test race conditions bug
+- `406 <https://github.com/HEPCloud/decisionengine/issues/406>`_: Taskmanager doesn't use/honor global log level
+- `379 <https://github.com/HEPCloud/decisionengine/issues/379>`_: Add postgresql.sql to distributed decisionengine rpm
+- `329 <https://github.com/HEPCloud/decisionengine/issues/329>`_: Docker container is missing pylint
+- `293 <https://github.com/HEPCloud/decisionengine/issues/293>`_: Drop requirements.txt setup mode 
+- `285 <https://github.com/HEPCloud/decisionengine/issues/285>`_: Unify ProcessingState with Reaper state management code
 - `253 <https://github.com/HEPCloud/decisionengine/issues/253>`_ : Decision engine can sometimes start up at boot time before network name resolution is working (`ae04db5 <https://github.com/HEPCloud/decisionengine/commit/ae04db544599c6777d63cb315ddac169e586809d>`_)
 
 
 Full list of commits since version 1.6.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`a25a4a3 <https://github.com/HEPCloud/decisionengine/commit/a25a4a3064c879b9e415ec8ece8cc813a3cf7c51>`_:   Fix ABC to match our actual usage
+`084f74e1 <https://github.com/HEPCloud/decisionengine/commit/084f74e1228f7d174ae89cdb69dcf42eb893ef71>`_:   Initial SQLAlchemy Datasource
 
-`1510b2d <https://github.com/HEPCloud/decisionengine/commit/1510b2d134165b9752101c9b981514ba5b4f8093>`_:   Address minor linting issues
+`3353aa00 <https://github.com/HEPCloud/decisionengine/commit/3353aa00111a1933ce263fb0e853b5fe87e30794>`_:   Make sure our jsonnet is json synatx valid
 
-`945e4b1 <https://github.com/HEPCloud/decisionengine/commit/945e4b16a8246d72a65a023501b84258e3d10e66>`_:   Fix missing attribute insert
+`402b1c26 <https://github.com/HEPCloud/decisionengine/commit/402b1c264c9959f35a5bdef103fb4a827259a5bf>`_:   Fix transform-ordering problem.
 
-`5eace9d <https://github.com/HEPCloud/decisionengine/commit/5eace9d51c4032585cc8821ccba1c59b36b8a730>`_:   Add note for how to get modules in place
+`49297573 <https://github.com/HEPCloud/decisionengine/commit/4929757322b1b55e56ad8f83eff6184a80503c2f>`_:   Fix incorrect packaging of tests at top level
 
-`50a8e26 <https://github.com/HEPCloud/decisionengine/commit/50a8e2688987152523d83d4a8ac2e4d9435fb192>`_:   Add list of packages in the CI env to output
+`fbfae499 <https://github.com/HEPCloud/decisionengine/commit/fbfae499a9d366ac573fecd3ae82607ad3bede21>`_:   The test_channel loads data once per second.
 
-`b9cb197 <https://github.com/HEPCloud/decisionengine/commit/b9cb197d102f4755fb6ad074903ef1ceda983aa9>`_:   Sanity check the home directory
+`33f9ade1 <https://github.com/HEPCloud/decisionengine/commit/33f9ade1700ffb376027bd3763a62c67058907dc>`_:   Rename taskmanager test nodb
 
-`cd17223 <https://github.com/HEPCloud/decisionengine/commit/cd17223c367ca692a94a3481c91b1c4d3b081abc>`_:   Have client provide a hint when you ask for no behavior
+`308343e9 <https://github.com/HEPCloud/decisionengine/commit/308343e9358075ea423b4494aa4b4e2ccf5eaef3>`_:   Initial modifications for addition of structured logging
 
-`95b0236 <https://github.com/HEPCloud/decisionengine/commit/95b02365d88e7d3a9f3a69f62491a4016ac77fc5>`_:   Fix de-query-tool to support produce/consume model
+`6f337b75 <https://github.com/HEPCloud/decisionengine/commit/6f337b757ec55754297e64a78c35bf34dff03cfa>`_:   Add missing error message
 
-`e660ca7 <https://github.com/HEPCloud/decisionengine/commit/e660ca726b3457d4aecf4ae2f18b3e03419cc2f3>`_:   Update required versions for bugfixes
+`23a4b770 <https://github.com/HEPCloud/decisionengine/commit/23a4b770abe07e2de382998eae1dec19688baad7>`_:   Call fixtures in a cleaner manner for xdist
 
-`6863cb8 <https://github.com/HEPCloud/decisionengine/commit/6863cb81174aff1598ac51b723070a1f1bd851f8>`_:   Fix path error
+`1f2fe8c4 <https://github.com/HEPCloud/decisionengine/commit/1f2fe8c4eff4bc2ced625b927f6dcce27b63ff5f>`_:   Add self.config so I can introspect the fixtures later
 
-`bb52e8b <https://github.com/HEPCloud/decisionengine/commit/bb52e8b1659dea39aa3b853056893d7d85c343e0>`_:   Merge pull request #340 from jcpunk/service-stop
+`689c0020 <https://github.com/HEPCloud/decisionengine/commit/689c0020fb325e0c062582ed9284bacfe66be034>`_:   Add missing `config` attrib test
 
-`6d7aba9 <https://github.com/HEPCloud/decisionengine/commit/6d7aba953ffce34d27685029b05f03977c4baf5f>`_:   Drop obsolete files
+`d2732816 <https://github.com/HEPCloud/decisionengine/commit/d2732816fa685ecf1c3c69c396eb2cd4503d9e1b>`_:   Best practices are for fixtues to `yield` vs `return`
 
-`168ae7a <https://github.com/HEPCloud/decisionengine/commit/168ae7aa0cc136a56b064e2a4d4f81aab746fa92>`_:   Name the tests better
+`accef50a <https://github.com/HEPCloud/decisionengine/commit/accef50a90f98cfa3838481e4c08a127d4c00b79>`_:   Seed SQLAlchemy fixtures for later activation
 
-`0f60c4e <https://github.com/HEPCloud/decisionengine/commit/0f60c4e3911686a47a12819c2276801e7868fa8e>`_:   Support new produces/consumes/configuration-description infrastructure.
+`31002bc5 <https://github.com/HEPCloud/decisionengine/commit/31002bc5d8b4feaa5fddfe4156bd43c8e6210d3e>`_:   Help define the fixture interlocking
 
-`8191246 <https://github.com/HEPCloud/decisionengine/commit/819124695fbf8cb75ccbd7bf861d07b85fa1ab32>`_:   Add de-query-tool
+`0f5fb129 <https://github.com/HEPCloud/decisionengine/commit/0f5fb129f4b6f52a665a5d90fbdb6ebe41a07704>`_:   The pandas 1.3.0 doesn't build against PyPy any longer
 
-`2a26c94 <https://github.com/HEPCloud/decisionengine/commit/2a26c9442938a376aa070c03fe6e12d4f744c9f0>`_:   ExecStopPre is not supported on all systemd instances
+`a7d18a41 <https://github.com/HEPCloud/decisionengine/commit/a7d18a41cb6114b2e40bed4adaa4dff313ec4a21>`_:   Correctly test datablock construction paths
 
-`67a54d5 <https://github.com/HEPCloud/decisionengine/commit/67a54d5cceeb9d4e5c6c7eaff8fa0e312d252f7a>`_:   Merge pull request #338 from jcpunk/fix-pytest-postgres
+`9af4c144 <https://github.com/HEPCloud/decisionengine/commit/9af4c1441fe45d1467843a5ceb2c5fa9dccf8eb0>`_:   the `mock` package was a backport for python2.
 
-`70ab133 <https://github.com/HEPCloud/decisionengine/commit/70ab133ff92a82972bcefd36e989c1b373688b74>`_:   Fixup use of pytest_postgresql for version 3.0.0
+`5ddaff8f <https://github.com/HEPCloud/decisionengine/commit/5ddaff8f07a0ded735a2190ac411654c1566a3e5>`_:   Add another constructor test
 
-`f8f4255 <https://github.com/HEPCloud/decisionengine/commit/f8f4255eb3dee4ab92e20df7f72e840c643f02a5>`_:   Merge pull request #337 from jcpunk/thread-names
+`9ae9ad13 <https://github.com/HEPCloud/decisionengine/commit/9ae9ad13565ad529187c945e094274874a231bf4>`_:   Make sure if the client says to stop we don't override it
 
-`5f49a4f <https://github.com/HEPCloud/decisionengine/commit/5f49a4f63a1bd24e24ef91e2d870b8af5585f943>`_:   Set names for the various parallel code
+`a581cd2b <https://github.com/HEPCloud/decisionengine/commit/a581cd2bbcb8a4f093a39058bfcaa9c83e30f616>`_:   run pyupgrade against codebase for python3.6
 
-`64da77c <https://github.com/HEPCloud/decisionengine/commit/64da77c6de71787386911e41b120627427c87fc8>`_:   Merge pull request #327 from jcpunk/datablock-expire
+`09e4e79c <https://github.com/HEPCloud/decisionengine/commit/09e4e79c42049ec74955d82ef8ff662329e91df1>`_:   Handle reaper duplicate shutdowns more cleanly
 
-`de33a60 <https://github.com/HEPCloud/decisionengine/commit/de33a60a19510d1cbfea47c01c19eea7aef78e1c>`_:   Merge pull request #336 from knoepfel/use-toposort
+`64d29dc5 <https://github.com/HEPCloud/decisionengine/commit/64d29dc54903345e6d3cb710c9e41f613e0c0adb>`_:   Drop pointless cache restore
 
-`31a8a90 <https://github.com/HEPCloud/decisionengine/commit/31a8a9053a2067c6a14485bcaf96fb3724a42547>`_:   Merge pull request #328 from knoepfel/de-class-inference
+`1c6b2588 <https://github.com/HEPCloud/decisionengine/commit/1c6b2588c4f137050d2e9c290371a37c8f283dfd>`_:   Update PyPy to 3.7 for testing
 
-`410e383 <https://github.com/HEPCloud/decisionengine/commit/410e383de712bdd5fcd5a6cc6e04deca8ce923bb>`_:   Merge pull request #331 from jcpunk/reaper-interval-tests
+`2bae173e <https://github.com/HEPCloud/decisionengine/commit/2bae173e7923e04ceb31dc9aa48e43c6f99ddbad>`_:   Increase wait for overloaded test workers, update log messages
 
-`719ff0c <https://github.com/HEPCloud/decisionengine/commit/719ff0c85a77376c19d7681bdf18c7abfc1f9c5d>`_:   Test datablock expire funtions
+`b67c185c <https://github.com/HEPCloud/decisionengine/commit/b67c185ccf4387e0de348b62fe74a4f79d6b6f76>`_:   When aborting CI builds cleanup all processes
 
-`e14c49d <https://github.com/HEPCloud/decisionengine/commit/e14c49d80537b549fea884546378fc5917c1591b>`_:   The 'name' parameter is optional.
+`6c5d6306 <https://github.com/HEPCloud/decisionengine/commit/6c5d6306852dcf2152dfed72e97bc1410f70fc9d>`_:   Trim pytest fast functions, add required plugin
 
-`7846c9f <https://github.com/HEPCloud/decisionengine/commit/7846c9f3f9a0a83b0de168b30569138763691a21>`_:   Enable DE class inference based on configuration.
+`8c63ca6b <https://github.com/HEPCloud/decisionengine/commit/8c63ca6b086592d48eee999c4bc755dadd289d29>`_:   note why we're ignoring this line
 
-`32ab7e4 <https://github.com/HEPCloud/decisionengine/commit/32ab7e44c4c748938d7837ac96d12bf7a92525fc>`_:   Use third-party topological sort.
+`2bd4ecbc <https://github.com/HEPCloud/decisionengine/commit/2bd4ecbc9bb067cd18500b4d43cca89553e90b5f>`_:   Add a syntax check for the toml files
 
-`01aa8ae <https://github.com/HEPCloud/decisionengine/commit/01aa8ae678f598f0b1b1941b63dcc6df66852304>`_:   Merge pull request #325 from jcpunk/channel-tests
+`e2dca404 <https://github.com/HEPCloud/decisionengine/commit/e2dca404d2ce841f683bf56b4e4d3bdc074f4b27>`_:   Sometimes these get stuck
 
-`52b4847 <https://github.com/HEPCloud/decisionengine/commit/52b48479094c37acc5422301cc0ebce721db65bc>`_:   Merge pull request #326 from jcpunk/valid-config-tests
+`6d012fab <https://github.com/HEPCloud/decisionengine/commit/6d012fab956c2f1c1cd526adb4bb71f931db1515>`_:   Add in Jenkinsfile pipeline configuration a timeout at stage level
 
-`8c4749e <https://github.com/HEPCloud/decisionengine/commit/8c4749e7d61727b820fee8b86ca572b4fe68585f>`_:   Merge pull request #330 from jcpunk/pylint-actions
+`baf07973 <https://github.com/HEPCloud/decisionengine/commit/baf07973e3c5ab6afec7e4ea0209acb4228493ba>`_:   Add timeout option to block-while/until
 
-`a37770c <https://github.com/HEPCloud/decisionengine/commit/a37770c9527932f81d754119524ffff6f8406c4d>`_:   Ensure validation testing is tested
+`970faf92 <https://github.com/HEPCloud/decisionengine/commit/970faf929ccd4333c63a9d521617bc7b010c1224>`_:   Make pre-commit happy
 
-`d8ab5eb <https://github.com/HEPCloud/decisionengine/commit/d8ab5eb6fd0998167635923a391d94785ab6a53f>`_:   Add missing test to ensure the run interval is actually used
+`0cea2285 <https://github.com/HEPCloud/decisionengine/commit/0cea22855f26bf53453add616dfba2cb3aef2a7e>`_:   Fix alignment issue
 
-`0cd9c42 <https://github.com/HEPCloud/decisionengine/commit/0cd9c42b708179a25cb4998466a39c86db66e069>`_:   Also run pylint for extra sanity checks
+`5620c65b <https://github.com/HEPCloud/decisionengine/commit/5620c65be6910a30b8b34f2baa914c596f2c94ea>`_:   List why we aren't checking
 
-`c5cf1ff <https://github.com/HEPCloud/decisionengine/commit/c5cf1fff9e5b191c4fd913d185805b5d3dbabecd>`_:   Ensure our errors error out
+`88611d90 <https://github.com/HEPCloud/decisionengine/commit/88611d9004df6541959aa40c3c33fe761fada3ef>`_:   Ensure fixtures are cleaned up between invocations
 
-`baf0170 <https://github.com/HEPCloud/decisionengine/commit/baf01700d8bb6cf4f8aca28e7fdd0726e3f617e0>`_:   Merge pull request #324 from jcpunk/cleanup-trivial-tests
+`0ba135d2 <https://github.com/HEPCloud/decisionengine/commit/0ba135d2eed04f9f419e318a408555d591696f1d>`_:   Setup blank DB for SQLAlchemy tests and prep fixtures
 
-`2a0133a <https://github.com/HEPCloud/decisionengine/commit/2a0133aadfba0fef2a70fcf43528bb60b7ed01bb>`_:   Try to cleanup trivial missing coverage
+`3793e674 <https://github.com/HEPCloud/decisionengine/commit/3793e674eeb495229fea43caefc2057d1092c0e7>`_:   Setup pre-commit
 
-`44e0ad6 <https://github.com/HEPCloud/decisionengine/commit/44e0ad6f039dc2982f8e72cd56bcf0caf6737e5c>`_:   Merge pull request #323 from jcpunk/about-coverage
+`9e6d1317 <https://github.com/HEPCloud/decisionengine/commit/9e6d13170adc2476a07df89a9df106312545241a>`_:   Migrate test_Reaper to pytest fixtures
 
-`d811f61 <https://github.com/HEPCloud/decisionengine/commit/d811f6174ecd77e40e84fac8b5eabe1d24aaa69d>`_:   Merge pull request #322 from knoepfel/fix-fail-on-error
+`51df43bf <https://github.com/HEPCloud/decisionengine/commit/51df43bfd48340cf18df44043a71aa1c25548ac4>`_:   Cleanup a bunch of pointless whitespace
 
-`cb42626 <https://github.com/HEPCloud/decisionengine/commit/cb42626213ffed843eae5916c2b1fd535d9883f1>`_:   Merge pull request #312 from jcpunk/finish-setuptools
+`96e5d069 <https://github.com/HEPCloud/decisionengine/commit/96e5d06997e53975d5baff0ab86e19951075c023>`_:   Fix typo
 
-`8f6d407 <https://github.com/HEPCloud/decisionengine/commit/8f6d407de53f95602a3dce29603d23ab0ea4390c>`_:   Merge pull request #316 from jcpunk/abc-coverage
+`9f96f418 <https://github.com/HEPCloud/decisionengine/commit/9f96f4181b0301d1a7b0a69e0ca10b5ce0baeeac>`_:   Setup datablock to use our paramaterized fixture
 
-`4d0676b <https://github.com/HEPCloud/decisionengine/commit/4d0676bbe82d9b3adf89b0b660734755b5f14168>`_:   Merge pull request #317 from vitodb/pylint
+`36ebc66c <https://github.com/HEPCloud/decisionengine/commit/36ebc66c19a8d20c001447c78744d978a9e3bbf2>`_:   Add config for LGTM
 
-`d7c43b9 <https://github.com/HEPCloud/decisionengine/commit/d7c43b961dbc4f092fdd39a73277be5d73dc9c2c>`_:   Use regular expression to support fail_on_error feature.
+`c6032e5f <https://github.com/HEPCloud/decisionengine/commit/c6032e5f78da2d4ace093f810dd5ca695bfb25cc>`_:   Use topologically sorted transforms to remove some multi-threading.
 
-`ada6692 <https://github.com/HEPCloud/decisionengine/commit/ada6692533280d4171804ae2cc26f5337d721f0f>`_:   add support to run pylint tests
+`e063f82a <https://github.com/HEPCloud/decisionengine/commit/e063f82a813f93f7e7fcf2cb31cdb5484699b405>`_:   Drop pointless comma
 
-`efb1e57 <https://github.com/HEPCloud/decisionengine/commit/efb1e57bfdb7c03420440d34ad679eb5da618bc4>`_:   Finish migration to pure setuptools
+`bfd6689e <https://github.com/HEPCloud/decisionengine/commit/bfd6689e123df23f69636b9fb43e59cc6f3abd45>`_:   Begin prepwork for PEP517
 
-`bc4720c <https://github.com/HEPCloud/decisionengine/commit/bc4720cf0e65f1df2b73958cbd64c5dabf84764c>`_:   We aren't testing 'unversioned" releases
+`72c5725f <https://github.com/HEPCloud/decisionengine/commit/72c5725faa3bc24b5fa73d63765cd8281d873503>`_:   Stub out null source rather than more complex mocking
 
-`e4dc35e <https://github.com/HEPCloud/decisionengine/commit/e4dc35e36f75b14c71e0626afc7e1376adbac3df>`_:   Merge pull request #314 from jcpunk/jsonnet_syntax
+`3b65e5e2 <https://github.com/HEPCloud/decisionengine/commit/3b65e5e2eed5ac2025c08d3b7145f8d90ee64d76>`_:   Push Singleton into its own space
 
-`87e32c2 <https://github.com/HEPCloud/decisionengine/commit/87e32c228376bbe5a3cf513ac2890b2a8b7b793b>`_:   Merge pull request #294 from jcpunk/move-reaper
+`fb5b177e <https://github.com/HEPCloud/decisionengine/commit/fb5b177efa968c16717689a17aa8c35d1b285aac>`_:   Put fixtures in central location
 
-`dec85d5 <https://github.com/HEPCloud/decisionengine/commit/dec85d5ebb7cf9b8fb19c73ac5a68e9855503dba>`_:   Merge pull request #319 from jcpunk/task-loop
+`5ab3cbaa <https://github.com/HEPCloud/decisionengine/commit/5ab3cbaa5ea29dde26b319336dd4f3e6a5aa9de8>`_:   Add more details to channel startup logs
 
-`4108472 <https://github.com/HEPCloud/decisionengine/commit/4108472afc04def8c35f7aaa569fd76568cf162f>`_:   Merge pull request #320 from jcpunk/container-swig
+`afe7f7d7 <https://github.com/HEPCloud/decisionengine/commit/afe7f7d79e84f3c6bd3181eb99475e3cd922f881>`_:   Add log about what DB we are hitting
 
-`920af1c <https://github.com/HEPCloud/decisionengine/commit/920af1c985f84896d92a1f5fe28ee8072d654247>`_:   Merge pull request #321 from knoepfel/include-init-files
+`38034b2c <https://github.com/HEPCloud/decisionengine/commit/38034b2c3ca21f1811a15a32d32870f626a1b76d>`_:   Let the datasource handle the connections internally
 
-`650dffa <https://github.com/HEPCloud/decisionengine/commit/650dffa70ea4bcca0022adb79823d53d81849d70>`_:   Don't forget __init__.py files.
+`5e03b6fe <https://github.com/HEPCloud/decisionengine/commit/5e03b6fefa953b5806e6ca6785cf71ee3c0e20cd>`_:   Since we are opening an IPv4 socket, just use 127.0.0.1 to check
 
-`1b412e0 <https://github.com/HEPCloud/decisionengine/commit/1b412e03067216451d0552f434277d6069300ae3>`_:   The latest m2crypto seems to need swig now
+`cac2bef3 <https://github.com/HEPCloud/decisionengine/commit/cac2bef32d3b503402b5e25503a63acee18c6921>`_:   Fix missing version requirements
 
-`a6e3ab1 <https://github.com/HEPCloud/decisionengine/commit/a6e3ab1c283e5ec596cde771db9fd3fc6d97125d>`_:   Merge pull request #313 from jcpunk/conf-test
+`3be8f84f <https://github.com/HEPCloud/decisionengine/commit/3be8f84f36044e2a289197883b852149c4ae1ae9>`_:   Add line lenght for autoformater
 
-`1205636 <https://github.com/HEPCloud/decisionengine/commit/1205636a69763ef71d1baa273c92d0dbc51e46db>`_:   Simplify run loop
+`90e2baad <https://github.com/HEPCloud/decisionengine/commit/90e2baadaa3197f2a0bf277273c081b2f442b76d>`_:   Protect against inappropriate wait under error condition.
 
-`30e59dc <https://github.com/HEPCloud/decisionengine/commit/30e59dc967285d13221dfee7b807f446f9fbfac2>`_:   fix test_client_with_no_server_verbose unit test for Jenkins CI (#315)
+`943a17a7 <https://github.com/HEPCloud/decisionengine/commit/943a17a70dca5169c137fabb122c1f27104e291d>`_:   Fix de-client typo and adjust tests accordingly.
 
-`10384a8 <https://github.com/HEPCloud/decisionengine/commit/10384a8cf3167bbadc0bfea08291c9eeb20cb01c>`_:   Move reaper into its own place and reuse state logic
+`3b104eba <https://github.com/HEPCloud/decisionengine/commit/3b104ebabca7bd4fd1c349e8cd0513a3e6105fee>`_:   Set the logs to DEBUG for testing
 
-`940584e <https://github.com/HEPCloud/decisionengine/commit/940584e446d9841e006b87dc5a0446cc52e664d8>`_:   No real way to test abstract base classes
+`4c5564d4 <https://github.com/HEPCloud/decisionengine/commit/4c5564d4b15096235776e230d8c64cb8f68979f5>`_:   Add another sync method to try and make tests less spotty
 
-`250c14b <https://github.com/HEPCloud/decisionengine/commit/250c14b151ba273417c09306556e591e9981d768>`_:   The `_validate` function doesn't permit missing 'PRODUCES'
+`66bd81f2 <https://github.com/HEPCloud/decisionengine/commit/66bd81f2b854c0465026ae13042f20db929edebe>`_:   Make sure to encourage updates to tools
 
-`5ae1ce9 <https://github.com/HEPCloud/decisionengine/commit/5ae1ce9fc748a146777dd8f5bd63a96a7bc09fac>`_:   Make sure syntax error in config names the problem
+`d16f04cc <https://github.com/HEPCloud/decisionengine/commit/d16f04cc0dbbd832877eabf0655dcdd2d6b6ff9f>`_:   Put postgresql datasource schema into RPM
 
-`b899fa2 <https://github.com/HEPCloud/decisionengine/commit/b899fa237d20f949f1adf147fa7d6da55381b4b2>`_:   Add SourceProxy module test. (#307)
+`62b97e79 <https://github.com/HEPCloud/decisionengine/commit/62b97e79c900920f9613cbf9039b8bf6042aa4a3>`_:   Fix __str__ so it includes all the data
 
-`7b3df14 <https://github.com/HEPCloud/decisionengine/commit/7b3df14c7a26c9d3ba2b0e56ac4598ed8d3c4d80>`_:   Increae coverage of utils (#304)
+`611ef1f8 <https://github.com/HEPCloud/decisionengine/commit/611ef1f8124126f06de1e94d898a121ad060b5c5>`_:   Drop pointless lines
 
-`ddba2a3 <https://github.com/HEPCloud/decisionengine/commit/ddba2a312884208b80682c7ecf3162234cf434e7>`_:   Fix duplicate entry warning (#311)
+`5b9e2fb6 <https://github.com/HEPCloud/decisionengine/commit/5b9e2fb6adcf489e1d42dc027446e1a9950b9806>`_:   Drop unreachable excepts
 
-`915673f <https://github.com/HEPCloud/decisionengine/commit/915673fac5b37ccce0804fb2c2df969a92726f6b>`_:   Test modules minimally (#298)
+`6991f65f <https://github.com/HEPCloud/decisionengine/commit/6991f65f4ed6cea21198bd623180ffe9c9a086f9>`_:   Restore product-name translation required for some source-proxy cases.
 
-`bc0c21a <https://github.com/HEPCloud/decisionengine/commit/bc0c21a924e097bfda51769228c787f69ae474e6>`_:   Some repos may error out, don't let them kill the build (#297)
+`f6258c09 <https://github.com/HEPCloud/decisionengine/commit/f6258c09a6452e1e2de324c828d8f4c990bd9664>`_:   Fixed formatting and updated content
 
-`924a704 <https://github.com/HEPCloud/decisionengine/commit/924a7047a31d2fe69de04f5c97ef89eefc600fa3>`_:   doc: add 1.6.1 release notes
+`104a0446 <https://github.com/HEPCloud/decisionengine/commit/104a04469ff8c7254ce39073b62b64f4487bac45>`_:   Update index.rst
 
-`b1ab4d3 <https://github.com/HEPCloud/decisionengine/commit/b1ab4d31d3b935929b39c553dd71135732bb9922>`_:   doc: fix typo
+`2ed61289 <https://github.com/HEPCloud/decisionengine/commit/2ed61289c5539a7666754774659487a74a794359>`_:   Update index.rst
 
-`85e5d71 <https://github.com/HEPCloud/decisionengine/commit/85e5d71454c018c84e30a81edd256f24c23e9fd9>`_:   postgresql: do not print stack trace for low level library (#309)
+`cb687150 <https://github.com/HEPCloud/decisionengine/commit/cb687150f4237e421df9bf25a2bbf3f0d2c45739>`_:   Create release_notes.rst
 
-`255c641 <https://github.com/HEPCloud/decisionengine/commit/255c641505fce253ac3c854cbda3287e15e0524b>`_:   Setuptools uses entry return value as an error msg (#303)
+`3b57d4a2 <https://github.com/HEPCloud/decisionengine/commit/3b57d4a20dfb0162bae4f181ce86832eb16c0c63>`_:   Note new requirement
 
-`2fd8db4 <https://github.com/HEPCloud/decisionengine/commit/2fd8db454e1329b72eac292df9176c2a4c820261>`_:   Fix name to match expectations (#305)
+`871af08b <https://github.com/HEPCloud/decisionengine/commit/871af08bdea2edaa33f942a4f8adffae1a6f9abf>`_:   Added 1.7.0 release notes
 
-`9cddb70 <https://github.com/HEPCloud/decisionengine/commit/9cddb70a5a6d74553868b8940139db00d59f2429>`_:   updated release notes
+`ce42b802 <https://github.com/HEPCloud/decisionengine/commit/ce42b8022742cc1f78cf5216126b015293c9f766>`_:   improved 1.6 release note
 
-`7fe0358 <https://github.com/HEPCloud/decisionengine/commit/7fe0358eedae19e2bb0d33a5fa6a908a17424e28>`_:   Error in more clean methods (#300)
+`583c10fb <https://github.com/HEPCloud/decisionengine/commit/583c10fb470f7ae1da284dd12abbd179b71e2a0b>`_:   fixed rst error
 
-`84aa506 <https://github.com/HEPCloud/decisionengine/commit/84aa506cfa8d3838a30039eb7d47b62f64d23db9>`_:   Fix a bug in setup.py parsing of requirements. (#301)
+`96d4dc1e <https://github.com/HEPCloud/decisionengine/commit/96d4dc1ed123606cee0318f1b71421e68ff361df>`_:   Added 1.6.2 release notes, from branch 1.6
 
-`a58b61b <https://github.com/HEPCloud/decisionengine/commit/a58b61bb421e41404532e9182ab3f28da8a77837>`_:   fix typo in release notes
+`13c2f283 <https://github.com/HEPCloud/decisionengine/commit/13c2f28325d697701d9417fb2116364f018da535>`_:   Add some helpful indexes to our default schema
+
+`29c32571 <https://github.com/HEPCloud/decisionengine/commit/29c32571e837ac51f238360be6f8208a49996ebb>`_:   Log as workers are started
+
+`619021c2 <https://github.com/HEPCloud/decisionengine/commit/619021c24df6a51818ea067b9c33b07a3a579f0f>`_:   One of these tests seems to be spotty, break them out to find which one
+
+`29a2c72d <https://github.com/HEPCloud/decisionengine/commit/29a2c72d55fa71bbdbbc787e90b05e98529a70dc>`_:   Run the test in a way that gives us colors
+
+`4e36bfd2 <https://github.com/HEPCloud/decisionengine/commit/4e36bfd25d7f94730e4412f27c7cc550848c7c2d>`_:   Drop unused table create logic
+
+`5511f69e <https://github.com/HEPCloud/decisionengine/commit/5511f69edbe0720f25edda7c09ca780007747572>`_:   Stronger notify state for when we've a lot of watchers.
+
+`b6cc7a46 <https://github.com/HEPCloud/decisionengine/commit/b6cc7a461c375b4360133c9ae26dd2ad759f3aa7>`_:   Test the dataspace abstractions
+
+`e3b1f594 <https://github.com/HEPCloud/decisionengine/commit/e3b1f594cd1b9462fc5d44372243640f0c2ceb6d>`_:   Better messages about our state
+
+`2d2feab9 <https://github.com/HEPCloud/decisionengine/commit/2d2feab9a9b42339263df6d81c1ada359cc875cf>`_:   Drop duplicate tests, leave specifics
+
+`8e737329 <https://github.com/HEPCloud/decisionengine/commit/8e7373298fcb5869d2137ed13d157a0f65a31946>`_:   Add parameter based datasource api tests
+
+`5c023aa5 <https://github.com/HEPCloud/decisionengine/commit/5c023aa5e4ae9aa68cb69a7edb175f7f8a7318d5>`_:   Don't do debug logs for flake8, they aren't helpful
+
+`f5d1a12f <https://github.com/HEPCloud/decisionengine/commit/f5d1a12fba958c1ecc077575c9b39f7c979fc963>`_:   Setup list of public exports for dataspace.py
+
+`7158b422 <https://github.com/HEPCloud/decisionengine/commit/7158b422c73f51c367e07c59c3cfa88006a61c67>`_:   Merge pull request #365 from jcpunk/bad-update-is-error
+
+`cd98cc4a <https://github.com/HEPCloud/decisionengine/commit/cd98cc4a09dc655417d67cab3a1ffb7e0c455e16>`_:   Update should error out if you try to do it wrongly
+
+`eb7907fe <https://github.com/HEPCloud/decisionengine/commit/eb7907fee07e5866cb193bf1d5b1acfa0a943d54>`_:   Add option to set taskmanager datestamp and sample usage
+
+`e124532c <https://github.com/HEPCloud/decisionengine/commit/e124532cc9c7ac98522dce507962460cfd75e6fb>`_:   Make sure the fixture uses the production flow
+
+`a8241b6e <https://github.com/HEPCloud/decisionengine/commit/a8241b6ee2e938b14ee514d84e49e43f0c844b7c>`_:   Make sure RPM also owns the .egg-info so we don't confuse the namespaces
+
+`da87376e <https://github.com/HEPCloud/decisionengine/commit/da87376e0bcecc0142bd7f651fbde74658563035>`_:   Ensure the DE server is fully started before running query
+
+`622bfacf <https://github.com/HEPCloud/decisionengine/commit/622bfacfab41f6ae477ddb4b95fab86b7d86c0c2>`_:   Simplify use of our PG fixtures
+
+`df98ecdf <https://github.com/HEPCloud/decisionengine/commit/df98ecdf07fa082beb98a5bcce24a290c48a760a>`_:   Fixed flake8 issue
+
+`061ff6cf <https://github.com/HEPCloud/decisionengine/commit/061ff6cff934eadc4e9e7a39bce78a0752b628a6>`_:   decisionengine/framework: stop_channel runs Publisher shutdown methods
+
+`3727b80b <https://github.com/HEPCloud/decisionengine/commit/3727b80beb49ec314579d8c822c94c4c5f37e5e6>`_:   Fixup comment to avoid assuming this test uses the DB
+
+`d45aaf6b <https://github.com/HEPCloud/decisionengine/commit/d45aaf6b160652b021e935b38566558023420b70>`_:   Fix script path typo
+
+`a25a4a30 <https://github.com/HEPCloud/decisionengine/commit/a25a4a3064c879b9e415ec8ece8cc813a3cf7c51>`_:   Fix ABC to match our actual usage
+
+`1510b2d1 <https://github.com/HEPCloud/decisionengine/commit/1510b2d134165b9752101c9b981514ba5b4f8093>`_:   Address minor linting issues
+
+`945e4b16 <https://github.com/HEPCloud/decisionengine/commit/945e4b16a8246d72a65a023501b84258e3d10e66>`_:   Fix missing attribute insert
+
+`5eace9d5 <https://github.com/HEPCloud/decisionengine/commit/5eace9d51c4032585cc8821ccba1c59b36b8a730>`_:   Add note for how to get modules in place
+
+`50a8e268 <https://github.com/HEPCloud/decisionengine/commit/50a8e2688987152523d83d4a8ac2e4d9435fb192>`_:   Add list of packages in the CI env to output
+
+`b9cb197d <https://github.com/HEPCloud/decisionengine/commit/b9cb197d102f4755fb6ad074903ef1ceda983aa9>`_:   Sanity check the home directory
+
+`cd17223c <https://github.com/HEPCloud/decisionengine/commit/cd17223c367ca692a94a3481c91b1c4d3b081abc>`_:   Have client provide a hint when you ask for no behavior
+
+`95b02365 <https://github.com/HEPCloud/decisionengine/commit/95b02365d88e7d3a9f3a69f62491a4016ac77fc5>`_:   Fix de-query-tool to support produce/consume model
+
+`e660ca72 <https://github.com/HEPCloud/decisionengine/commit/e660ca726b3457d4aecf4ae2f18b3e03419cc2f3>`_:   Update required versions for bugfixes
+
+`6863cb81 <https://github.com/HEPCloud/decisionengine/commit/6863cb81174aff1598ac51b723070a1f1bd851f8>`_:   Fix path error
+
+`bb52e8b1 <https://github.com/HEPCloud/decisionengine/commit/bb52e8b1659dea39aa3b853056893d7d85c343e0>`_:   Merge pull request #340 from jcpunk/service-stop
+
+`6d7aba95 <https://github.com/HEPCloud/decisionengine/commit/6d7aba953ffce34d27685029b05f03977c4baf5f>`_:   Drop obsolete files
+
+`168ae7aa <https://github.com/HEPCloud/decisionengine/commit/168ae7aa0cc136a56b064e2a4d4f81aab746fa92>`_:   Name the tests better
+
+`0f60c4e3 <https://github.com/HEPCloud/decisionengine/commit/0f60c4e3911686a47a12819c2276801e7868fa8e>`_:   Support new produces/consumes/configuration-description infrastructure.
+
+`81912469 <https://github.com/HEPCloud/decisionengine/commit/819124695fbf8cb75ccbd7bf861d07b85fa1ab32>`_:   Add de-query-tool
+
+`2a26c944 <https://github.com/HEPCloud/decisionengine/commit/2a26c9442938a376aa070c03fe6e12d4f744c9f0>`_:   ExecStopPre is not supported on all systemd instances
+
+`67a54d5c <https://github.com/HEPCloud/decisionengine/commit/67a54d5cceeb9d4e5c6c7eaff8fa0e312d252f7a>`_:   Merge pull request #338 from jcpunk/fix-pytest-postgres
+
+`70ab133f <https://github.com/HEPCloud/decisionengine/commit/70ab133ff92a82972bcefd36e989c1b373688b74>`_:   Fixup use of pytest_postgresql for version 3.0.0
+
+`f8f4255e <https://github.com/HEPCloud/decisionengine/commit/f8f4255eb3dee4ab92e20df7f72e840c643f02a5>`_:   Merge pull request #337 from jcpunk/thread-names
+
+`5f49a4f6 <https://github.com/HEPCloud/decisionengine/commit/5f49a4f63a1bd24e24ef91e2d870b8af5585f943>`_:   Set names for the various parallel code
+
+`64da77c6 <https://github.com/HEPCloud/decisionengine/commit/64da77c6de71787386911e41b120627427c87fc8>`_:   Merge pull request #327 from jcpunk/datablock-expire
+
+`de33a60a <https://github.com/HEPCloud/decisionengine/commit/de33a60a19510d1cbfea47c01c19eea7aef78e1c>`_:   Merge pull request #336 from knoepfel/use-toposort
+
+`31a8a905 <https://github.com/HEPCloud/decisionengine/commit/31a8a9053a2067c6a14485bcaf96fb3724a42547>`_:   Merge pull request #328 from knoepfel/de-class-inference
+
+`410e383d <https://github.com/HEPCloud/decisionengine/commit/410e383de712bdd5fcd5a6cc6e04deca8ce923bb>`_:   Merge pull request #331 from jcpunk/reaper-interval-tests
+
+`719ff0c8 <https://github.com/HEPCloud/decisionengine/commit/719ff0c85a77376c19d7681bdf18c7abfc1f9c5d>`_:   Test datablock expire funtions
+
+`e14c49d8 <https://github.com/HEPCloud/decisionengine/commit/e14c49d80537b549fea884546378fc5917c1591b>`_:   The 'name' parameter is optional.
+
+`7846c9f3 <https://github.com/HEPCloud/decisionengine/commit/7846c9f3f9a0a83b0de168b30569138763691a21>`_:   Enable DE class inference based on configuration.
+
+`32ab7e44 <https://github.com/HEPCloud/decisionengine/commit/32ab7e44c4c748938d7837ac96d12bf7a92525fc>`_:   Use third-party topological sort.
+
+`01aa8ae6 <https://github.com/HEPCloud/decisionengine/commit/01aa8ae678f598f0b1b1941b63dcc6df66852304>`_:   Merge pull request #325 from jcpunk/channel-tests
+
+`52b48479 <https://github.com/HEPCloud/decisionengine/commit/52b48479094c37acc5422301cc0ebce721db65bc>`_:   Merge pull request #326 from jcpunk/valid-config-tests
+
+`8c4749e7 <https://github.com/HEPCloud/decisionengine/commit/8c4749e7d61727b820fee8b86ca572b4fe68585f>`_:   Merge pull request #330 from jcpunk/pylint-actions
+
+`a37770c9 <https://github.com/HEPCloud/decisionengine/commit/a37770c9527932f81d754119524ffff6f8406c4d>`_:   Ensure validation testing is tested
+
+`d8ab5eb6 <https://github.com/HEPCloud/decisionengine/commit/d8ab5eb6fd0998167635923a391d94785ab6a53f>`_:   Add missing test to ensure the run interval is actually used
+
+`0cd9c42b <https://github.com/HEPCloud/decisionengine/commit/0cd9c42b708179a25cb4998466a39c86db66e069>`_:   Also run pylint for extra sanity checks
+
+`c5cf1fff <https://github.com/HEPCloud/decisionengine/commit/c5cf1fff9e5b191c4fd913d185805b5d3dbabecd>`_:   Ensure our errors error out
+
+`baf01700 <https://github.com/HEPCloud/decisionengine/commit/baf01700d8bb6cf4f8aca28e7fdd0726e3f617e0>`_:   Merge pull request #324 from jcpunk/cleanup-trivial-tests
+
+`2a0133aa <https://github.com/HEPCloud/decisionengine/commit/2a0133aadfba0fef2a70fcf43528bb60b7ed01bb>`_:   Try to cleanup trivial missing coverage
+
+`44e0ad6f <https://github.com/HEPCloud/decisionengine/commit/44e0ad6f039dc2982f8e72cd56bcf0caf6737e5c>`_:   Merge pull request #323 from jcpunk/about-coverage
+
+`d811f617 <https://github.com/HEPCloud/decisionengine/commit/d811f6174ecd77e40e84fac8b5eabe1d24aaa69d>`_:   Merge pull request #322 from knoepfel/fix-fail-on-error
+
+`cb426262 <https://github.com/HEPCloud/decisionengine/commit/cb42626213ffed843eae5916c2b1fd535d9883f1>`_:   Merge pull request #312 from jcpunk/finish-setuptools
+
+`8f6d407d <https://github.com/HEPCloud/decisionengine/commit/8f6d407de53f95602a3dce29603d23ab0ea4390c>`_:   Merge pull request #316 from jcpunk/abc-coverage
+
+`4d0676bb <https://github.com/HEPCloud/decisionengine/commit/4d0676bbe82d9b3adf89b0b660734755b5f14168>`_:   Merge pull request #317 from vitodb/pylint
+
+`d7c43b96 <https://github.com/HEPCloud/decisionengine/commit/d7c43b961dbc4f092fdd39a73277be5d73dc9c2c>`_:   Use regular expression to support fail_on_error feature.
+
+`ada66925 <https://github.com/HEPCloud/decisionengine/commit/ada6692533280d4171804ae2cc26f5337d721f0f>`_:   add support to run pylint tests
+
+`efb1e57b <https://github.com/HEPCloud/decisionengine/commit/efb1e57bfdb7c03420440d34ad679eb5da618bc4>`_:   Finish migration to pure setuptools
+
+`bc4720cf <https://github.com/HEPCloud/decisionengine/commit/bc4720cf0e65f1df2b73958cbd64c5dabf84764c>`_:   We aren't testing 'unversioned" releases
+
+`e4dc35e3 <https://github.com/HEPCloud/decisionengine/commit/e4dc35e36f75b14c71e0626afc7e1376adbac3df>`_:   Merge pull request #314 from jcpunk/jsonnet_syntax
+
+`87e32c22 <https://github.com/HEPCloud/decisionengine/commit/87e32c228376bbe5a3cf513ac2890b2a8b7b793b>`_:   Merge pull request #294 from jcpunk/move-reaper
+
+`dec85d5e <https://github.com/HEPCloud/decisionengine/commit/dec85d5ebb7cf9b8fb19c73ac5a68e9855503dba>`_:   Merge pull request #319 from jcpunk/task-loop
+
+`4108472a <https://github.com/HEPCloud/decisionengine/commit/4108472afc04def8c35f7aaa569fd76568cf162f>`_:   Merge pull request #320 from jcpunk/container-swig
+
+`920af1c9 <https://github.com/HEPCloud/decisionengine/commit/920af1c985f84896d92a1f5fe28ee8072d654247>`_:   Merge pull request #321 from knoepfel/include-init-files
+
+`650dffa7 <https://github.com/HEPCloud/decisionengine/commit/650dffa70ea4bcca0022adb79823d53d81849d70>`_:   Don't forget __init__.py files.
+
+`1b412e03 <https://github.com/HEPCloud/decisionengine/commit/1b412e03067216451d0552f434277d6069300ae3>`_:   The latest m2crypto seems to need swig now
+
+`a6e3ab1c <https://github.com/HEPCloud/decisionengine/commit/a6e3ab1c283e5ec596cde771db9fd3fc6d97125d>`_:   Merge pull request #313 from jcpunk/conf-test
+
+`1205636a <https://github.com/HEPCloud/decisionengine/commit/1205636a69763ef71d1baa273c92d0dbc51e46db>`_:   Simplify run loop
+
+`30e59dc9 <https://github.com/HEPCloud/decisionengine/commit/30e59dc967285d13221dfee7b807f446f9fbfac2>`_:   fix test_client_with_no_server_verbose unit test for Jenkins CI (#315)
+
+`10384a8c <https://github.com/HEPCloud/decisionengine/commit/10384a8cf3167bbadc0bfea08291c9eeb20cb01c>`_:   Move reaper into its own place and reuse state logic
+
+`940584e4 <https://github.com/HEPCloud/decisionengine/commit/940584e446d9841e006b87dc5a0446cc52e664d8>`_:   No real way to test abstract base classes
+
+`250c14b1 <https://github.com/HEPCloud/decisionengine/commit/250c14b151ba273417c09306556e591e9981d768>`_:   The `_validate` function doesn't permit missing 'PRODUCES'
+
+`5ae1ce9f <https://github.com/HEPCloud/decisionengine/commit/5ae1ce9fc748a146777dd8f5bd63a96a7bc09fac>`_:   Make sure syntax error in config names the problem
+
+`b899fa23 <https://github.com/HEPCloud/decisionengine/commit/b899fa237d20f949f1adf147fa7d6da55381b4b2>`_:   Add SourceProxy module test. (#307)
+
+`7b3df14c <https://github.com/HEPCloud/decisionengine/commit/7b3df14c7a26c9d3ba2b0e56ac4598ed8d3c4d80>`_:   Increae coverage of utils (#304)
+
+`ddba2a31 <https://github.com/HEPCloud/decisionengine/commit/ddba2a312884208b80682c7ecf3162234cf434e7>`_:   Fix duplicate entry warning (#311)
+
+`915673fa <https://github.com/HEPCloud/decisionengine/commit/915673fac5b37ccce0804fb2c2df969a92726f6b>`_:   Test modules minimally (#298)
+
+`bc0c21a9 <https://github.com/HEPCloud/decisionengine/commit/bc0c21a924e097bfda51769228c787f69ae474e6>`_:   Some repos may error out, don't let them kill the build (#297)
+
+`924a7047 <https://github.com/HEPCloud/decisionengine/commit/924a7047a31d2fe69de04f5c97ef89eefc600fa3>`_:   doc: add 1.6.1 release notes
+
+`b1ab4d31 <https://github.com/HEPCloud/decisionengine/commit/b1ab4d31d3b935929b39c553dd71135732bb9922>`_:   doc: fix typo
+
+`85e5d714 <https://github.com/HEPCloud/decisionengine/commit/85e5d71454c018c84e30a81edd256f24c23e9fd9>`_:   postgresql: do not print stack trace for low level library (#309)
+
+`255c6415 <https://github.com/HEPCloud/decisionengine/commit/255c641505fce253ac3c854cbda3287e15e0524b>`_:   Setuptools uses entry return value as an error msg (#303)
+
+`2fd8db45 <https://github.com/HEPCloud/decisionengine/commit/2fd8db454e1329b72eac292df9176c2a4c820261>`_:   Fix name to match expectations (#305)
+
+`9cddb70a <https://github.com/HEPCloud/decisionengine/commit/9cddb70a5a6d74553868b8940139db00d59f2429>`_:   updated release notes
+
+`7fe0358e <https://github.com/HEPCloud/decisionengine/commit/7fe0358eedae19e2bb0d33a5fa6a908a17424e28>`_:   Error in more clean methods (#300)
+
+`84aa506c <https://github.com/HEPCloud/decisionengine/commit/84aa506cfa8d3838a30039eb7d47b62f64d23db9>`_:   Fix a bug in setup.py parsing of requirements. (#301)
+
+`a58b61bb <https://github.com/HEPCloud/decisionengine/commit/a58b61bb421e41404532e9182ab3f28da8a77837>`_:   fix typo in release notes
+
+
