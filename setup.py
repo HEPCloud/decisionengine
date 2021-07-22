@@ -94,6 +94,7 @@ setup(
             "de-reaper=decisionengine.framework.util.reaper:main",
             "decisionengine=decisionengine.framework.engine.DecisionEngine:main",  # noqa: E501
             "de-client=decisionengine.framework.engine.de_client:console_scripts_main",  # noqa: E501
+            "de-query-tool=decisionengine.framework.engine.de_query_tool:console_scripts_main",  # noqa: E501
         ],
     },
     options={
