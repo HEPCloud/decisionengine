@@ -78,5 +78,17 @@ def main(args_to_parse=None):
         return msg
 
 
+def console_scripts_main(args_to_parse=None):
+    """
+    This is the entry point for the setuptools auto generated scripts.
+    Setuptools thinks a return from this function is an error message.
+    """
+    msg = main(args_to_parse)
+    if "An error occurred while trying to access a DE server" in msg:
+        return msg
+    else:
+        print(msg)
+
+
 if __name__ == "__main__":
-    print(main())
+    console_scripts_main()
