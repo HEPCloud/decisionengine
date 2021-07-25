@@ -442,6 +442,7 @@ class Postgresql(ds.DataSource):
         db, cursor = None, None
         try:
             db = self.get_connection()
+            db.begin()
             if cursor_factory:
                 cursor = db.cursor(cursor_factory=cursor_factory)
             else:
@@ -466,7 +467,8 @@ class Postgresql(ds.DataSource):
     def _update(self, query_string, values=None):
         db, cursor = None, None
         try:
-            db = self.connection_pool.connection()
+            db = self.get_connection()
+            db.begin()
             cursor = db.cursor()
             if values:
                 cursor.execute(query_string, values)
@@ -486,7 +488,8 @@ class Postgresql(ds.DataSource):
     def _update_returning_result(self, query_string, values=None):
         db, cursor = None, None
         try:
-            db = self.connection_pool.connection()
+            db = self.get_connection()
+            db.begin()
             cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
             query_string += " RETURNING *"
             if values:
