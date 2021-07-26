@@ -55,6 +55,7 @@ def _create_module_instance(config_dict, base_class):
     """
     Create instance of dynamically loaded module
     """
+    delogger.info(f'loading {config_dict["module"]} via importlib')
     my_module = importlib.import_module(config_dict["module"])
     class_name = config_dict.get("name")
     if class_name is None:

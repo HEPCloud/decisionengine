@@ -12,6 +12,10 @@ __all__ = [
 from decisionengine.framework.modules.de_logger import LOGGERNAME
 from decisionengine.framework.util.singleton import ScopedSingleton
 
+
+delogger = structlog.getLogger(LOGGERNAME)
+delogger = delogger.bind(module=__name__.split(".")[-1])
+
 class DataSpaceConfigurationError(Exception):
     """
     Errors related to database access
@@ -48,6 +52,7 @@ class DataSourceLoader(metaclass=ScopedSingleton):
     def create_datasource(module_name, class_name, config):
         ds = DataSourceLoader._ds
         if not ds:
+            delogger.info(f'loading {module_name} via importlib')
             py_module = importlib.import_module(module_name)
             clazz = getattr(py_module, class_name)
             ds = clazz(config)
