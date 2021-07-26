@@ -404,7 +404,7 @@ def test_update(dataspace):  # noqa: F811
 
 @pytest.mark.usefixtures("dataspace")
 def test_update_bad(dataspace):  # noqa: F811
-    """Do updates fail to work as expected"""
+    """Do updates fail to work on a bogus taskmanager"""
     metadata_row = dataspace.get_metadata(
         taskmanager_id=1,
         generation_id=1,
@@ -415,7 +415,7 @@ def test_update_bad(dataspace):  # noqa: F811
         generation_id=1,
         key="my_test_key",
     )
-    with pytest.raises((KeyError, NoResultFound)):
+    with pytest.raises(Exception):
         dataspace.update(
             taskmanager_id=100,
             generation_id=1,

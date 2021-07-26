@@ -250,13 +250,23 @@ class SQLAlchemyDS(ds.DataSource):
         """
         # fetch the records
         with self.session() as session:
-            my_dataproduct = (
-                session.query(db_schema.Dataproduct)
-                .filter(db_schema.Dataproduct.taskmanager_id == taskmanager_id)
-                .filter(db_schema.Dataproduct.generation_id == generation_id)
-                .filter(db_schema.Dataproduct.key == key)
-                .one()
-            )
+            try:
+                my_dataproduct = (
+                    session.query(db_schema.Dataproduct)
+                    .filter(db_schema.Dataproduct.taskmanager_id == taskmanager_id)
+                    .filter(db_schema.Dataproduct.generation_id == generation_id)
+                    .filter(db_schema.Dataproduct.key == key)
+                    .one()
+                )
+            except NoResultFound:
+                # element generated during decision cycle
+                my_dataproduct = db_schema.Dataproduct(
+                    taskmanager_id=taskmanager_id,
+                    generation_id=generation_id,
+                    key=key,
+                    value=value,
+                )
+
             my_header = (
                 session.query(db_schema.Header)
                 .filter(db_schema.Header.taskmanager_id == taskmanager_id)
@@ -264,6 +274,7 @@ class SQLAlchemyDS(ds.DataSource):
                 .filter(db_schema.Header.key == key)
                 .one()
             )
+
             my_metadata = (
                 session.query(db_schema.Metadata)
                 .filter(db_schema.Metadata.taskmanager_id == taskmanager_id)

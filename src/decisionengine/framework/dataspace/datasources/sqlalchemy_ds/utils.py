@@ -43,8 +43,13 @@ def add_engine_pidguard(engine):
     def connect(dbapi_connection, connection_record):
         """
         Based on
+        https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#foreign-key-support
         https://docs.sqlalchemy.org/en/14/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork
         """
+        if 'sqlite' in str(type(dbapi_connection)):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
         connection_record.info["pid"] = os.getpid()
 
     @sqlalchemy.event.listens_for(engine, "checkout")

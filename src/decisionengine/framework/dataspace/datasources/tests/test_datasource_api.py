@@ -408,7 +408,7 @@ def test_update(datasource):  # noqa: F811
 
 @pytest.mark.usefixtures("datasource")
 def test_update_bad(datasource):  # noqa: F811
-    """Do updates fail to work as expected"""
+    """Do updates fail to work on a bogus taskmanager"""
     metadata_row = datasource.get_metadata(
         taskmanager_id=1,
         generation_id=1,
@@ -419,7 +419,8 @@ def test_update_bad(datasource):  # noqa: F811
         generation_id=1,
         key="my_test_key",
     )
-    with pytest.raises((KeyError, NoResultFound)):
+
+    with pytest.raises(Exception):
         datasource.update(
             taskmanager_id=100,
             generation_id=1,

@@ -252,24 +252,29 @@ class Postgresql(ds.DataSource):
 
     def update(self, taskmanager_id, generation_id, key,
                value, header, metadata):
-        for table in (ds.DataSource.header_table, ds.DataSource.metadata_table,
-                      ds.DataSource.dataproduct_table):
-            q = SELECT_QUERY.format(table)
-            try:
-                self._select(q, (taskmanager_id, generation_id, key))[0]
-            except IndexError:
-                # do not log stack trace, Exception thrown is handled by the caller
-                raise KeyError("taskmanager_id={} or generation_id={} or key={} not found in {}".format(
-                    taskmanager_id, generation_id, key, table))
 
+        # dataproduct
+        sel_q = SELECT_QUERY.format(ds.DataSource.dataproduct_table)
         q = """
             UPDATE {} SET value=%s
                       WHERE taskmanager_id=%s AND generation_id=%s AND key=%s
             """.format(ds.DataSource.dataproduct_table)
 
-        self._update(q, (psycopg2.Binary(value),
-                         taskmanager_id, generation_id, key))
+        try:
+            self._select(sel_q, (taskmanager_id, generation_id, key))[0]
+            self._update(q, (psycopg2.Binary(value),
+                             taskmanager_id, generation_id, key))
+        except IndexError:
+            self.logger.debug('loading missing dataproduct into DB during update')
+            self._insert(ds.DataSource.dataproduct_table,
+                         {'taskmanager_id': taskmanager_id,
+                          'generation_id': generation_id,
+                          'key': key,
+                          'value': psycopg2.Binary(value)
+                          })
 
+        # header
+        sel_q = SELECT_QUERY.format(ds.DataSource.header_table)
         q = """
         UPDATE {} SET create_time=%s,
                       expiration_time=%s,
@@ -278,18 +283,24 @@ class Postgresql(ds.DataSource):
                       schema_id=%s
                   WHERE taskmanager_id=%s AND generation_id=%s AND key=%s
             """.format(ds.DataSource.header_table)
+
+        self._select(sel_q, (taskmanager_id, generation_id, key))[0]
         self._update(q, (header.get('create_time'),
                          header.get('expiration_time'),
                          header.get('scheduled_create_time'),
                          header.get('creator'), header.get('schema_id'),
                          taskmanager_id, generation_id, key))
 
+        # metadata
+        sel_q = SELECT_QUERY.format(ds.DataSource.metadata_table)
         q = """
              UPDATE {} SET state=%s,
                            generation_time=%s,
                            missed_update_count=%s
                         WHERE taskmanager_id=%s AND generation_id=%s AND key=%s
             """.format(ds.DataSource.metadata_table)
+
+        self._select(sel_q, (taskmanager_id, generation_id, key))[0]
         self._update(q, (metadata.get('state'), metadata.get('generation_time'),
                          metadata.get('missed_update_count'),
                          taskmanager_id, generation_id, key))

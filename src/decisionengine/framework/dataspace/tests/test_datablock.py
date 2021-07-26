@@ -61,6 +61,12 @@ def test_DataBlock_to_str(dataspace):  # noqa: F811
 def test_DataBlock_key_management(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])
+    metadata = datablock.Metadata(
+        my_tm["taskmanager_id"],
+        generation_id=dataspace.get_last_generation_id(
+            my_tm["name"], my_tm["taskmanager_id"]
+        ),
+    )
     dblock = datablock.DataBlock(dataspace, my_tm["name"], my_tm["taskmanager_id"])
 
     dblock.put("example_test_key", "example_test_value", header)
@@ -81,7 +87,7 @@ def test_DataBlock_key_management(dataspace):  # noqa: F811
     # FIXME: The following behavior should be disallowed for data-integrity reasons!
     #        i.e. replacing a product name with a different value.
     newDict = {"subKey": "newValue"}
-    dblock.put("example_test_key", newDict, header)
+    dblock.put("example_test_key", newDict, header, metadata)
     assert dblock["example_test_key"] == newDict
 
 

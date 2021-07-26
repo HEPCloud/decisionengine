@@ -345,7 +345,7 @@ class DataBlock:
             # This has been already inserted, so you are working on a copy
             # that was backed up. You need to update and adjust the update
             # counter
-            self._update(key, store_value, header, metadata=metadata)
+            self._update(key, store_value, header, metadata)
         else:
             self._insert(key, store_value, header, metadata)
 
