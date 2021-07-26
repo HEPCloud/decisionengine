@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.tests.test_datablock &mdash; decisionengine 1.6.99.post4.post5+gb6c99021 documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_datablock &mdash; decisionengine 1.6.99.post4.post6+g5f102095 documentation</title>
   
 
   
@@ -227,8 +227,15 @@
 <span class="k">def</span> <span class="nf">test_DataBlock_key_management</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
     <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
+        <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span>
+        <span class="n">generation_id</span><span class="o">=</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span>
+            <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
     <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
 
+    <span class="c1"># test with automatic metadata and string value</span>
     <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="s2">&quot;example_test_key&quot;</span> <span class="ow">in</span> <span class="n">dblock</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -244,10 +251,24 @@
         <span class="o">==</span> <span class="s2">&quot;Product retriever for {&#39;name&#39;: &#39;example_test_key&#39;, &#39;type&#39;: None, &#39;creator&#39;: None}&quot;</span>
     <span class="p">)</span>
 
-    <span class="c1"># FIXME: The following behavior should be disallowed for data-integrity reasons!</span>
-    <span class="c1">#        i.e. replacing a product name with a different value.</span>
+    <span class="c1"># test new key with manual metadata and dict value</span>
     <span class="n">newDict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;subKey&quot;</span><span class="p">:</span> <span class="s2">&quot;newValue&quot;</span><span class="p">}</span>
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="n">newDict</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;new_example_test_key&quot;</span><span class="p">,</span> <span class="n">newDict</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">dblock</span><span class="p">[</span><span class="s2">&quot;new_example_test_key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">newDict</span></div>
+
+
+<div class="viewcode-block" id="test_DataBlock_key_management_change_name"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_key_management_change_name">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_DataBlock_key_management_change_name</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
+    <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+
+    <span class="c1"># FIXME: The following behavior should be disallowed for data-integrity reasons!</span>
+    <span class="c1">#        i.e. replacing a product name from datablock.ProductRetriever with a</span>
+    <span class="c1">#             different value.</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="n">newDict</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">dblock</span><span class="p">[</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">newDict</span></div>
 
 
