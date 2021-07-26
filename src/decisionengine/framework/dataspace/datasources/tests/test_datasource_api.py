@@ -462,6 +462,13 @@ def test_delete_data_older_than_arg(datasource):  # noqa: F811
     with pytest.raises((KeyError, NoResultFound)):
         datasource.get_taskmanager(taskmanager_name="taskmanager1")
 
+@pytest.mark.usefixtures("datasource")
+def test_get_datablock(datasource):  # noqa: F811
+    tm = datasource.get_taskmanager(taskmanager_name="taskmanager1")
+    gen_id = datasource.get_last_generation_id(taskmanager_name="taskmanager1")
+    result1 = datasource.get_datablock(tm["sequence_id"], gen_id)
+
+    assert result1 == {'my_test_key': b'my_test_value', 'a_test_key': b'a_test_value'}
 
 @pytest.mark.usefixtures("datasource")
 def test_duplicate_datablock(datasource):  # noqa: F811

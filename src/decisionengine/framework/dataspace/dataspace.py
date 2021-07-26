@@ -122,6 +122,9 @@ class DataSpace():
             self.logger.exception("Error in dataspace update!")
             raise
 
+    def get_datablock(self, taskmanager_id, generation_id):
+        return self.datasource.get_datablock(taskmanager_id, generation_id)
+
     def get_dataproduct(self, taskmanager_id, generation_id, key):
         return self.datasource.get_dataproduct(taskmanager_id, generation_id, key)
 

@@ -340,7 +340,13 @@ class Postgresql(ds.DataSource):
                 taskmanager_id, generation_id, key))
 
     def get_datablock(self, taskmanager_id, generation_id):
-        return {}
+        q = f"""SELECT key, value FROM {ds.DataSource.dataproduct_table} dp, taskmanager tm
+                WHERE tm.sequence_id = dp.taskmanager_id AND dp.taskmanager_id=%s AND dp.generation_id=%s"""
+        rows = self._select_dictresult(q, (taskmanager_id, generation_id))
+        result = {}
+        for row in rows:
+            result[row['key']] = row['value'].tobytes()
+        return result
 
     def duplicate_datablock(self, taskmanager_id, generation_id,
                             new_generation_id):
