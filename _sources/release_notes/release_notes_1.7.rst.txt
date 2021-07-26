@@ -20,7 +20,7 @@ Issues fixed in this release
 - `406 <https://github.com/HEPCloud/decisionengine/issues/406>`_: Taskmanager doesn't use/honor global log level
 - `379 <https://github.com/HEPCloud/decisionengine/issues/379>`_: Add postgresql.sql to distributed decisionengine rpm
 - `329 <https://github.com/HEPCloud/decisionengine/issues/329>`_: Docker container is missing pylint
-- `293 <https://github.com/HEPCloud/decisionengine/issues/293>`_: Drop requirements.txt setup mode 
+- `293 <https://github.com/HEPCloud/decisionengine/issues/293>`_: Drop requirements.txt setup mode
 - `285 <https://github.com/HEPCloud/decisionengine/issues/285>`_: Unify ProcessingState with Reaper state management code
 - `253 <https://github.com/HEPCloud/decisionengine/issues/253>`_ : Decision engine can sometimes start up at boot time before network name resolution is working (`ae04db5 <https://github.com/HEPCloud/decisionengine/commit/ae04db544599c6777d63cb315ddac169e586809d>`_)
 
@@ -367,5 +367,3 @@ Full list of commits since version 1.6.0
 `84aa506c <https://github.com/HEPCloud/decisionengine/commit/84aa506cfa8d3838a30039eb7d47b62f64d23db9>`_:   Fix a bug in setup.py parsing of requirements. (#301)
 
 `a58b61bb <https://github.com/HEPCloud/decisionengine/commit/a58b61bb421e41404532e9182ab3f28da8a77837>`_:   fix typo in release notes
-
-
