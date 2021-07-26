@@ -61,8 +61,15 @@ def test_DataBlock_to_str(dataspace):  # noqa: F811
 def test_DataBlock_key_management(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])
+    metadata = datablock.Metadata(
+        my_tm["taskmanager_id"],
+        generation_id=dataspace.get_last_generation_id(
+            my_tm["name"], my_tm["taskmanager_id"]
+        ),
+    )
     dblock = datablock.DataBlock(dataspace, my_tm["name"], my_tm["taskmanager_id"])
 
+    # test with automatic metadata and string value
     dblock.put("example_test_key", "example_test_value", header)
 
     assert "example_test_key" in dblock.keys()
@@ -78,10 +85,24 @@ def test_DataBlock_key_management(dataspace):  # noqa: F811
         == "Product retriever for {'name': 'example_test_key', 'type': None, 'creator': None}"
     )
 
-    # FIXME: The following behavior should be disallowed for data-integrity reasons!
-    #        i.e. replacing a product name with a different value.
+    # test new key with manual metadata and dict value
     newDict = {"subKey": "newValue"}
-    dblock.put("example_test_key", newDict, header)
+    dblock.put("new_example_test_key", newDict, header, metadata)
+    assert dblock["new_example_test_key"] == newDict
+
+
+@pytest.mark.usefixtures("dataspace")
+def test_DataBlock_key_management_change_name(dataspace):  # noqa: F811
+    my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
+    header = datablock.Header(my_tm["taskmanager_id"])
+    dblock = datablock.DataBlock(dataspace, my_tm["name"], my_tm["taskmanager_id"])
+
+    dblock.put("example_test_key", "example_test_value", header)
+
+    # FIXME: The following behavior should be disallowed for data-integrity reasons!
+    #        i.e. replacing a product name from datablock.ProductRetriever with a
+    #             different value.
+    dblock.put("example_test_key", newDict, header, metadata)
     assert dblock["example_test_key"] == newDict
 
 

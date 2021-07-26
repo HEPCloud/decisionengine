@@ -284,7 +284,7 @@ class DataBlock:
         :type header: :obj:`Header`
         :type metadata: :obj:`Metadata`
         """
-        self._setitem(key, value, header, metadata=metadata)
+        self._setitem(key, value, header, metadata)
 
     def get(self, key, default=None):
         """
@@ -345,7 +345,7 @@ class DataBlock:
             # This has been already inserted, so you are working on a copy
             # that was backed up. You need to update and adjust the update
             # counter
-            self._update(key, store_value, header, metadata=metadata)
+            self._update(key, store_value, header, metadata)
         else:
             self._insert(key, store_value, header, metadata)
 
