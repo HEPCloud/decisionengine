@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.tests.test_dataspace &mdash; decisionengine 1.6.99.post4.post4+g6b76ba7c documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_dataspace &mdash; decisionengine 1.6.99.post4.post5+gb6c99021 documentation</title>
   
 
   
@@ -570,7 +570,7 @@
 
 <div class="viewcode-block" id="test_update_bad"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_dataspace.test_update_bad">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_update_bad</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
-    <span class="sd">&quot;&quot;&quot;Do updates fail to work as expected&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Do updates fail to work on bogus taskmanager as expected&quot;&quot;&quot;</span>
     <span class="n">metadata_row</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span>
         <span class="n">taskmanager_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">generation_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -581,7 +581,7 @@
         <span class="n">generation_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">key</span><span class="o">=</span><span class="s2">&quot;my_test_key&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">)):</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
         <span class="n">dataspace</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="n">taskmanager_id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
             <span class="n">generation_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.utils &mdash; decisionengine 1.6.99.post4.post4+g6b76ba7c documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.utils &mdash; decisionengine 1.6.99.post4.post5+gb6c99021 documentation</title>
   
 
   
@@ -209,8 +209,13 @@
     <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="n">dbapi_connection</span><span class="p">,</span> <span class="n">connection_record</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Based on</span>
+<span class="sd">        https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#foreign-key-support</span>
 <span class="sd">        https://docs.sqlalchemy.org/en/14/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;sqlite&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dbapi_connection</span><span class="p">)):</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbapi_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;PRAGMA foreign_keys=ON&quot;</span><span class="p">)</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">connection_record</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
 
     <span class="nd">@sqlalchemy</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">listens_for</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="s2">&quot;checkout&quot;</span><span class="p">)</span>
