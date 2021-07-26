@@ -311,6 +311,17 @@ def test_get_dataproduct(dataspace):  # noqa: F811
 
 
 @pytest.mark.usefixtures("dataspace")
+def test_get_datablock(dataspace):  # noqa: F811
+    """Can we get the datablock content"""
+    result2 = dataspace.get_datablock(
+        taskmanager_id=2,
+        generation_id=2,
+    )
+
+    assert result2 == {'other_test_key': b'other_test_value'}
+
+
+@pytest.mark.usefixtures("dataspace")
 def test_get_dataproduct_not_exist(dataspace):  # noqa: F811
     """Does it error out if we ask for bogus information?"""
     with pytest.raises((KeyError, NoResultFound)):
