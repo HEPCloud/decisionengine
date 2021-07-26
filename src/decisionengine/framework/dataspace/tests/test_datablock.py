@@ -102,7 +102,8 @@ def test_DataBlock_key_management_change_name(dataspace):  # noqa: F811
     # FIXME: The following behavior should be disallowed for data-integrity reasons!
     #        i.e. replacing a product name from datablock.ProductRetriever with a
     #             different value.
-    dblock.put("example_test_key", newDict, header, metadata)
+    newDict = {"subKey": "newValue"}
+    dblock.put("example_test_key", newDict, header)
     assert dblock["example_test_key"] == newDict
 
 
