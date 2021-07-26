@@ -368,7 +368,7 @@ class TaskManager:
                 self.logger.info(f"Src {src.name} calling acquire")
                 data = src.worker.acquire()
                 Module.verify_products(src.worker, data)
-                self.logger.info(f"Src {src.name} acquire retuned")
+                self.logger.info(f"Src {src.name} acquire returned")
                 self.logger.info(f"Src {src.name} filling header")
                 if data:
                     t = time.time()
@@ -377,7 +377,7 @@ class TaskManager:
                     self.data_block_put(data, header, self.data_block_t0)
                     self.logger.info(f"Src {src.name} data block put done")
                 else:
-                    self.logger.warning(f"Src {src.name} acquire retuned no data")
+                    self.logger.warning(f"Src {src.name} acquire returned no data")
                 src.data_updated.set()
                 self.logger.info(f"Src {src.name} {src.module} finished cycle")
             except Exception:
