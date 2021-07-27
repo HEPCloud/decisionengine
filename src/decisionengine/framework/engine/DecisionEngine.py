@@ -30,21 +30,6 @@ import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
-# from decisionengine.framework.util.prometheus import get_registry
-
-# from flask import Flask, Response
-import cherrypy
-from prometheus_client import multiprocess, REGISTRY
-from prometheus_client import CollectorRegistry, generate_latest, CONTENT_TYPE_LATEST
-
-# app = Flask(__name__)
-
-# @app.route('/metrics')
-# def metrics2():
-#     registry = CollectorRegistry()
-#     multiprocess.MultiProcessCollector(registry)
-#     data = generate_latest(registry=registry)
-#     return data.decode()
 
 
 class StopState(enum.Enum):
@@ -69,8 +54,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         xmlrpc.server.SimpleXMLRPCServer.__init__(
             self,
             server_address,
-            # logRequests=False,
-            logRequests=True,
+            logRequests=False,
             requestHandler=RequestHandler)
 
         signal.signal(signal.SIGHUP, self.handle_sighup)
@@ -83,36 +67,6 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.logger = structlog.getLogger(LOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1])
         self.logger.info(f"DecisionEngine started on {server_address}")
-        os.environ['prometheus_multiproc_dir'] = "/tmp/prometheus_metrics"
-        self.register_function(self.rpc_metrics, name='metrics')
-        self.start_metrics_server()  # Make this dependent on flag
-
-    def start_metrics_server(self):
-        cherrypy.config.update({
-            'server.socket_port': 8000,
-            'server.socket_host': '0.0.0.0'
-        })
-        cherrypy.tree.mount(self)
-        cherrypy.engine.start()
-
-    @cherrypy.expose
-    def metrics(self):
-        return self.rpc_metrics()
-
-    def rpc_metrics(self):
-        try:
-            print('Called rpc_metrics')
-            self.logger.info(
-                f'prometheus_multiproc_dir is set to {os.environ.get("prometheus_multiproc_dir")}'
-            )
-            registry = CollectorRegistry()
-            multiprocess.MultiProcessCollector(registry)
-            data = generate_latest(registry=registry)
-            self.logger.info(data)
-            return data.decode()
-        except Exception as e:
-            self.logger.error(e)
-        # return Response(data, mimetype=CONTENT_TYPE_LATEST)
 
     def get_logger(self):
         return self.logger
@@ -212,7 +166,8 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             for ch, worker in workers.items():
                 if not worker.is_alive():
                     txt += f"Channel {ch} is in not active\n"
-                    self.logger.debug(f"Channel:{ch} is in not active when running rpc_print_product")
+                    self.logger.debug(
+                        f"Channel:{ch} is in not active when running rpc_print_product")
                     continue
 
                 produces = worker.get_produces()
@@ -221,9 +176,11 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                     continue
                 found = True
                 txt += " Found in channel {}\n".format(ch)
-                self.logger.debug(f"Found channel:{ch} active when running rpc_print_product")
+                self.logger.debug(
+                    f"Found channel:{ch} active when running rpc_print_product")
                 tm = self.dataspace.get_taskmanager(ch)
-                self.logger.debug(f"rpc_print_product - channel:{ch} taskmanager:{tm}")
+                self.logger.debug(
+                    f"rpc_print_product - channel:{ch} taskmanager:{tm}")
                 try:
                     data_block = datablock.DataBlock(
                         self.dataspace,
@@ -233,7 +190,8 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                     data_block.generation_id -= 1
                     df = data_block[product]
                     dfj = df.to_json()
-                    self.logger.debug(f"rpc_print_product - channel:{ch} task manager:{tm} datablock:{dfj}")
+                    self.logger.debug(
+                        f"rpc_print_product - channel:{ch} task manager:{tm} datablock:{dfj}")
                     df = pd.read_json(dfj)
                     dataframe_formatter = self._dataframe_to_table
                     if format == 'vertical':
@@ -372,7 +330,8 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             self.logger.info("No channel configurations available in " +
                              f"{self.channel_config_loader.channel_config_dir}")
         else:
-            self.logger.debug(f"Found channels: {self.channel_config_loader.get_channels().items()}")
+            self.logger.debug(
+                f"Found channels: {self.channel_config_loader.get_channels().items()}")
 
         for name, config in self.channel_config_loader.get_channels().items():
             try:
@@ -587,15 +546,13 @@ def parse_program_options(args=None):
         type=int,
         choices=range(1, 65535),
         metavar="<port number>",
-        help=
-        "Default port number is 8888; allowed values are in the half-open interval [1, 65535)."
+        help="Default port number is 8888; allowed values are in the half-open interval [1, 65535)."
     )
     parser.add_argument(
         "--config",
         default=policies.GLOBAL_CONFIG_FILENAME,
         metavar="<filename>",
-        help=
-        "Configuration file for initializing server; default behavior is to choose "
+        help="Configuration file for initializing server; default behavior is to choose "
         +
         f"'{policies.GLOBAL_CONFIG_FILENAME}' located in the CONFIG_PATH directory."
     )

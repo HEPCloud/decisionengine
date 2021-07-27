@@ -23,40 +23,10 @@ from decisionengine.framework.taskmanager.ProcessingState import ProcessingState
 from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
 from decisionengine.framework.util.subclasses import all_subclasses
 from decisionengine.framework.modules.de_logger import LOGGERNAME
-from decisionengine.framework.util.metrics import *
 
 
 _TRANSFORMS_TO = 300  # 5 minutes
 _DEFAULT_SCHEDULE = 300  # ""
-
-# Metrics for monitoring TaskManager
-CHANNEL_STATE_GAUGE = Gauge('de_channel_state', 'Channel state', [
-    'channel_name',
-])
-
-SOURCE_ACQUIRE_GAUGE = Gauge('de_source_last_acquire', 'Last time a source '
-                             'successfully ran its acquire function', [
-                                 'channel_name',
-                                 'source_name',
-                             ])
-
-LOGICENGINE_RUN_GAUGE = Gauge('de_logicengine_last_run', 'Last time '
-                              'a logicengine successfully ran', [
-                                  'channel_name',
-                                  'logicengine_name',
-                              ])
-
-TRANSFORM_RUN_GAUGE = Gauge('de_transform_last_run', 'Last time a '
-                            'transform successfully ran', [
-                                'channel_name',
-                                'transform_name',
-                            ])
-
-PUBLISHER_RUN_GAUGE = Gauge('de_publisher_last_run', 'Last time '
-                            'a publisher successfully ran', [
-                                'channel_name',
-                                'publisher_name',
-                            ])
 
 delogger = structlog.getLogger(LOGGERNAME)
 delogger = delogger.bind(module=__name__.split(".")[-1])
@@ -260,8 +230,6 @@ class TaskManager:
                 if not self.state.should_stop():
                     # the last decision_cycle completed without error
                     self.state.set(State.STEADY)
-                    CHANNEL_STATE_GAUGE.labels(self.name).set_function(
-                        self.get_state_value)
                     self.wait_for_any(done_events)
             except Exception:  # pragma: no cover
                 self.logger.exception(
@@ -323,20 +291,15 @@ class TaskManager:
     def set_to_shutdown(self):
         self.state.set(State.SHUTTINGDOWN)
         delogger.debug("Shutting down. Will call shutdown on all publishers")
-        CHANNEL_STATE_GAUGE.labels(self.name).set_function(
-            self.get_state_value)
         for publisher_worker in self.channel.publishers.values():
             publisher_worker.worker.shutdown()
         self.state.set(State.SHUTDOWN)
-        CHANNEL_STATE_GAUGE.labels(self.name).set_function(
-            self.get_state_value)
 
     def take_offline(self, current_data_block):
         """
         offline and stop task manager
         """
         self.state.set(State.OFFLINE)
-        CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
         # invalidate data block
         # not implemented yet
 
@@ -425,8 +388,6 @@ class TaskManager:
                 Module.verify_products(src.worker, data)
                 self.logger.info(f"Src {src.name} acquire returned")
                 self.logger.info(f"Src {src.name} filling header")
-                SOURCE_ACQUIRE_GAUGE.labels(self.name,
-                                            src.name).set_to_current_time()
                 if data:
                     t = time.time()
                     header = datablock.Header(
@@ -470,7 +431,6 @@ class TaskManager:
         for key, source in self.channel.sources.items():
             self.logger.info(f"starting loop for {key}")
             event_list.append(source.data_updated)
-            SOURCE_ACQUIRE_GAUGE.labels(self.name, source.name)
             thread = threading.Thread(target=self.run_source,
                                       name=source.name,
                                       args=(source, ))
@@ -521,7 +481,6 @@ class TaskManager:
                                       creator=transform.name)
             self.data_block_put(data, header, data_block)
             self.logger.info("transform put data")
-            TRANSFORM_RUN_GAUGE.labels(self.name, transform.name).set(t)
         except Exception:  # pragma: no cover
             self.logger.exception(
                 f"exception from transform {transform.name} ")
@@ -548,9 +507,6 @@ class TaskManager:
                 le_list.append(rc)
                 self.logger.info("run logic engine %s done",
                                  self.channel.le_s[le].name)
-                LOGICENGINE_RUN_GAUGE.labels(
-                    self.name,
-                    self.channel.le_s[le].name).set_to_current_time()
                 self.logger.info(
                     "logic engine %s generated newfacts: %s",
                     self.channel.le_s[le].name,
@@ -601,8 +557,6 @@ class TaskManager:
 
                     try:
                         publisher.worker.publish(data_block)
-                        PUBLISHER_RUN_GAUGE.labels(self.name,
-                                                   name).set_to_current_time()
                     except KeyError as e:
                         if self.state.should_stop():
                             self.logger.warning(
