@@ -3,6 +3,7 @@ import datetime
 import gc
 import logging
 import os
+import platform
 import sys
 import threading
 from collections import UserDict
@@ -41,8 +42,9 @@ PG_DE_DB_WITHOUT_SCHEMA = factories.postgresql(
     dbname="decisionengine",
 )
 
-if sys.version_info.major == 3 and sys.version_info.minor > 6:
+if sys.version_info.major == 3 and sys.version_info.minor > 6 and platform.python_implementation() == 'CPython':
     # sqlite on EL7 is too old for efficient testing
+    # sqlite on pypy is unnecessary and really slow
     DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA", "SQLALCHEMY_PG_WITH_SCHEMA", "SQLALCHEMY_TEMPFILE_SQLITE")
 else:
     DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA", "SQLALCHEMY_PG_WITH_SCHEMA")
