@@ -57,6 +57,7 @@ def _create_module_instance(config_dict, base_class):
     """
     my_module = importlib.import_module(config_dict["module"])
     class_name = config_dict.get("name")
+    delogger.debug(f"in TaskManager, importlib has imported module {class_name}")
     if class_name is None:
         if base_class == LogicEngine:
             # Icky kludge until we remove explicit LogicEngine 'module' specification
