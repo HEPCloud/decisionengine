@@ -12,6 +12,11 @@ __all__ = [
 from decisionengine.framework.modules.de_logger import LOGGERNAME
 from decisionengine.framework.util.singleton import ScopedSingleton
 
+logger = structlog.getLogger(LOGGERNAME)
+logger = logger.bind(module=__name__.split(".")[-1])
+
+
+
 class DataSpaceConfigurationError(Exception):
     """
     Errors related to database access
@@ -49,6 +54,7 @@ class DataSourceLoader(metaclass=ScopedSingleton):
         ds = DataSourceLoader._ds
         if not ds:
             py_module = importlib.import_module(module_name)
+            logger.debug(f"in Dataspace, importlib has imported module {class_name}")
             clazz = getattr(py_module, class_name)
             ds = clazz(config)
         else:
@@ -70,16 +76,14 @@ class DataSpace():
         :arg config: Configuration dictionary
         """
 
-        self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
-        self.logger.debug('Initializing a dataspace')
+        logger.debug('Initializing a dataspace')
 
         # Validate configuration
         if not config.get('dataspace'):
-            self.logger.exception("Error in initializing DataSpace!")
+            logger.exception("Error in initializing DataSpace!")
             raise DataSpaceConfigurationError('Configuration is missing dataspace information: dataspace key not found.')
         elif not isinstance(config.get('dataspace'), dict):
-            self.logger.exception("Error in initializing DataSpace!")
+            logger.exception("Error in initializing DataSpace!")
             raise DataSpaceConfigurationError('Invalid dataspace configuration: '
                                               'dataspace key must correspond to a dictionary')
         try:
@@ -87,7 +91,7 @@ class DataSpace():
             self._db_driver_module = config['dataspace']['datasource']['module']
             self._db_driver_config = config['dataspace']['datasource']['config']
         except KeyError:
-            self.logger.exception("Error in initializing DataSpace!")
+            logger.exception("Error in initializing DataSpace!")
             raise DataSpaceConfigurationError('Invalid dataspace configuration')
 
         self.config = config
@@ -110,7 +114,7 @@ class DataSpace():
             self.datasource.insert(taskmanager_id, generation_id, key,
                                    value, header, metadata)
         except Exception:
-            self.logger.exception("Error in dataspace insert!")
+            logger.exception("Error in dataspace insert!")
             raise
 
     def update(self, taskmanager_id, generation_id, key,
@@ -119,7 +123,7 @@ class DataSpace():
             self.datasource.update(taskmanager_id, generation_id, key,
                                    value, header, metadata)
         except Exception:
-            self.logger.exception("Error in dataspace update!")
+            logger.exception("Error in dataspace update!")
             raise
 
     def get_dataproduct(self, taskmanager_id, generation_id, key):
