@@ -1,7 +1,7 @@
 """
 The table layout and utilities for our SQLAlchemy ORM
 """
-from sqlalchemy import Column, ForeignKey, Index, sql
+from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, sql
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from sqlalchemy.types import BigInteger, DateTime, Integer, LargeBinary, String, Text
 
@@ -83,6 +83,7 @@ class Taskmanager(Base):
             postgresql_using="brin",
             postgresql_with={"autosummarize": "ON", "pages_per_range": 1024},
         ),
+        UniqueConstraint('sequence_id', 'taskmanager_id', name="uq_taskmanager_squence_id_taskmanager_id"),
     )
 
     task_header = relationship("Header", back_populates="taskmanager", cascade="delete")
@@ -132,6 +133,7 @@ class Header(Base):
             postgresql_with={"fillfactor": 50},
         ),
         Index("ix_header_key", "key", postgresql_using="hash"),
+        UniqueConstraint('taskmanager_id', 'generation_id', 'key', name="uq_header_taskmanager_id_generation_id_key"),
     )
 
 
@@ -176,6 +178,7 @@ class Metadata(Base):
         ),
         Index("ix_metadata_key", "key", postgresql_using="hash"),
         Index("ix_metadata_state", "state", postgresql_using="hash"),
+        UniqueConstraint('taskmanager_id', 'generation_id', 'key', name="uq_metadata_taskmanager_id_generation_id_key"),
     )
 
 
@@ -210,4 +213,5 @@ class Dataproduct(Base):
             postgresql_with={"fillfactor": 70},
         ),
         Index("ix_dataproduct_key", "key", postgresql_using="hash"),
+        UniqueConstraint('taskmanager_id', 'generation_id', 'key', name="uq_dataproduct_taskmanager_id_generation_id_key"),
     )
