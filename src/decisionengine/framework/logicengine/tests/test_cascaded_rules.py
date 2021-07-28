@@ -10,8 +10,9 @@ def myengine():
     rules["r2"] = {"expression": "f2", "actions": ["a2"], "facts": ["f3"]}
     rules["r3"] = {"expression": "f3", "facts": ["f4"]}
     rules["r4"] = {"expression": "f4", "actions": ["a4"], "false_actions": ["fa4"]}
+    channelname = "testing"
 
-    yield LogicEngine({"facts": facts, "rules": rules})
+    yield LogicEngine({"facts": facts, "rules": rules}, channelname)
 
 def test_rule_that_fires(myengine):
     db = {"val": 20}

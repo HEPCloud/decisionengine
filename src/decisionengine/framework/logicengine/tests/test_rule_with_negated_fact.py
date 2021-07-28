@@ -8,7 +8,8 @@ def myengine():
     rules = {}
     rules["r1"] = {"expression": "not f1", "actions": ["a1"]}
     rules["r2"] = {"expression": "not (f1)", "actions": ["a2"]}
-    yield LogicEngine({"facts": facts, "rules": rules})
+    channelname = "test"
+    yield LogicEngine({"facts": facts, "rules": rules}, channelname)
 
 
 def test_rule_that_fires(myengine):

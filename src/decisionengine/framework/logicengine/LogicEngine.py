@@ -5,12 +5,11 @@ from itertools import chain
 from decisionengine.framework.logicengine.RuleEngine import RuleEngine
 from decisionengine.framework.logicengine.BooleanExpression import BooleanExpression
 from decisionengine.framework.modules.Module import Module
-from decisionengine.framework.modules.de_logger import LOGGERNAME
 
 class LogicEngine(Module):
-    def __init__(self, cfg):
+    def __init__(self, cfg, channel_name):
         super().__init__(cfg)
-        self.logger = structlog.getLogger(LOGGERNAME)
+        self.logger = structlog.getLogger(f"{channel_name}")
         self.logger = self.logger.bind(module=__name__.split(".")[-1])
         self.facts = {name: BooleanExpression(expr) for name, expr in cfg["facts"].items()}
         self.rule_engine = RuleEngine(cfg["facts"].keys(), cfg["rules"])
