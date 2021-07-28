@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Release 1.7.0 &mdash; decisionengine 1.6.99.post4.post7+g94c14110 documentation</title>
+  <title>Release 1.7.0 &mdash; decisionengine 1.6.99.post4.post8+gb13aa8a9 documentation</title>
   
 
   
@@ -171,12 +171,14 @@
 <ul class="simple">
 <li><p>New produces-consumes structure using decorators. This will improve the code quality, improving static checks and reducing the lines of code by removing repetitive boilerplates, especially in the modules.</p></li>
 <li><p>Added structured logging. Improved python logging and adoption of structured logs format that will increase the semantinc content of the messages and ease the export of information for dashboards and Elastic Search.</p></li>
-<li><p>Added SQLAlchemy object-relational mapper to increase the testability of DB interactions and to allow different database backends.</p></li>
-<li><p>Packaging via setuptools for both decisionengine and decisionengine_modules: RPM packages correctly install also all dependencies.</p></li>
+<li><p>Added SQLAlchemy object-relational mapper to increase the testability of DB interactions and to allow different database backends.
+Switching between datasource backends requires dropping all objects if you wish to reuse the tablespace.</p></li>
+<li><p>Packaging via setuptools for both decisionengine and decisionengine_modules: Dependencies are not yet fully listed in the RPMs.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Added requirement on SQLAlchemy (for test framework)</p>
+<p>Added requirement on SQLAlchemy (for new datasource backend).
+Non-SQLAlchemy users should ensure the indexes from <cite>13c2f283 &lt;https://github.com/HEPCloud/decisionengine/commit/13c2f28325d697701d9417fb2116364f018da535&gt;</cite> are in their database.</p>
 </div>
 <div class="section" id="issues-fixed-in-this-release">
 <h2>Issues fixed in this release<a class="headerlink" href="#issues-fixed-in-this-release" title="Permalink to this headline">¶</a></h2>

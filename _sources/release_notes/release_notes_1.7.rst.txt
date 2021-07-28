@@ -6,10 +6,13 @@ This release features:
 - New produces-consumes structure using decorators. This will improve the code quality, improving static checks and reducing the lines of code by removing repetitive boilerplates, especially in the modules.
 - Added structured logging. Improved python logging and adoption of structured logs format that will increase the semantinc content of the messages and ease the export of information for dashboards and Elastic Search.
 - Added SQLAlchemy object-relational mapper to increase the testability of DB interactions and to allow different database backends.
-- Packaging via setuptools for both decisionengine and decisionengine_modules: RPM packages correctly install also all dependencies.
+  Switching between datasource backends requires dropping all objects if you wish to reuse the tablespace.
+- Packaging via setuptools for both decisionengine and decisionengine_modules: Dependencies are not yet fully listed in the RPMs.
 
 .. note::
-    Added requirement on SQLAlchemy (for test framework)
+    Added requirement on SQLAlchemy (for new datasource backend).
+    Non-SQLAlchemy users should ensure the indexes from `13c2f283 <https://github.com/HEPCloud/decisionengine/commit/13c2f28325d697701d9417fb2116364f018da535>` are in their database.
+
 
 
 Issues fixed in this release
