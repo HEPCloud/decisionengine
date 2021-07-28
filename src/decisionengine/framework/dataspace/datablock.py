@@ -234,16 +234,16 @@ class DataBlock:
             'taskmanager_id': self.taskmanager_id,
             'generation_id': self.generation_id,
             'sequence_id': self.sequence_id,
-            'keys': self._keys,
+            'keys': self.keys(),
         }
         dp = {}
-        for key in self._keys:
+        for key in self.keys():
             dp[key] = self.get(key)
         value['dataproducts'] = dp
         return '%s' % value
 
     def __contains__(self, key):
-        return key in self._keys
+        return key in self.keys()
 
     def keys(self):
         return self._keys
@@ -341,7 +341,7 @@ class DataBlock:
         else:
             store_value = compress({'pickled': True, 'value': pickle.dumps(value,
                                                                            protocol=pickle.HIGHEST_PROTOCOL)})
-        if key in self._keys:
+        if key in self.keys():
             # This has been already inserted, so you are working on a copy
             # that was backed up. You need to update and adjust the update
             # counter
