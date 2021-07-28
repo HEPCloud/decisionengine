@@ -51,7 +51,7 @@ def _find_only_one_subclass(module, base_class):
     return subclasses[0]
 
 
-def _create_module_instance(config_dict, base_class):
+def _create_module_instance(config_dict, base_class, channel_name):
     """
     Create instance of dynamically loaded module
     """
@@ -66,7 +66,11 @@ def _create_module_instance(config_dict, base_class):
             class_name = _find_only_one_subclass(my_module, base_class)
 
     class_type = getattr(my_module, class_name)
-    return class_type(config_dict["parameters"])
+    #here we add the channel name to the LogicEngine class to get the correct logger
+    if class_name == "LogicEngine":
+        return class_type(config_dict["parameters"], channel_name)
+    else:
+        return class_type(config_dict["parameters"])
 
 
 class Worker:
@@ -75,12 +79,12 @@ class Worker:
     execution
     """
 
-    def __init__(self, conf_dict, base_class):
+    def __init__(self, conf_dict, base_class, channel_name):
         """
         :type conf_dict: :obj:`dict`
         :arg conf_dict: configuration dictionary describing the worker
         """
-        self.worker = _create_module_instance(conf_dict, base_class)
+        self.worker = _create_module_instance(conf_dict, base_class, channel_name)
         self.module = conf_dict["module"]
         self.name = self.worker.__class__.__name__
         self.schedule = conf_dict.get("schedule", _DEFAULT_SCHEDULE)
@@ -93,8 +97,8 @@ class Worker:
         )
 
 
-def _make_workers_for(configs, base_class):
-    return {name: Worker(e, base_class) for name, e in configs.items()}
+def _make_workers_for(configs, base_class, channel_name):
+    return {name: Worker(e, base_class, channel_name) for name, e in configs.items()}
 
 
 class Channel:
@@ -103,21 +107,21 @@ class Channel:
     Instantiates workers according to channel configuration
     """
 
-    def __init__(self, channel_dict):
+    def __init__(self, channel_dict, channel_name):
         """
         :type channel_dict: :obj:`dict`
         :arg channel_dict: channel configuration
         """
 
         delogger.debug("Creating channel source")
-        self.sources = _make_workers_for(channel_dict["sources"], Source)
+        self.sources = _make_workers_for(channel_dict["sources"], Source, channel_name)
         delogger.debug("Creating channel logicengine")
-        self.le_s = _make_workers_for(channel_dict["logicengines"], LogicEngine)
+        self.le_s = _make_workers_for(channel_dict["logicengines"], LogicEngine, channel_name)
         delogger.debug("Creating channel publisher")
-        self.publishers = _make_workers_for(channel_dict["publishers"], Publisher)
+        self.publishers = _make_workers_for(channel_dict["publishers"], Publisher, channel_name)
 
         delogger.debug("Creating channel transform")
-        transforms = _make_workers_for(channel_dict["transforms"], Transform)
+        transforms = _make_workers_for(channel_dict["transforms"], Transform, channel_name)
         self.transforms = ensure_no_circularities(self.sources, transforms, self.publishers)
         self.task_manager = channel_dict.get("task_manager", {})
 
@@ -144,7 +148,7 @@ class TaskManager:
         self.name = name
         self.logger = structlog.getLogger(f"{self.name}")
         self.logger = self.logger.bind(module=__name__.split(".")[-1])
-        self.channel = Channel(channel_dict)
+        self.channel = Channel(channel_dict, name)
         self.state = ProcessingState()
         self.loglevel = multiprocessing.Value("i", logging.WARNING)
         self.lock = threading.Lock()

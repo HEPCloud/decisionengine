@@ -5,7 +5,8 @@ import pytest
 def logic_engine_with_fact(fact):
     facts = {"f1": fact}
     rules = {"r1": {"expression": "f1"}}
-    return LogicEngine({"facts": facts, "rules": rules})
+    channelname = "test"
+    return LogicEngine({"facts": facts, "rules": rules}, channelname)
 
 def test_true_literal_fact():
     engine = logic_engine_with_fact("fail_on_error(True)")

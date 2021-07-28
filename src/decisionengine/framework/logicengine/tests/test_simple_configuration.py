@@ -6,7 +6,8 @@ import pandas as pd
 def myengine():
     facts = {"f1": "val > 10"}
     rules = {"r1": {"expression": "f1", "actions": ["a1", "a2"]}}
-    yield LogicEngine({"facts": facts, "rules": rules})
+    channelname = "test"
+    yield LogicEngine({"facts": facts, "rules": rules}, channelname)
 
 
 def test_rule_that_fires(myengine):
