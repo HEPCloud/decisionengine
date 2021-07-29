@@ -5,6 +5,7 @@ import pytest
 def env_setup(tmp_path, monkeypatch):
     """Make sure we have a directory set for PROMETHEUS_MULTIPROC_DIR so that
     metric instantiation gives us multiprocess metrics"""
+    # Get a fixed dir
     d = tmp_path
     monkeypatch.setenv("PROMETHEUS_MULTIPROC_DIR", str(d))
     yield
