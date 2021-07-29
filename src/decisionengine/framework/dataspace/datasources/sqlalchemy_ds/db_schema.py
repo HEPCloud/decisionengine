@@ -130,7 +130,6 @@ class Header(Base):
         Index(
             "ix_header_generation_id",
             "generation_id",
-            postgresql_with={"fillfactor": 50},
         ),
         Index("ix_header_key", "key", postgresql_using="hash"),
         UniqueConstraint('taskmanager_id', 'generation_id', 'key', name="uq_header_taskmanager_id_generation_id_key"),
@@ -174,7 +173,6 @@ class Metadata(Base):
         Index(
             "ix_metadata_generation_id",
             "generation_id",
-            postgresql_with={"fillfactor": 70},
         ),
         Index("ix_metadata_key", "key", postgresql_using="hash"),
         Index("ix_metadata_state", "state", postgresql_using="hash"),
@@ -210,7 +208,6 @@ class Dataproduct(Base):
         Index(
             "ix_dataproduct_generation_id",
             "generation_id",
-            postgresql_with={"fillfactor": 70},
         ),
         Index("ix_dataproduct_key", "key", postgresql_using="hash"),
         UniqueConstraint('taskmanager_id', 'generation_id', 'key', name="uq_dataproduct_taskmanager_id_generation_id_key"),
