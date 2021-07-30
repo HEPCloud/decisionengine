@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datasources.tests.test_datasource_api &mdash; decisionengine 1.6.99.post4.post12+gedbb3568 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.test_datasource_api &mdash; decisionengine 1.6.99.post4.post13+g3ebe8619 documentation</title>
   
 
   
@@ -628,6 +628,13 @@
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">)):</span>
         <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="test_get_datablock"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_datablock">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_get_datablock</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
+    <span class="n">tm</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">)</span>
+    <span class="n">gen_id</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">)</span>
+    <span class="n">result1</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_datablock</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="s2">&quot;sequence_id&quot;</span><span class="p">],</span> <span class="n">gen_id</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">result1</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;my_test_key&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;my_test_value&#39;</span><span class="p">,</span> <span class="s1">&#39;a_test_key&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;a_test_value&#39;</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="test_duplicate_datablock"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_duplicate_datablock">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_duplicate_datablock</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.tests.test_dataspace &mdash; decisionengine 1.6.99.post4.post12+gedbb3568 documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_dataspace &mdash; decisionengine 1.6.99.post4.post13+g3ebe8619 documentation</title>
   
 
   
@@ -474,6 +474,17 @@
     <span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">result2</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;other_test_value&quot;</span></div>
+
+
+<div class="viewcode-block" id="test_get_datablock"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_dataspace.test_get_datablock">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_get_datablock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
+    <span class="sd">&quot;&quot;&quot;Can we get the datablock content&quot;&quot;&quot;</span>
+    <span class="n">result2</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_datablock</span><span class="p">(</span>
+        <span class="n">taskmanager_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">generation_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">result2</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;other_test_key&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;other_test_value&#39;</span><span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="test_get_dataproduct_not_exist"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_dataspace.test_get_dataproduct_not_exist">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">)</span>
