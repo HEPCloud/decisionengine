@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.de_query_tool &mdash; decisionengine 1.6.99.post4.post11+gfed95c62 documentation</title>
+  <title>decisionengine.framework.engine.de_query_tool &mdash; decisionengine 1.6.99.post4.post12+gedbb3568 documentation</title>
   
 
   
@@ -244,8 +244,20 @@
         <span class="k">return</span> <span class="n">msg</span></div>
 
 
+<div class="viewcode-block" id="console_scripts_main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.de_query_tool.console_scripts_main">[docs]</a><span class="k">def</span> <span class="nf">console_scripts_main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the entry point for the setuptools auto generated scripts.</span>
+<span class="sd">    Setuptools thinks a return from this function is an error message.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;An error occurred while trying to access a DE server&quot;</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">msg</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+    <span class="n">console_scripts_main</span><span class="p">()</span>
 </pre></div>
 
            </div>
