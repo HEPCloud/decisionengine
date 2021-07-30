@@ -204,6 +204,8 @@ class DataBlock:
         :type generation_id: :obj:`int`
         """
 
+        self.__internal_data_write_lock = threading.Lock()
+        self.__internal_data_read_lock = threading.Lock()
         self.logger = structlog.getLogger(LOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1])
         self.logger.debug('Initializing a datablock')
@@ -246,7 +248,9 @@ class DataBlock:
 
     @property
     def _keys(self):
-        return tuple(self.dataspace.get_datablock(self.sequence_id, self.generation_id).keys())
+        self.logger.debug("datablock waiting for internal read lock in '_keys'")
+        with self.__internal_data_read_lock:
+            return tuple(self.dataspace.get_datablock(self.sequence_id, self.generation_id).keys())
 
     @_keys.setter
     def _keys(self, value):  # pragma: no cover
@@ -262,7 +266,11 @@ class DataBlock:
         :type taskmanager_id: :obj: `string`
         :rtype: :obj:`int`
         """
-        return self.dataspace.store_taskmanager(taskmanager_name, taskmanager_id)
+        self.logger.debug("datablock waiting for internal write lock in 'store_taskmanager'")
+        with self.__internal_data_write_lock:
+            self.logger.debug("datablock waiting for internal read lock in 'store_taskmanager'")
+            with self.__internal_data_read_lock:
+                return self.dataspace.store_taskmanager(taskmanager_name, taskmanager_id)
 
     def get_taskmanager(self, taskmanager_name, taskmanager_id=None):
         """
@@ -302,7 +310,7 @@ class DataBlock:
         """
         return self.__getitem__(key, default=default)
 
-    def _insert(self, key, value, header, metadata):
+    def __insert(self, key, value, header, metadata):
         """
         Insert a new product into database with header and metadata
 
@@ -314,7 +322,7 @@ class DataBlock:
         self.dataspace.insert(self.sequence_id, self.generation_id,
                               key, value, header, metadata)
 
-    def _update(self, key, value, header, metadata):
+    def __update(self, key, value, header, metadata):
         """
         Update an existing product in the database with header and metadata
 
@@ -347,13 +355,15 @@ class DataBlock:
         else:
             store_value = compress({'pickled': True, 'value': pickle.dumps(value,
                                                                            protocol=pickle.HIGHEST_PROTOCOL)})
-        if key in self.keys():
-            # This has been already inserted, so you are working on a copy
-            # that was backed up. You need to update and adjust the update
-            # counter
-            self._update(key, store_value, header, metadata)
-        else:
-            self._insert(key, store_value, header, metadata)
+        self.logger.debug("datablock waiting for internal write lock in '_setitem'")
+        with self.__internal_data_write_lock:
+            if key in self.keys():
+                # This has been already inserted, so you are working on a copy
+                # that was backed up. You need to update and adjust the update
+                # counter
+                self.__update(key, store_value, header, metadata)
+            else:
+                self.__insert(key, store_value, header, metadata)
 
     def get_dataproducts(self, key=None):
         values = self.dataspace.get_dataproducts(self.sequence_id, key)
@@ -443,11 +453,13 @@ class DataBlock:
         :rtype: :obj:`DataBlock`
         """
 
-        dup_datablock = copy.copy(self)
-        self.generation_id += 1
-        self.dataspace.duplicate_datablock(self.sequence_id,
-                                           dup_datablock.generation_id,
-                                           self.generation_id)
+        self.logger.debug("datablock waiting for internal write lock in 'duplicate'")
+        with self.__internal_data_write_lock:
+            dup_datablock = copy.copy(self)
+            self.generation_id += 1
+            self.dataspace.duplicate_datablock(self.sequence_id,
+                                               dup_datablock.generation_id,
+                                               self.generation_id)
         return dup_datablock
 
     def is_expired(self, key=None):
