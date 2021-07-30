@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.dataspace.datablock &mdash; decisionengine 1.6.99.post4.post15+g85b6c3ba documentation</title>
+  <title>decisionengine.framework.dataspace.datablock &mdash; decisionengine 1.6.99.post4.post16+gb2259e9e documentation</title>
   
 
   
@@ -400,16 +400,16 @@
             <span class="s1">&#39;taskmanager_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span>
             <span class="s1">&#39;generation_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
             <span class="s1">&#39;sequence_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
-            <span class="s1">&#39;keys&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">,</span>
+            <span class="s1">&#39;keys&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
         <span class="p">}</span>
         <span class="n">dp</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">dp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="n">value</span><span class="p">[</span><span class="s1">&#39;dataproducts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dp</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
 <div class="viewcode-block" id="DataBlock.keys"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span></div>
@@ -507,7 +507,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">store_value</span> <span class="o">=</span> <span class="n">compress</span><span class="p">({</span><span class="s1">&#39;pickled&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">,</span>
                                                                            <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)})</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_keys</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="c1"># This has been already inserted, so you are working on a copy</span>
             <span class="c1"># that was backed up. You need to update and adjust the update</span>
             <span class="c1"># counter</span>
