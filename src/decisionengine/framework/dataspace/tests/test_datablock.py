@@ -42,9 +42,9 @@ def test_DataBlock_to_str(dataspace):  # noqa: F811
             my_tm["name"], my_tm["taskmanager_id"]
         ),
         "sequence_id": len(dataspace.get_dataproducts(my_tm["sequence_id"])) + 1,
-        "keys": [
+        "keys": (
             "example_test_key",
-        ],
+        ),
         "dataproducts": {"example_test_key": "example_test_value"},
     }
 

@@ -226,7 +226,6 @@ class DataBlock:
             self.generation_id = self.dataspace.get_last_generation_id(
                 name, taskmanager_id)
 
-        self._keys = []
         self.lock = threading.Lock()
 
     def __str__(self):
@@ -244,6 +243,14 @@ class DataBlock:
 
     def __contains__(self, key):
         return key in self.keys()
+
+    @property
+    def _keys(self):
+        return tuple(self.dataspace.get_datablock(self.sequence_id, self.generation_id).keys())
+
+    @_keys.setter
+    def _keys(self, value):  # pragma: no cover
+        raise ValueError("You may not redefine the known keys for a datablock")
 
     def keys(self):
         return self._keys
@@ -306,7 +313,6 @@ class DataBlock:
         """
         self.dataspace.insert(self.sequence_id, self.generation_id,
                               key, value, header, metadata)
-        self._keys.append(key)
 
     def _update(self, key, value, header, metadata):
         """
@@ -439,7 +445,6 @@ class DataBlock:
 
         dup_datablock = copy.copy(self)
         self.generation_id += 1
-        dup_datablock._keys = copy.deepcopy(self._keys)
         self.dataspace.duplicate_datablock(self.sequence_id,
                                            dup_datablock.generation_id,
                                            self.generation_id)
