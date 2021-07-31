@@ -18,7 +18,10 @@ This release features:
 Issues fixed in this release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
+- `458 <https://github.com/HEPCloud/decisionengine/issues/458>`_: Exception in new SQLAlchemy data source 1.6.99post4
+- `455 <https://github.com/HEPCloud/decisionengine/issues/455>`_: New postgresql exception in 1.6.99post4 (aka Fixed databese inconsistency silently ignored in v1.6)
+- `456 <https://github.com/HEPCloud/decisionengine/issues/456>`_: Logic engine messages show in the main DE log (1.6.99 post4)
+- `451 <https://github.com/HEPCloud/decisionengine/issues/451>`_: Transforms executed in wrong order in 1.6.99.post3
 - `367 <https://github.com/HEPCloud/decisionengine/issues/367>`_: Test race conditions bug
 - `406 <https://github.com/HEPCloud/decisionengine/issues/406>`_: Taskmanager doesn't use/honor global log level
 - `379 <https://github.com/HEPCloud/decisionengine/issues/379>`_: Add postgresql.sql to distributed decisionengine rpm
@@ -30,6 +33,46 @@ Issues fixed in this release
 
 Full list of commits since version 1.6.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`b2739c14 <https://github.com/HEPCloud/decisionengine/commit/b2739c14b965f6fc1de6c0621ae391581a4d127a>`_:   moved logging of LogicEngine from decisionengine logger to channel loggers
+
+`0c0532f3 <https://github.com/HEPCloud/decisionengine/commit/0c0532f37786db32e6200eb50903fe9c32fe0a93>`_:   Add locks to help ensure data changes are "atomic"
+
+`ae63c6ee <https://github.com/HEPCloud/decisionengine/commit/ae63c6ee2cb6914056d93f452fe103fa30c68921>`_:   Use DB generated known keys so it always matches DB state
+
+`b2259e9e <https://github.com/HEPCloud/decisionengine/commit/b2259e9e2b131362684c271e8b0164b6b665faf1>`_:   Use public .keys() rather than internal implementation
+
+`85b6c3ba <https://github.com/HEPCloud/decisionengine/commit/85b6c3baaa30a216b17ac38d771c3bf35ca2401f>`_:   Real world data shows the defaults are fine
+
+`95fb3fdf <https://github.com/HEPCloud/decisionengine/commit/95fb3fdff34c430f452d687dc5bc6668fd19ddfb>`_:   Further constrain tablespace
+
+`3ebe8619 <https://github.com/HEPCloud/decisionengine/commit/3ebe861967c88fde491ac7c63e5ad06807bf5d09>`_:   Finish implementation of get_datablock
+
+`edbb3568 <https://github.com/HEPCloud/decisionengine/commit/edbb35683b38b77dc8efb356424f514ae4d0f57d>`_:   Add entry point for de-query-tool
+
+`fed95c62 <https://github.com/HEPCloud/decisionengine/commit/fed95c62237902f86cb54d4c03a5dc672e906689>`_:   adding logging of importlib imports of modules
+
+`53e62f03 <https://github.com/HEPCloud/decisionengine/commit/53e62f03426586a2fbe987113ffe4ea03461fb2b>`_:   Sometimes pypy times out on the cleanup.
+
+`a44d4bc4 <https://github.com/HEPCloud/decisionengine/commit/a44d4bc4b1d8e6a7744bc16261ed19487d04e4d1>`_:   Don't test sqlite on pypy it isn't necessary
+
+`b13aa8a9 <https://github.com/HEPCloud/decisionengine/commit/b13aa8a9573f739dc632fa6513ba722fd28ac78a>`_:   Some corrections
+
+`94c14110 <https://github.com/HEPCloud/decisionengine/commit/94c141107710f9480d20c762310c81942956d972>`_:   Fix missing defines
+
+`5f102095 <https://github.com/HEPCloud/decisionengine/commit/5f102095422246cc8bf185198b656ad3d5512f12>`_:   More detailed testing of datablock
+
+`b6c99021 <https://github.com/HEPCloud/decisionengine/commit/b6c99021c6a26275be1f68081d6fb2a02bd8ac88>`_:   Make sure our sqlite tests have ForeignKeyConditional support
+
+`6b76ba7c <https://github.com/HEPCloud/decisionengine/commit/6b76ba7cda7f23bdaf07b4a412739157cbb0c666>`_:   Fix typo
+
+`6694369d <https://github.com/HEPCloud/decisionengine/commit/6694369dd7cfe369de07616924ce3306d07ab6ce>`_:   Ensure dbutils uses transactions
+
+`1df400ae <https://github.com/HEPCloud/decisionengine/commit/1df400ae183829c8f0d53f1310af45bfdc63354f>`_:   Fix spaces
+
+`5278fd99 <https://github.com/HEPCloud/decisionengine/commit/5278fd996382965469f002adfb35d5901b585a63>`_:   Raise timout for numpy on pypy
+
+`6d0a1a74 <https://github.com/HEPCloud/decisionengine/commit/6d0a1a7419883495fb44b17ef2b78091df100a1c>`_:   Release notes ready for v1.7.0
 
 `084f74e1 <https://github.com/HEPCloud/decisionengine/commit/084f74e1228f7d174ae89cdb69dcf42eb893ef71>`_:   Initial SQLAlchemy Datasource
 
