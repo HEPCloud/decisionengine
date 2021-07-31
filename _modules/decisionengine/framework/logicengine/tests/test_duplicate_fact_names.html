@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.logicengine.tests.test_duplicate_fact_names &mdash; decisionengine 1.6.99.post4.post18+g0c0532f3 documentation</title>
+  <title>decisionengine.framework.logicengine.tests.test_duplicate_fact_names &mdash; decisionengine 1.6.99.post4.post19+gb2739c14 documentation</title>
   
 
   
@@ -174,7 +174,8 @@
                           <span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;should_publish&quot;</span><span class="p">]}</span>
     <span class="n">rules</span><span class="p">[</span><span class="s2">&quot;publish_2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;expression&quot;</span><span class="p">:</span> <span class="s2">&quot;(should_publish)&quot;</span><span class="p">,</span>
                           <span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;should_publish&quot;</span><span class="p">]}</span>
-    <span class="n">le</span> <span class="o">=</span> <span class="n">LogicEngine</span><span class="p">({</span><span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="n">facts</span><span class="p">,</span> <span class="s2">&quot;rules&quot;</span><span class="p">:</span> <span class="n">rules</span><span class="p">})</span>
+    <span class="n">channelname</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+    <span class="n">le</span> <span class="o">=</span> <span class="n">LogicEngine</span><span class="p">({</span><span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="n">facts</span><span class="p">,</span> <span class="s2">&quot;rules&quot;</span><span class="p">:</span> <span class="n">rules</span><span class="p">},</span> <span class="n">channelname</span><span class="p">)</span>
     <span class="n">ef</span> <span class="o">=</span> <span class="n">le</span><span class="o">.</span><span class="n">evaluate_facts</span><span class="p">({})</span>
     <span class="k">assert</span> <span class="n">ef</span><span class="p">[</span><span class="s2">&quot;should_publish&quot;</span><span class="p">]</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">le</span><span class="o">.</span><span class="n">evaluate</span><span class="p">({})</span>

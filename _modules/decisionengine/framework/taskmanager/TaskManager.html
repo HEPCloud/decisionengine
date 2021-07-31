@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.6.99.post4.post18+g0c0532f3 documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.6.99.post4.post19+gb2739c14 documentation</title>
   
 
   
@@ -217,7 +217,7 @@
     <span class="k">return</span> <span class="n">subclasses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="_create_module_instance"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager._create_module_instance">[docs]</a><span class="k">def</span> <span class="nf">_create_module_instance</span><span class="p">(</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">base_class</span><span class="p">):</span>
+<div class="viewcode-block" id="_create_module_instance"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager._create_module_instance">[docs]</a><span class="k">def</span> <span class="nf">_create_module_instance</span><span class="p">(</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">base_class</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create instance of dynamically loaded module</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -232,7 +232,11 @@
             <span class="n">class_name</span> <span class="o">=</span> <span class="n">_find_only_one_subclass</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">base_class</span><span class="p">)</span>
 
     <span class="n">class_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">class_type</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">])</span></div>
+    <span class="c1">#here we add the channel name to the LogicEngine class to get the correct logger</span>
+    <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s2">&quot;LogicEngine&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">class_type</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span> <span class="n">channel_name</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">class_type</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">:</span>
@@ -241,12 +245,12 @@
 <span class="sd">    execution</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf_dict</span><span class="p">,</span> <span class="n">base_class</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf_dict</span><span class="p">,</span> <span class="n">base_class</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :type conf_dict: :obj:`dict`</span>
 <span class="sd">        :arg conf_dict: configuration dictionary describing the worker</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="n">_create_module_instance</span><span class="p">(</span><span class="n">conf_dict</span><span class="p">,</span> <span class="n">base_class</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="n">_create_module_instance</span><span class="p">(</span><span class="n">conf_dict</span><span class="p">,</span> <span class="n">base_class</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">conf_dict</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">=</span> <span class="n">conf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schedule&quot;</span><span class="p">,</span> <span class="n">_DEFAULT_SCHEDULE</span><span class="p">)</span>
@@ -259,8 +263,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="_make_workers_for"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager._make_workers_for">[docs]</a><span class="k">def</span> <span class="nf">_make_workers_for</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span> <span class="n">base_class</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">Worker</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">base_class</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">configs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+<div class="viewcode-block" id="_make_workers_for"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager._make_workers_for">[docs]</a><span class="k">def</span> <span class="nf">_make_workers_for</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span> <span class="n">base_class</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">Worker</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">base_class</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">configs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
 
 <div class="viewcode-block" id="Channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.Channel">[docs]</a><span class="k">class</span> <span class="nc">Channel</span><span class="p">:</span>
@@ -269,21 +273,21 @@
 <span class="sd">    Instantiates workers according to channel configuration</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_dict</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :type channel_dict: :obj:`dict`</span>
 <span class="sd">        :arg channel_dict: channel configuration</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel source&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">],</span> <span class="n">Source</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">],</span> <span class="n">Source</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
         <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel logicengine&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">le_s</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;logicengines&quot;</span><span class="p">],</span> <span class="n">LogicEngine</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">le_s</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;logicengines&quot;</span><span class="p">],</span> <span class="n">LogicEngine</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
         <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel publisher&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">publishers</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;publishers&quot;</span><span class="p">],</span> <span class="n">Publisher</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publishers</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;publishers&quot;</span><span class="p">],</span> <span class="n">Publisher</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
 
         <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel transform&quot;</span><span class="p">)</span>
-        <span class="n">transforms</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;transforms&quot;</span><span class="p">],</span> <span class="n">Transform</span><span class="p">)</span>
+        <span class="n">transforms</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;transforms&quot;</span><span class="p">],</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="n">ensure_no_circularities</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sources</span><span class="p">,</span> <span class="n">transforms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">publishers</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span> <span class="o">=</span> <span class="n">channel_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;task_manager&quot;</span><span class="p">,</span> <span class="p">{})</span></div>
 
@@ -310,7 +314,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">Channel</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">Channel</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">ProcessingState</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
