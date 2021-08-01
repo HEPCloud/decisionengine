@@ -246,18 +246,10 @@ class DataBlock:
     def __contains__(self, key):
         return key in self.keys()
 
-    @property
-    def _keys(self):
-        self.logger.debug("datablock waiting for internal read lock in '_keys'")
+    def keys(self):
+        self.logger.debug("datablock waiting for internal read lock in 'keys'")
         with self.__internal_data_read_lock:
             return tuple(self.dataspace.get_datablock(self.sequence_id, self.generation_id).keys())
-
-    @_keys.setter
-    def _keys(self, value):  # pragma: no cover
-        raise ValueError("You may not redefine the known keys for a datablock")
-
-    def keys(self):
-        return self._keys
 
     def store_taskmanager(self, taskmanager_name, taskmanager_id):
         """

@@ -233,9 +233,9 @@ def test_DataBlock_duplicate(dataspace):  # noqa: F811
     assert dblock.taskmanager_id == dblock_2.taskmanager_id
     assert dblock.generation_id == dblock_2.generation_id + 1
     assert dblock.sequence_id == dblock_2.sequence_id
-    assert dblock._keys == dblock_2._keys
+    assert dblock.keys() == dblock_2.keys()
 
-    for key in dblock._keys:
+    for key in dblock.keys():
         assert dblock[key] == dblock_2[key]
 
 
