@@ -26,3 +26,13 @@ def test_query_tool_with_no_server_verbose():
             and "Cannot assign requested address" not in msg \
             and "Network is unreachable" not in msg:
         raise ValueError(msg)
+
+def test_client_err_returned_as_rc():
+    """no de server is running, so --status should error"""
+    msg = de_query_tool.console_scripts_main(['foo'])
+    assert 'An error occurred' in msg
+
+def test_client_err_returned_verbose_as_rc():
+    """no de server is running, so --status should error"""
+    msg = de_query_tool.console_scripts_main(['foo', '--verbose'])
+    assert 'An error occurred' in msg
