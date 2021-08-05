@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.tests.test_query_tool_only &mdash; decisionengine 1.6.99.post4.post20+gefabfeb3 documentation</title>
+  <title>decisionengine.framework.engine.tests.test_query_tool_only &mdash; decisionengine 1.6.99.post6.post1+gc167fc50 documentation</title>
   
 
   
@@ -192,6 +192,16 @@
             <span class="ow">and</span> <span class="s2">&quot;Cannot assign requested address&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span> \
             <span class="ow">and</span> <span class="s2">&quot;Network is unreachable&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_client_err_returned_as_rc"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_query_tool_only.test_client_err_returned_as_rc">[docs]</a><span class="k">def</span> <span class="nf">test_client_err_returned_as_rc</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;no de server is running, so --status should error&quot;&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">de_query_tool</span><span class="o">.</span><span class="n">console_scripts_main</span><span class="p">([</span><span class="s1">&#39;foo&#39;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="s1">&#39;An error occurred&#39;</span> <span class="ow">in</span> <span class="n">msg</span></div>
+
+<div class="viewcode-block" id="test_client_err_returned_verbose_as_rc"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_query_tool_only.test_client_err_returned_verbose_as_rc">[docs]</a><span class="k">def</span> <span class="nf">test_client_err_returned_verbose_as_rc</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;no de server is running, so --status should error&quot;&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">de_query_tool</span><span class="o">.</span><span class="n">console_scripts_main</span><span class="p">([</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;--verbose&#39;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="s1">&#39;An error occurred&#39;</span> <span class="ow">in</span> <span class="n">msg</span></div>
 </pre></div>
 
            </div>
