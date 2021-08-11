@@ -29,3 +29,10 @@ class Histogram(prometheus_client.Histogram):
 
 class Summary(prometheus_client.Summary):
     pass
+
+
+def display_metrics():
+    registry = prometheus_client.CollectorRegistry()
+    prometheus_client.multiprocess.MultiProcessCollector(registry)
+    data = prometheus_client.generate_latest(registry=registry)
+    return data.decode()

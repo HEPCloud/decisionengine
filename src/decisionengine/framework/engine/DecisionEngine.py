@@ -23,6 +23,10 @@ import pandas as pd
 import structlog
 import tabulate
 
+import cherrypy
+from prometheus_client import multiprocess, REGISTRY
+from prometheus_client import CollectorRegistry, generate_latest, CONTENT_TYPE_LATEST
+
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
@@ -33,8 +37,17 @@ from decisionengine.framework.dataspace.maintain import Reaper
 from decisionengine.framework.engine.Workers import Worker, Workers
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 
-from prometheus_client import multiprocess, REGISTRY
-from prometheus_client import CollectorRegistry, generate_latest, CONTENT_TYPE_LATEST
+from decisionengine.framework.util.metrics import *
+
+# DecisionEngine metrics
+STATUS_SUMMARY = Summary('de_client_status_seconds', 'Time to run de-client --status')
+PRINT_PRODUCT_SUMMARY = Summary('de_client_print_product_seconds', 'Time to run de-client --print-product')
+START_CHANNEL_SUMMARY = Summary('de_client_start_channel_seconds',
+                                'Time to run de-client --start-channel', ['channel_name'])
+RM_CHANNEL_SUMMARY = Summary('de_client_rm_channel_seconds',
+                             'Time to run de-client --stop-channel', ['channel_name'])
+QUERY_TOOL_SUMMARY = Summary('de_client_query_seconds', 'Time to run de-client --query', ['product'])
+METRICS_SUMMARY = Summary('de_client_metrics_seconds', 'Time to run de-client --status')
 
 
 class StopState(enum.Enum):
@@ -71,33 +84,6 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         os.environ['prometheus_multiproc_dir'] = "/tmp/prometheus_metrics"
         self.register_function(self.rpc_metrics, name='metrics')
         self.start_metrics_server()  # Make this dependent on flag
-
-    def start_metrics_server(self):
-        cherrypy.config.update({
-            'server.socket_port': 8000,
-            'server.socket_host': '0.0.0.0'
-        })
-        cherrypy.tree.mount(self)
-        cherrypy.engine.start()
-
-    @cherrypy.expose
-    def metrics(self):
-        return self.rpc_metrics()
-
-    def rpc_metrics(self):
-        try:
-            print('Called rpc_metrics')
-            self.logger.info(
-                f'prometheus_multiproc_dir is set to {os.environ.get("prometheus_multiproc_dir")}'
-            )
-            registry = CollectorRegistry()
-            multiprocess.MultiProcessCollector(registry)
-            data = generate_latest(registry=registry)
-            self.logger.info(data)
-            return data.decode()
-        except Exception as e:
-            self.logger.error(e)
-        # return Response(data, mimetype=CONTENT_TYPE_LATEST)
 
     def get_logger(self):
         return self.logger
@@ -182,6 +168,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def rpc_show_de_config(self):
         return self.global_config.dump()
 
+    @PRINT_PRODUCT_SUMMARY.time()
     def rpc_print_product(self, product, columns=None, query=None, types=False, format=None):
         if not isinstance(product, str):
             raise ValueError(f"Requested product should be a string not {type(product)}")
@@ -192,7 +179,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             for ch, worker in workers.items():
                 if not worker.is_alive():
                     txt += f"Channel {ch} is in not active\n"
-                    self.logger.debug(f"Channel:{ch} is in not active when running rpc_print_product")
+                    self.logger.debug(
+                        f"Channel:{ch} is in not active when running rpc_print_product")
                     continue
 
                 produces = worker.get_produces()
@@ -203,7 +191,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 txt += f" Found in channel {ch}\n"
                 self.logger.debug(f"Found channel:{ch} active when running rpc_print_product")
                 tm = self.dataspace.get_taskmanager(ch)
-                self.logger.debug(f"rpc_print_product - channel:{ch} taskmanager:{tm}")
+                self.logger.debug(
+                    f"rpc_print_product - channel:{ch} taskmanager:{tm}")
                 try:
                     data_block = datablock.DataBlock(
                         self.dataspace, ch, taskmanager_id=tm["taskmanager_id"], sequence_id=tm["sequence_id"]
@@ -211,7 +200,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                     data_block.generation_id -= 1
                     df = data_block[product]
                     dfj = df.to_json()
-                    self.logger.debug(f"rpc_print_product - channel:{ch} task manager:{tm} datablock:{dfj}")
+                    self.logger.debug(
+                        f"rpc_print_product - channel:{ch} task manager:{tm} datablock:{dfj}")
                     df = pd.read_json(dfj)
                     dataframe_formatter = self._dataframe_to_table
                     if format == "vertical":
@@ -284,6 +274,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                                 txt += f"\t\t\t{e}\n"
         return txt[:-1]
 
+    @STATUS_SUMMARY.time()
     def rpc_status(self):
         with self.workers.access() as workers:
             channel_keys = workers.keys()
@@ -315,15 +306,16 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return "OK"
 
     def start_channel(self, channel_name, channel_config):
-        generation_id = 1
-        task_manager = TaskManager.TaskManager(channel_name, generation_id, channel_config, self.global_config)
-        worker = Worker(task_manager, self.global_config["logger"])
-        with self.workers.access() as workers:
-            workers[channel_name] = worker
-        self.logger.debug(f"Trying to start {channel_name}")
-        worker.start()
-        self.logger.info(f"Channel {channel_name} started")
-        return worker
+        with START_CHANNEL_SUMMARY.labels(channel_name).time():
+            generation_id = 1
+            task_manager = TaskManager.TaskManager(channel_name, generation_id, channel_config, self.global_config)
+            worker = Worker(task_manager, self.global_config["logger"])
+            with self.workers.access() as workers:
+                workers[channel_name] = worker
+            self.logger.debug(f"Trying to start {channel_name}")
+            worker.start()
+            self.logger.info(f"Channel {channel_name} started")
+            return worker
 
     def start_channels(self):
         self.channel_config_loader.load_all_channels()
@@ -333,7 +325,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 "No channel configurations available in " + f"{self.channel_config_loader.channel_config_dir}"
             )
         else:
-            self.logger.debug(f"Found channels: {self.channel_config_loader.get_channels().items()}")
+            self.logger.debug(
+                f"Found channels: {self.channel_config_loader.get_channels().items()}")
 
         for name, config in self.channel_config_loader.get_channels().items():
             try:
@@ -381,14 +374,15 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return f"Channel {channel} stopped cleanly."
 
     def rm_channel(self, channel, maybe_timeout):
-        rc = None
-        with self.workers.access() as workers:
-            if channel not in workers:
-                return StopState.NotFound
-            self.logger.debug(f"Trying to stop {channel}")
-            rc = self.stop_worker(workers[channel], maybe_timeout)
-            del workers[channel]
-        return rc
+        with RM_CHANNEL_SUMMARY.labels(channel).time():
+            rc = None
+            with self.workers.access() as workers:
+                if channel not in workers:
+                    return StopState.NotFound
+                self.logger.debug(f"Trying to stop {channel}")
+                rc = self.stop_worker(workers[channel], maybe_timeout)
+                del workers[channel]
+            return rc
 
     def stop_worker(self, worker, timeout):
         if worker.is_alive():
@@ -480,58 +474,80 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return f"\nreaper:\n\tstate: {state}\n\tretention_interval: {interval}\n"
 
     def rpc_query_tool(self, product, format=None, start_time=None):
-        found = False
-        result = pd.DataFrame()
-        txt = f"Product {product}: "
+        with QUERY_TOOL_SUMMARY.labels(product).time():
+            found = False
+            result = pd.DataFrame()
+            txt = f"Product {product}: "
+    
+            with self.workers.access() as workers:
+                for ch, worker in workers.items():
+                    if not worker.is_alive():
+                        txt += f"Channel {ch} is in not active\n"
+                        continue
+    
+                    produces = worker.get_produces()
+                    r = [x for x in list(produces.items()) if product in x[1]]
+                    if not r:
+                        continue
+                    found = True
+                    txt += f" Found in channel {ch}\n"
+    
+                    if start_time:
+                        tms = self.dataspace.get_taskmanagers(
+                            ch, start_time=start_time)
+                    else:
+                        tms = [self.dataspace.get_taskmanager(ch)]
+                    for tm in tms:
+                        try:
+                            data_block = datablock.DataBlock(
+                                self.dataspace, ch, taskmanager_id=tm["taskmanager_id"], sequence_id=tm["sequence_id"]
+                            )
+                            products = data_block.get_dataproducts(product)
+                            for p in products:
+                                df = p["value"]
+                                if df.shape[0] > 0:
+                                    df["channel"] = [tm["name"]] * df.shape[0]
+                                    df["taskmanager_id"] = [p["taskmanager_id"]
+                                                            ] * df.shape[0]
+                                    df["generation_id"] = [p["generation_id"]
+                                                           ] * df.shape[0]
+                                    result = result.append(df)
+                        except Exception as e:  # pragma: no cover
+                            txt += f"\t\t{e}\n"
+    
+            if found:
+                dataframe_formatter = self._dataframe_to_table
+                if format == "csv":
+                    dataframe_formatter = self._dataframe_to_csv
+                if format == "json":
+                    dataframe_formatter = self._dataframe_to_json
+                result = result.reset_index(drop=True)
+                txt += dataframe_formatter(result)
+            else:
+                txt += "Not produced by any module\n"
+            return txt
 
-        with self.workers.access() as workers:
-            for ch, worker in workers.items():
-                if not worker.is_alive():
-                    txt += f"Channel {ch} is in not active\n"
-                    continue
+    def start_metrics_server(self):
+        cherrypy.config.update({
+            'server.socket_port': 8000,
+            'server.socket_host': '0.0.0.0'
+        })
+        cherrypy.tree.mount(self)
+        cherrypy.engine.start()
 
-                produces = worker.get_produces()
-                r = [x for x in list(produces.items()) if product in x[1]]
-                if not r:
-                    continue
-                found = True
-                txt += f" Found in channel {ch}\n"
+    @cherrypy.expose
+    def metrics(self):
+        return self.rpc_metrics()
 
-                if start_time:
-                    tms = self.dataspace.get_taskmanagers(
-                        ch, start_time=start_time)
-                else:
-                    tms = [self.dataspace.get_taskmanager(ch)]
-                for tm in tms:
-                    try:
-                        data_block = datablock.DataBlock(
-                            self.dataspace, ch, taskmanager_id=tm["taskmanager_id"], sequence_id=tm["sequence_id"]
-                        )
-                        products = data_block.get_dataproducts(product)
-                        for p in products:
-                            df = p["value"]
-                            if df.shape[0] > 0:
-                                df["channel"] = [tm["name"]] * df.shape[0]
-                                df["taskmanager_id"] = [p["taskmanager_id"]
-                                                        ] * df.shape[0]
-                                df["generation_id"] = [p["generation_id"]
-                                                       ] * df.shape[0]
-                                result = result.append(df)
-                    except Exception as e:  # pragma: no cover
-                        txt += f"\t\t{e}\n"
-
-        if found:
-            dataframe_formatter = self._dataframe_to_table
-            if format == "csv":
-                dataframe_formatter = self._dataframe_to_csv
-            if format == "json":
-                dataframe_formatter = self._dataframe_to_json
-            result = result.reset_index(drop=True)
-            txt += dataframe_formatter(result)
-        else:
-            txt += "Not produced by any module\n"
-
-        return txt
+    @METRICS_SUMMARY.time()
+    def rpc_metrics(self):
+        """
+        Display collected metrics
+        """
+        try:
+            return display_metrics()
+        except Exception as e:
+            self.logger.error(e)
 
 
 def parse_program_options(args=None):

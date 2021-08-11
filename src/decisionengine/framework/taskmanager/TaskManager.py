@@ -53,6 +53,26 @@ PUBLISHER_RUN_GAUGE = Gauge('de_publisher_last_run', 'Last time '
                                 'publisher_name',
                             ])
 
+SOURCE_RUN_SUMMARY = Summary('de_source_run_seconds', 'Time spent running source', [
+    'channel_name',
+    'source_name',
+])
+
+LOGICENGINE_RUN_SUMMARY = Summary('de_logicengine_run_seconds', 'Time spent running logicengine', [
+    'channel_name',
+    'logicengine_name',
+])
+
+TRANSFORM_RUN_SUMMARY = Summary('de_transform_run_seconds', 'Time spent running transform', [
+    'channel_name',
+    'transform_name',
+])
+
+PUBLISHER_RUN_SUMMARY = Summary('de_publisher_run_seconds', 'Time spent running publisher', [
+    'channel_name',
+    'publisher_name',
+])
+
 delogger = structlog.getLogger(LOGGERNAME)
 delogger = delogger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
 
@@ -399,13 +419,13 @@ class TaskManager(ComponentManager):
         :type worker: :obj:`~Worker`
         :arg worker: Source worker
         """
-
         # If task manager is in offline state, do not keep executing sources.
         while not self.state.should_stop():
             try:
                 self.logger.info(f"Src {worker.name} calling acquire")
-                data = worker.module_instance.acquire()
-                Module.verify_products(worker.module_instance, data)
+                with SOURCE_RUN_SUMMARY.labels(self.name, src.name).time():
+                    data = worker.module_instance.acquire()
+                    Module.verify_products(worker.module_instance, data)
                 self.logger.info(f"Src {worker.name} acquire returned")
                 self.logger.info(f"Src {worker.name} filling header")
                 SOURCE_ACQUIRE_GAUGE.labels(self.name,
@@ -486,12 +506,13 @@ class TaskManager(ComponentManager):
         )
         self.logger.info("run transform %s", worker.name)
         try:
-            data = worker.module_instance.transform(data_block)
-            self.logger.debug(f"transform returned {data}")
-            header = datablock.Header(data_block.taskmanager_id, create_time=time.time(), creator=worker.name)
-            self.data_block_put(data, header, data_block)
-            self.logger.info("transform put data")
-            TRANSFORM_RUN_GAUGE.labels(self.name, transform.name).set(t)
+            with TRANSFORM_RUN_SUMMARY.labels(self.name, transform.name).time():
+                data = worker.module_instance.transform(data_block)
+                self.logger.debug(f"transform returned {data}")
+                header = datablock.Header(data_block.taskmanager_id, create_time=time.time(), creator=worker.name)
+                self.data_block_put(data, header, data_block)
+                self.logger.info("transform put data")
+                TRANSFORM_RUN_GAUGE.labels(self.name, transform.name).set(t)
         except Exception:  # pragma: no cover
             self.logger.exception(f"exception from transform {worker.name} ")
             self.take_offline()
@@ -509,20 +530,21 @@ class TaskManager(ComponentManager):
 
         try:
             for le in self.workflow.le_s:
-                self.logger.info("run logic engine %s", self.workflow.le_s[le].name)
-                self.logger.debug("run logic engine %s %s", self.workflow.le_s[le].name, data_block)
-                rc = self.workflow.le_s[le].module_instance.evaluate(data_block)
-                le_list.append(rc)
-                self.logger.info("run logic engine %s done", self.workflow.le_s[le].name)
-                LOGICENGINE_RUN_GAUGE.labels(
-                    self.name,
-                    self.channel.le_s[le].name).set_to_current_time()
-                self.logger.info(
-                    "logic engine %s generated newfacts: %s",
-                    self.workflow.le_s[le].name,
-                    rc["newfacts"].to_dict(orient="records"),
-                )
-                self.logger.info("logic engine %s generated actions: %s", self.workflow.le_s[le].name, rc["actions"])
+                with LOGICENGINE_RUN_SUMMARY.labels(self.name, self.channel.le_s[le].name).time():
+                    self.logger.info("run logic engine %s", self.workflow.le_s[le].name)
+                    self.logger.debug("run logic engine %s %s", self.workflow.le_s[le].name, data_block)
+                    rc = self.workflow.le_s[le].module_instance.evaluate(data_block)
+                    le_list.append(rc)
+                    self.logger.info("run logic engine %s done", self.workflow.le_s[le].name)
+                    LOGICENGINE_RUN_GAUGE.labels(
+                        self.name,
+                        self.channel.le_s[le].name).set_to_current_time()
+                    self.logger.info(
+                        "logic engine %s generated newfacts: %s",
+                        self.workflow.le_s[le].name,
+                        rc["newfacts"].to_dict(orient="records"),
+                    )
+                    self.logger.info("logic engine %s generated actions: %s", self.workflow.le_s[le].name, rc["actions"])
 
             # Add new facts to the datablock
             # Add empty dataframe if nothing is available
@@ -562,9 +584,10 @@ class TaskManager(ComponentManager):
                     self.logger.info(f"run publisher {name}")
                     self.logger.debug(f"run publisher {name} {data_block}")
                     try:
-                        worker.module_instance.publish(data_block)
-                        PUBLISHER_RUN_GAUGE.labels(self.name,
-                                                   name).set_to_current_time()
+                        with PUBLISHER_RUN_SUMMARY.labels(self.name, name).time():
+                            worker.module_instance.publish(data_block)
+                            PUBLISHER_RUN_GAUGE.labels(self.name,
+                                                       name).set_to_current_time()
                     except KeyError as e:
                         if self.state.should_stop():
                             self.logger.warning(
