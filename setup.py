@@ -22,6 +22,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 # pull in runtime requirements
 runtime_require = ["DBUtils >= 2.0",
                    "jsonnet >= 0.17.0",
+                   "prometheus-client >= 0.10.0",
                    "tabulate >= 0.8.7",
                    "toposort >= 1.6",
                    "sqlalchemy >= 1.4.20",
@@ -31,7 +32,6 @@ runtime_require = ["DBUtils >= 2.0",
                    "pandas == 1.1.5; python_version <= '3.6'",
                    "pandas >= 1.1.5; python_version >= '3.7' and platform_python_implementation == 'CPython'",
                    "pandas == 1.2.5; platform_python_implementation == 'PyPy'",  # For pypy3.7, try again on pypy3.8
-                   "prometheus-client >= 0.10.0",
                    "psycopg2-binary >= 2.8.6; platform_python_implementation == 'CPython'",  # noqa: E501
                    "psycopg2cffi >= 2.9.0; platform_python_implementation == 'PyPy'"]  # noqa: E501
 
