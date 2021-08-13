@@ -167,7 +167,7 @@ class TaskManager:
         self.logger.info("Waiting for all tasks to run")
 
         try:
-            while not all([e.is_set() for e in events_done]):
+            while not all(e.is_set() for e in events_done):
                 time.sleep(1)
                 if self.state.should_stop():
                     break
@@ -186,7 +186,7 @@ class TaskManager:
         :arg events_done: list of events to wait for
         """
         try:
-            while not any([e.is_set() for e in events_done]):
+            while not any(e.is_set() for e in events_done):
                 time.sleep(1)
                 if self.state.should_stop():
                     break
