@@ -27,15 +27,14 @@ def log_setup():
 @pytest.mark.usefixtures("log_setup")
 @pytest.mark.skip(reason="test failing under structlog config, needs re-working")
 def test_by_nonsense_is_err(log_setup):
-    with pytest.raises(ValueError) as err:
-        with tempfile.NamedTemporaryFile() as log:
-            de_logger.set_logging(
-                log_level="INFO",
-                max_backup_count=6,
-                file_rotate_by="nonsense",
-                max_file_size=1000000,
-                log_file_name=log.name,
-            )
+    with pytest.raises(ValueError) as err, tempfile.NamedTemporaryFile() as log:
+        de_logger.set_logging(
+            log_level="INFO",
+            max_backup_count=6,
+            file_rotate_by="nonsense",
+            max_file_size=1000000,
+            log_file_name=log.name,
+        )
     assert "Incorrect 'file_rotate_by'" in str(err.value)
 
 

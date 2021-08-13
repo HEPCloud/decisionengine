@@ -58,9 +58,11 @@ def PG_DE_DB_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
     so pytest knows the limitations on parallel usage of this
     database scope.
     """
-    with open(os.path.dirname(os.path.abspath(__file__)) + "/../postgresql.sql", 'r') as _fd:
-        with PG_DE_DB_WITHOUT_SCHEMA.cursor() as cursor:
-            cursor.execute(_fd.read())
+    with open(
+        os.path.dirname(os.path.abspath(__file__)) + "/../postgresql.sql"
+    ) as _fd, PG_DE_DB_WITHOUT_SCHEMA.cursor() as cursor:
+        cursor.execute(_fd.read())
+
     PG_DE_DB_WITHOUT_SCHEMA.commit()
     yield PG_DE_DB_WITHOUT_SCHEMA
 
