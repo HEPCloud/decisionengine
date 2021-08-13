@@ -25,4 +25,4 @@ def test_source_only_channel(deserver):
     # been constructed.
     deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli('--stop-channel', 'error_on_acquire')
-    assert "Channel error_on_acquire stopped cleanly." == output
+    assert output == "Channel error_on_acquire stopped cleanly."
