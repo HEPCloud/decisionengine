@@ -93,5 +93,5 @@ def verify_products(producer, data):
 
     err_msg = "\nThe following products have the wrong types:\n"
     for name, a_type, b_type in mismatched_types:
-        err_msg += f" - '{name}' (expected '{a_name}', got '{b_name}')\n"
+        err_msg += f" - '{name}' (expected '{a_type}', got '{b_type}')\n"
     raise RuntimeError(err_msg)

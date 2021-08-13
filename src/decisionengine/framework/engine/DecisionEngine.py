@@ -244,7 +244,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                           "publishers"):
                     txt += "\t{}:\n".format(i)
                     modules = channel_config.get(i, {})
-                    for mod_name, mod_config in modules.items():
+                    for mod_name in modules.keys():
                         txt += "\t\t{}\n".format(mod_name)
                         products = produces.get(mod_name, [])
                         for product in products:
@@ -279,7 +279,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                           "publishers"):
                     txt += "\t{}:\n".format(i)
                     modules = channel_config.get(i, {})
-                    for mod_name, mod_config in modules.items():
+                    for mod_name in modules.keys():
                         txt += "\t\t{}\n".format(mod_name)
                         txt += "\t\t\tconsumes : {}\n".format(consumes.get(mod_name, []))
                         txt += "\t\t\tproduces : {}\n".format(produces.get(mod_name, []))

@@ -142,7 +142,7 @@ class Workers:
 
     def _update_channel_states(self):
         with self._lock:
-            for channel, process in self._workers.items():
+            for process in self._workers.values():
                 if process.is_alive():
                     continue
                 if process.task_manager.state.inactive():

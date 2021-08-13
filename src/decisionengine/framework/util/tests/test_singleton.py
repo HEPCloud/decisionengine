@@ -102,7 +102,7 @@ def test_single_instance_threading_lock():
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
         threads = []
-        for i in range(15):
+        for _i in range(15):
             threads.append(executor.submit(make_class, barrier))
 
         for future in concurrent.futures.as_completed(threads):
