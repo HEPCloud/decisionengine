@@ -450,14 +450,12 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def rpc_reaper_status(self):
         interval = self.reaper.retention_interval
         state = self.reaper.state.get()
-        txt = 'reaper:\n\tstate: {}\n\tretention_interval: {}'.format(state, interval)
-        return txt
+        return 'reaper:\n\tstate: {}\n\tretention_interval: {}'.format(state, interval)
 
     def reaper_status(self):
         interval = self.reaper.retention_interval
         state = self.reaper.state.get()
-        txt = '\nreaper:\n\tstate: {}\n\tretention_interval: {}\n'.format(state, interval)
-        return txt
+        return '\nreaper:\n\tstate: {}\n\tretention_interval: {}\n'.format(state, interval)
 
     def rpc_query_tool(self, product, format=None, start_time=None):
         found = False
