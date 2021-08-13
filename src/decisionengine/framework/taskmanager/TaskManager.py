@@ -9,7 +9,7 @@ import time
 import multiprocessing
 import uuid
 
-import pandas
+import pandas as pd
 
 from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
@@ -491,10 +491,10 @@ class TaskManager:
             # Add new facts to the datablock
             # Add empty dataframe if nothing is available
             if le_list:
-                all_facts = pandas.concat([i["newfacts"] for i in le_list], ignore_index=True)
+                all_facts = pd.concat([i["newfacts"] for i in le_list], ignore_index=True)
             else:
                 self.logger.info("Logic engine(s) did not return any new facts")
-                all_facts = pandas.DataFrame()
+                all_facts = pd.DataFrame()
 
             data = {"de_logicengine_facts": all_facts}
             t = time.time()
