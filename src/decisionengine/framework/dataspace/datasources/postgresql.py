@@ -39,8 +39,7 @@ def generate_insert_query(table_name, keys):
     query = """
     INSERT INTO {} ({}) VALUES ({})
     """
-    query = query.format(table_name, ",".join(keys), ("%s," * len(keys))[:-1])
-    return query
+    return query.format(table_name, ",".join(keys), ("%s," * len(keys))[:-1])
 
 
 SELECT_QUERY = """
