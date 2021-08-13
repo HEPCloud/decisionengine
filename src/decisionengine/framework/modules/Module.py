@@ -81,7 +81,7 @@ def verify_products(producer, data):
 
     mismatched_types = []
     for (name, a_type), b_type in zip(expected.items(), actual.values()):
-        if a_type == Any or b_type == Any:
+        if Any in (a_type, b_type):
             continue
         if a_type != b_type:
             a_name = getattr(a_type, '__name__', None)
