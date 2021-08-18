@@ -54,9 +54,9 @@ def set_logging(
 
     # logconf is our global object edited in global space on purpose
 
-    logconf["handlers"]["de_file_debug"].update({"filename": "{}_debug.log".format(log_file_name)})
-    logconf["handlers"]["de_file_info"].update({"filename": "{}.log".format(log_file_name)})
-    logconf["handlers"]["file_structlog_debug"].update({"filename": "{}_structlog_debug.log".format(log_file_name)})
+    logconf["handlers"]["de_file_debug"].update({"filename": f"{log_file_name}_debug.log"})
+    logconf["handlers"]["de_file_info"].update({"filename": f"{log_file_name}.log"})
+    logconf["handlers"]["file_structlog_debug"].update({"filename": f"{log_file_name}_structlog_debug.log"})
 
     if file_rotate_by == "size":
         logconf["handlers"]["de_file_debug"].update(
@@ -126,7 +126,7 @@ if __name__ == "__main__":
         1,
         max_backup_count=5,
         max_file_size=100000,
-        log_file_name="%s/de_log/decision_engine_log0" % (os.environ.get("HOME")),
+        log_file_name=f"{os.environ.get('HOME')}/de_log/decision_engine_log0",
     )
     logger.error("THIS IS ERROR")
     logger.info("THIS IS INFO")

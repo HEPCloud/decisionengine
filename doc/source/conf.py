@@ -23,7 +23,7 @@ from decisionengine.framework.about import __version__, __title__, __author__  #
 # isort: on
 
 project = __title__
-copyright = '{}, {}'.format(time.localtime().tm_year, __author__)
+copyright = f'{time.localtime().tm_year}, {__author__}'
 author = __author__
 
 # The full version, including alpha/beta/rc tags
