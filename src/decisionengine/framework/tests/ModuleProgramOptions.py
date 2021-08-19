@@ -141,6 +141,7 @@ class AcquireWithConfig:
     def test(self, byte_str, expected_stderr=''):
         with tempfile.NamedTemporaryFile(suffix='.jsonnet') as config_file:
             config_file.write(byte_str)
+            config_file.flush()
             config_file.seek(0)
             rc, stdout, stderr = _run_as_main(self.name, '--acquire-with-config', config_file.name)
             if expected_stderr:
