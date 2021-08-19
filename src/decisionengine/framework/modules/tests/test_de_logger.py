@@ -28,6 +28,7 @@ def log_setup():
 @pytest.mark.skip(reason="test failing under structlog config, needs re-working")
 def test_by_nonsense_is_err(log_setup):
     with pytest.raises(ValueError) as err, tempfile.NamedTemporaryFile() as log:
+        log.flush()
         de_logger.set_logging(
             log_level="INFO",
             max_backup_count=6,
@@ -42,6 +43,7 @@ def test_by_nonsense_is_err(log_setup):
 @pytest.mark.skip(reason="test failing under structlog config, needs re-working")
 def test_by_size(log_setup):
     with tempfile.NamedTemporaryFile() as log:
+        log.flush()
         de_logger.set_logging(
             log_level="INFO", max_backup_count=6, file_rotate_by="size", max_file_size=1000000, log_file_name=log.name
         )
@@ -56,6 +58,7 @@ def test_by_size(log_setup):
 @pytest.mark.skip(reason="test failing under structlog config, needs re-working")
 def test_by_time(log_setup):
     with tempfile.NamedTemporaryFile() as log:
+        log.flush()
         de_logger.set_logging(
             log_level="INFO", rotation_interval=1, file_rotate_by="time", rotation_time_unit="D", log_file_name=log.name
         )
