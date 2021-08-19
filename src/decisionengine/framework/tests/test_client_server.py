@@ -61,6 +61,18 @@ def test_client_print_product_not_real(deserver):
     assert output == "Product NO_SUCH_PRODUCT: Not produced by any module"
 
 @pytest.mark.usefixtures("deserver")
+def test_client_print_product_not_string(deserver):
+    """Make sure the public API is protected against bad values"""
+    with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
+        deserver.de_server.rpc_print_product(123)
+    with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
+        deserver.de_server.rpc_print_product(b"123")
+    with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
+        deserver.de_server.rpc_print_product(pytest)
+    with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
+        deserver.de_server.rpc_print_product({"a": "b"})
+
+@pytest.mark.usefixtures("deserver")
 def test_client_print_product_types(deserver):
     # Test --types
     output = deserver.de_client_run_cli('--print-product', 'foo', '--types')

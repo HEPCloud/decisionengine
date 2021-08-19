@@ -151,8 +151,11 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return self.global_config.dump()
 
     def rpc_print_product(self, product, columns=None, query=None, types=False, format=None):
+        if not isinstance(product, str):
+            raise ValueError(f"Requested product should be a string not {type(product)}")
+
         found = False
-        txt = "Product {}: ".format(product)
+        txt = f"Product {product}: "
         with self.workers.access() as workers:
             for ch, worker in workers.items():
                 if not worker.is_alive():
@@ -165,7 +168,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                 if not r:
                     continue
                 found = True
-                txt += " Found in channel {}\n".format(ch)
+                txt += f" Found in channel {ch}\n"
                 self.logger.debug(f"Found channel:{ch} active when running rpc_print_product")
                 tm = self.dataspace.get_taskmanager(ch)
                 self.logger.debug(f"rpc_print_product - channel:{ch} taskmanager:{tm}")
@@ -208,7 +211,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                         else:
                             txt += dataframe_formatter(df)
                 except Exception as e:  # pragma: no cover
-                    txt += "\t\t{}\n".format(e)
+                    txt += f"\t\t{e}\n"
         if not found:
             txt += "Not produced by any module\n"
         return txt[:-1]
