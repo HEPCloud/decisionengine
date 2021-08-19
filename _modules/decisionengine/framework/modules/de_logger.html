@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.de_logger &mdash; decisionengine 1.6.99.post6.post11+g7bb5b64f documentation</title>
+  <title>decisionengine.framework.modules.de_logger &mdash; decisionengine 1.6.99.post6.post12+gcc91aa24 documentation</title>
   
 
   
@@ -220,9 +220,9 @@
 
     <span class="c1"># logconf is our global object edited in global space on purpose</span>
 
-    <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_debug.log&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">)})</span>
-    <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.log&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">)})</span>
-    <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;file_structlog_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_structlog_debug.log&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">)})</span>
+    <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_file_name</span><span class="si">}</span><span class="s2">_debug.log&quot;</span><span class="p">})</span>
+    <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_file_name</span><span class="si">}</span><span class="s2">.log&quot;</span><span class="p">})</span>
+    <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;file_structlog_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_file_name</span><span class="si">}</span><span class="s2">_structlog_debug.log&quot;</span><span class="p">})</span>
 
     <span class="k">if</span> <span class="n">file_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span>
         <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
@@ -292,7 +292,7 @@
         <span class="mi">1</span><span class="p">,</span>
         <span class="n">max_backup_count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
         <span class="n">max_file_size</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span>
-        <span class="n">log_file_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/de_log/decision_engine_log0&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HOME&quot;</span><span class="p">)),</span>
+        <span class="n">log_file_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">/de_log/decision_engine_log0&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;THIS IS ERROR&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;THIS IS INFO&quot;</span><span class="p">)</span>
