@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.Workers &mdash; decisionengine 1.6.99.post6.post5+gc055a5cd documentation</title>
+  <title>decisionengine.framework.engine.Workers &mdash; decisionengine 1.6.99.post6.post6+gcccd31bc documentation</title>
   
 
   
@@ -308,7 +308,7 @@
 
 <div class="viewcode-block" id="Workers._update_channel_states"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.Workers.Workers._update_channel_states">[docs]</a>    <span class="k">def</span> <span class="nf">_update_channel_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">channel</span><span class="p">,</span> <span class="n">process</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">process</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
                     <span class="k">continue</span>
                 <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">inactive</span><span class="p">():</span>
