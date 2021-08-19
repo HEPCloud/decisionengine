@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.util package &mdash; decisionengine 1.6.99.post6.post2+gc2d7835c documentation</title>
+  <title>decisionengine.framework.util package &mdash; decisionengine 1.6.99.post6.post4+ge8c689b4 documentation</title>
   
 
   
@@ -201,6 +201,45 @@
 <dd><p>Return all files in dir_path that match the provided extensions.</p>
 <p>If no extensions are given, then all files in dir_path are returned.</p>
 <p>Results are sorted by channel name to ensure stable output.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-decisionengine.framework.util.metrics">
+<span id="decisionengine-framework-util-metrics-module"></span><h2>decisionengine.framework.util.metrics module<a class="headerlink" href="#module-decisionengine.framework.util.metrics" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.util.metrics.Counter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.util.metrics.</span></span><span class="sig-name descname"><span class="pre">Counter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name</span></em>, <em class="sig-param"><span class="pre">documentation</span></em>, <em class="sig-param"><span class="pre">labelnames=()</span></em>, <em class="sig-param"><span class="pre">namespace=''</span></em>, <em class="sig-param"><span class="pre">subsystem=''</span></em>, <em class="sig-param"><span class="pre">unit=''</span></em>, <em class="sig-param"><span class="pre">registry=&lt;prometheus_client.registry.CollectorRegistry</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">_labelvalues=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/util/metrics.html#Counter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.util.metrics.Counter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">prometheus_client.metrics.Counter</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.util.metrics.Gauge">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.util.metrics.</span></span><span class="sig-name descname"><span class="pre">Gauge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/util/metrics.html#Gauge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.util.metrics.Gauge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">prometheus_client.metrics.Gauge</span></code></p>
+<p>Override prometheus client Gauge so that muliproccess_mode ‘liveall” is
+the default as opposed to ‘all’</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="decisionengine.framework.util.metrics.Gauge._DEFAULT_MULTIPROC_MODE">
+<span class="sig-name descname"><span class="pre">_DEFAULT_MULTIPROC_MODE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'liveall'</span></em><a class="headerlink" href="#decisionengine.framework.util.metrics.Gauge._DEFAULT_MULTIPROC_MODE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.util.metrics.Gauge.__determine_multiprocess_mode_existence">
+<span class="sig-name descname"><span class="pre">__determine_multiprocess_mode_existence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#decisionengine.framework.util.metrics.Gauge.__determine_multiprocess_mode_existence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.util.metrics.Histogram">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.util.metrics.</span></span><span class="sig-name descname"><span class="pre">Histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name</span></em>, <em class="sig-param"><span class="pre">documentation</span></em>, <em class="sig-param"><span class="pre">labelnames=()</span></em>, <em class="sig-param"><span class="pre">namespace=''</span></em>, <em class="sig-param"><span class="pre">subsystem=''</span></em>, <em class="sig-param"><span class="pre">unit=''</span></em>, <em class="sig-param"><span class="pre">registry=&lt;prometheus_client.registry.CollectorRegistry</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">_labelvalues=None</span></em>, <em class="sig-param"><span class="pre">buckets=(0.005</span></em>, <em class="sig-param"><span class="pre">0.01</span></em>, <em class="sig-param"><span class="pre">0.025</span></em>, <em class="sig-param"><span class="pre">0.05</span></em>, <em class="sig-param"><span class="pre">0.075</span></em>, <em class="sig-param"><span class="pre">0.1</span></em>, <em class="sig-param"><span class="pre">0.25</span></em>, <em class="sig-param"><span class="pre">0.5</span></em>, <em class="sig-param"><span class="pre">0.75</span></em>, <em class="sig-param"><span class="pre">1.0</span></em>, <em class="sig-param"><span class="pre">2.5</span></em>, <em class="sig-param"><span class="pre">5.0</span></em>, <em class="sig-param"><span class="pre">7.5</span></em>, <em class="sig-param"><span class="pre">10.0</span></em>, <em class="sig-param"><span class="pre">inf)</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/util/metrics.html#Histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.util.metrics.Histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">prometheus_client.metrics.Histogram</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.util.metrics.Summary">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.util.metrics.</span></span><span class="sig-name descname"><span class="pre">Summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name</span></em>, <em class="sig-param"><span class="pre">documentation</span></em>, <em class="sig-param"><span class="pre">labelnames=()</span></em>, <em class="sig-param"><span class="pre">namespace=''</span></em>, <em class="sig-param"><span class="pre">subsystem=''</span></em>, <em class="sig-param"><span class="pre">unit=''</span></em>, <em class="sig-param"><span class="pre">registry=&lt;prometheus_client.registry.CollectorRegistry</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">_labelvalues=None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/util/metrics.html#Summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.util.metrics.Summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">prometheus_client.metrics.Summary</span></code></p>
 </dd></dl>
 
 </div>

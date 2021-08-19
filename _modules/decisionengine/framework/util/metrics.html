@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.FailingSourceProxy &mdash; decisionengine 1.6.99.post6.post4+ge8c689b4 documentation</title>
+  <title>decisionengine.framework.util.metrics &mdash; decisionengine 1.6.99.post6.post4+ge8c689b4 documentation</title>
   
 
   
@@ -148,7 +148,7 @@
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
-      <li>decisionengine.framework.tests.FailingSourceProxy</li>
+      <li>decisionengine.framework.util.metrics</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -163,16 +163,41 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for decisionengine.framework.tests.FailingSourceProxy</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">SourceProxy</span>
+  <h1>Source code for decisionengine.framework.util.metrics</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">prometheus_client</span>
 
-<div class="viewcode-block" id="FailingSourceProxy"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.FailingSourceProxy.FailingSourceProxy">[docs]</a><span class="k">class</span> <span class="nc">FailingSourceProxy</span><span class="p">(</span><span class="n">SourceProxy</span><span class="o">.</span><span class="n">SourceProxy</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<div class="viewcode-block" id="Gauge"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Gauge">[docs]</a><span class="k">class</span> <span class="nc">Gauge</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Gauge</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Override prometheus client Gauge so that muliproccess_mode &#39;liveall&quot; is</span>
+<span class="sd">    the default as opposed to &#39;all&#39;&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="FailingSourceProxy.acquire"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.FailingSourceProxy.FailingSourceProxy.acquire">[docs]</a>    <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Failing source proxy test&quot;</span><span class="p">)</span></div></div>
+    <span class="n">_DEFAULT_MULTIPROC_MODE</span> <span class="o">=</span> <span class="s2">&quot;liveall&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__determine_multiprocess_mode_existence</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">multiprocess_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_DEFAULT_MULTIPROC_MODE</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__determine_multiprocess_mode_existence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;multiprocess_mode&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MULTIPROC_MODES</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Counter"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Counter">[docs]</a><span class="k">class</span> <span class="nc">Counter</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Counter</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Histogram"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Histogram">[docs]</a><span class="k">class</span> <span class="nc">Histogram</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Histogram</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Summary"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Summary">[docs]</a><span class="k">class</span> <span class="nc">Summary</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Summary</span><span class="p">):</span>
+    <span class="k">pass</span></div>
 </pre></div>
 
            </div>
