@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.ModuleProgramOptions &mdash; decisionengine 1.6.99.post6.post15+g7806aa00 documentation</title>
+  <title>decisionengine.framework.tests.ModuleProgramOptions &mdash; decisionengine 1.6.99.post6.post16+g8fb128d3 documentation</title>
   
 
   
@@ -307,6 +307,7 @@
 <div class="viewcode-block" id="AcquireWithConfig.test"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions.AcquireWithConfig.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">byte_str</span><span class="p">,</span> <span class="n">expected_stderr</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.jsonnet&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file</span><span class="p">:</span>
             <span class="n">config_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">byte_str</span><span class="p">)</span>
+            <span class="n">config_file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="n">config_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;--acquire-with-config&#39;</span><span class="p">,</span> <span class="n">config_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">expected_stderr</span><span class="p">:</span>
