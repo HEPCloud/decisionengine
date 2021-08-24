@@ -29,25 +29,25 @@ CHANNEL_STATE_GAUGE = Gauge('de_channel_state', 'Channel state', [
     'channel_name',
 ])
 
-SOURCE_ACQUIRE_GAUGE = Gauge('de_source_last_acquire', 'Last time a source '
+SOURCE_ACQUIRE_GAUGE = Gauge('de_source_last_acquire_timestamp_seconds', 'Last time a source '
                              'successfully ran its acquire function', [
                                  'channel_name',
                                  'source_name',
                              ])
 
-LOGICENGINE_RUN_GAUGE = Gauge('de_logicengine_last_run', 'Last time '
+LOGICENGINE_RUN_GAUGE = Gauge('de_logicengine_last_run_timestamp_seconds', 'Last time '
                               'a logicengine successfully ran', [
                                   'channel_name',
                                   'logicengine_name',
                               ])
 
-TRANSFORM_RUN_GAUGE = Gauge('de_transform_last_run', 'Last time a '
+TRANSFORM_RUN_GAUGE = Gauge('de_transform_last_run_timestamp_seconds', 'Last time a '
                             'transform successfully ran', [
                                 'channel_name',
                                 'transform_name',
                             ])
 
-PUBLISHER_RUN_GAUGE = Gauge('de_publisher_last_run', 'Last time '
+PUBLISHER_RUN_GAUGE = Gauge('de_publisher_last_run_timestamp_seconds', 'Last time '
                             'a publisher successfully ran', [
                                 'channel_name',
                                 'publisher_name',
@@ -465,7 +465,8 @@ class TaskManager(ComponentManager):
             self.logger.info(f"starting loop for {key}")
             event_list.append(source.data_updated)
             SOURCE_ACQUIRE_GAUGE.labels(self.name, source.name)
-            thread = threading.Thread(target=self.run_source, name=source.name, args=(source,))
+            thread = threading.Thread(
+                target=self.run_source, name=source.name, args=(source,))
             source_threads.append(thread)
             # Cannot catch exception from function called in separate thread
             thread.start()
@@ -549,9 +550,11 @@ class TaskManager(ComponentManager):
             # Add new facts to the datablock
             # Add empty dataframe if nothing is available
             if le_list:
-                all_facts = pd.concat([i["newfacts"] for i in le_list], ignore_index=True)
+                all_facts = pd.concat([i["newfacts"]
+                                      for i in le_list], ignore_index=True)
             else:
-                self.logger.info("Logic engine(s) did not return any new facts")
+                self.logger.info(
+                    "Logic engine(s) did not return any new facts")
                 all_facts = pd.DataFrame()
 
             data = {"de_logicengine_facts": all_facts}
