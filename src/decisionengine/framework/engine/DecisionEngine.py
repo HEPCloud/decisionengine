@@ -40,14 +40,18 @@ from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL
 from decisionengine.framework.util.metrics import *
 
 # DecisionEngine metrics
-STATUS_SUMMARY = Summary('de_client_status_seconds', 'Time to run de-client --status')
-PRINT_PRODUCT_SUMMARY = Summary('de_client_print_product_seconds', 'Time to run de-client --print-product')
-START_CHANNEL_SUMMARY = Summary('de_client_start_channel_seconds',
+STATUS_SUMMARY = Summary(
+    'de_client_status_duration_seconds', 'Time to run de-client --status')
+PRINT_PRODUCT_SUMMARY = Summary(
+    'de_client_print_product_duration_seconds', 'Time to run de-client --print-product')
+START_CHANNEL_SUMMARY = Summary('de_client_start_channel_duration_seconds',
                                 'Time to run de-client --start-channel', ['channel_name'])
-RM_CHANNEL_SUMMARY = Summary('de_client_rm_channel_seconds',
+RM_CHANNEL_SUMMARY = Summary('de_client_rm_channel_duration_seconds',
                              'Time to run de-client --stop-channel', ['channel_name'])
-QUERY_TOOL_SUMMARY = Summary('de_client_query_seconds', 'Time to run de-client --query', ['product'])
-METRICS_SUMMARY = Summary('de_client_metrics_seconds', 'Time to run de-client --status')
+QUERY_TOOL_SUMMARY = Summary(
+    'de_client_query_duration_seconds', 'Time to run de-client --query', ['product'])
+METRICS_SUMMARY = Summary(
+    'de_client_metrics_duration_seconds', 'Time to run de-client --status')
 
 
 class StopState(enum.Enum):
