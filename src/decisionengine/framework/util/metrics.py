@@ -16,10 +16,7 @@ class Gauge(prometheus_client.Gauge):
     def __determine_multiprocess_mode_existence(self, *args, **kwargs):
         if "multiprocess_mode" in kwargs:
             return True
-        for arg in args:
-            if isinstance(arg, str) and arg in self._MULTIPROC_MODES:
-                return True
-        return False
+        return any(isinstance(arg, str) and arg in self._MULTIPROC_MODES for arg in args)
 
 
 class Counter(prometheus_client.Counter):
