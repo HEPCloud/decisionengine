@@ -1,4 +1,3 @@
-import structlog
 import pandas
 from itertools import chain
 
@@ -7,22 +6,21 @@ from decisionengine.framework.logicengine.BooleanExpression import BooleanExpres
 from decisionengine.framework.modules.Module import Module
 
 class LogicEngine(Module):
-    def __init__(self, cfg, channel_name):
+    def __init__(self, cfg):
         super().__init__(cfg)
-        self.logger = structlog.getLogger(f"{channel_name}")
         self.logger = self.logger.bind(module=__name__.split(".")[-1])
         self.facts = {name: BooleanExpression(expr) for name, expr in cfg["facts"].items()}
         self.rule_engine = RuleEngine(cfg["facts"].keys(), cfg["rules"])
 
     def produces(self):
-        self.logger.debug("in LE::produces()")
+        self.get_logger().debug("in LE::produces()")
         return ["actions", "newfacts"]
 
     def consumes(self):
         """Return the names of all the items that must be in the DataBlock for
         the rules to be evaluated.
         """
-        self.logger.debug("in LE::consumes()")
+        self.get_logger().debug("in LE::consumes()")
         list_of_lists = [f.required_names for f in self.facts.values()]
         return list(set(chain(*list_of_lists)))
 
@@ -43,10 +41,10 @@ class LogicEngine(Module):
                 msg += "Allowed fact names are:\n"
                 for key in db:
                     msg += "  '" + key + "'\n"
-            self.logger.error(msg)
+            self.get_logger().error(msg)
             raise e
         except Exception as e:
-            self.logger.exception("Unexpected exception while evaluating facts.")
+            self.get_logger().exception("Unexpected exception while evaluating facts.")
             raise e
 
     def evaluate(self, db):
@@ -57,14 +55,14 @@ class LogicEngine(Module):
         :type db: :obj:`DataBlock`
         :arg db: Products used to evaluate facts.
         """
-        self.logger.info("LE: calling evaluate_facts")
+        self.get_logger().info("LE: calling evaluate_facts")
 
         evaluated_facts = self.evaluate_facts(db)
         for key, val in evaluated_facts.items():
-            self.logger.info(f"Evaluated Fact: {key} -> Value: {val} -> TypeOf(Value): {type(val)}")
+            self.get_logger().info(f"Evaluated Fact: {key} -> Value: {val} -> TypeOf(Value): {type(val)}")
 
         # Process rules
-        self.logger.info("LE: calling execute")
+        self.get_logger().info("LE: calling execute")
         actions, newfacts = self.rule_engine.execute(evaluated_facts)
         return {"actions": actions, "newfacts": self._create_facts_dataframe(newfacts)}
 
@@ -84,7 +82,7 @@ class LogicEngine(Module):
             }
         }
         """
-        self.logger.debug("in LE::_create_facts_dataframe")
+        self.get_logger().debug("in LE::_create_facts_dataframe")
         # Extract new facts from le_result
         # Dataframe column values for Facts
         rule_name = []

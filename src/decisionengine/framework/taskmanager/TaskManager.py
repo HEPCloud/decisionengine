@@ -66,12 +66,11 @@ def _create_module_instance(config_dict, base_class, channel_name):
             class_name = _find_only_one_subclass(my_module, base_class)
 
     class_type = getattr(my_module, class_name)
-    #here we add the channel name to the LogicEngine class to get the correct logger
-    if class_name == "LogicEngine":
-        return class_type(config_dict["parameters"], channel_name)
-    else:
-        return class_type(config_dict["parameters"])
 
+    if "channel_name" in config_dict["parameters"].keys():
+        return class_type(config_dict["parameters"])
+    else:
+        return class_type(dict(**config_dict["parameters"], channel_name=channel_name))
 
 class Worker:
     """

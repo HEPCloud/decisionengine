@@ -42,6 +42,6 @@ def test_acquire_for_sources():
                              expected_stderr="Configuration.*does not contain a 'parameters' table")
     acquire_with_config.test(jsonnet_variable +
                              b"{ sources: { src: { module: spec," +
-                             b"  parameters: { multiplier: 2 } } } }")
+                             b"  parameters: { channel_name: 'test', multiplier: 2} } } }")
 
     opts.AcquireWithSampleConfig('SourceWithSampleConfigNOP').test()

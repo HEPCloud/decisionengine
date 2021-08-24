@@ -1,3 +1,5 @@
+import structlog
+
 from collections import OrderedDict
 from typing import Any
 
@@ -11,6 +13,8 @@ class Module:
     def __init__(self, set_of_parameters):
         self.parameters = set_of_parameters
         self.data_block = None
+        self.logger = structlog.getLogger(set_of_parameters["channel_name"])
+        self.logger = self.logger.bind(module=__name__.split(".")[-1])
 
     def get_parameters(self):
         return self.parameters
@@ -20,6 +24,9 @@ class Module:
 
     def set_data_block(self, data_block):
         self.data_block = data_block
+
+    def get_logger(self):
+        return self.logger
 
 # ====================================================================================
 # Auxiliary facilities for produces, consumes, and supports_config

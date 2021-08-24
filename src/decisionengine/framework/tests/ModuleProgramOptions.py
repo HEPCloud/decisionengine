@@ -149,15 +149,16 @@ class AcquireWithConfig:
                 assert re.search(expected_stderr, _normalize(stderr), re.DOTALL)
             else:
                 assert rc == 0
-                assert _normalize(stdout) == _expected_acquire_result(self.name, config_file, 2)
+                assert _normalize(stdout) == _expected_acquire_result(self.name, config_file, 2, "test")
 
-def _expected_acquire_result(name, config_file=None, multiplier=1):
+def _expected_acquire_result(name, config_file=None, multiplier=1, channel_name="test1"):
     result = ''
     if config_file is None:
         result += f"Running acquire for source {name} using default configuration:"
     else:
         result += f"Running acquire for source {name} using configuration from {config_file.name}:"
-    result += " {'multiplier':  " + f"{multiplier}" + \
+    result += " {'channel_name': " + f"{channel_name}" + \
+              "} {'multiplier':  " + f"{multiplier}" + \
               "} Produced products: {'foo':      col1  col2 " + \
               f"0  value1   {0.5 * multiplier} " + \
               f"1  value2   {2.0 * multiplier}" + "}"
