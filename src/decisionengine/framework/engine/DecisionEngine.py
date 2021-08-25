@@ -52,6 +52,8 @@ QUERY_TOOL_SUMMARY = Summary(
     'de_client_query_duration_seconds', 'Time to run de-client --query', ['product'])
 METRICS_SUMMARY = Summary(
     'de_client_metrics_duration_seconds', 'Time to run de-client --status')
+WORKERS_COUNT = Gauge(
+    'de_workers_total', 'Number of workers started by the Decision Engine')
 
 
 class StopState(enum.Enum):
@@ -314,6 +316,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             generation_id = 1
             task_manager = TaskManager.TaskManager(channel_name, generation_id, channel_config, self.global_config)
             worker = Worker(task_manager, self.global_config["logger"])
+            WORKERS_COUNT.inc()
             with self.workers.access() as workers:
                 workers[channel_name] = worker
             self.logger.debug(f"Trying to start {channel_name}")
@@ -375,6 +378,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             suffix = "s" if maybe_timeout > 1 else ""
             return f"Channel {channel} has been killed due to shutdown timeout ({maybe_timeout} second{suffix})."
         assert rc == StopState.Clean
+        WORKERS_COUNT.dec()
         return f"Channel {channel} stopped cleanly."
 
     def rm_channel(self, channel, maybe_timeout):
