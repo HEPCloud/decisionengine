@@ -294,8 +294,8 @@ class TaskManager(ComponentManager):
                         # If we are signaled to stop, don't override that state
                         # otherwise the last decision_cycle completed without error
                         self.state.set(State.STEADY)
-                        CHANNEL_STATE_GAUGE.labels(self.name).set_function(
-                            self.get_state_value)
+                        CHANNEL_STATE_GAUGE.labels(
+                            self.name).set(self.get_state_value())
                 if not self.state.should_stop():
                     self.wait_for_any(done_events)
             except Exception:  # pragma: no cover
@@ -325,14 +325,12 @@ class TaskManager(ComponentManager):
 
     def set_to_shutdown(self):
         self.state.set(State.SHUTTINGDOWN)
-        CHANNEL_STATE_GAUGE.labels(self.name).set_function(
-            self.get_state_value)
+        CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
         delogger.debug("Shutting down. Will call shutdown on all publishers")
         for worker in self.workflow.publisher_workers.values():
             worker.module_instance.shutdown()
         self.state.set(State.SHUTDOWN)
-        CHANNEL_STATE_GAUGE.labels(self.name).set_function(
-            self.get_state_value)
+        CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
 
     def take_offline(self, current_data_block):
         """
