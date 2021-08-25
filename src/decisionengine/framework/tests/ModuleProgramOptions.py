@@ -1,15 +1,26 @@
+import os
 import re
 import subprocess
 import sys
 import tempfile
 
+import decisionengine
+
 def _run_as_main(name, *program_options):
+    my_env = os.environ.copy()
+    de_path = os.path.dirname(os.path.dirname(decisionengine.__file__))
+    if 'PYTHONPATH' in my_env:
+        my_env['PYTHONPATH'] = f"{my_env['PYTHONPATH']}:{de_path}"
+    else:
+        my_env['PYTHONPATH'] = de_path
+
     rc = subprocess.run([sys.executable,
                          '-m',
                          'decisionengine.framework.tests.' + name,
                          *program_options],
                         stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE)
+                        stderr=subprocess.PIPE,
+                        env=my_env)
     return rc.returncode, rc.stdout.decode().strip(), rc.stderr.decode().strip()
 
 def _normalize(string):
