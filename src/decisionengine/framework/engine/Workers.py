@@ -104,7 +104,7 @@ class Worker(multiprocessing.Process):
             }
         )
         logging.config.dictConfig(logconf)
-        logger = logger.bind(module=__name__.split(".")[-1])
+        logger.bind(module=__name__.split(".")[-1])
 
         channel_log_level = self.logger_config.get(
             "global_channel_log_level", "WARNING"

@@ -14,8 +14,8 @@ pre_chain = [
 ]
 
 
-global pylogconfig
-
+# this dictionary is a shared singleton used as
+# a global store of the runtime logger's settings.
 pylogconfig = {
     "version": 1,
     "disable_existing_loggers": False,
