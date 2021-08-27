@@ -13,7 +13,7 @@ class Transform(Module):
     def __init__(self, set_of_parameters):
         super().__init__(set_of_parameters)
         self.name_list = []
-
+        self.logger.bind(class_module=__name__.split(".")[-1])
     """
     decide: The action function for a Transform. Will
     retrieve from the DataBlock the data products

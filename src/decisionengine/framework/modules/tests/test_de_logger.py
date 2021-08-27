@@ -5,7 +5,7 @@ import pytest
 import structlog
 
 import decisionengine.framework.modules.de_logger as de_logger
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME
 
 @pytest.fixture
 def log_setup():

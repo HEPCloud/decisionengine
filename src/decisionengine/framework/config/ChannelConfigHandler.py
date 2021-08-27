@@ -13,10 +13,12 @@ import os
 from decisionengine.framework.config import ValidConfig
 import decisionengine.framework.modules.de_logger as de_logger
 import decisionengine.framework.util.fs as fs
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME
 
 _MANDATORY_CHANNEL_KEYS = {'sources', 'logicengines', 'transforms', 'publishers'}
 _ALLOWED_CHANNEL_KEYS = _MANDATORY_CHANNEL_KEYS | {'task_manager'}
 _MANDATORY_MODULE_KEYS = {"module", "parameters"}
+
 
 def _make_de_logger(global_config):
     if 'logger' not in global_config:
@@ -67,7 +69,7 @@ class ChannelConfigHandler():
         self.channel_config_dir = channel_config_dir
         self.channels = {}
         self.logger = _make_de_logger(global_config)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
 
     def get_channels(self):
         return self.channels

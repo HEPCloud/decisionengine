@@ -7,13 +7,12 @@ import logging.handlers
 import logging.config
 import structlog
 from decisionengine.framework.modules.logging_configDict import pylogconfig as logconf
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 
 MB = 1000000
 
-LOGGERNAME = "decisionengine"
-
 logger = structlog.getLogger(LOGGERNAME)
-logger = logger.bind(module=__name__.split(".")[-1])
+logger = logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
 
 
 def set_logging(

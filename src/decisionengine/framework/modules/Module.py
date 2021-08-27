@@ -1,7 +1,10 @@
+import structlog
+
 from collections import OrderedDict
 from typing import Any
 
 from decisionengine.framework.dataspace import datablock
+from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
 
 class Module:
     """
@@ -11,6 +14,10 @@ class Module:
     def __init__(self, set_of_parameters):
         self.parameters = set_of_parameters
         self.data_block = None
+        self.channel_name = set_of_parameters["channel_name"]
+
+        self.logger = structlog.getLogger(CHANNELLOGGERNAME)
+        self.logger = self.logger.bind(class_module=__name__.split(".")[-1], channel=self.channel_name)
 
     def get_parameters(self):
         return self.parameters

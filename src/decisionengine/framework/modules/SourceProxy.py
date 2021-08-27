@@ -12,14 +12,14 @@ import decisionengine.framework.dataspace.dataspace as dataspace
 from decisionengine.framework.modules import Source
 from decisionengine.framework.modules.Source import Parameter
 from decisionengine.framework.modules.translate_product_name import translate_all
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
 
 RETRIES = 10
 RETRY_TO = 60
-must_have = ('channel_name', 'Dataproducts')
+must_have = ('source_channel', 'Dataproducts')
 
 
-@Source.supports_config(Parameter('channel_name', type=str, comment="Channel from which to retrieve data products."),
+@Source.supports_config(Parameter('source_channel', type=str, comment="Channel from which to retrieve data products."),
                         Parameter('Dataproducts', type=list, comment="List of data products to retrieve."),
                         Parameter('retries', default=RETRIES, comment="Number of attempts allowed to fetch products."),
                         Parameter('retry_timeout', default=RETRY_TO, comment="Number of seconds to wait between retries."))
@@ -28,12 +28,13 @@ class SourceProxy(Source.Source):
         if not set(must_have).issubset(set(config.keys())):
             raise RuntimeError(
                 'SourceProxy misconfigured. Must have {} defined'.format(must_have))
-        self.source_channel = config['channel_name']
+        self.source_channel = config['source_channel']
         self.data_keys = translate_all(config['Dataproducts'])
         self.retries = config.get('retries', RETRIES)
         self.retry_to = config.get('retry_timeout', RETRY_TO)
-        self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
+        self.channel_name = config.get('channel_name')
+        self.logger = structlog.getLogger(CHANNELLOGGERNAME)
+        self.logger = self.logger.bind(class_module=__name__.split(".")[-1], channel=self.channel_name)
 
         # Hack - it is possible for a subclass to declare @produces,
         #        in which case, we do not want to override that.

@@ -1,5 +1,5 @@
 from decisionengine.framework.logicengine.FactLookup import FactLookup
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 import structlog
 
 class RuleEngine:
@@ -14,7 +14,7 @@ class RuleEngine:
         self.fact_lookup = FactLookup(fact_names, rules_cfg)
         self.rules = self.fact_lookup.sorted_rules(rules_cfg)
         self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
 
     def execute(self, evaluated_facts):
         """

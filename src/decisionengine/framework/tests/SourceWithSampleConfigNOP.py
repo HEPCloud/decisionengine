@@ -5,6 +5,7 @@ from decisionengine.framework.modules.Source import Parameter
 
 
 @Source.supports_config(Parameter('multiplier', type=int))
+@Source.supports_config(Parameter('channel_name', type=str))
 @Source.produces(foo=pd.DataFrame)
 class SourceWithSampleConfigNOP(Source.Source):
 
@@ -19,4 +20,4 @@ class SourceWithSampleConfigNOP(Source.Source):
         ])}
 
 
-Source.describe(SourceWithSampleConfigNOP, sample_config={'multiplier': 1})
+Source.describe(SourceWithSampleConfigNOP, sample_config={'multiplier': 1, 'channel_name': "test1"})

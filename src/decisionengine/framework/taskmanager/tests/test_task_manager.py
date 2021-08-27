@@ -22,7 +22,8 @@ _CWD = os.path.dirname(os.path.abspath(__file__))
 _CONFIG_PATH = os.path.join(_CWD, "../../tests/etc/decisionengine")
 _CHANNEL_CONFIG_DIR = os.path.join(_CWD, "channels")
 
-_TEST_CHANNEL_NAMES = ("test_channel",)
+_TEST_CHANNEL_NAMES = ["test_channel", ]
+_TEST_CHANNEL_NAMES2 = ["test_channel2", ]
 
 
 class RunChannel:
@@ -57,6 +58,13 @@ def test_taskmanager_init(global_config):
     for channel in _TEST_CHANNEL_NAMES:
         task_manager = TaskManager(channel, 1, get_channel_config(channel), global_config)
         assert task_manager.state.has_value(State.BOOT)
+
+
+@pytest.mark.usefixtures("global_config")
+def test_taskmanager_channel_name_in_config(global_config):
+    for channel in _TEST_CHANNEL_NAMES2:
+        task_manager = TaskManager(channel, 1, get_channel_config(channel), global_config)
+        assert task_manager.name == "name_in_config"
 
 
 @pytest.mark.usefixtures("global_config")

@@ -24,8 +24,7 @@ import multiprocessing
 import structlog
 import threading
 
-from decisionengine.framework.modules.de_logger import LOGGERNAME
-
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 
 class State(enum.Enum):
     BOOT = 0
@@ -58,7 +57,7 @@ class ProcessingState:
         self._lock = multiprocessing.RLock()
         self._state = multiprocessing.Value('i', allowed_state.value)
         self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
 
     @property
     def lock(self):

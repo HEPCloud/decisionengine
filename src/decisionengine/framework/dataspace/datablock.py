@@ -7,7 +7,7 @@ import uuid
 import zlib
 import structlog
 from collections import UserDict
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 
 ###############################################################################
 # TODO:
@@ -207,8 +207,8 @@ class DataBlock:
         self.__internal_data_write_lock = threading.Lock()
         self.__internal_data_read_lock = threading.Lock()
         self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
-        self.logger.debug('Initializing a datablock')
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
+        self.logger.debug('Initializing a datablock for %s', name)
         self.dataspace = dataspace
 
         # If taskmanager_id is None create new or

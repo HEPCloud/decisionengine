@@ -2,10 +2,10 @@ import os
 from pathlib import Path
 import structlog
 
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 
 logger = structlog.getLogger(LOGGERNAME)
-logger = logger.bind(module=__name__.split(".")[-1])
+logger = logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
 
 
 def files_with_extensions(dir_path, *extensions):
