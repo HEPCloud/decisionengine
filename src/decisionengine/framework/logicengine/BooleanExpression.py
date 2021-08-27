@@ -13,7 +13,7 @@ import ast
 import structlog
 import re
 
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 
 # If support for direct use of numpy and pandas functions is desired,
 # import the numpy and pandas modules and adjust the facts_globals:
@@ -24,7 +24,7 @@ _facts_globals = {}
 _re = re.compile(r"fail_on_error\s*\(\s*(.*)\s*\)")
 
 logger = structlog.getLogger(LOGGERNAME)
-logger = logger.bind(module=__name__.split(".")[-1])
+logger = logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
 
 
 def maybe_fail_on_error(expr):

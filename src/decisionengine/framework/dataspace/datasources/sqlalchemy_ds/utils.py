@@ -6,7 +6,7 @@ import os
 import sqlalchemy
 import structlog
 
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME
 
 __all__ = ["orm_as_dict", "clone_model", "add_engine_pidguard"]
 

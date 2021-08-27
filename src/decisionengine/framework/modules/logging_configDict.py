@@ -3,6 +3,11 @@ Global Logger config dictionary used by all loggers (in their own subkeys)
 """
 import structlog
 
+LOGGERNAME = "decisionengine"
+DELOGGER_CHANNEL_NAME = "engine"
+
+CHANNELLOGGERNAME = "channel"
+
 userformat = "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s"
 
 timestamper = structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S")
@@ -13,8 +18,6 @@ pre_chain = [
     timestamper,
 ]
 
-
-global pylogconfig
 
 pylogconfig = {
     "version": 1,

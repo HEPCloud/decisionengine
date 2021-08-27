@@ -22,13 +22,14 @@ from decisionengine.framework.taskmanager.ProcessingState import State
 from decisionengine.framework.taskmanager.ProcessingState import ProcessingState
 from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
 from decisionengine.framework.util.subclasses import all_subclasses
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
+from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
 
 _TRANSFORMS_TO = 300  # 5 minutes
 _DEFAULT_SCHEDULE = 300  # ""
 
 delogger = structlog.getLogger(LOGGERNAME)
-delogger = delogger.bind(module=__name__.split(".")[-1])
+delogger = delogger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
 
 
 def _find_only_one_subclass(module, base_class):
@@ -66,12 +67,7 @@ def _create_module_instance(config_dict, base_class, channel_name):
             class_name = _find_only_one_subclass(my_module, base_class)
 
     class_type = getattr(my_module, class_name)
-    #here we add the channel name to the LogicEngine class to get the correct logger
-    if class_name == "LogicEngine":
-        return class_type(config_dict["parameters"], channel_name)
-    else:
-        return class_type(config_dict["parameters"])
-
+    return class_type(dict(**config_dict["parameters"], channel_name=channel_name))
 
 class Worker:
     """
@@ -145,10 +141,15 @@ class TaskManager:
         self.id = str(uuid.uuid4()).upper()
         self.dataspace = dataspace.DataSpace(global_config)
         self.data_block_t0 = datablock.DataBlock(self.dataspace, name, self.id, generation_id)  # my current data block
-        self.name = name
-        self.logger = structlog.getLogger(f"{self.name}")
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
-        self.channel = Channel(channel_dict, name)
+
+        if "channel_name" in channel_dict.keys():
+            self.name = channel_dict["channel_name"]
+        else:
+            self.name = name
+
+        self.logger = structlog.getLogger(CHANNELLOGGERNAME)
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=self.name)
+        self.channel = Channel(channel_dict, self.name)
         self.state = ProcessingState()
         self.loglevel = multiprocessing.Value("i", logging.WARNING)
         self.lock = threading.Lock()

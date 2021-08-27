@@ -25,7 +25,7 @@ from threading import Event
 from decisionengine.framework.config import ChannelConfigHandler, ValidConfig, policies
 from decisionengine.framework.dataspace.maintain import Reaper
 from decisionengine.framework.engine.Workers import Worker, Workers
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
@@ -64,7 +64,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.reaper = Reaper(self.global_config)
         self.startup_complete = Event()
         self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
         self.logger.info(f"DecisionEngine started on {server_address}")
 
     def get_logger(self):

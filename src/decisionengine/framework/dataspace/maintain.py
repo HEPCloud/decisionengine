@@ -4,8 +4,7 @@ import threading
 import decisionengine.framework.dataspace.dataspace as dataspace
 from decisionengine.framework.taskmanager.ProcessingState import State, STOPPING_CONDITIONS
 from decisionengine.framework.taskmanager.ProcessingState import ProcessingState
-from decisionengine.framework.modules.de_logger import LOGGERNAME
-
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 
 class Reaper():
     """
@@ -25,7 +24,7 @@ class Reaper():
         """
         # Validate configuration
         self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
         self.logger.debug('Initializing a reaper')
 
         # since we must validate this, have a private store space

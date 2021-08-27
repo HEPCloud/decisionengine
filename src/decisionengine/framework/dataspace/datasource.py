@@ -1,6 +1,6 @@
 import abc
 import structlog
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 
 class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
 
@@ -24,7 +24,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
 
         self.config = config
         self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
         self.logger.debug('Initializing a datasource')
 
     def __repr__(self):  # pragma: no cover

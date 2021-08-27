@@ -12,7 +12,7 @@ from sqlalchemy.orm import scoped_session
 
 import decisionengine.framework.dataspace.datasource as ds
 
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 
 from . import db_schema
 from .utils import add_engine_pidguard, clone_model, orm_as_dict
@@ -52,7 +52,7 @@ class SQLAlchemyDS(ds.DataSource):
     def __init__(self, config_dict):
         super().__init__(config_dict)
         self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
 
         if "echo" in config_dict and config_dict["echo"]:
             self.logger.debug(f"Initializing a SQLAlchemyDS datasource: {config_dict}")

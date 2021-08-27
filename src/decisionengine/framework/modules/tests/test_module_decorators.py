@@ -30,7 +30,7 @@ def test_wrong_product_names():
         def acquire(self):
             return {'b': ''}
 
-    maker = BMaker({})
+    maker = BMaker({"channel_name": "test"})
     expected_err_msg = "The following products were not produced:\n" + \
                        " - 'a' of type 'str'\n\n" + \
                        "The following products were not declared:\n" + \
@@ -48,7 +48,7 @@ def test_wrong_product_types():
         def acquire(self):
             return {'a': 42, 'b': 17}
 
-    maker = AMaker({})
+    maker = AMaker({"channel_name": "test"})
     expected_err_msg = "The following products have the wrong types:\n" + \
                        r" - 'a' \(expected 'str', got 'int'\)"
     with pytest.raises(Exception, match=expected_err_msg):

@@ -16,7 +16,7 @@ else:
     import psycopg2.extras
 
 import decisionengine.framework.dataspace.datasource as ds
-from decisionengine.framework.modules.de_logger import LOGGERNAME
+from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 
 MAX_NUMBER_OF_RETRIES = 10
 TIME_TO_SLEEP = 2
@@ -124,7 +124,7 @@ class Postgresql(ds.DataSource):
     def __init__(self, config_dict):
         super().__init__(config_dict)
         self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1])
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
         self.logger.debug('Initializing a Postgresql datasource')
 
         # account for differences between psycopg2 and psycopg2cffi

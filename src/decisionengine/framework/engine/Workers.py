@@ -6,7 +6,7 @@ import threading
 
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 from decisionengine.framework.modules.logging_configDict import pylogconfig as logconf
-
+from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
 
 MAX_CHANNEL_FILE_SIZE = 200 * 1000000
 
@@ -31,6 +31,7 @@ class Worker(multiprocessing.Process):
         self.task_manager = task_manager
         self.task_manager_id = task_manager.id
         self.logger_config = logger_config
+        self.logger = None
 
     def wait_until(self, state, timeout=None):
         return self.task_manager.state.wait_until(state, timeout)
@@ -54,11 +55,11 @@ class Worker(multiprocessing.Process):
             os.path.dirname(self.logger_config["log_file"]), myname + ".log"
         )
 
-        logger = structlog.getLogger(f"{myname}")
+        self.logger = structlog.getLogger(CHANNELLOGGERNAME)
 
         # setting a default value here. value from config file is set in call
         # self.task_manager.set_loglevel_value after logger configuration is completed
-        logger.setLevel(logging.DEBUG)
+        logging.getLogger(CHANNELLOGGERNAME).setLevel(logging.DEBUG)
 
         # TODO:
         # alter decisionengine.framework.modules.de_logger set_logging
@@ -70,9 +71,9 @@ class Worker(multiprocessing.Process):
         if logger_rotate_by == "size":
             logconf["handlers"].update(
                 {
-                    f"{myname}": {
+                    myname: {
                         "level": "DEBUG",
-                        "filename": f"{myfilename}",
+                        "filename": myfilename,
                         "formatter": "plain",
                         "class": "logging.handlers.RotatingFileHandler",
                         "maxBytes": MAX_CHANNEL_FILE_SIZE,
@@ -83,9 +84,9 @@ class Worker(multiprocessing.Process):
         elif logger_rotate_by == "time":
             logconf["handlers"].update(
                 {
-                    f"{myname}": {
+                    myname: {
                         "level": "DEBUG",
-                        "filename": f"{myfilename}",
+                        "filename": myfilename,
                         "formatter": "plain",
                         "class": "logging.handlers.TimedRotatingFileHandler",
                         "when": "D",
@@ -98,13 +99,13 @@ class Worker(multiprocessing.Process):
 
         logconf["loggers"].update(
             {
-                f"{myname}": {
-                    "handlers": [f"{myname}", "file_structlog_debug"],
+                CHANNELLOGGERNAME: {
+                    "handlers": [myname, "file_structlog_debug"],
                 }
             }
         )
         logging.config.dictConfig(logconf)
-        logger = logger.bind(module=__name__.split(".")[-1])
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=myname)
 
         channel_log_level = self.logger_config.get(
             "global_channel_log_level", "WARNING"

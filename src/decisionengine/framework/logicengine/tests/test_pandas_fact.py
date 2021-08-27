@@ -7,8 +7,7 @@ import pandas as pd
 def myengine():
     facts = {"f1": "y > 10", "f2": "vals.one.sum() > 10"}
     rules = {"r1": {"expression": "f1 and f2", "actions": ["a1", "a2"]}}
-    channelname = "test"
-    yield LogicEngine({"facts": facts, "rules": rules}, channelname)
+    yield LogicEngine({"facts": facts, "rules": rules, "channel_name": "test"})
 
 def mydata(y):
     """Return a 'datablock' surrogate carrying a Pandas DataFrame, and a

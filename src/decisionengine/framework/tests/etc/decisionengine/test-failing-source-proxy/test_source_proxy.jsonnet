@@ -3,7 +3,7 @@
     "source1": {
       "module": "decisionengine.framework.tests.FailingSourceProxy",
       "parameters": {
-        "channel_name": "test_channel",
+        "source_channel": "test_channel",
         "Dataproducts": ["foo"],
         "retries": 1,
         "retry_to": 0
