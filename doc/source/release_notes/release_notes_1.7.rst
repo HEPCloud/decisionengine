@@ -18,6 +18,8 @@ This release features:
 Issues fixed in this release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+- `481 <https://github.com/HEPCloud/decisionengine/issues/481>`_: Channel name should be available to all worker types in TaskManager
+- `456 <https://github.com/HEPCloud/decisionengine/issues/456>`_: Logic engine messages show in the main DE log (1.6.99 post4) prj_testing
 - `458 <https://github.com/HEPCloud/decisionengine/issues/458>`_: Exception in new SQLAlchemy data source 1.6.99post4
 - `455 <https://github.com/HEPCloud/decisionengine/issues/455>`_: New postgresql exception in 1.6.99post4 (aka Fixed databese inconsistency silently ignored in v1.6)
 - `456 <https://github.com/HEPCloud/decisionengine/issues/456>`_: Logic engine messages show in the main DE log (1.6.99 post4)
@@ -33,6 +35,44 @@ Issues fixed in this release
 
 Full list of commits since version 1.6.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`d60b6e4e <https://github.com/HEPCloud/decisionengine/commit/d60b6e4e8e83b2be96fea44022b1b33107337958>`_:   new changes for logging with common logger name "channel"
+
+`8cdeb67e <https://github.com/HEPCloud/decisionengine/commit/8cdeb67ea8a5020f381aa9eaa1a16221fe3c9a99>`_:   Simplify return expression
+
+`8fb128d3 <https://github.com/HEPCloud/decisionengine/commit/8fb128d3e4c9a93c61959625c3db23cfb024ffdc>`_:   Ensure file is "flushed" so name is fully established
+
+`7806aa00 <https://github.com/HEPCloud/decisionengine/commit/7806aa00cc2463f51c6177c142a97b9c33aa18b1>`_:   Add github CodeQL analysis
+
+`9f09bca9 <https://github.com/HEPCloud/decisionengine/commit/9f09bca92c85234891969efa9b85c49d26f7b9b2>`_:   removed modules/LogicEngine.py and corresponding test
+
+`b9d28fbf <https://github.com/HEPCloud/decisionengine/commit/b9d28fbf7bb81ec1ab18976b15fc743311cf49d0>`_:   Cleaner check for `Any`
+
+`cc91aa24 <https://github.com/HEPCloud/decisionengine/commit/cc91aa2433663f795c352f9d98f2b1503dd95810>`_:   Switch to fstring formatting
+
+`7bb5b64f <https://github.com/HEPCloud/decisionengine/commit/7bb5b64fc8f33f6d66055f65fd0b940f6fd33b1a>`_:   Just return created value rather than store then return
+
+`f4847fbe <https://github.com/HEPCloud/decisionengine/commit/f4847fbe64a3a600aa361ac92155b70ceee59201>`_:   Combine nested `with` blocks
+
+`4ba38bcd <https://github.com/HEPCloud/decisionengine/commit/4ba38bcd4326d4c8eac3c82407bd80bcd9185016>`_:   Drop redundant brackets
+
+`bdcfe8c9 <https://github.com/HEPCloud/decisionengine/commit/bdcfe8c951e4eae72efbcc6fe44eb11aa26bf665>`_:   By convention, pandas is usually imported as `pd`
+
+`1dd904ff <https://github.com/HEPCloud/decisionengine/commit/1dd904ff91a659b65e58278ef521647a0cd15c9c>`_:   Use more traditional expression order
+
+`cccd31bc <https://github.com/HEPCloud/decisionengine/commit/cccd31bc13c66074ee7777132d32824b06728d48>`_:   Unused loop vars should start with `_`
+
+`c055a5cd <https://github.com/HEPCloud/decisionengine/commit/c055a5cdf4a321fe52c52cf53a435650ce5d4076>`_:   Drop `_keys` in favor of DB backed `keys`
+
+`e8c689b4 <https://github.com/HEPCloud/decisionengine/commit/e8c689b4ef78f13d971b0273d2ebe5ea5a5015e2>`_:   Moved prometheus-client requirement to proper place in list
+
+`5391500d <https://github.com/HEPCloud/decisionengine/commit/5391500d5efadbe8e54fce5db7a29ee1fadcca9b>`_:   Added metrics API module
+
+`c2d7835c <https://github.com/HEPCloud/decisionengine/commit/c2d7835c1d22129d134be91e7eedf1290265d1f1>`_:   Drop unnecessary timeout
+
+`c167fc50 <https://github.com/HEPCloud/decisionengine/commit/c167fc5016f494eb567494866fec5c091f4e7c32>`_:   Add tests for de-query-tool entry point
+
+`efabfeb3 <https://github.com/HEPCloud/decisionengine/commit/efabfeb30541332b3476a9e77f4166e64f011a51>`_:   Updated release notes for 1.7.0 RC2 (1.6.99.post6)
 
 `b2739c14 <https://github.com/HEPCloud/decisionengine/commit/b2739c14b965f6fc1de6c0621ae391581a4d127a>`_:   moved logging of LogicEngine from decisionengine logger to channel loggers
 
