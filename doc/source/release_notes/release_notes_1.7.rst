@@ -13,6 +13,8 @@ This release features:
 .. note::
     Added requirement on SQLAlchemy (for new datasource backend).
     Non-SQLAlchemy users should ensure the indexes from `13c2f283 <https://github.com/HEPCloud/decisionengine/commit/13c2f28325d697701d9417fb2116364f018da535>` are in their database.
+.. note::
+    The "channel_name" key in the Source Proxy config dictionaries needs to be changed to "source_channel". "channel_name" is now being used to describe the name of the channel itself, not the name of the channel the Source Proxy is gettting information from.
 
 
 
