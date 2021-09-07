@@ -8,6 +8,7 @@ This release features:
 - Added SQLAlchemy object-relational mapper to increase the testability of DB interactions and to allow different database backends.
   Switching between datasource backends requires dropping all objects if you wish to reuse the tablespace.
 - Packaging via setuptools for both decisionengine and decisionengine_modules: Dependencies are not yet fully listed in the RPMs.
+- A new, optional, configuration parameter called "channel_name" is available. "channel_name" is one of the keys in the output dictionary of the structured logging and will be used in the upcoming monitoring. If the variable is not defined in the configuration file, then it is taken from the name of the file, e.g. the job_classification.jsonnet config file gives a default "channel_name" value of "job_classification".  
 
 .. note::
     Added requirement on SQLAlchemy (for new datasource backend).
