@@ -1,7 +1,6 @@
 """
 Fill in data from another channel data block
 """
-import structlog
 import time
 
 import pandas as pd
@@ -12,7 +11,6 @@ import decisionengine.framework.dataspace.dataspace as dataspace
 from decisionengine.framework.modules import Source
 from decisionengine.framework.modules.Source import Parameter
 from decisionengine.framework.modules.translate_product_name import translate_all
-from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
 
 RETRIES = 10
 RETRY_TO = 60
@@ -25,6 +23,7 @@ must_have = ('source_channel', 'Dataproducts')
                         Parameter('retry_timeout', default=RETRY_TO, comment="Number of seconds to wait between retries."))
 class SourceProxy(Source.Source):
     def __init__(self, config):
+        super().__init__(config)
         if not set(must_have).issubset(set(config.keys())):
             raise RuntimeError(
                 'SourceProxy misconfigured. Must have {} defined'.format(must_have))
@@ -32,9 +31,7 @@ class SourceProxy(Source.Source):
         self.data_keys = translate_all(config['Dataproducts'])
         self.retries = config.get('retries', RETRIES)
         self.retry_to = config.get('retry_timeout', RETRY_TO)
-        self.channel_name = config.get('channel_name')
-        self.logger = structlog.getLogger(CHANNELLOGGERNAME)
-        self.logger = self.logger.bind(class_module=__name__.split(".")[-1], channel=self.channel_name)
+        self.logger = self.logger.bind(class_module=__name__.split(".")[-1])
 
         # Hack - it is possible for a subclass to declare @produces,
         #        in which case, we do not want to override that.
