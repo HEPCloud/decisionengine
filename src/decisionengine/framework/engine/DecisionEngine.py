@@ -24,8 +24,7 @@ import structlog
 import tabulate
 
 import cherrypy
-from prometheus_client import multiprocess, REGISTRY
-from prometheus_client import CollectorRegistry, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import multiprocess
 
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
@@ -38,6 +37,10 @@ from decisionengine.framework.engine.Workers import Worker, Workers
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 
 from decisionengine.framework.util.metrics import *
+
+
+DEFAULT_WEBSERVER_PORT = 8000
+
 
 # DecisionEngine metrics
 STATUS_SUMMARY = Summary(
@@ -89,7 +92,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.logger.info(f"DecisionEngine started on {server_address}")
         os.environ['prometheus_multiproc_dir'] = "/tmp/prometheus_metrics"
         self.register_function(self.rpc_metrics, name='metrics')
-        self.start_metrics_server()  # Make this dependent on flag
+        if not global_config.get('no_webserver'):
+            self.start_webserver()  # Make this dependent on flag
 
     def get_logger(self):
         return self.logger
@@ -535,9 +539,18 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 txt += "Not produced by any module\n"
             return txt
 
-    def start_metrics_server(self):
+    def start_webserver(self):
+        """
+        Start CherryPy webserver using configured port.  If port is not configured
+        use default webserver port.
+        """
+        if self.global_config.get('webserver') and isinstance(self.global_config.get('webserver'), dict):
+            _port = self.global_config['webserver'].get(
+                'port', DEFAULT_WEBSERVER_PORT)
+        else:
+            _port = DEFAULT_WEBSERVER_PORT
         cherrypy.config.update({
-            'server.socket_port': 8000,
+            'server.socket_port': _port,
             'server.socket_host': '0.0.0.0'
         })
         cherrypy.tree.mount(self)
@@ -576,6 +589,12 @@ def parse_program_options(args=None):
         help="Configuration file for initializing server; default behavior is to choose "
         + f"'{policies.GLOBAL_CONFIG_FILENAME}' located in the CONFIG_PATH directory.",
     )
+    parser.add_argument(
+        "--no-webserver",
+        action="store_true",
+        help="Run the decision engine without the accompanying webserver. " +
+        "Note that if this option is given, metrics collection will not work."
+    )
     return parser.parse_args(args)
 
 
@@ -589,6 +608,12 @@ def _get_global_config(config_file, options):
     global_config.update(
         {"server_address": ["localhost", options.port]}  # Use Jsonnet-supported schema (i.e. not a tuple)
     )
+
+    if options.no_webserver:
+        global_config.update({
+            'no_webserver': True
+        })
+
     return global_config
 
 
