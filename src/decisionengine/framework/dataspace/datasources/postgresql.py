@@ -204,7 +204,8 @@ class Postgresql(ds.DataSource):
             try:
                 generation_id = self._select(SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID,
                                              (taskmanager_name, taskmanager_id))[0][0]
-                assert generation_id
+                if not generation_id:
+                    raise AssertionError("Failed to retrieve value")
                 return generation_id
             except AssertionError:
                 raise KeyError("Last generation id not found for taskmanager={} taskmanager_id={}".
@@ -213,7 +214,8 @@ class Postgresql(ds.DataSource):
             try:
                 generation_id = self._select(SELECT_LAST_GENERATION_ID_BY_NAME,
                                              (taskmanager_name, ))[0][0]
-                assert generation_id
+                if not generation_id:
+                    raise AssertionError("Failed to retrieve value")
                 return generation_id
             except AssertionError:
                 raise KeyError("Last generation id not found for taskmanager={}".
