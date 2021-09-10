@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.tests.test_module_decorators &mdash; decisionengine 1.6.99.post6.post17+g8cdeb67e documentation</title>
+  <title>decisionengine.framework.modules.tests.test_module_decorators &mdash; decisionengine 1.6.99.post8 documentation</title>
   
 
   
@@ -196,7 +196,7 @@
         <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
 
-    <span class="n">maker</span> <span class="o">=</span> <span class="n">BMaker</span><span class="p">({})</span>
+    <span class="n">maker</span> <span class="o">=</span> <span class="n">BMaker</span><span class="p">({</span><span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">})</span>
     <span class="n">expected_err_msg</span> <span class="o">=</span> <span class="s2">&quot;The following products were not produced:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
                        <span class="s2">&quot; - &#39;a&#39; of type &#39;str&#39;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
                        <span class="s2">&quot;The following products were not declared:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
@@ -214,7 +214,7 @@
         <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">17</span><span class="p">}</span>
 
-    <span class="n">maker</span> <span class="o">=</span> <span class="n">AMaker</span><span class="p">({})</span>
+    <span class="n">maker</span> <span class="o">=</span> <span class="n">AMaker</span><span class="p">({</span><span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">})</span>
     <span class="n">expected_err_msg</span> <span class="o">=</span> <span class="s2">&quot;The following products have the wrong types:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
                        <span class="sa">r</span><span class="s2">&quot; - &#39;a&#39; \(expected &#39;str&#39;, got &#39;int&#39;\)&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">expected_err_msg</span><span class="p">):</span>

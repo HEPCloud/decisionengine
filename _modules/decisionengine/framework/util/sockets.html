@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.util.sockets &mdash; decisionengine 1.6.99.post6.post17+g8cdeb67e documentation</title>
+  <title>decisionengine.framework.util.sockets &mdash; decisionengine 1.6.99.post8 documentation</title>
   
 
   
@@ -167,10 +167,10 @@
 <span></span><span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">structlog</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span><span class="p">,</span> <span class="n">DELOGGER_CHANNEL_NAME</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
 
 <div class="viewcode-block" id="get_random_port"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.sockets.get_random_port">[docs]</a><span class="k">def</span> <span class="nf">get_random_port</span><span class="p">():</span>
     <span class="k">try</span><span class="p">:</span>

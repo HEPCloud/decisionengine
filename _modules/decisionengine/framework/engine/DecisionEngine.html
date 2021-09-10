@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.6.99.post6.post17+g8cdeb67e documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.6.99.post8 documentation</title>
   
 
   
@@ -191,7 +191,7 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.config</span> <span class="kn">import</span> <span class="n">ChannelConfigHandler</span><span class="p">,</span> <span class="n">ValidConfig</span><span class="p">,</span> <span class="n">policies</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.maintain</span> <span class="kn">import</span> <span class="n">Reaper</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.engine.Workers</span> <span class="kn">import</span> <span class="n">Worker</span><span class="p">,</span> <span class="n">Workers</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span><span class="p">,</span> <span class="n">DELOGGER_CHANNEL_NAME</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="k">as</span> <span class="nn">datablock</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="k">as</span> <span class="nn">ProcessingState</span>
@@ -230,7 +230,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span> <span class="o">=</span> <span class="n">Reaper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">startup_complete</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DecisionEngine started on </span><span class="si">{</span><span class="n">server_address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DecisionEngine.get_logger"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.get_logger">[docs]</a>    <span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -317,8 +317,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_print_product"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_print_product">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_print_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested product should be a string not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">product</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;Product </span><span class="si">{}</span><span class="s2">: &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">product</span><span class="p">)</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Product </span><span class="si">{</span><span class="n">product</span><span class="si">}</span><span class="s2">: &quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ch</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
@@ -331,7 +334,7 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot; Found in channel </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+                <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Found in channel </span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found channel:</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> active when running rpc_print_product&quot;</span><span class="p">)</span>
                 <span class="n">tm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rpc_print_product - channel:</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> taskmanager:</span><span class="si">{</span><span class="n">tm</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -374,7 +377,7 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">txt</span> <span class="o">+=</span> <span class="n">dataframe_formatter</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-                    <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
             <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;Not produced by any module</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">txt</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>

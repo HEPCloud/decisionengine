@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.6.99.post6.post17+g8cdeb67e documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.6.99.post8 documentation</title>
   
 
   
@@ -188,13 +188,14 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">ProcessingState</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.module_graph</span> <span class="kn">import</span> <span class="n">ensure_no_circularities</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.subclasses</span> <span class="kn">import</span> <span class="n">all_subclasses</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span><span class="p">,</span> <span class="n">DELOGGER_CHANNEL_NAME</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">CHANNELLOGGERNAME</span>
 
 <span class="n">_TRANSFORMS_TO</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes</span>
 <span class="n">_DEFAULT_SCHEDULE</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># &quot;&quot;</span>
 
 <span class="n">delogger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
-<span class="n">delogger</span> <span class="o">=</span> <span class="n">delogger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">delogger</span> <span class="o">=</span> <span class="n">delogger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="_find_only_one_subclass"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager._find_only_one_subclass">[docs]</a><span class="k">def</span> <span class="nf">_find_only_one_subclass</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">base_class</span><span class="p">):</span>
@@ -232,12 +233,7 @@
             <span class="n">class_name</span> <span class="o">=</span> <span class="n">_find_only_one_subclass</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">base_class</span><span class="p">)</span>
 
     <span class="n">class_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
-    <span class="c1">#here we add the channel name to the LogicEngine class to get the correct logger</span>
-    <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s2">&quot;LogicEngine&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">class_type</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span> <span class="n">channel_name</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">class_type</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">])</span></div>
-
+    <span class="k">return</span> <span class="n">class_type</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span> <span class="n">channel_name</span><span class="o">=</span><span class="n">channel_name</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -311,10 +307,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">)</span>  <span class="c1"># my current data block</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">Channel</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;channel_name&quot;</span> <span class="ow">in</span> <span class="n">channel_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;channel_name&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">CHANNELLOGGERNAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">Channel</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">ProcessingState</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>

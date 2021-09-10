@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Release 1.7.0 &mdash; decisionengine 1.6.99.post6.post17+g8cdeb67e documentation</title>
+  <title>Release 1.7.0 &mdash; decisionengine 1.6.99.post8 documentation</title>
   
 
   
@@ -174,15 +174,27 @@
 <li><p>Added SQLAlchemy object-relational mapper to increase the testability of DB interactions and to allow different database backends.
 Switching between datasource backends requires dropping all objects if you wish to reuse the tablespace.</p></li>
 <li><p>Packaging via setuptools for both decisionengine and decisionengine_modules: Dependencies are not yet fully listed in the RPMs.</p></li>
+<li><p>A new, optional, configuration parameter called “channel_name” is available. “channel_name” is one of the keys in the output dictionary of the structured logging and will be used in the upcoming monitoring. If the variable is not defined in the configuration file, then it is taken from the name of the file, e.g. the job_classification.jsonnet config file gives a default “channel_name” value of “job_classification”.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Added requirement on SQLAlchemy (for new datasource backend).
 Non-SQLAlchemy users should ensure the indexes from <cite>13c2f283 &lt;https://github.com/HEPCloud/decisionengine/commit/13c2f28325d697701d9417fb2116364f018da535&gt;</cite> are in their database.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Added requirement on prometheus-client.
+Prometheus will be used as optional monitoring component.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The “channel_name” key in the Source Proxy config dictionaries needs to be changed to “source_channel”. “channel_name” is now being used to describe the name of the channel itself, not the name of the channel the Source Proxy is gettting information from.</p>
+</div>
 <div class="section" id="issues-fixed-in-this-release">
 <h2>Issues fixed in this release<a class="headerlink" href="#issues-fixed-in-this-release" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/481">481</a>: Channel name should be available to all worker types in TaskManager</p></li>
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/456">456</a>: Logic engine messages show in the main DE log (1.6.99 post4) prj_testing</p></li>
 <li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/458">458</a>: Exception in new SQLAlchemy data source 1.6.99post4</p></li>
 <li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/455">455</a>: New postgresql exception in 1.6.99post4 (aka Fixed databese inconsistency silently ignored in v1.6)</p></li>
 <li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/456">456</a>: Logic engine messages show in the main DE log (1.6.99 post4)</p></li>
@@ -198,6 +210,31 @@ Non-SQLAlchemy users should ensure the indexes from <cite>13c2f283 &lt;https://g
 </div>
 <div class="section" id="full-list-of-commits-since-version-1-6-0">
 <h2>Full list of commits since version 1.6.0<a class="headerlink" href="#full-list-of-commits-since-version-1-6-0" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/0e19c7544bad188bc02d59b149f793ecee48c33e">0e19c754</a>:   fix SP</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/810994af7fd5e8516eb2fc9a3ce2b3ea348c3358">810994af</a>:   Update release_notes_1.7.rst</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/fbee95e7afd7029755ccd229e2493ec5edb14551">fbee95e7</a>:   Update release_notes_1.7.rst</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/68b955b030dc32adddbc69855141615142507b4a">68b955b0</a>:   Make sure product is a string</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/ef7a8b96ddb9a27020c6212f95afedca7b017647">ef7a8b96</a>:   Automatically adjust PYTHONPATH for tests</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e292d388e0f072474e244f5560dfe8973d24b145">e292d388</a>:   Updated release notes for 1.7.0 RC3 (1.6.99.post7)</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/d60b6e4e8e83b2be96fea44022b1b33107337958">d60b6e4e</a>:   new changes for logging with common logger name “channel”</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/8cdeb67ea8a5020f381aa9eaa1a16221fe3c9a99">8cdeb67e</a>:   Simplify return expression</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/8fb128d3e4c9a93c61959625c3db23cfb024ffdc">8fb128d3</a>:   Ensure file is “flushed” so name is fully established</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/7806aa00cc2463f51c6177c142a97b9c33aa18b1">7806aa00</a>:   Add github CodeQL analysis</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/9f09bca92c85234891969efa9b85c49d26f7b9b2">9f09bca9</a>:   removed modules/LogicEngine.py and corresponding test</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/b9d28fbf7bb81ec1ab18976b15fc743311cf49d0">b9d28fbf</a>:   Cleaner check for <cite>Any</cite></p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/cc91aa2433663f795c352f9d98f2b1503dd95810">cc91aa24</a>:   Switch to fstring formatting</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/7bb5b64fc8f33f6d66055f65fd0b940f6fd33b1a">7bb5b64f</a>:   Just return created value rather than store then return</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/f4847fbe64a3a600aa361ac92155b70ceee59201">f4847fbe</a>:   Combine nested <cite>with</cite> blocks</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/4ba38bcd4326d4c8eac3c82407bd80bcd9185016">4ba38bcd</a>:   Drop redundant brackets</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/bdcfe8c951e4eae72efbcc6fe44eb11aa26bf665">bdcfe8c9</a>:   By convention, pandas is usually imported as <cite>pd</cite></p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1dd904ff91a659b65e58278ef521647a0cd15c9c">1dd904ff</a>:   Use more traditional expression order</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/cccd31bc13c66074ee7777132d32824b06728d48">cccd31bc</a>:   Unused loop vars should start with <cite>_</cite></p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c055a5cdf4a321fe52c52cf53a435650ce5d4076">c055a5cd</a>:   Drop <cite>_keys</cite> in favor of DB backed <cite>keys</cite></p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e8c689b4ef78f13d971b0273d2ebe5ea5a5015e2">e8c689b4</a>:   Moved prometheus-client requirement to proper place in list</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/5391500d5efadbe8e54fce5db7a29ee1fadcca9b">5391500d</a>:   Added metrics API module</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c2d7835c1d22129d134be91e7eedf1290265d1f1">c2d7835c</a>:   Drop unnecessary timeout</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c167fc5016f494eb567494866fec5c091f4e7c32">c167fc50</a>:   Add tests for de-query-tool entry point</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/efabfeb30541332b3476a9e77f4166e64f011a51">efabfeb3</a>:   Updated release notes for 1.7.0 RC2 (1.6.99.post6)</p>
 <p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/b2739c14b965f6fc1de6c0621ae391581a4d127a">b2739c14</a>:   moved logging of LogicEngine from decisionengine logger to channel loggers</p>
 <p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/0c0532f37786db32e6200eb50903fe9c32fe0a93">0c0532f3</a>:   Add locks to help ensure data changes are “atomic”</p>
 <p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/ae63c6ee2cb6914056d93f452fe103fa30c68921">ae63c6ee</a>:   Use DB generated known keys so it always matches DB state</p>

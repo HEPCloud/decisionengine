@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.ModuleProgramOptions &mdash; decisionengine 1.6.99.post6.post17+g8cdeb67e documentation</title>
+  <title>decisionengine.framework.tests.ModuleProgramOptions &mdash; decisionengine 1.6.99.post8 documentation</title>
   
 
   
@@ -164,18 +164,29 @@
            <div itemprop="articleBody">
             
   <h1>Source code for decisionengine.framework.tests.ModuleProgramOptions</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 
+<span class="kn">import</span> <span class="nn">decisionengine</span>
+
 <div class="viewcode-block" id="_run_as_main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._run_as_main">[docs]</a><span class="k">def</span> <span class="nf">_run_as_main</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">program_options</span><span class="p">):</span>
+    <span class="n">my_env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">de_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">decisionengine</span><span class="o">.</span><span class="vm">__file__</span><span class="p">))</span>
+    <span class="k">if</span> <span class="s1">&#39;PYTHONPATH&#39;</span> <span class="ow">in</span> <span class="n">my_env</span><span class="p">:</span>
+        <span class="n">my_env</span><span class="p">[</span><span class="s1">&#39;PYTHONPATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">my_env</span><span class="p">[</span><span class="s1">&#39;PYTHONPATH&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">de_path</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">my_env</span><span class="p">[</span><span class="s1">&#39;PYTHONPATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">de_path</span>
+
     <span class="n">rc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span>
                          <span class="s1">&#39;-m&#39;</span><span class="p">,</span>
                          <span class="s1">&#39;decisionengine.framework.tests.&#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span>
                          <span class="o">*</span><span class="n">program_options</span><span class="p">],</span>
                         <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
-                        <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+                        <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                        <span class="n">env</span><span class="o">=</span><span class="n">my_env</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rc</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">rc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">rc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="_normalize"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._normalize">[docs]</a><span class="k">def</span> <span class="nf">_normalize</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
@@ -315,15 +326,16 @@
                 <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">expected_stderr</span><span class="p">,</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stderr</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span>
-                <span class="k">assert</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span> <span class="o">==</span> <span class="n">_expected_acquire_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">config_file</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div></div>
+                <span class="k">assert</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span> <span class="o">==</span> <span class="n">_expected_acquire_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">config_file</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">)</span></div></div>
 
-<div class="viewcode-block" id="_expected_acquire_result"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._expected_acquire_result">[docs]</a><span class="k">def</span> <span class="nf">_expected_acquire_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="_expected_acquire_result"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._expected_acquire_result">[docs]</a><span class="k">def</span> <span class="nf">_expected_acquire_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">channel_name</span><span class="o">=</span><span class="s2">&quot;test1&quot;</span><span class="p">):</span>
     <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">if</span> <span class="n">config_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Running acquire for source </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> using default configuration:&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Running acquire for source </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> using configuration from </span><span class="si">{</span><span class="n">config_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:&quot;</span>
-    <span class="n">result</span> <span class="o">+=</span> <span class="s2">&quot; {&#39;multiplier&#39;:  &quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">multiplier</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> \
+    <span class="n">result</span> <span class="o">+=</span> <span class="s2">&quot; {&#39;channel_name&#39;: &quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="o">+</span> \
+              <span class="s2">&quot;, &#39;multiplier&#39;:  &quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">multiplier</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> \
               <span class="s2">&quot;} Produced products: {&#39;foo&#39;:      col1  col2 &quot;</span> <span class="o">+</span> \
               <span class="sa">f</span><span class="s2">&quot;0  value1   </span><span class="si">{</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">multiplier</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">+</span> \
               <span class="sa">f</span><span class="s2">&quot;1  value2   </span><span class="si">{</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">multiplier</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>

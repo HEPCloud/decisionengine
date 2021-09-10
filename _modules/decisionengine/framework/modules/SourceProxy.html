@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.SourceProxy &mdash; decisionengine 1.6.99.post6.post17+g8cdeb67e documentation</title>
+  <title>decisionengine.framework.modules.SourceProxy &mdash; decisionengine 1.6.99.post8 documentation</title>
   
 
   
@@ -167,7 +167,6 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Fill in data from another channel data block</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">structlog</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -178,28 +177,27 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Source</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Source</span> <span class="kn">import</span> <span class="n">Parameter</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.translate_product_name</span> <span class="kn">import</span> <span class="n">translate_all</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
 
 <span class="n">RETRIES</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">RETRY_TO</span> <span class="o">=</span> <span class="mi">60</span>
-<span class="n">must_have</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;channel_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Dataproducts&#39;</span><span class="p">)</span>
+<span class="n">must_have</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;source_channel&#39;</span><span class="p">,</span> <span class="s1">&#39;Dataproducts&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SourceProxy"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.SourceProxy">[docs]</a><span class="nd">@Source</span><span class="o">.</span><span class="n">supports_config</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="s1">&#39;channel_name&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Channel from which to retrieve data products.&quot;</span><span class="p">),</span>
+<div class="viewcode-block" id="SourceProxy"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.SourceProxy">[docs]</a><span class="nd">@Source</span><span class="o">.</span><span class="n">supports_config</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="s1">&#39;source_channel&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Channel from which to retrieve data products.&quot;</span><span class="p">),</span>
                         <span class="n">Parameter</span><span class="p">(</span><span class="s1">&#39;Dataproducts&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;List of data products to retrieve.&quot;</span><span class="p">),</span>
                         <span class="n">Parameter</span><span class="p">(</span><span class="s1">&#39;retries&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">RETRIES</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Number of attempts allowed to fetch products.&quot;</span><span class="p">),</span>
                         <span class="n">Parameter</span><span class="p">(</span><span class="s1">&#39;retry_timeout&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">RETRY_TO</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Number of seconds to wait between retries.&quot;</span><span class="p">))</span>
 <span class="k">class</span> <span class="nc">SourceProxy</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">Source</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">must_have</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="s1">&#39;SourceProxy misconfigured. Must have </span><span class="si">{}</span><span class="s1"> defined&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">must_have</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source_channel</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;channel_name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_channel</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;source_channel&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span> <span class="o">=</span> <span class="n">translate_all</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;Dataproducts&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retries&#39;</span><span class="p">,</span> <span class="n">RETRIES</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;retry_timeout&#39;</span><span class="p">,</span> <span class="n">RETRY_TO</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">class_module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
         <span class="c1"># Hack - it is possible for a subclass to declare @produces,</span>
         <span class="c1">#        in which case, we do not want to override that.</span>

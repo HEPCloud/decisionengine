@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.logicengine.BooleanExpression &mdash; decisionengine 1.6.99.post6.post17+g8cdeb67e documentation</title>
+  <title>decisionengine.framework.logicengine.BooleanExpression &mdash; decisionengine 1.6.99.post8 documentation</title>
   
 
   
@@ -179,7 +179,7 @@
 <span class="kn">import</span> <span class="nn">structlog</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span><span class="p">,</span> <span class="n">DELOGGER_CHANNEL_NAME</span>
 
 <span class="c1"># If support for direct use of numpy and pandas functions is desired,</span>
 <span class="c1"># import the numpy and pandas modules and adjust the facts_globals:</span>
@@ -190,7 +190,7 @@
 <span class="n">_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;fail_on_error\s*\(\s*(.*)\s*\)&quot;</span><span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="maybe_fail_on_error"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.BooleanExpression.maybe_fail_on_error">[docs]</a><span class="k">def</span> <span class="nf">maybe_fail_on_error</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.modules.tests.test_Source &mdash; decisionengine 1.6.99.post6.post17+g8cdeb67e documentation</title>
+  <title>decisionengine.framework.modules.tests.test_Source &mdash; decisionengine 1.6.99.post8 documentation</title>
   
 
   
@@ -170,8 +170,9 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The module.Source itself is a bit of a skeleton...</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">test_source</span> <span class="o">=</span> <span class="n">Source</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-    <span class="k">assert</span> <span class="n">test_source</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">}</span>
+    <span class="n">test_source</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">test_source</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">}</span>
 
     <span class="n">test_source</span><span class="o">.</span><span class="n">set_data_block</span><span class="p">(</span><span class="s1">&#39;example&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">test_source</span><span class="o">.</span><span class="n">get_data_block</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;example&#39;</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 1.6.99.post6.post17+g8cdeb67e documentation</title>
+  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 1.6.99.post8 documentation</title>
   
 
   
@@ -225,6 +225,18 @@
 
     <span class="c1"># Check for specific output</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;Product NO_SUCH_PRODUCT: Not produced by any module&quot;</span></div>
+
+<div class="viewcode-block" id="test_client_print_product_not_string"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product_not_string">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client_print_product_not_string</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure the public API is protected against bad values&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Requested product should be a string.*&quot;</span><span class="p">):</span>
+        <span class="n">deserver</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">rpc_print_product</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Requested product should be a string.*&quot;</span><span class="p">):</span>
+        <span class="n">deserver</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">rpc_print_product</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;123&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Requested product should be a string.*&quot;</span><span class="p">):</span>
+        <span class="n">deserver</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">rpc_print_product</span><span class="p">(</span><span class="n">pytest</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Requested product should be a string.*&quot;</span><span class="p">):</span>
+        <span class="n">deserver</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">rpc_print_product</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="test_client_print_product_types"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product_types">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_print_product_types</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>

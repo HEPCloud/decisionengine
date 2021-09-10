@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>decisionengine.framework.engine.Workers &mdash; decisionengine 1.6.99.post6.post17+g8cdeb67e documentation</title>
+  <title>decisionengine.framework.engine.Workers &mdash; decisionengine 1.6.99.post8 documentation</title>
   
 
   
@@ -172,7 +172,7 @@
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="k">as</span> <span class="nn">ProcessingState</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">pylogconfig</span> <span class="k">as</span> <span class="n">logconf</span>
-
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">CHANNELLOGGERNAME</span>
 
 <span class="n">MAX_CHANNEL_FILE_SIZE</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">*</span> <span class="mi">1000000</span>
 
@@ -197,6 +197,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span> <span class="o">=</span> <span class="n">task_manager</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager_id</span> <span class="o">=</span> <span class="n">task_manager</span><span class="o">.</span><span class="n">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span> <span class="o">=</span> <span class="n">logger_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Worker.wait_until"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.Workers.Worker.wait_until">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_until</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span></div>
@@ -220,11 +221,11 @@
             <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="p">[</span><span class="s2">&quot;log_file&quot;</span><span class="p">]),</span> <span class="n">myname</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span>
         <span class="p">)</span>
 
-        <span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">myname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">CHANNELLOGGERNAME</span><span class="p">)</span>
 
         <span class="c1"># setting a default value here. value from config file is set in call</span>
         <span class="c1"># self.task_manager.set_loglevel_value after logger configuration is completed</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">CHANNELLOGGERNAME</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
         <span class="c1"># TODO:</span>
         <span class="c1"># alter decisionengine.framework.modules.de_logger set_logging</span>
@@ -236,9 +237,9 @@
         <span class="k">if</span> <span class="n">logger_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span>
             <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">myname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="n">myname</span><span class="p">:</span> <span class="p">{</span>
                         <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">myfilename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">myfilename</span><span class="p">,</span>
                         <span class="s2">&quot;formatter&quot;</span><span class="p">:</span> <span class="s2">&quot;plain&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;logging.handlers.RotatingFileHandler&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;maxBytes&quot;</span><span class="p">:</span> <span class="n">MAX_CHANNEL_FILE_SIZE</span><span class="p">,</span>
@@ -249,9 +250,9 @@
         <span class="k">elif</span> <span class="n">logger_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
             <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">myname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="n">myname</span><span class="p">:</span> <span class="p">{</span>
                         <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">myfilename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">myfilename</span><span class="p">,</span>
                         <span class="s2">&quot;formatter&quot;</span><span class="p">:</span> <span class="s2">&quot;plain&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;logging.handlers.TimedRotatingFileHandler&quot;</span><span class="p">,</span>
                         <span class="s2">&quot;when&quot;</span><span class="p">:</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span>
@@ -264,13 +265,13 @@
 
         <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;loggers&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">myname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">myname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;file_structlog_debug&quot;</span><span class="p">],</span>
+                <span class="n">CHANNELLOGGERNAME</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">myname</span><span class="p">,</span> <span class="s2">&quot;file_structlog_debug&quot;</span><span class="p">],</span>
                 <span class="p">}</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">logconf</span><span class="p">)</span>
-        <span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">myname</span><span class="p">)</span>
 
         <span class="n">channel_log_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="s2">&quot;global_channel_log_level&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span>
