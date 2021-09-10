@@ -14,6 +14,9 @@ This release features:
     Added requirement on SQLAlchemy (for new datasource backend).
     Non-SQLAlchemy users should ensure the indexes from `13c2f283 <https://github.com/HEPCloud/decisionengine/commit/13c2f28325d697701d9417fb2116364f018da535>` are in their database.
 .. note::
+    Added requirement on prometheus-client. 
+    Prometheus will be used as optional monitoring component.
+.. note::
     The "channel_name" key in the Source Proxy config dictionaries needs to be changed to "source_channel". "channel_name" is now being used to describe the name of the channel itself, not the name of the channel the Source Proxy is gettting information from.
 
 
@@ -38,6 +41,18 @@ Issues fixed in this release
 
 Full list of commits since version 1.6.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`0e19c754 <https://github.com/HEPCloud/decisionengine/commit/0e19c7544bad188bc02d59b149f793ecee48c33e>`_:   fix SP
+
+`810994af <https://github.com/HEPCloud/decisionengine/commit/810994af7fd5e8516eb2fc9a3ce2b3ea348c3358>`_:   Update release_notes_1.7.rst
+
+`fbee95e7 <https://github.com/HEPCloud/decisionengine/commit/fbee95e7afd7029755ccd229e2493ec5edb14551>`_:   Update release_notes_1.7.rst
+
+`68b955b0 <https://github.com/HEPCloud/decisionengine/commit/68b955b030dc32adddbc69855141615142507b4a>`_:   Make sure product is a string
+
+`ef7a8b96 <https://github.com/HEPCloud/decisionengine/commit/ef7a8b96ddb9a27020c6212f95afedca7b017647>`_:   Automatically adjust PYTHONPATH for tests
+
+`e292d388 <https://github.com/HEPCloud/decisionengine/commit/e292d388e0f072474e244f5560dfe8973d24b145>`_:   Updated release notes for 1.7.0 RC3 (1.6.99.post7)
 
 `d60b6e4e <https://github.com/HEPCloud/decisionengine/commit/d60b6e4e8e83b2be96fea44022b1b33107337958>`_:   new changes for logging with common logger name "channel"
 
