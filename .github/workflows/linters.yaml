@@ -1,5 +1,5 @@
 ---
-name: Run CI
+name: Linters
 on:
   push:
     branches:
@@ -10,82 +10,55 @@ on:
       - master
 
 jobs:
-  pytest:
+  run_flake8:
+    name: Run pytest-flake8 against code tree
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version:
-          - '3.6'
-          - '3.9'
-          - 'pypy-3.7'
-
-    name: Python ${{ matrix.python-version }} unit tests
     steps:
       - name: checkout code tree
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      - name: Setup python
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
+          python-version: '3.9'
+          architecture: 'x64'
 
       - name: Cache pip
         uses: actions/cache@v2
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('setup.py') }}
+          # Look to see if there is a cache hit for the corresponding file
+          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-3.9
           restore-keys: |
-            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-
             ${{ runner.os }}-pip-
-
-      - name: Note Python version/implementation/cache
+      - name: Note Python version/implementation
         run: |
           which python3
           python3 -c 'import sys; print(sys.version)'
           python3 -c 'import platform; print(platform.python_implementation())'
           python3 -m pip cache dir
-
-      - name: Ensure pip/setuptools is up to date
+      - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade wheel setuptools
-
-      - name: Install dependencies (runtime)
-        run: |
-          python3 -m pip install -e . --user
-          python3 -m pip list --user
-
-      - name: Install dependencies (unit tests)
-        run: |
           python3 -m pip install --upgrade pytest
+          python3 -m pip install -e . --user
           python3 -m pip install -e .[develop] --user
-          python3 -m pip list --user
-
       - name: Ensure version.py exists
         run: python3 setup.py bdist_wheel
 
-      - name: Run Unit Tests on Python ${{ matrix.python-version }}
-        timeout-minutes: 55
+      - name: Run Flake8 Tests against the code tree
         env:
-          PYTEST_TIMEOUT: 90
           PYTHONPATH: ${{ github.workspace }}/src
-        shell: 'script -q -e -c "bash --noprofile --norc -eo pipefail {0}"'
         run: |
-          pytest --cov-report term --cov-report xml --cov=decisionengine --no-cov-on-fail
+          pytest -m flake8 --flake8 --log-level=error
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          flags: python-${{ matrix.python-version }}
-
-  build_doc:
-    name: Generate Documentation
+  run_pylint:
+    name: Run pylint against code tree
     runs-on: ubuntu-latest
-    needs: pytest
     steps:
       - name: checkout code tree
         uses: actions/checkout@v2
@@ -108,7 +81,7 @@ jobs:
             ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-
             ${{ runner.os }}-pip-
 
-      - name: Note Python version/implementation/cache
+      - name: Note Python version/implementation
         run: |
           which python3
           python3 -c 'import sys; print(sys.version)'
@@ -123,41 +96,25 @@ jobs:
           python3 -m pip install -e . --user
           python3 -m pip install -e .[develop] --user
 
-      - name: Install sphinx expected fonts within the container
-        run: |
-          sudo apt-get update || true
-          sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
-          python3 -m pip install sphinx sphinx_rtd_theme --user
-
       - name: Ensure version.py exists
         run: python3 setup.py bdist_wheel
 
-      - name: Build documentation
+      - name: Run pylint against the code tree
         env:
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
-          cd doc
-          make rst html latexpdf
+          pylint src/decisionengine/
 
-  rpmbuild_el7:
-    name: Build an EL7 rpm
+  pre-commit:
+    name: Validate our pre-commit hooks pass
     runs-on: ubuntu-latest
-    needs: pytest
     steps:
-      - name: checkout code tree
-        uses: actions/checkout@v2
+      - uses: actions/cache@v2
         with:
-          fetch-depth: 0
-
-      - name: Run the build in a container (SL7/HEPCloud-CI)
-        uses: ./.github/actions/python-command-in-sl7-container
-        with:
-          python-command: 'setup.py bdist_rpm'
-          logfile: 'rpmbuild.log'
-
-      - name: Archive rpm
-        uses: actions/upload-artifact@v2
-        with:
-          name: rpms
-          path: dist/*.rpm
-          if-no-files-found: error
+          path: ~/.cache/pre-commit
+          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pre-commit-
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: pre-commit/action@v2.0.3
