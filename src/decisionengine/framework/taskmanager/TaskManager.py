@@ -3,17 +3,14 @@ Task Manager
 """
 import importlib
 import threading
-import logging
 import structlog
 import time
-import multiprocessing
-import uuid
 
 import pandas as pd
 
-from decisionengine.framework.dataspace import dataspace
 from decisionengine.framework.dataspace import datablock
 from decisionengine.framework.modules import Module
+from decisionengine.framework.managers.ComponentManager import ComponentManager
 from decisionengine.framework.modules.Publisher import Publisher
 from decisionengine.framework.modules.Source import Source
 from decisionengine.framework.modules.Transform import Transform
@@ -122,7 +119,7 @@ class Channel:
         self.task_manager = channel_dict.get("task_manager", {})
 
 
-class TaskManager:
+class TaskManager(ComponentManager):
     """
     Task Manager
     """
@@ -138,20 +135,16 @@ class TaskManager:
         :type global_config: :obj:`dict`
         :arg global_config: global configuration
         """
-        self.id = str(uuid.uuid4()).upper()
-        self.dataspace = dataspace.DataSpace(global_config)
-        self.data_block_t0 = datablock.DataBlock(self.dataspace, name, self.id, generation_id)  # my current data block
-
         if "channel_name" in channel_dict.keys():
             self.name = channel_dict["channel_name"]
         else:
             self.name = name
 
+        super().__init__(self.name, generation_id, global_config)
         self.logger = structlog.getLogger(CHANNELLOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=self.name)
         self.channel = Channel(channel_dict, self.name)
         self.state = ProcessingState()
-        self.loglevel = multiprocessing.Value("i", logging.WARNING)
         self.lock = threading.Lock()
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
@@ -241,15 +234,6 @@ class TaskManager:
         for thread in source_threads:
             thread.join()
 
-    def get_state_value(self):
-        return self.state.get().value
-
-    def get_state(self):
-        return self.state.get()
-
-    def get_state_name(self):
-        return self.get_state().name
-
     def get_produces(self):
         # FIXME: What happens if a transform and source have the same name?
         produces = {}
@@ -268,54 +252,12 @@ class TaskManager:
             consumes[name] = list(mod.worker._consumes.keys())
         return consumes
 
-    def set_loglevel_value(self, log_level):
-        """Assumes log_level is a string corresponding to the supported logging-module levels."""
-        with self.loglevel.get_lock():
-            # Convert from string to int form using technique
-            # suggested by logging module
-            self.loglevel.value = getattr(logging, log_level)
-
-    def get_loglevel(self):
-        with self.loglevel.get_lock():
-            return self.loglevel.value
-
     def set_to_shutdown(self):
         self.state.set(State.SHUTTINGDOWN)
         delogger.debug("Shutting down. Will call shutdown on all publishers")
         for publisher_worker in self.channel.publishers.values():
             publisher_worker.worker.shutdown()
         self.state.set(State.SHUTDOWN)
-
-    def take_offline(self, current_data_block):
-        """
-        offline and stop task manager
-        """
-        self.state.set(State.OFFLINE)
-        # invalidate data block
-        # not implemented yet
-
-    def data_block_put(self, data, header, data_block):
-        """
-        Put data into data block
-
-        :type data: :obj:`dict`
-        :arg data: key, value pairs
-        :type header: :obj:`~datablock.Header`
-        :arg header: data header
-        :type data_block: :obj:`~datablock.DataBlock`
-        :arg data_block: data block
-        """
-
-        if not isinstance(data, dict):
-            self.logger.error(f"data_block put expecting {dict} type, got {type(data)}")
-            return
-        self.logger.debug(f"data_block_put {data}")
-        with data_block.lock:
-            metadata = datablock.Metadata(
-                data_block.taskmanager_id, state="END_CYCLE", generation_id=data_block.generation_id
-            )
-            for key, product in data.items():
-                data_block.put(key, product, header, metadata=metadata)
 
     def do_backup(self):
         """

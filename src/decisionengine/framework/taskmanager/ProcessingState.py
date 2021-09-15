@@ -103,6 +103,10 @@ class ProcessingState:
             self.logger.exception("Unexpected error!")
             raise
 
+    def get_state_value(self):
+        with self._state.get_lock():
+            return self._state.value
+
     def has_value(self, state):
         try:
             if not isinstance(state, State) and not isinstance(state, (list, tuple)):
