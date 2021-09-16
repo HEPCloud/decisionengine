@@ -12,15 +12,16 @@ Release Notes
    :maxdepth: 1
 
    release_notes
-   Latest<release_notes/release_notes_1.6>
+   Latest<release_notes/release_notes_1.7>
 
 Developer Documentation
 =======================
 
-.. toctree::
-   :maxdepth: 1
+The developer documentation is in the `GitHub Wiki <https://github.com/HEPCloud/decisionengine/wiki/Development-Workflow>`_
 
-   unittest.rst
+Intructions to build the package, or to run unit tests and other CI tests, and to install decisionengine 
+are in the `GitHub Wiki <https://github.com/HEPCloud/decisionengine/wiki/How-to-Run-Decision-Engine>`_ as well.
+
 
 Jenkins CI pipeline
 ===================
@@ -32,6 +33,7 @@ Jenkins CI pipeline
 
 Source code
 ===========
+
 .. toctree::
    :maxdepth: 1
 
