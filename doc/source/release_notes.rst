@@ -10,6 +10,7 @@ New feature development will happen in the development branch and go in the next
 .. toctree::
    :maxdepth: 1
 
+   release_notes/release_notes_1.7
    release_notes/release_notes_1.6
    release_notes/release_notes_1.5
    release_notes/release_notes_1.4
