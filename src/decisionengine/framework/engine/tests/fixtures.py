@@ -66,6 +66,7 @@ class DETestWorker(threading.Thread):
         self.global_config["dataspace"]["datasource"] = datasource
 
         self.de_server = _create_de_server(self.global_config, self.channel_config_loader)
+        self.stdout_at_setup = None
 
     def run(self):
         _start_de_server(self.de_server)
@@ -116,7 +117,7 @@ def DEServer(
     """A DE Server using a private database"""
 
     @pytest.fixture(params=DATABASES_TO_TEST)
-    def de_server_factory(request):
+    def de_server_factory(request, capsys):
         """
         This parameterized fixture will mock up various datasources.
 
@@ -174,6 +175,8 @@ def DEServer(
         # Ensure the channels have started
         logger.debug(f"DE Fixture: Wait on startup state: is_set={server_proc.de_server.startup_complete.is_set()}")
         server_proc.de_server.startup_complete.wait()
+        server_proc.stdout_at_setup = capsys.readouterr().out
+
         logger.debug(
             f"DE Fixture: Done waiting for startup state: is_set={server_proc.de_server.startup_complete.is_set()}"
         )

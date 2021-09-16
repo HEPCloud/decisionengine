@@ -10,13 +10,13 @@
       schedule: 1,
     },
   },
-
-  transforms: {
-    transform1: {
-      module: "decisionengine.framework.tests.TransformNOP",
-      parameters: {},
+  transforms: {},
+  publishers: {
+    pub1: {
+      module: "decisionengine.framework.tests.WriteToDisk",
+      parameters: {
+        consumes: ["foo"],
+      },
     },
   },
-
-  publishers: {},
 }
