@@ -42,6 +42,8 @@ Issues fixed in this release
 Full list of commits since version 1.6.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+`029d118a <https://github.com/HEPCloud/decisionengine/commit/029d118a928520b9bf031e42e99670b7666b66c5>`_:   Updated release notes for 1.7.0 RC4 (1.6.99.post8)
+
 `0e19c754 <https://github.com/HEPCloud/decisionengine/commit/0e19c7544bad188bc02d59b149f793ecee48c33e>`_:   fix SP
 
 `810994af <https://github.com/HEPCloud/decisionengine/commit/810994af7fd5e8516eb2fc9a3ce2b3ea348c3358>`_:   Update release_notes_1.7.rst
