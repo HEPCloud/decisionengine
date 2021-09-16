@@ -12,7 +12,7 @@ This release features:
 
 .. note::
     Added requirement on SQLAlchemy (for new datasource backend).
-    Non-SQLAlchemy users should ensure the indexes from `13c2f283 <https://github.com/HEPCloud/decisionengine/commit/13c2f28325d697701d9417fb2116364f018da535>` are in their database.
+    Non-SQLAlchemy users should ensure the indexes from `13c2f283 <https://github.com/HEPCloud/decisionengine/commit/13c2f28325d697701d9417fb2116364f018da535>`_ are in their database.
 .. note::
     Added requirement on prometheus-client. 
     Prometheus will be used as optional monitoring component.
@@ -36,11 +36,13 @@ Issues fixed in this release
 - `329 <https://github.com/HEPCloud/decisionengine/issues/329>`_: Docker container is missing pylint
 - `293 <https://github.com/HEPCloud/decisionengine/issues/293>`_: Drop requirements.txt setup mode
 - `285 <https://github.com/HEPCloud/decisionengine/issues/285>`_: Unify ProcessingState with Reaper state management code
-- `253 <https://github.com/HEPCloud/decisionengine/issues/253>`_ : Decision engine can sometimes start up at boot time before network name resolution is working (`ae04db5 <https://github.com/HEPCloud/decisionengine/commit/ae04db544599c6777d63cb315ddac169e586809d>`_)
+- `253 <https://github.com/HEPCloud/decisionengine/issues/253>`_: Decision engine can sometimes start up at boot time before network name resolution is working (`ae04db5 <https://github.com/HEPCloud/decisionengine/commit/ae04db544599c6777d63cb315ddac169e586809d>`_)
 
 
 Full list of commits since version 1.6.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`f42558df <https://github.com/HEPCloud/decisionengine/commit/f42558dfed16033be5f4f610b5972000803742f3>`_:   Updated documentation for 1.7.0 release
 
 `029d118a <https://github.com/HEPCloud/decisionengine/commit/029d118a928520b9bf031e42e99670b7666b66c5>`_:   Updated release notes for 1.7.0 RC4 (1.6.99.post8)
 

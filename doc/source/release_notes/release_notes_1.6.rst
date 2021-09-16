@@ -4,7 +4,7 @@ Release 1.6.2
 Patch level (bug fix) release.
 
 Issues fixed in this release
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Bugs fixed
 
