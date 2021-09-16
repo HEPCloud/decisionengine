@@ -4,8 +4,7 @@ Manager of channel configurations.
 The ChannelConfigHandler manages only channel configurations and not
 the global decision-engine configuration.  It is responsible for
 loading channel configuration files and validating that the channels
-have the correct configuration artifacts and inter-module product
-dependencies.
+have the correct configuration artifacts.
 """
 
 import os
@@ -16,8 +15,8 @@ import decisionengine.framework.util.fs as fs
 from decisionengine.framework.config import ValidConfig
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME
 
-_MANDATORY_CHANNEL_KEYS = {"sources", "logicengines", "transforms", "publishers"}
-_ALLOWED_CHANNEL_KEYS = _MANDATORY_CHANNEL_KEYS | {"task_manager"}
+_MANDATORY_CHANNEL_KEYS = {"sources", "transforms", "publishers"}
+_ALLOWED_CHANNEL_KEYS = _MANDATORY_CHANNEL_KEYS | {"logicengines", "task_manager"}
 _MANDATORY_MODULE_KEYS = {"module", "parameters"}
 
 
@@ -90,7 +89,7 @@ class ChannelConfigHandler:
         except Exception as msg:
             return (
                 False,
-                f"Failed to open channel configuration file {path} " f"contains error\n-> {msg}\nSKIPPING channel",
+                f"Failed to open channel configuration file {path} contains error\n-> {msg}\nSKIPPING channel",
             )
 
         try:
@@ -98,7 +97,7 @@ class ChannelConfigHandler:
         except Exception as msg:
             return (
                 False,
-                f"The channel configuration file {path} contains a " f"validation error\n{msg}\nSKIPPING channel",
+                f"The channel configuration file {path} contains a validation error\n{msg}\nSKIPPING channel",
             )
         self.logger.debug(f"Channel {channel_name} config is valid.")
 

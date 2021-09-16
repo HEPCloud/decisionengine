@@ -12,6 +12,5 @@
     }
   },
   "transforms": {},
-  "logicengines": {},
   "publishers": {}
 }

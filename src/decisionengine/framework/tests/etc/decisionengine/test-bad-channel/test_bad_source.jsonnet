@@ -7,6 +7,5 @@
     }
   },
   "transforms": {},
-  "logicengines": {},
   "publishers": {}
 }

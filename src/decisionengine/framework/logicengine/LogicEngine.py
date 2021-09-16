@@ -9,6 +9,21 @@ from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAM
 from decisionengine.framework.modules.Module import Module
 
 
+def passthrough_configuration(publisher_names):
+    """Assembles logic-engine configuration to unconditionally execute all publishers."""
+    if len(publisher_names) == 0:
+        return {}
+    return {
+        "logic_engine": {
+            "module": "decisionengine.framework.logicengine.LogicEngine",
+            "parameters": {
+                "facts": {},
+                "rules": {"r1": {"expression": "True", "actions": list(publisher_names)}},
+            },
+        }
+    }
+
+
 class LogicEngine(Module):
     def __init__(self, cfg):
         super().__init__(cfg)

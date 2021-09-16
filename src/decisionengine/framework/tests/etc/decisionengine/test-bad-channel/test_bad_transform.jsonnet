@@ -6,6 +6,5 @@
       "parameters": {}
     }
   },
-  "logicengines": {},
   "publishers": {}
 }
