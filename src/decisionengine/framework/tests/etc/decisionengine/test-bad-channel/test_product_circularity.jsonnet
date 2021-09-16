@@ -10,6 +10,5 @@
       "parameters": {}
     }
   },
-  "logicengines": {},
   "publishers": {}
 }

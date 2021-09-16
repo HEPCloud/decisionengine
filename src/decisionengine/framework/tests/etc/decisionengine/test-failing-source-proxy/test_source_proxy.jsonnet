@@ -20,6 +20,5 @@
      }
    },
 
-  "logicengines": {},
   "publishers": {}
 }

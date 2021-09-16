@@ -10,6 +10,7 @@ import structlog
 
 from decisionengine.framework.dataspace import datablock
 from decisionengine.framework.logicengine.LogicEngine import LogicEngine
+from decisionengine.framework.logicengine.LogicEngine import passthrough_configuration
 from decisionengine.framework.managers.ComponentManager import ComponentManager
 from decisionengine.framework.modules import Module
 from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME, DELOGGER_CHANNEL_NAME, LOGGERNAME
@@ -107,10 +108,18 @@ class Channel:
 
         delogger.debug("Creating channel source")
         self.sources = _make_workers_for(channel_dict["sources"], Source, channel_name)
-        delogger.debug("Creating channel logicengine")
-        self.le_s = _make_workers_for(channel_dict["logicengines"], LogicEngine, channel_name)
+
         delogger.debug("Creating channel publisher")
         self.publishers = _make_workers_for(channel_dict["publishers"], Publisher, channel_name)
+
+        delogger.debug("Creating channel logicengine")
+        configured_le_s = channel_dict.get("logicengines")
+        if configured_le_s is None:
+            configured_le_s = passthrough_configuration(channel_dict["publishers"].keys())
+        if len(configured_le_s) > 1:
+            raise RuntimeError("Cannot support more than one logic engine per channel.")
+
+        self.le_s = _make_workers_for(configured_le_s, LogicEngine, channel_name)
 
         delogger.debug("Creating channel transform")
         transforms = _make_workers_for(channel_dict["transforms"], Transform, channel_name)

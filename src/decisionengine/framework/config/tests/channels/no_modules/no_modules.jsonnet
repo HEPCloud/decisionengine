@@ -1,6 +1,5 @@
 {
   "sources": {},
   "transforms": {},
-  "logicengines": {},
   "publishers": {}
 }
