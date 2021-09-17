@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -72,7 +72,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for decisionengine.framework.config.ChannelConfigHandler</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Manager of channel configurations.</span>
 
 <span class="sd">The ChannelConfigHandler manages only channel configurations and not</span>
@@ -80,35 +80,39 @@
 <span class="sd">loading channel configuration files and validating that the channels</span>
 <span class="sd">have the correct configuration artifacts and inter-module product</span>
 <span class="sd">dependencies.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.config</span> <span class="kn">import</span> <span class="n">ValidConfig</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="k">as</span> <span class="nn">de_logger</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.util.fs</span> <span class="k">as</span> <span class="nn">fs</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.config</span> <span class="kn">import</span> <span class="n">ValidConfig</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span>
 
-<span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sources&#39;</span><span class="p">,</span> <span class="s1">&#39;logicengines&#39;</span><span class="p">,</span> <span class="s1">&#39;transforms&#39;</span><span class="p">,</span> <span class="s1">&#39;publishers&#39;</span><span class="p">}</span>
-<span class="n">_ALLOWED_CHANNEL_KEYS</span> <span class="o">=</span> <span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">|</span> <span class="p">{</span><span class="s1">&#39;task_manager&#39;</span><span class="p">}</span>
+<span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sources&quot;</span><span class="p">,</span> <span class="s2">&quot;logicengines&quot;</span><span class="p">,</span> <span class="s2">&quot;transforms&quot;</span><span class="p">,</span> <span class="s2">&quot;publishers&quot;</span><span class="p">}</span>
+<span class="n">_ALLOWED_CHANNEL_KEYS</span> <span class="o">=</span> <span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">|</span> <span class="p">{</span><span class="s2">&quot;task_manager&quot;</span><span class="p">}</span>
 <span class="n">_MANDATORY_MODULE_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">}</span>
 
 
 <div class="viewcode-block" id="_make_de_logger"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._make_de_logger">[docs]</a><span class="k">def</span> <span class="nf">_make_de_logger</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
-    <span class="k">if</span> <span class="s1">&#39;logger&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">global_config</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;logger&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">global_config</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No logger configuration has been specified.&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">logger_config</span> <span class="o">=</span> <span class="n">global_config</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">]</span>
-        <span class="n">de_logger</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;log_level&#39;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">),</span>
-                              <span class="n">file_rotate_by</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;file_rotate_by&#39;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">),</span>
-                              <span class="n">rotation_time_unit</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rotation_time_unit&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">),</span>
-                              <span class="n">rotation_interval</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rotation_time_interval&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-                              <span class="n">max_backup_count</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max_backup_count&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
-                              <span class="n">max_file_size</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max_file_size&#39;</span><span class="p">,</span> <span class="mi">1000000</span><span class="p">),</span>
-                              <span class="n">log_file_name</span><span class="o">=</span><span class="n">logger_config</span><span class="p">[</span><span class="s1">&#39;log_file&#39;</span><span class="p">])</span>
+        <span class="n">logger_config</span> <span class="o">=</span> <span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">]</span>
+        <span class="n">de_logger</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span>
+            <span class="n">log_level</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_level&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">),</span>
+            <span class="n">file_rotate_by</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;file_rotate_by&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">),</span>
+            <span class="n">rotation_time_unit</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rotation_time_unit&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">),</span>
+            <span class="n">rotation_interval</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rotation_time_interval&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">max_backup_count</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_backup_count&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+            <span class="n">max_file_size</span><span class="o">=</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_file_size&quot;</span><span class="p">,</span> <span class="mi">1000000</span><span class="p">),</span>
+            <span class="n">log_file_name</span><span class="o">=</span><span class="n">logger_config</span><span class="p">[</span><span class="s2">&quot;log_file&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">de_logger</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create log: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="_check_keys"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._check_keys">[docs]</a><span class="k">def</span> <span class="nf">_check_keys</span><span class="p">(</span><span class="n">channel_conf_dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -134,11 +138,12 @@
             <span class="n">diff</span> <span class="o">=</span> <span class="n">_MANDATORY_MODULE_KEYS</span> <span class="o">-</span> <span class="n">module_keys</span>
             <span class="k">if</span> <span class="n">diff</span><span class="p">:</span>
                 <span class="n">missing_keys</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> module </span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2"> is missing one or more mandatory keys:</span><span class="se">\n</span><span class="si">{</span><span class="n">missing_keys</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span></div>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> module </span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2"> is missing one or more mandatory keys:</span><span class="se">\n</span><span class="si">{</span><span class="n">missing_keys</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ChannelConfigHandler"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler">[docs]</a><span class="k">class</span> <span class="nc">ChannelConfigHandler</span><span class="p">():</span>
-
+<div class="viewcode-block" id="ChannelConfigHandler"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler">[docs]</a><span class="k">class</span> <span class="nc">ChannelConfigHandler</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_dir</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">channel_config_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>
@@ -157,23 +162,25 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">channel_config</span> <span class="o">=</span> <span class="n">ValidConfig</span><span class="o">.</span><span class="n">ValidConfig</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;Failed to open channel configuration file </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;contains error</span><span class="se">\n</span><span class="s2">-&gt; </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="kc">False</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;Failed to open channel configuration file </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s2">&quot;contains error</span><span class="se">\n</span><span class="s2">-&gt; </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">_check_keys</span><span class="p">(</span><span class="n">channel_config</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;The channel configuration file </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> contains a &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;validation error</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="kc">False</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;The channel configuration file </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> contains a &quot;</span> <span class="sa">f</span><span class="s2">&quot;validation error</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2"> config is valid.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel_config</span>
         <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ChannelConfigHandler.load_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.load_channel">[docs]</a>    <span class="k">def</span> <span class="nf">load_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a single configuration for a channel with the supplied name.</span>
 
 <span class="sd">        The behavior is to read a configuration file whose path is:</span>
@@ -183,23 +190,23 @@
 <span class="sd">        where the cached channel-configuration directory was stored whenever the</span>
 <span class="sd">        ChannelConfigHandler object was created, and {channel_name} is the value</span>
 <span class="sd">        of the supplied method argument.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.jsonnet&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.jsonnet&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ChannelConfigHandler.load_all_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.load_all_channels">[docs]</a>    <span class="k">def</span> <span class="nf">load_all_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load all channel configurations inside the stored channel-configuration directory.</span>
 
 <span class="sd">        Any cached configurations will be dropped prior to reloading.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;All channel configurations have been removed and are being reloaded.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading channel configs from:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">files</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">files_with_extensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="s1">&#39;.conf&#39;</span><span class="p">,</span> <span class="s1">&#39;.jsonnet&#39;</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">files_with_extensions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="s2">&quot;.conf&quot;</span><span class="p">,</span> <span class="s2">&quot;.jsonnet&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">full_path</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
             <span class="c1"># Load only the channels that are not already in memory</span>
             <span class="k">if</span> <span class="n">channel_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.dataspace &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.dataspace.dataspace &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -73,7 +73,11 @@
              
   <h1>Source code for decisionengine.framework.dataspace.dataspace</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">importlib</span>
+
 <span class="kn">import</span> <span class="nn">structlog</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.util.singleton</span> <span class="kn">import</span> <span class="n">ScopedSingleton</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;DataSpaceConfigurationError&quot;</span><span class="p">,</span>
@@ -83,18 +87,16 @@
     <span class="s2">&quot;DataSpace&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span><span class="p">,</span> <span class="n">DELOGGER_CHANNEL_NAME</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.util.singleton</span> <span class="kn">import</span> <span class="n">ScopedSingleton</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
-
 
 
 <div class="viewcode-block" id="DataSpaceConfigurationError"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpaceConfigurationError">[docs]</a><span class="k">class</span> <span class="nc">DataSpaceConfigurationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Errors related to database access</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 
@@ -102,6 +104,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Errors related to database access</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 
@@ -109,6 +112,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Errors related to database access</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 
@@ -116,6 +120,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Errors related to database access</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">pass</span></div>
 
 
@@ -138,7 +143,7 @@
         <span class="k">return</span> <span class="n">ds</span>
 
 
-<div class="viewcode-block" id="DataSpace"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace">[docs]</a><span class="k">class</span> <span class="nc">DataSpace</span><span class="p">():</span>
+<div class="viewcode-block" id="DataSpace"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace">[docs]</a><span class="k">class</span> <span class="nc">DataSpace</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    DataSpace class is collection of datablocks and provides interface</span>
 <span class="sd">    to the database used to store the actual data</span>
@@ -150,52 +155,51 @@
 <span class="sd">        :arg config: Configuration dictionary</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Initializing a dataspace&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing a dataspace&quot;</span><span class="p">)</span>
 
         <span class="c1"># Validate configuration</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataspace&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing DataSpace!&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Configuration is missing dataspace information: dataspace key not found.&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataspace&#39;</span><span class="p">),</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DataSpaceConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;Configuration is missing dataspace information: dataspace key not found.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">),</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing DataSpace!&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration: &#39;</span>
-                                              <span class="s1">&#39;dataspace key must correspond to a dictionary&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">DataSpaceConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;Invalid dataspace configuration: &quot;</span> <span class="s2">&quot;dataspace key must correspond to a dictionary&quot;</span>
+            <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_name</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;module&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_name</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">][</span><span class="s2">&quot;module&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing DataSpace!&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s2">&quot;Invalid dataspace configuration&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
 
         <span class="c1"># Connect to the datasource/database</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">DataSourceLoader</span><span class="p">()</span><span class="o">.</span><span class="n">create_datasource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_module</span><span class="p">,</span>
-                                                               <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_name</span><span class="p">,</span>
-                                                               <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">DataSourceLoader</span><span class="p">()</span><span class="o">.</span><span class="n">create_datasource</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_driver_config</span>
+        <span class="p">)</span>
 
         <span class="c1"># Datablocks, current and previous, keyed by taskmanager_ids</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">curr_datablocks</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prev_datablocks</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
-<div class="viewcode-block" id="DataSpace.insert"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
-               <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+<div class="viewcode-block" id="DataSpace.insert"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
-                                   <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in dataspace insert!&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="DataSpace.update"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
-               <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+<div class="viewcode-block" id="DataSpace.update"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
-                                   <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in dataspace update!&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
@@ -215,10 +219,8 @@
 <div class="viewcode-block" id="DataSpace.get_metadata"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.get_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataSpace.duplicate_datablock"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.duplicate_datablock">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate_datablock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span>
-                            <span class="n">new_generation_id</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">duplicate_datablock</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span>
-                                                   <span class="n">new_generation_id</span><span class="p">)</span></div>
+<div class="viewcode-block" id="DataSpace.duplicate_datablock"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.duplicate_datablock">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate_datablock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">new_generation_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">duplicate_datablock</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">new_generation_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataSpace.delete"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">all_generations</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># Remove the latest generation of the datablock</span>
@@ -239,11 +241,8 @@
 <div class="viewcode-block" id="DataSpace.store_taskmanager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.store_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">store_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">datestamp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">datestamp</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataSpace.get_last_generation_id"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.get_last_generation_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_last_generation_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                               <span class="n">taskmanager_name</span><span class="p">,</span>
-                               <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span>
-                                                      <span class="n">taskmanager_id</span><span class="p">)</span></div>
+<div class="viewcode-block" id="DataSpace.get_last_generation_id"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.get_last_generation_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_last_generation_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataSpace.get_taskmanager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.dataspace.DataSpace.get_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">get_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">)</span></div>

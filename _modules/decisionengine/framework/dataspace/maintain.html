@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.maintain &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.dataspace.maintain &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -72,15 +72,17 @@
            <div itemprop="articleBody">
              
   <h1>Source code for decisionengine.framework.dataspace.maintain</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">structlog</span>
-<span class="kn">import</span> <span class="nn">threading</span>
+<span></span><span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="kn">import</span> <span class="nn">structlog</span>
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">State</span><span class="p">,</span> <span class="n">STOPPING_CONDITIONS</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">ProcessingState</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span><span class="p">,</span> <span class="n">DELOGGER_CHANNEL_NAME</span>
 
-<div class="viewcode-block" id="Reaper"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.maintain.Reaper">[docs]</a><span class="k">class</span> <span class="nc">Reaper</span><span class="p">():</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">ProcessingState</span><span class="p">,</span> <span class="n">State</span><span class="p">,</span> <span class="n">STOPPING_CONDITIONS</span>
+
+
+<div class="viewcode-block" id="Reaper"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.maintain.Reaper">[docs]</a><span class="k">class</span> <span class="nc">Reaper</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reaper provides functionality of periodic deletion</span>
 <span class="sd">    of data older than retention_interval in days</span>
@@ -88,6 +90,7 @@
 <span class="sd">    The class attributes indicate a rational set of defaults</span>
 <span class="sd">    that shouldn&#39;t be altered by user configuration.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">MIN_RETENTION_INTERVAL_DAYS</span> <span class="o">=</span> <span class="mi">7</span>
     <span class="n">MIN_SECONDS_BETWEEN_RUNS</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">59</span>
 
@@ -99,34 +102,35 @@
         <span class="c1"># Validate configuration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Initializing a reaper&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing a reaper&quot;</span><span class="p">)</span>
 
         <span class="c1"># since we must validate this, have a private store space</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__retention_interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MIN_RETENTION_INTERVAL_DAYS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__seconds_between_runs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MIN_SECONDS_BETWEEN_RUNS</span>
 
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataspace&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing Reaper!&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration: &#39;</span>
-                                                        <span class="s1">&#39;dataspace key not found in dictionary&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataspace&#39;</span><span class="p">),</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;Invalid dataspace configuration: &quot;</span> <span class="s2">&quot;dataspace key not found in dictionary&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">),</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing Reaper!&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration: &#39;</span>
-                                                        <span class="s1">&#39;dataspace key must correspond to a dictionary&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;Invalid dataspace configuration: &quot;</span> <span class="s2">&quot;dataspace key must correspond to a dictionary&quot;</span>
+            <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">db_driver_name</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-            <span class="n">db_driver_module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;module&#39;</span><span class="p">]</span>
-            <span class="n">db_driver_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;datasource&#39;</span><span class="p">][</span><span class="s1">&#39;config&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">retention_interval</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">][</span><span class="s1">&#39;retention_interval_in_days&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">seconds_between_runs</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;dataspace&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reaper_run_interval&#39;</span><span class="p">,</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+            <span class="n">db_driver_name</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">db_driver_module</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">][</span><span class="s2">&quot;module&quot;</span><span class="p">]</span>
+            <span class="n">db_driver_config</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">][</span><span class="s2">&quot;config&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">retention_interval</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;retention_interval_in_days&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seconds_between_runs</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reaper_run_interval&quot;</span><span class="p">,</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing Reaper!&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s1">&#39;Invalid dataspace configuration&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">(</span><span class="s2">&quot;Invalid dataspace configuration&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSourceLoader</span><span class="p">()</span><span class="o">.</span><span class="n">create_datasource</span><span class="p">(</span><span class="n">db_driver_module</span><span class="p">,</span>
-                                                                         <span class="n">db_driver_name</span><span class="p">,</span>
-                                                                         <span class="n">db_driver_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSourceLoader</span><span class="p">()</span><span class="o">.</span><span class="n">create_datasource</span><span class="p">(</span>
+            <span class="n">db_driver_module</span><span class="p">,</span> <span class="n">db_driver_name</span><span class="p">,</span> <span class="n">db_driver_config</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">ProcessingState</span><span class="p">()</span>
@@ -140,8 +144,9 @@
     <span class="k">def</span> <span class="nf">retention_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MIN_RETENTION_INTERVAL_DAYS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing Reaper!&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For safety the data retention interval has to be greater than </span><span class="si">{}</span><span class="s2"> days&quot;</span><span class="o">.</span>
-                             <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MIN_RETENTION_INTERVAL_DAYS</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;For safety the data retention interval has to be greater than </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">MIN_RETENTION_INTERVAL_DAYS</span><span class="si">}</span><span class="s2"> days&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reaper setting retention_interval to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__retention_interval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
@@ -154,8 +159,9 @@
     <span class="k">def</span> <span class="nf">seconds_between_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MIN_SECONDS_BETWEEN_RUNS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in initializing Reaper!&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For performance the time between runs to be greater than </span><span class="si">{}</span><span class="s2"> seconds&quot;</span><span class="o">.</span>
-                             <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MIN_SECONDS_BETWEEN_RUNS</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;For performance the time between runs to be greater than </span><span class="si">{self.MIN_SECONDS_BETWEEN_RUNS}</span><span class="s2"> seconds&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reaper setting seconds_between_runs to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__seconds_between_runs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
@@ -228,14 +234,13 @@
             <span class="c1"># each invocation must be a new thread</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                               <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_reaper_loop</span><span class="p">,</span>
-                                               <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="p">),</span>
-                                               <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Reaper_loop_thread&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+                    <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_reaper_loop</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">delay</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Reaper_loop_thread&quot;</span>
+                <span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Reaper loop thread not started&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Reaper loop thread not started&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span></div>
 
@@ -258,8 +263,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Reaper tried to stop but was never started&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Reaper, retention interval </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">retention_interval</span><span class="p">,</span><span class="si">}</span><span class="s2"> days, &quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;between runs wait </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">seconds_between_runs</span><span class="si">}</span><span class="s2"> seconds, state </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Reaper, retention interval </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">retention_interval</span><span class="p">,</span><span class="si">}</span><span class="s2"> days, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;between runs wait </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">seconds_between_runs</span><span class="si">}</span><span class="s2"> seconds, state </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
 </pre></div>
 
            </div>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.FactLookup &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.logicengine.FactLookup &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -72,17 +72,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for decisionengine.framework.logicengine.FactLookup</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.Rule</span> <span class="kn">import</span> <span class="n">Rule</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span><span class="p">,</span> <span class="n">DELOGGER_CHANNEL_NAME</span>
+<span></span><span class="kn">import</span> <span class="nn">structlog</span>
+
 <span class="kn">from</span> <span class="nn">toposort</span> <span class="kn">import</span> <span class="n">toposort_flatten</span>
 
-<span class="kn">import</span> <span class="nn">structlog</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.Rule</span> <span class="kn">import</span> <span class="n">Rule</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
 
-<span class="n">_TOP_LEVEL</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># Indicates facts not contained by rules</span>
+<span class="n">_TOP_LEVEL</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># Indicates facts not contained by rules</span>
 
 
 <div class="viewcode-block" id="FactLookup"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup">[docs]</a><span class="k">class</span> <span class="nc">FactLookup</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Establishes a policy for looking up a fact based on the given name.</span>
 
 <span class="sd">    To wit, the first fact with a given name is the one that is used</span>
@@ -115,7 +116,8 @@
 <span class="sd">    their own facts with the same name.  FactLookup ensures that</span>
 <span class="sd">    &#39;publish_1&#39; and &#39;publish_2&#39; will both use the evaluated fact from</span>
 <span class="sd">    the top-level &#39;facts&#39; table.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fact_names</span><span class="p">,</span> <span class="n">rules_cfg</span><span class="p">):</span>
         <span class="c1"># For the above configuration, the &#39;self.facts&#39; attribute is a dictionary of the form:</span>
         <span class="c1"># {</span>

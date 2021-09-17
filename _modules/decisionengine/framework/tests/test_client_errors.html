@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_client_errors &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.tests.test_client_errors &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -72,32 +72,32 @@
            <div itemprop="articleBody">
              
   <h1>Source code for decisionengine.framework.tests.test_client_errors</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;Fixture based DE Server tests of the sample config&#39;&#39;&#39;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Fixture based DE Server tests of the sample config&quot;&quot;&quot;</span>
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 
 <span class="kn">import</span> <span class="nn">pytest</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
+    <span class="n">DEServer</span><span class="p">,</span>
     <span class="n">PG_DE_DB_WITH_SCHEMA</span><span class="p">,</span>
     <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="p">,</span>
     <span class="n">PG_PROG</span><span class="p">,</span>
     <span class="n">SQLALCHEMY_PG_WITH_SCHEMA</span><span class="p">,</span>
     <span class="n">SQLALCHEMY_TEMPFILE_SQLITE</span><span class="p">,</span>
-    <span class="n">DEServer</span><span class="p">,</span>
+    <span class="n">TEST_CHANNEL_CONFIG_PATH</span><span class="p">,</span>
     <span class="n">TEST_CONFIG_PATH</span><span class="p">,</span>
-    <span class="n">TEST_CHANNEL_CONFIG_PATH</span>
 <span class="p">)</span>
 
 <span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span>
-    <span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span>
-    <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">TEST_CHANNEL_CONFIG_PATH</span>
-<span class="p">)</span> <span class="c1"># pylint: disable=invalid-name</span>
+    <span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">TEST_CHANNEL_CONFIG_PATH</span>
+<span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+
 
 <div class="viewcode-block" id="test_client_cannot_wait_on_bad_state"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_errors.test_client_cannot_wait_on_bad_state">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_cannot_wait_on_bad_state</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Verify wait is for a valid state&#39;&#39;&#39;</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while=INVALID_STATE&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s1">&#39;INVALID_STATE is not a valid channel state.&#39;</span></div>
+    <span class="sd">&quot;&quot;&quot;Verify wait is for a valid state&quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--block-while=INVALID_STATE&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;INVALID_STATE is not a valid channel state.&quot;</span></div>
 </pre></div>
 
            </div>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.tests.test_Reaper &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_Reaper &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -77,17 +77,19 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
+
 <span class="kn">import</span> <span class="nn">pytest</span>
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.null</span> <span class="kn">import</span> <span class="n">NullDataSource</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.maintain</span> <span class="kn">import</span> <span class="n">Reaper</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">State</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.null</span> <span class="kn">import</span> <span class="n">NullDataSource</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.config">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<div class="viewcode-block" id="config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.config">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">config</span><span class="p">():</span>
 
     <span class="k">yield</span> <span class="p">{</span>
@@ -104,7 +106,7 @@
     <span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="reaper"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.reaper">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<div class="viewcode-block" id="reaper"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.reaper">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">reaper</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">config_fixture</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">)</span>
     <span class="n">reaper</span> <span class="o">=</span> <span class="n">Reaper</span><span class="p">(</span><span class="n">config_fixture</span><span class="p">)</span>
@@ -221,36 +223,36 @@
 <span class="k">def</span> <span class="nf">test_fail_start_two_reapers</span><span class="p">(</span><span class="n">reaper</span><span class="p">):</span>
     <span class="n">reaper</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">IDLE</span><span class="p">,</span> <span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">,</span> <span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running second start&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running second start&quot;</span><span class="p">)</span>
         <span class="n">reaper</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="test_fail_missing_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.test_fail_missing_config">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;reaper&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_fail_missing_config</span><span class="p">(</span><span class="n">reaper</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="k">del</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">):</span>
-        <span class="k">del</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span>
         <span class="n">Reaper</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_fail_bad_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.test_fail_bad_config">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;reaper&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_fail_bad_config</span><span class="p">(</span><span class="n">reaper</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;somestring&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">):</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;somestring&quot;</span>
         <span class="n">Reaper</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_fail_missing_config_key"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.test_fail_missing_config_key">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;reaper&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_fail_missing_config_key</span><span class="p">(</span><span class="n">reaper</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="k">del</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;retention_interval_in_days&quot;</span><span class="p">]</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpaceConfigurationError</span><span class="p">):</span>
-        <span class="k">del</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;retention_interval_in_days&quot;</span><span class="p">]</span>
         <span class="n">Reaper</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_fail_wrong_config_key"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_Reaper.test_fail_wrong_config_key">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;reaper&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_fail_wrong_config_key</span><span class="p">(</span><span class="n">reaper</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;retention_interval_in_days&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;retention_interval_in_days&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
         <span class="n">Reaper</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
 
 

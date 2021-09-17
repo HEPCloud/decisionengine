@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.Workers &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.engine.Workers &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -73,20 +73,22 @@
              
   <h1>Source code for decisionengine.framework.engine.Workers</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">structlog</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 
+<span class="kn">import</span> <span class="nn">structlog</span>
+
 <span class="kn">import</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="k">as</span> <span class="nn">ProcessingState</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">pylogconfig</span> <span class="k">as</span> <span class="n">logconf</span>
+
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">CHANNELLOGGERNAME</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">pylogconfig</span> <span class="k">as</span> <span class="n">logconf</span>
 
 <span class="n">MAX_CHANNEL_FILE_SIZE</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">*</span> <span class="mi">1000000</span>
 
 
 <div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.Workers.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class that encapsulates a channel&#39;s task manager as a separate process.</span>
 
 <span class="sd">    This class&#39; run function is called whenever the process is</span>
@@ -98,10 +100,10 @@
 <span class="sd">    To determine the exit code of this process, use the</span>
 <span class="sd">    Worker.exitcode value, provided by the multiprocessing.Process</span>
 <span class="sd">    base class.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_manager</span><span class="p">,</span> <span class="n">logger_config</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;DEWorker-</span><span class="si">{</span><span class="n">task_manager</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;DEWorker-</span><span class="si">{</span><span class="n">task_manager</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span> <span class="o">=</span> <span class="n">task_manager</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager_id</span> <span class="o">=</span> <span class="n">task_manager</span><span class="o">.</span><span class="n">id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span> <span class="o">=</span> <span class="n">logger_config</span>
@@ -125,9 +127,7 @@
 <div class="viewcode-block" id="Worker.run"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.Workers.Worker.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">myname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">name</span>
-        <span class="n">myfilename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="p">[</span><span class="s2">&quot;log_file&quot;</span><span class="p">]),</span> <span class="n">myname</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span>
-        <span class="p">)</span>
+        <span class="n">myfilename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="p">[</span><span class="s2">&quot;log_file&quot;</span><span class="p">]),</span> <span class="n">myname</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">CHANNELLOGGERNAME</span><span class="p">)</span>
 
@@ -181,15 +181,13 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">logconf</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">myname</span><span class="p">)</span>
 
-        <span class="n">channel_log_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s2">&quot;global_channel_log_level&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span>
-        <span class="p">)</span>
+        <span class="n">channel_log_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;global_channel_log_level&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">set_loglevel_value</span><span class="p">(</span><span class="n">channel_log_level</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="Workers"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.Workers.Workers">[docs]</a><span class="k">class</span> <span class="nc">Workers</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class manages and provides access to the task-manager workers.</span>
 
 <span class="sd">    The intention is that the decision engine never directly interacts with the</span>
@@ -209,7 +207,7 @@
 
 <span class="sd">    Calling a blocking method while using the protected context</span>
 <span class="sd">    manager (i.e. workers.access()) will likely result in a deadlock.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span> <span class="o">=</span> <span class="p">{}</span>

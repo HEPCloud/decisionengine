@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.config.policies &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.config.policies &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -72,7 +72,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for decisionengine.framework.config.policies</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Decision-engine default configuration policies.</span>
 
 <span class="sd">For the decision-engine process, the configuration policies are:</span>
@@ -90,25 +90,25 @@
 <span class="sd">accessing the configuration artifacts according to the policies listed</span>
 <span class="sd">above.  Please consult the documentation for each function below for</span>
 <span class="sd">more detailed information.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 
-<span class="n">GLOBAL_CONFIG_FILENAME</span> <span class="o">=</span> <span class="s1">&#39;decision_engine.jsonnet&#39;</span>
+<span class="n">GLOBAL_CONFIG_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;decision_engine.jsonnet&quot;</span>
 
 
 <div class="viewcode-block" id="valid_dir"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.policies.valid_dir">[docs]</a><span class="k">def</span> <span class="nf">valid_dir</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">scope</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Throws if the supplied path object is not a directory, otherwise returns the path object.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">scope</span><span class="si">}</span><span class="s2"> configuration directory &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">path</span></div>
 
 
 <div class="viewcode-block" id="global_config_dir"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.policies.global_config_dir">[docs]</a><span class="k">def</span> <span class="nf">global_config_dir</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve global configuration dir as pathlib.Path object.</span>
 
 <span class="sd">    This is the directory that houses the &#39;decision_engine.jsonnet&#39;</span>
@@ -118,13 +118,13 @@
 <span class="sd">    or will use /etc/decisionengine otherwise.  If the path exists as</span>
 <span class="sd">    a directory, then the directory path is returned as a string;</span>
 <span class="sd">    otherwise an exception is raised.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">global_config_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;CONFIG_PATH&quot;</span><span class="p">,</span> <span class="s2">&quot;/etc/decisionengine&quot;</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">valid_dir</span><span class="p">(</span><span class="n">global_config_dir</span><span class="p">,</span> <span class="s1">&#39;Global&#39;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">valid_dir</span><span class="p">(</span><span class="n">global_config_dir</span><span class="p">,</span> <span class="s2">&quot;Global&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="channel_config_dir"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.policies.channel_config_dir">[docs]</a><span class="k">def</span> <span class="nf">channel_config_dir</span><span class="p">(</span><span class="n">parent_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve the channel configuration directory as a pathlib.Path object.</span>
 
 <span class="sd">    This function returns a path object according to the following</span>
@@ -144,22 +144,22 @@
 <span class="sd">    the &#39;parent_dir&#39; argument is supplied, and the resulting path</span>
 <span class="sd">    object is not a valid directory, the function will exit with an</span>
 <span class="sd">    exception and not attempt rule 2 or 3.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">parent_dir</span><span class="p">:</span>
-        <span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">,</span> <span class="s1">&#39;config.d&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">valid_dir</span><span class="p">(</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="s1">&#39;Channel&#39;</span><span class="p">)</span>
+        <span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">,</span> <span class="s2">&quot;config.d&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">valid_dir</span><span class="p">(</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="s2">&quot;Channel&quot;</span><span class="p">)</span>
 
-    <span class="n">env_value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;CHANNEL_CONFIG_PATH&#39;</span><span class="p">)</span>
+    <span class="n">env_value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;CHANNEL_CONFIG_PATH&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">env_value</span><span class="p">:</span>
         <span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">env_value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">valid_dir</span><span class="p">(</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="s1">&#39;Channel&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">valid_dir</span><span class="p">(</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="s2">&quot;Channel&quot;</span><span class="p">)</span>
 
-    <span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">global_config_dir</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;config.d&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">valid_dir</span><span class="p">(</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="s1">&#39;Channel&#39;</span><span class="p">)</span></div>
+    <span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">global_config_dir</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;config.d&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">valid_dir</span><span class="p">(</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="s2">&quot;Channel&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="global_config_file"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.policies.global_config_file">[docs]</a><span class="k">def</span> <span class="nf">global_config_file</span><span class="p">(</span><span class="n">parent_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the pathlib.Path object corresponding to the global configuration.</span>
 
 <span class="sd">    If supplied, the &#39;parent_dir&#39; is assumed to be the full path</span>
@@ -169,7 +169,7 @@
 <span class="sd">    &#39;global_config_dir()&#39; function.</span>
 
 <span class="sd">    An exception is raised if no &#39;decision_engine.jsonnet&#39; file is found.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">parent_dir</span><span class="p">:</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">,</span> <span class="n">GLOBAL_CONFIG_FILENAME</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>

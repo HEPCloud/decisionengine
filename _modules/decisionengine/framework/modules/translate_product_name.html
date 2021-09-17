@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.translate_product_name &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.modules.translate_product_name &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -93,13 +93,15 @@
 
 <div class="viewcode-block" id="translate"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.translate_product_name.translate">[docs]</a><span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="n">spec</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Break apart the string &#39;old -&gt; new&#39; into a tuple (&#39;old&#39;, &#39;new&#39;)&quot;&quot;&quot;</span>
-    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">R</span><span class="s1">&#39;(\w+)(\s+\-&gt;\s+(\w+))?&#39;</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">R</span><span class="s2">&quot;(\w+)(\s+\-&gt;\s+(\w+))?&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The specification &#39;</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2">&#39; does not match the supported pattern &quot;</span>
-                           <span class="s1">&#39;&quot;old_name[ -&gt; new_name]&quot;,</span><span class="se">\n</span><span class="s1">&#39;</span>
-                           <span class="s2">&quot;where the product names can consist of the characters a-z, a-Z, 0-9, &quot;</span>
-                           <span class="s2">&quot;and an underscore &#39;_&#39;.</span><span class="se">\n</span><span class="s2">If an optional new name is specified, the &#39;-&gt;&#39; &quot;</span>
-                           <span class="s2">&quot;token must be surrounded by at least</span><span class="se">\n</span><span class="s2">one space on either side.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The specification &#39;</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2">&#39; does not match the supported pattern &quot;</span>
+            <span class="s1">&#39;&quot;old_name[ -&gt; new_name]&quot;,</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="s2">&quot;where the product names can consist of the characters a-z, a-Z, 0-9, &quot;</span>
+            <span class="s2">&quot;and an underscore &#39;_&#39;.</span><span class="se">\n</span><span class="s2">If an optional new name is specified, the &#39;-&gt;&#39; &quot;</span>
+            <span class="s2">&quot;token must be surrounded by at least</span><span class="se">\n</span><span class="s2">one space on either side.&quot;</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></div>
 
 

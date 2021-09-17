@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -74,23 +74,26 @@
   <h1>Source code for decisionengine.framework.dataspace.datasources.postgresql</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">structlog</span>
 
 <span class="kn">import</span> <span class="nn">dbutils.pooled_db</span> <span class="k">as</span> <span class="nn">pooled_db</span>
+<span class="kn">import</span> <span class="nn">structlog</span>
 
-<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_implementation</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;CPython&#39;</span><span class="p">:</span>
+<span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datasource</span> <span class="k">as</span> <span class="nn">ds</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
+
+<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_implementation</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;CPython&quot;</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">psycopg2</span>
     <span class="kn">import</span> <span class="nn">psycopg2.extras</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="c1"># try to load psycopg2cffi dynamically and use psycopg2 namespace</span>
     <span class="kn">import</span> <span class="nn">importlib</span>
-    <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;psycopg2cffi&#39;</span><span class="p">)</span>
-    <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;psycopg2cffi.compat&#39;</span><span class="p">)</span>
-    <span class="nb">__import__</span><span class="p">(</span><span class="s1">&#39;psycopg2cffi&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">compat</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+
+    <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;psycopg2cffi&quot;</span><span class="p">)</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;psycopg2cffi.compat&quot;</span><span class="p">)</span>
+    <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;psycopg2cffi&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">compat</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
     <span class="kn">import</span> <span class="nn">psycopg2.extras</span>
 
-<span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datasource</span> <span class="k">as</span> <span class="nn">ds</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span><span class="p">,</span> <span class="n">DELOGGER_CHANNEL_NAME</span>
 
 <span class="n">MAX_NUMBER_OF_RETRIES</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">TIME_TO_SLEEP</span> <span class="o">=</span> <span class="mi">2</span>
@@ -165,48 +168,44 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">tables</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;header&#39;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s1">&#39;taskmanager_id TEXT&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;generation_id INT&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;key TEXT&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;create_time REAL&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;expiration_time REAL&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;scheduled_create_time REAL&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;creator TEXT&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;schema_id INT&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;header&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;taskmanager_id TEXT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;generation_id INT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key TEXT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;create_time REAL&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;expiration_time REAL&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;scheduled_create_time REAL&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;creator TEXT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;schema_id INT&quot;</span><span class="p">,</span>
         <span class="p">],</span>
-        <span class="s1">&#39;schema&#39;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s1">&#39;schema_id INT&#39;</span><span class="p">,</span>  <span class="c1"># Auto generated</span>
-            <span class="s1">&#39;schema BLOB&#39;</span><span class="p">,</span>    <span class="c1"># keys in the value dict of the dataproduct table</span>
+        <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;schema_id INT&quot;</span><span class="p">,</span>  <span class="c1"># Auto generated</span>
+            <span class="s2">&quot;schema BLOB&quot;</span><span class="p">,</span>  <span class="c1"># keys in the value dict of the dataproduct table</span>
         <span class="p">],</span>
-        <span class="s1">&#39;metadata&#39;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s1">&#39;taskmanager_id TEXT&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;generation_id INT&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;key TEXT&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;state TEXT&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;generation_time REAL&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;missed_update_count INT&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;taskmanager_id TEXT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;generation_id INT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;key TEXT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;state TEXT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;generation_time REAL&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;missed_update_count INT&quot;</span><span class="p">,</span>
         <span class="p">],</span>
-        <span class="s1">&#39;dataproduct&#39;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s1">&#39;taskmanager_id TEXT&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;generation_id INT&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;key TEXT&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;value BLOB&#39;</span>
-        <span class="p">]</span>
+        <span class="s2">&quot;dataproduct&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;taskmanager_id TEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;generation_id INT&quot;</span><span class="p">,</span> <span class="s2">&quot;key TEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;value BLOB&quot;</span><span class="p">],</span>
     <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config_dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Initializing a Postgresql datasource&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing a Postgresql datasource&quot;</span><span class="p">)</span>
 
         <span class="c1"># account for differences between psycopg2 and psycopg2cffi</span>
-        <span class="n">dbname</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dbname&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to connect as </span><span class="si">{</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">dbname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">dbname</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dbname&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Trying to connect as </span><span class="si">{</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">dbname</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span> <span class="o">=</span> <span class="n">pooled_db</span><span class="o">.</span><span class="n">PooledDB</span><span class="p">(</span><span class="n">psycopg2</span><span class="p">,</span>
-                                                  <span class="o">**</span><span class="n">config_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span> <span class="o">=</span> <span class="n">pooled_db</span><span class="o">.</span><span class="n">PooledDB</span><span class="p">(</span><span class="n">psycopg2</span><span class="p">,</span> <span class="o">**</span><span class="n">config_dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="o">=</span> <span class="n">MAX_NUMBER_OF_RETRIES</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">TIME_TO_SLEEP</span>
 
@@ -215,38 +214,32 @@
 
 <div class="viewcode-block" id="Postgresql.store_taskmanager"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.store_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">store_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">datestamp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">datestamp</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_returning_result</span><span class="p">(</span><span class="s2">&quot;INSERT INTO taskmanager (name, taskmanager_id, datestamp) values (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
-                                                 <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">datestamp</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sequence_id&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_returning_result</span><span class="p">(</span>
+                <span class="s2">&quot;INSERT INTO taskmanager (name, taskmanager_id, datestamp) values (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">datestamp</span><span class="p">),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sequence_id&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_returning_result</span><span class="p">(</span><span class="s2">&quot;INSERT INTO taskmanager (name, taskmanager_id) values (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
-                                             <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sequence_id&#39;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_returning_result</span><span class="p">(</span>
+            <span class="s2">&quot;INSERT INTO taskmanager (name, taskmanager_id) values (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sequence_id&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Postgresql.get_taskmanager"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">get_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">taskmanager_id</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">SELECT_TASKMANAGER_BY_NAME_AND_ID</span><span class="p">,</span>
-                                               <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">SELECT_TASKMANAGER_BY_NAME_AND_ID</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Taskmanager=</span><span class="si">{}</span><span class="s2"> taskmanager_id=</span><span class="si">{}</span><span class="s2"> not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Taskmanager=</span><span class="si">{</span><span class="n">taskmanager_name</span><span class="si">}</span><span class="s2"> taskmanager_id=</span><span class="si">{</span><span class="n">taskmanager_id</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">SELECT_TASKMANAGER_BY_NAME</span><span class="p">,</span>
-                                               <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,))[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">SELECT_TASKMANAGER_BY_NAME</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,))[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-                    <span class="s2">&quot;Taskmanager=</span><span class="si">{}</span><span class="s2"> not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">))</span></div>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Taskmanager=</span><span class="si">{</span><span class="n">taskmanager_name</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Postgresql.get_taskmanagers"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_taskmanagers">[docs]</a>    <span class="k">def</span> <span class="nf">get_taskmanagers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                         <span class="n">taskmanager_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                         <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                         <span class="n">end_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Postgresql.get_taskmanagers"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_taskmanagers">[docs]</a>    <span class="k">def</span> <span class="nf">get_taskmanagers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
-        <span class="n">SELECT_TASKMANAGERS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SELECT tm.name, &quot;</span>
-                               <span class="s2">&quot;tm.sequence_id, &quot;</span>
-                               <span class="s2">&quot;tm.taskmanager_id, &quot;</span>
-                               <span class="s2">&quot;tm.datestamp &quot;</span>
-                               <span class="s2">&quot;FROM taskmanager tm &quot;</span><span class="p">)</span>
+        <span class="n">SELECT_TASKMANAGERS</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;SELECT tm.name, &quot;</span> <span class="s2">&quot;tm.sequence_id, &quot;</span> <span class="s2">&quot;tm.taskmanager_id, &quot;</span> <span class="s2">&quot;tm.datestamp &quot;</span> <span class="s2">&quot;FROM taskmanager tm &quot;</span>
+        <span class="p">)</span>
 
         <span class="n">have_where</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">taskmanager_name</span><span class="p">:</span>
@@ -266,108 +259,127 @@
                 <span class="n">SELECT_TASKMANAGERS</span> <span class="o">+=</span> <span class="s2">&quot; WHERE &quot;</span>
             <span class="n">SELECT_TASKMANAGERS</span> <span class="o">+=</span> <span class="s2">&quot; tm.datestamp &lt;=  &#39;&quot;</span> <span class="o">+</span> <span class="n">end_time</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">SELECT_TASKMANAGERS</span> <span class="o">+</span>
-                                           <span class="s2">&quot; ORDER BY tm.datestamp ASC&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">SELECT_TASKMANAGERS</span> <span class="o">+</span> <span class="s2">&quot; ORDER BY tm.datestamp ASC&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Postgresql.get_last_generation_id"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_last_generation_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_last_generation_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                               <span class="n">taskmanager_name</span><span class="p">,</span>
-                               <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Postgresql.get_last_generation_id"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_last_generation_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_last_generation_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">taskmanager_id</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">generation_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID</span><span class="p">,</span>
-                                             <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">generation_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span>
+                    <span class="n">SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">)</span>
+                <span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">generation_id</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Failed to retrieve value&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">generation_id</span>
             <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Last generation id not found for taskmanager=</span><span class="si">{}</span><span class="s2"> taskmanager_id=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
-                               <span class="nb">format</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Last generation id not found for taskmanager=</span><span class="si">{</span><span class="n">taskmanager_name</span><span class="si">}</span><span class="s2"> taskmanager_id=</span><span class="si">{</span><span class="n">taskmanager_id</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">generation_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">SELECT_LAST_GENERATION_ID_BY_NAME</span><span class="p">,</span>
-                                             <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">generation_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">SELECT_LAST_GENERATION_ID_BY_NAME</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">generation_id</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Failed to retrieve value&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">generation_id</span>
             <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Last generation id not found for taskmanager=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
-                               <span class="nb">format</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="p">))</span></div>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Last generation id not found for taskmanager=</span><span class="si">{</span><span class="n">taskmanager_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Postgresql.insert"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
-               <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+<div class="viewcode-block" id="Postgresql.insert"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_insert</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">,</span>
-                     <span class="p">{</span><span class="s1">&#39;taskmanager_id&#39;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
-                      <span class="s1">&#39;generation_id&#39;</span><span class="p">:</span> <span class="n">generation_id</span><span class="p">,</span>
-                      <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
-                      <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">Binary</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                      <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insert</span><span class="p">(</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
+                <span class="s2">&quot;generation_id&quot;</span><span class="p">:</span> <span class="n">generation_id</span><span class="p">,</span>
+                <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">Binary</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_insert</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">header_table</span><span class="p">,</span>
-                     <span class="p">{</span><span class="s1">&#39;taskmanager_id&#39;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
-                      <span class="s1">&#39;generation_id&#39;</span><span class="p">:</span> <span class="n">generation_id</span><span class="p">,</span>
-                      <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
-                      <span class="s1">&#39;create_time&#39;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;create_time&#39;</span><span class="p">),</span>
-                      <span class="s1">&#39;scheduled_create_time&#39;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scheduled_create_time&#39;</span><span class="p">),</span>
-                      <span class="s1">&#39;expiration_time&#39;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;expiration_time&#39;</span><span class="p">),</span>
-                      <span class="s1">&#39;creator&#39;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;creator&#39;</span><span class="p">),</span>
-                      <span class="s1">&#39;schema_id&#39;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;schema_id&#39;</span><span class="p">)</span>
-                      <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insert</span><span class="p">(</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">header_table</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
+                <span class="s2">&quot;generation_id&quot;</span><span class="p">:</span> <span class="n">generation_id</span><span class="p">,</span>
+                <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+                <span class="s2">&quot;create_time&quot;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;create_time&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;scheduled_create_time&quot;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scheduled_create_time&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;expiration_time&quot;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;expiration_time&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;creator&quot;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;creator&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;schema_id&quot;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema_id&quot;</span><span class="p">),</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_insert</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">metadata_table</span><span class="p">,</span>
-                     <span class="p">{</span><span class="s1">&#39;taskmanager_id&#39;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
-                      <span class="s1">&#39;generation_id&#39;</span><span class="p">:</span> <span class="n">generation_id</span><span class="p">,</span>
-                      <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
-                      <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">),</span>
-                      <span class="s1">&#39;generation_time&#39;</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;generation_time&#39;</span><span class="p">),</span>
-                      <span class="s1">&#39;missed_update_count&#39;</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;missed_update_count&#39;</span><span class="p">)</span>
-                      <span class="p">})</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insert</span><span class="p">(</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">metadata_table</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
+                <span class="s2">&quot;generation_id&quot;</span><span class="p">:</span> <span class="n">generation_id</span><span class="p">,</span>
+                <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+                <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;generation_time&quot;</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generation_time&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;missed_update_count&quot;</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;missed_update_count&quot;</span><span class="p">),</span>
+            <span class="p">},</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Postgresql.update"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span>
-               <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">header_table</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">metadata_table</span><span class="p">,</span>
-                      <span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">):</span>
+<div class="viewcode-block" id="Postgresql.update"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">header_table</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">metadata_table</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">):</span>
             <span class="n">q</span> <span class="o">=</span> <span class="n">SELECT_QUERY</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
                 <span class="c1"># do not log stack trace, Exception thrown is handled by the caller</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{}</span><span class="s2"> or generation_id=</span><span class="si">{}</span><span class="s2"> or key=</span><span class="si">{}</span><span class="s2"> not found in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">table</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{</span><span class="n">taskmanager_id</span><span class="si">}</span><span class="s2"> or generation_id=</span><span class="si">{</span><span class="n">generation_id</span><span class="si">}</span><span class="s2"> or key=</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> not found in </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
 
-        <span class="n">q</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">            UPDATE </span><span class="si">{}</span><span class="s2"> SET value=</span><span class="si">%s</span><span class="s2"></span>
-<span class="s2">                      WHERE taskmanager_id=</span><span class="si">%s</span><span class="s2"> AND generation_id=</span><span class="si">%s</span><span class="s2"> AND key=</span><span class="si">%s</span><span class="s2"></span>
-<span class="s2">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            UPDATE </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="si">}</span><span class="s2"> SET value=%s</span>
+<span class="s2">                      WHERE taskmanager_id=%s AND generation_id=%s AND key=%s</span>
+<span class="s2">            &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">Binary</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
-                         <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">Binary</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
 
-        <span class="n">q</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        UPDATE </span><span class="si">{}</span><span class="s2"> SET create_time=</span><span class="si">%s</span><span class="s2">,</span>
-<span class="s2">                      expiration_time=</span><span class="si">%s</span><span class="s2">,</span>
-<span class="s2">                      scheduled_create_time=</span><span class="si">%s</span><span class="s2">,</span>
-<span class="s2">                      creator=</span><span class="si">%s</span><span class="s2">,</span>
-<span class="s2">                      schema_id=</span><span class="si">%s</span><span class="s2"></span>
-<span class="s2">                  WHERE taskmanager_id=</span><span class="si">%s</span><span class="s2"> AND generation_id=</span><span class="si">%s</span><span class="s2"> AND key=</span><span class="si">%s</span><span class="s2"></span>
-<span class="s2">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">header_table</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;create_time&#39;</span><span class="p">),</span>
-                         <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;expiration_time&#39;</span><span class="p">),</span>
-                         <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scheduled_create_time&#39;</span><span class="p">),</span>
-                         <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;creator&#39;</span><span class="p">),</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;schema_id&#39;</span><span class="p">),</span>
-                         <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        UPDATE </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">header_table</span><span class="si">}</span><span class="s2"> SET create_time=%s,</span>
+<span class="s2">                      expiration_time=%s,</span>
+<span class="s2">                      scheduled_create_time=%s,</span>
+<span class="s2">                      creator=%s,</span>
+<span class="s2">                      schema_id=%s</span>
+<span class="s2">                  WHERE taskmanager_id=%s AND generation_id=%s AND key=%s</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span>
+            <span class="n">q</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;create_time&quot;</span><span class="p">),</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;expiration_time&quot;</span><span class="p">),</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scheduled_create_time&quot;</span><span class="p">),</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;creator&quot;</span><span class="p">),</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema_id&quot;</span><span class="p">),</span>
+                <span class="n">taskmanager_id</span><span class="p">,</span>
+                <span class="n">generation_id</span><span class="p">,</span>
+                <span class="n">key</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
 
-        <span class="n">q</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">             UPDATE </span><span class="si">{}</span><span class="s2"> SET state=</span><span class="si">%s</span><span class="s2">,</span>
-<span class="s2">                           generation_time=</span><span class="si">%s</span><span class="s2">,</span>
-<span class="s2">                           missed_update_count=</span><span class="si">%s</span><span class="s2"></span>
-<span class="s2">                        WHERE taskmanager_id=</span><span class="si">%s</span><span class="s2"> AND generation_id=</span><span class="si">%s</span><span class="s2"> AND key=</span><span class="si">%s</span><span class="s2"></span>
-<span class="s2">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">metadata_table</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">),</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;generation_time&#39;</span><span class="p">),</span>
-                         <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;missed_update_count&#39;</span><span class="p">),</span>
-                         <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span></div>
+        <span class="n">q</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">             UPDATE </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">metadata_table</span><span class="si">}</span><span class="s2"> SET state=%s,</span>
+<span class="s2">                           generation_time=%s,</span>
+<span class="s2">                           missed_update_count=%s</span>
+<span class="s2">                        WHERE taskmanager_id=%s AND generation_id=%s AND key=%s</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span>
+            <span class="n">q</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">),</span>
+                <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generation_time&quot;</span><span class="p">),</span>
+                <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;missed_update_count&quot;</span><span class="p">),</span>
+                <span class="n">taskmanager_id</span><span class="p">,</span>
+                <span class="n">generation_id</span><span class="p">,</span>
+                <span class="n">key</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Postgresql.get_header"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_header">[docs]</a>    <span class="k">def</span> <span class="nf">get_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="n">q</span> <span class="o">=</span> <span class="n">SELECT_QUERY</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">header_table</span><span class="p">)</span>
@@ -375,8 +387,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="c1"># do not log stack trace, Exception thrown is handled by the caller</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{}</span><span class="s2"> or generation_id=</span><span class="si">{}</span><span class="s2"> or key=</span><span class="si">{}</span><span class="s2"> not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{</span><span class="n">taskmanager_id</span><span class="si">}</span><span class="s2"> or generation_id=</span><span class="si">{</span><span class="n">generation_id</span><span class="si">}</span><span class="s2"> or key=</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Postgresql.get_metadata"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="n">q</span> <span class="o">=</span> <span class="n">SELECT_QUERY</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">metadata_table</span><span class="p">)</span>
@@ -384,8 +395,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="c1"># do not log stack trace, Exception thrown is handled by the caller</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{}</span><span class="s2"> or generation_id=</span><span class="si">{}</span><span class="s2"> or key=</span><span class="si">{}</span><span class="s2"> not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{</span><span class="n">taskmanager_id</span><span class="si">}</span><span class="s2"> or generation_id=</span><span class="si">{</span><span class="n">generation_id</span><span class="si">}</span><span class="s2"> or key=</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Postgresql.get_dataproducts"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_dataproducts">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataproducts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">q</span> <span class="o">=</span> <span class="n">SELECT_PRODUCTS</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">)</span>
@@ -395,24 +405,27 @@
             <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,))</span>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">],</span>
-                               <span class="s1">&#39;taskmanager_id&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;taskmanager_id&#39;</span><span class="p">],</span>
-                               <span class="s1">&#39;generation_id&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;generation_id&#39;</span><span class="p">],</span>
-                               <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()})</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;generation_id&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;generation_id&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">(),</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
             <span class="k">return</span> <span class="n">result</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="c1"># do not log stack trace, Exception thrown is handled by the caller</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{}</span><span class="s2"> not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{</span><span class="n">taskmanager_id</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Postgresql.get_dataproduct"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_dataproduct">[docs]</a>    <span class="k">def</span> <span class="nf">get_dataproduct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="n">q</span> <span class="o">=</span> <span class="n">SELECT_QUERY</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">value_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">return</span> <span class="n">value_row</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">value_row</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="c1"># do not log stack trace, Exception thrown is handled by the caller</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{}</span><span class="s2"> or generation_id=</span><span class="si">{}</span><span class="s2"> or key=</span><span class="si">{}</span><span class="s2"> not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;taskmanager_id=</span><span class="si">{</span><span class="n">taskmanager_id</span><span class="si">}</span><span class="s2"> or generation_id=</span><span class="si">{</span><span class="n">generation_id</span><span class="si">}</span><span class="s2"> or key=</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Postgresql.get_datablock"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.get_datablock">[docs]</a>    <span class="k">def</span> <span class="nf">get_datablock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">):</span>
         <span class="n">q</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;SELECT key, value FROM </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="si">}</span><span class="s2"> dp, taskmanager tm</span>
@@ -420,60 +433,61 @@
         <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_dictresult</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">))</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
-            <span class="n">result</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Postgresql.duplicate_datablock"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.duplicate_datablock">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate_datablock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span>
-                            <span class="n">new_generation_id</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">            INSERT INTO </span><span class="si">{}</span><span class="s2"> (taskmanager_id,</span>
+<div class="viewcode-block" id="Postgresql.duplicate_datablock"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.duplicate_datablock">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate_datablock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">new_generation_id</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            INSERT INTO </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="si">}</span><span class="s2"> (taskmanager_id,</span>
 <span class="s2">                            generation_id,</span>
 <span class="s2">                            key,</span>
 <span class="s2">                            value)</span>
 <span class="s2">                   SELECT taskmanager_id,</span>
-<span class="s2">                          </span><span class="si">%s</span><span class="s2">,</span>
+<span class="s2">                          %s,</span>
 <span class="s2">                          key,</span>
 <span class="s2">                          value</span>
-<span class="s2">                   FROM </span><span class="si">{}</span><span class="s2"></span>
-<span class="s2">                   WHERE taskmanager_id=</span><span class="si">%s</span><span class="s2"> AND generation_id=</span><span class="si">%s</span><span class="s2"></span>
-<span class="s2">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="p">),</span>
-                  <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            INSERT INTO {} (taskmanager_id,</span>
-<span class="sd">                            generation_id,</span>
-<span class="sd">                            key,</span>
-<span class="sd">                            state,</span>
-<span class="sd">                            generation_time,</span>
-<span class="sd">                            missed_update_count)</span>
-<span class="sd">                   SELECT taskmanager_id,</span>
-<span class="sd">                          %s,</span>
-<span class="sd">                          key,</span>
-<span class="sd">                          state,</span>
-<span class="sd">                          generation_time,</span>
-<span class="sd">                          missed_update_count</span>
-<span class="sd">                   FROM {}</span>
-<span class="sd">                   WHERE taskmanager_id=%s AND generation_id=%s</span>
-<span class="sd">            &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">metadata_table</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">metadata_table</span><span class="p">),</span>
-                  <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            INSERT INTO {} (taskmanager_id,</span>
-<span class="sd">                        generation_id,</span>
-<span class="sd">                        key,</span>
-<span class="sd">                        create_time,</span>
-<span class="sd">                        expiration_time,</span>
-<span class="sd">                        scheduled_create_time,</span>
-<span class="sd">                        creator,</span>
-<span class="sd">                        schema_id)</span>
-<span class="sd">                 SELECT taskmanager_id,</span>
-<span class="sd">                        %s,</span>
-<span class="sd">                        key,</span>
-<span class="sd">                        create_time,</span>
-<span class="sd">                        expiration_time,</span>
-<span class="sd">                        scheduled_create_time,</span>
-<span class="sd">                        creator,</span>
-<span class="sd">                        schema_id</span>
-<span class="sd">                 FROM {}</span>
-<span class="sd">                 WHERE taskmanager_id=%s</span>
-<span class="sd">                 AND   generation_id=%s</span>
-<span class="sd">                 &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">header_table</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">header_table</span><span class="p">)):</span>
+<span class="s2">                   FROM </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">dataproduct_table</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">                   WHERE taskmanager_id=%s AND generation_id=%s</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            INSERT INTO </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">metadata_table</span><span class="si">}</span><span class="s2"> (taskmanager_id,</span>
+<span class="s2">                            generation_id,</span>
+<span class="s2">                            key,</span>
+<span class="s2">                            state,</span>
+<span class="s2">                            generation_time,</span>
+<span class="s2">                            missed_update_count)</span>
+<span class="s2">                   SELECT taskmanager_id,</span>
+<span class="s2">                          %s,</span>
+<span class="s2">                          key,</span>
+<span class="s2">                          state,</span>
+<span class="s2">                          generation_time,</span>
+<span class="s2">                          missed_update_count</span>
+<span class="s2">                   FROM </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">metadata_table</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">                   WHERE taskmanager_id=%s AND generation_id=%s</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            INSERT INTO </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">header_table</span><span class="si">}</span><span class="s2"> (taskmanager_id,</span>
+<span class="s2">                        generation_id,</span>
+<span class="s2">                        key,</span>
+<span class="s2">                        create_time,</span>
+<span class="s2">                        expiration_time,</span>
+<span class="s2">                        scheduled_create_time,</span>
+<span class="s2">                        creator,</span>
+<span class="s2">                        schema_id)</span>
+<span class="s2">                 SELECT taskmanager_id,</span>
+<span class="s2">                        %s,</span>
+<span class="s2">                        key,</span>
+<span class="s2">                        create_time,</span>
+<span class="s2">                        expiration_time,</span>
+<span class="s2">                        scheduled_create_time,</span>
+<span class="s2">                        creator,</span>
+<span class="s2">                        schema_id</span>
+<span class="s2">                 FROM </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">DataSource</span><span class="o">.</span><span class="n">header_table</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">                 WHERE taskmanager_id=%s</span>
+<span class="s2">                 AND   generation_id=%s</span>
+<span class="s2">                 &quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_insert</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">new_generation_id</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Postgresql.delete_data_older_than"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.delete_data_older_than">[docs]</a>    <span class="k">def</span> <span class="nf">delete_data_older_than</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">days</span><span class="p">):</span>
@@ -484,8 +498,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">days</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># do not log stack trace, Exception thrown is handled by the caller</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument has to be positive, non zero integer. Supplied </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">days</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remove</span><span class="p">(</span><span class="n">DELETE_OLD_DATA_QUERY</span><span class="p">,</span> <span class="p">(</span><span class="n">days</span><span class="p">,</span> <span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Argument has to be positive, non zero integer. Supplied </span><span class="si">{</span><span class="n">days</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove</span><span class="p">(</span><span class="n">DELETE_OLD_DATA_QUERY</span><span class="p">,</span> <span class="p">(</span><span class="n">days</span><span class="p">,))</span>
         <span class="k">return</span></div>
 
 <div class="viewcode-block" id="Postgresql.close"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -594,8 +608,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">record</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="n">q</span> <span class="o">=</span> <span class="n">generate_insert_query</span><span class="p">(</span>
-                        <span class="n">table_name_or_sql_query</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+                    <span class="n">q</span> <span class="o">=</span> <span class="n">generate_insert_query</span><span class="p">(</span><span class="n">table_name_or_sql_query</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">table_name_or_sql_query</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
@@ -604,13 +617,11 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">raise</span></div>
 
-
 <div class="viewcode-block" id="Postgresql._insert_returning_result"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql._insert_returning_result">[docs]</a>    <span class="k">def</span> <span class="nf">_insert_returning_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_name_or_sql_query</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">record</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="n">q</span> <span class="o">=</span> <span class="n">generate_insert_query</span><span class="p">(</span>
-                        <span class="n">table_name_or_sql_query</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+                    <span class="n">q</span> <span class="o">=</span> <span class="n">generate_insert_query</span><span class="p">(</span><span class="n">table_name_or_sql_query</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_returning_result</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_returning_result</span><span class="p">(</span><span class="n">table_name_or_sql_query</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
@@ -627,20 +638,16 @@
 
 <div class="viewcode-block" id="Postgresql._select_dictresult"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql._select_dictresult">[docs]</a>    <span class="k">def</span> <span class="nf">_select_dictresult</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql_query</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">values</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span>
-                <span class="n">sql_query</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">cursor_factory</span><span class="o">=</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">extras</span><span class="o">.</span><span class="n">RealDictCursor</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">sql_query</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">cursor_factory</span><span class="o">=</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">extras</span><span class="o">.</span><span class="n">RealDictCursor</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span>
-                <span class="n">sql_query</span><span class="p">,</span> <span class="n">cursor_factory</span><span class="o">=</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">extras</span><span class="o">.</span><span class="n">RealDictCursor</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">sql_query</span><span class="p">,</span> <span class="n">cursor_factory</span><span class="o">=</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">extras</span><span class="o">.</span><span class="n">RealDictCursor</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Postgresql._select_getresult"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql._select_getresult">[docs]</a>    <span class="k">def</span> <span class="nf">_select_getresult</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql_query</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">values</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span>
-                <span class="n">sql_query</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">cursor_factory</span><span class="o">=</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">extras</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">sql_query</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">cursor_factory</span><span class="o">=</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">extras</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span>
-                <span class="n">sql_query</span><span class="p">,</span> <span class="n">cursor_factory</span><span class="o">=</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">extras</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">sql_query</span><span class="p">,</span> <span class="n">cursor_factory</span><span class="o">=</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">extras</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Postgresql._select_tuple"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.datasources.html#decisionengine.framework.dataspace.datasources.postgresql.Postgresql._select_tuple">[docs]</a>    <span class="k">def</span> <span class="nf">_select_tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql_query</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>

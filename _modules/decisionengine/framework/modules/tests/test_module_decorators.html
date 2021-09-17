@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.tests.test_module_decorators &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.modules.tests.test_module_decorators &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -72,15 +72,16 @@
            <div itemprop="articleBody">
              
   <h1>Source code for decisionengine.framework.modules.tests.test_module_decorators</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Source</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Source</span> <span class="kn">import</span> <span class="n">Parameter</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Publisher</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Module</span> <span class="kn">import</span> <span class="n">verify_products</span>
+<span></span><span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Publisher</span><span class="p">,</span> <span class="n">Source</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Module</span> <span class="kn">import</span> <span class="n">verify_products</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Source</span> <span class="kn">import</span> <span class="n">Parameter</span>
+
 
 <div class="viewcode-block" id="test_multiple_consumes_declarations"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_module_decorators.test_multiple_consumes_declarations">[docs]</a><span class="k">def</span> <span class="nf">test_multiple_consumes_declarations</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;@consumes has already been called&quot;</span><span class="p">):</span>
+
         <span class="nd">@Publisher</span><span class="o">.</span><span class="n">consumes</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="nd">@Publisher</span><span class="o">.</span><span class="n">consumes</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="k">class</span> <span class="nc">_</span><span class="p">(</span><span class="n">Publisher</span><span class="o">.</span><span class="n">Publisher</span><span class="p">):</span>
@@ -89,6 +90,7 @@
 
 <div class="viewcode-block" id="test_multiple_produces_declarations"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_module_decorators.test_multiple_produces_declarations">[docs]</a><span class="k">def</span> <span class="nf">test_multiple_produces_declarations</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;@produces has already been called&quot;</span><span class="p">):</span>
+
         <span class="nd">@Source</span><span class="o">.</span><span class="n">produces</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
         <span class="nd">@Source</span><span class="o">.</span><span class="n">produces</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="k">class</span> <span class="nc">_</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">Source</span><span class="p">):</span>
@@ -102,13 +104,15 @@
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
 
     <span class="n">maker</span> <span class="o">=</span> <span class="n">BMaker</span><span class="p">({</span><span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">})</span>
-    <span class="n">expected_err_msg</span> <span class="o">=</span> <span class="s2">&quot;The following products were not produced:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
-                       <span class="s2">&quot; - &#39;a&#39; of type &#39;str&#39;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
-                       <span class="s2">&quot;The following products were not declared:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
-                       <span class="s2">&quot; - &#39;b&#39; of type &#39;str&#39;&quot;</span>
+    <span class="n">expected_err_msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;The following products were not produced:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="o">+</span> <span class="s2">&quot; - &#39;a&#39; of type &#39;str&#39;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;The following products were not declared:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="o">+</span> <span class="s2">&quot; - &#39;b&#39; of type &#39;str&#39;&quot;</span>
+    <span class="p">)</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">expected_err_msg</span><span class="p">):</span>
         <span class="n">verify_products</span><span class="p">(</span><span class="n">maker</span><span class="p">,</span> <span class="n">maker</span><span class="o">.</span><span class="n">acquire</span><span class="p">())</span></div>
 
@@ -120,21 +124,23 @@
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">17</span><span class="p">}</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mi">17</span><span class="p">}</span>
 
     <span class="n">maker</span> <span class="o">=</span> <span class="n">AMaker</span><span class="p">({</span><span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">})</span>
-    <span class="n">expected_err_msg</span> <span class="o">=</span> <span class="s2">&quot;The following products have the wrong types:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
-                       <span class="sa">r</span><span class="s2">&quot; - &#39;a&#39; \(expected &#39;str&#39;, got &#39;int&#39;\)&quot;</span>
+    <span class="n">expected_err_msg</span> <span class="o">=</span> <span class="s2">&quot;The following products have the wrong types:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot; - &#39;a&#39; \(expected &#39;str&#39;, got &#39;int&#39;\)&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">expected_err_msg</span><span class="p">):</span>
         <span class="n">verify_products</span><span class="p">(</span><span class="n">maker</span><span class="p">,</span> <span class="n">maker</span><span class="o">.</span><span class="n">acquire</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="test_supports_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_module_decorators.test_supports_config">[docs]</a><span class="k">def</span> <span class="nf">test_supports_config</span><span class="p">():</span>
-    <span class="n">expected_err_msg</span> <span class="o">=</span> <span class="s2">&quot;An error occurred while processing the parameter &#39;conflicting_types&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
-                       <span class="s2">&quot;The specified type &#39;int&#39; conflicts with the type of the default value &quot;</span> <span class="o">+</span> \
-                       <span class="sa">r</span><span class="s2">&quot;&#39;hello&#39; \(type &#39;str&#39;\)&quot;</span>
+    <span class="n">expected_err_msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;An error occurred while processing the parameter &#39;conflicting_types&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;The specified type &#39;int&#39; conflicts with the type of the default value &quot;</span>
+        <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;&#39;hello&#39; \(type &#39;str&#39;\)&quot;</span>
+    <span class="p">)</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">expected_err_msg</span><span class="p">):</span>
-        <span class="nd">@Source</span><span class="o">.</span><span class="n">supports_config</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="s1">&#39;conflicting_types&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">))</span>
+
+        <span class="nd">@Source</span><span class="o">.</span><span class="n">supports_config</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;conflicting_types&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;hello&quot;</span><span class="p">))</span>
         <span class="k">class</span> <span class="nc">_</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">Source</span><span class="p">):</span>
             <span class="k">pass</span></div>
 </pre></div>

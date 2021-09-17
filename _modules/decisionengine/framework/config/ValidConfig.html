@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.config.ValidConfig &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.config.ValidConfig &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -72,7 +72,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for decisionengine.framework.config.ValidConfig</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">ValidConfig represents a valid JSON document.</span>
 
 <span class="sd">The decision engine requires each of its configuration files to be</span>
@@ -83,13 +83,16 @@
 <span class="sd">Vetting of a file for JSON validity happens upon construction of a</span>
 <span class="sd">&#39;ValidConfig&#39; object.  A fully constructed &#39;ValidConfig&#39; object thus</span>
 <span class="sd">corresponds to a valid JSON document.</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">UserDict</span>
-<span class="kn">import</span> <span class="nn">os</span>
+
 <span class="kn">import</span> <span class="nn">_jsonnet</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+
 
 <div class="viewcode-block" id="_convert_to_json"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ValidConfig._convert_to_json">[docs]</a><span class="k">def</span> <span class="nf">_convert_to_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -106,8 +109,10 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">global_config</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Configuration file </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2"> contains errors:</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                                   <span class="s2">&quot;The supplied configuration must be a valid Jsonnet/JSON document.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Configuration file </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2"> contains errors:</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;The supplied configuration must be a valid Jsonnet/JSON document.&quot;</span>
+                <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to read configuration file </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -120,10 +125,13 @@
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The supplied configuration is not convertible to a Jsonnet/JSON document.&quot;</span><span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The supplied configuration file </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2"> is not a valid Jsonnet/JSON document.</span><span class="se">\n</span><span class="s2">&quot;</span>
-          <span class="s2">&quot;It has been converted to a valid JSON construct, but it should be fixed.&quot;</span><span class="p">,</span>
-          <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;The supplied configuration file </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2"> is not a valid Jsonnet/JSON document.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;It has been converted to a valid JSON construct, but it should be fixed.&quot;</span><span class="p">,</span>
+        <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="n">json_config</span></div>
+
 
 <div class="viewcode-block" id="_config_from_file"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ValidConfig._config_from_file">[docs]</a><span class="k">def</span> <span class="nf">_config_from_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -133,31 +141,32 @@
     <span class="n">basename</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">config_str</span> <span class="o">=</span> <span class="n">_jsonnet</span><span class="o">.</span><span class="n">evaluate_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">config_file</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.jsonnet&#39;</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please rename &#39;</span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">.jsonnet&#39;.&quot;</span><span class="p">,</span>
-                  <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s2">&quot;.jsonnet&quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please rename &#39;</span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">.jsonnet&#39;.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="c1"># Conversion allowed only for files that do not yet have a</span>
         <span class="c1"># &#39;.jsonnet&#39; extension.</span>
-        <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.jsonnet&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s2">&quot;.jsonnet&quot;</span><span class="p">:</span>
             <span class="n">config_str</span> <span class="o">=</span> <span class="n">_convert_to_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span>
 
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">config_str</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="ValidConfig"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ValidConfig.ValidConfig">[docs]</a><span class="k">class</span> <span class="nc">ValidConfig</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ValidConfig represents a valid JSON configuration in the form of a dictionary.</span>
 
 <span class="sd">    In addition to the normal dictionary operations, users may call &#39;dump()&#39; to print</span>
 <span class="sd">    out in a string form the JSON configuration.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_config_from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
 
 <div class="viewcode-block" id="ValidConfig.dump"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ValidConfig.ValidConfig.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s1">&#39;Print dictionary data to a valid JSON string.&#39;</span>
+        <span class="s2">&quot;Print dictionary data to a valid JSON string.&quot;</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div></div>
 </pre></div>
 

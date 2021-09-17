@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.utils &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.utils &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -86,12 +86,12 @@
 
 
 <div class="viewcode-block" id="orm_as_dict"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.utils.orm_as_dict">[docs]</a><span class="k">def</span> <span class="nf">orm_as_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Based on : https://stackoverflow.com/a/37350445 &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Based on : https://stackoverflow.com/a/37350445&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">key</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">inspect</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">column_attrs</span><span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="clone_model"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.utils.clone_model">[docs]</a><span class="k">def</span> <span class="nf">clone_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Based on https://stackoverflow.com/a/55991358 &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Based on https://stackoverflow.com/a/55991358&quot;&quot;&quot;</span>
     <span class="c1"># will raise AttributeError if data not loaded</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">model</span><span class="o">.</span><span class="n">sequence_id</span>  <span class="c1"># taskmanager doesn&#39;t have an &#39;id&#39; column</span>
@@ -120,7 +120,7 @@
 <span class="sd">        https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#foreign-key-support</span>
 <span class="sd">        https://docs.sqlalchemy.org/en/14/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;sqlite&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dbapi_connection</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="s2">&quot;sqlite&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dbapi_connection</span><span class="p">)):</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbapi_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;PRAGMA foreign_keys=ON&quot;</span><span class="p">)</span>
             <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -136,8 +136,7 @@
         <span class="k">if</span> <span class="n">connection_record</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">pid</span><span class="p">:</span>
             <span class="n">connection_record</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">connection_proxy</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">raise</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">DisconnectionError</span><span class="p">(</span>
-                <span class="s2">&quot;Connection record belongs to pid </span><span class="si">%s</span><span class="s2">, &quot;</span>
-                <span class="s2">&quot;attempting to check out in pid </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">connection_record</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">],</span> <span class="n">pid</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;Connection record belongs to pid </span><span class="si">{</span><span class="n">connection_record</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;pid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, attempting to check out in pid </span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span></div>
 </pre></div>
 

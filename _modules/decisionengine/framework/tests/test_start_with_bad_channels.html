@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -72,57 +72,64 @@
            <div itemprop="articleBody">
              
   <h1>Source code for decisionengine.framework.tests.test_start_with_bad_channels</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;Fixture based DE Server tests of invalid channel configs&#39;&#39;&#39;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Fixture based DE Server tests of invalid channel configs&quot;&quot;&quot;</span>
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">import</span> <span class="nn">re</span>
+
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">ERROR</span>
 
+<span class="kn">import</span> <span class="nn">pytest</span>
+
 <span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
+    <span class="n">DEServer</span><span class="p">,</span>
     <span class="n">PG_DE_DB_WITH_SCHEMA</span><span class="p">,</span>
     <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="p">,</span>
     <span class="n">PG_PROG</span><span class="p">,</span>
     <span class="n">SQLALCHEMY_PG_WITH_SCHEMA</span><span class="p">,</span>
     <span class="n">SQLALCHEMY_TEMPFILE_SQLITE</span><span class="p">,</span>
-    <span class="n">DEServer</span><span class="p">,</span>
-    <span class="n">TEST_CONFIG_PATH</span><span class="p">,</span>
     <span class="n">TEST_CHANNEL_CONFIG_PATH</span><span class="p">,</span>
+    <span class="n">TEST_CONFIG_PATH</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">_channel_config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="s2">&quot;test-bad-channel&quot;</span><span class="p">)</span>  <span class="c1"># noqa: F405</span>
-<span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span>
-    <span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">_channel_config_dir</span>
-<span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">_channel_config_dir</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
 <div class="viewcode-block" id="_missing_produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_bad_channels._missing_produces">[docs]</a><span class="k">def</span> <span class="nf">_missing_produces</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;The following modules are missing &#39;@produces&#39; declarations:</span><span class="se">\n\n</span><span class="s2"> - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
 
+
 <div class="viewcode-block" id="_missing_consumes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_bad_channels._missing_consumes">[docs]</a><span class="k">def</span> <span class="nf">_missing_consumes</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;The following modules are missing &#39;@consumes&#39; declarations:</span><span class="se">\n\n</span><span class="s2"> - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+
 
 <div class="viewcode-block" id="_consumes_not_subset"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_bad_channels._consumes_not_subset">[docs]</a><span class="k">def</span> <span class="nf">_consumes_not_subset</span><span class="p">(</span><span class="n">test_str</span><span class="p">):</span>
     <span class="k">return</span> <span class="s2">&quot;The following products are required but not produced:</span><span class="se">\n</span><span class="s2">[&#39;B&#39;]&quot;</span> <span class="ow">in</span> <span class="n">test_str</span></div>
 
+
 <div class="viewcode-block" id="_expected_circularity"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_bad_channels._expected_circularity">[docs]</a><span class="k">def</span> <span class="nf">_expected_circularity</span><span class="p">(</span><span class="n">test_str</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;Circular dependencies exist among these items: &quot;</span>
-                     <span class="s2">&quot;{&#39;a_uses_b&#39;:{&#39;b_uses_a&#39;}, &#39;b_uses_a&#39;:{&#39;a_uses_b&#39;}}&quot;</span><span class="p">,</span>
-                     <span class="n">test_str</span><span class="p">,</span>
-                     <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;Circular dependencies exist among these items: {&#39;a_uses_b&#39;:{&#39;b_uses_a&#39;}, &#39;b_uses_a&#39;:{&#39;a_uses_b&#39;}}&quot;</span><span class="p">,</span>
+        <span class="n">test_str</span><span class="p">,</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="test_client_can_get_products_no_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_bad_channels.test_client_can_get_products_no_channels">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_get_products_no_channels</span><span class="p">(</span><span class="n">deserver</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Verify client can get channel products even when none are run&#39;&#39;&#39;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--block-while&#39;</span><span class="p">,</span> <span class="s1">&#39;BOOT&#39;</span><span class="p">),</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s1">&#39;--print-products&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s1">&#39;No channels are currently active.&#39;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="sd">&quot;&quot;&quot;Verify client can get channel products even when none are run&quot;&quot;&quot;</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--block-while&quot;</span><span class="p">,</span> <span class="s2">&quot;BOOT&quot;</span><span class="p">),</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--print-products&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s2">&quot;No channels are currently active.&quot;</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="n">error_msgs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">when</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;setup&quot;</span><span class="p">,</span> <span class="s2">&quot;call&quot;</span><span class="p">):</span>  <span class="c1"># log may show up in either pytest &#39;when&#39;</span>
-        <span class="n">error_msgs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">message</span><span class="p">)[</span><span class="s1">&#39;event&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">caplog</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">when</span><span class="p">)</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">ERROR</span><span class="p">])</span>
+        <span class="n">error_msgs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">message</span><span class="p">)[</span><span class="s2">&quot;event&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">caplog</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">when</span><span class="p">)</span> <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">levelno</span> <span class="o">==</span> <span class="n">ERROR</span><span class="p">]</span>
+        <span class="p">)</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">error_msgs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span>
 
     <span class="c1"># Find missing product erro</span>
@@ -138,9 +145,11 @@
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">error_msgs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
 
     <span class="c1"># Test missing-list messages</span>
-    <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;test_bad_publisher&#39;</span><span class="p">:</span> <span class="n">_missing_consumes</span><span class="p">(</span><span class="s1">&#39;publisher1&#39;</span><span class="p">),</span>
-                <span class="s1">&#39;test_bad_source&#39;</span><span class="p">:</span> <span class="n">_missing_produces</span><span class="p">(</span><span class="s1">&#39;source1&#39;</span><span class="p">),</span>
-                <span class="s1">&#39;test_bad_transform&#39;</span><span class="p">:</span> <span class="n">_missing_produces</span><span class="p">(</span><span class="s1">&#39;transform1&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_missing_consumes</span><span class="p">(</span><span class="s1">&#39;transform1&#39;</span><span class="p">)}</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;test_bad_publisher&quot;</span><span class="p">:</span> <span class="n">_missing_consumes</span><span class="p">(</span><span class="s2">&quot;publisher1&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;test_bad_source&quot;</span><span class="p">:</span> <span class="n">_missing_produces</span><span class="p">(</span><span class="s2">&quot;source1&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;test_bad_transform&quot;</span><span class="p">:</span> <span class="n">_missing_produces</span><span class="p">(</span><span class="s2">&quot;transform1&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">_missing_consumes</span><span class="p">(</span><span class="s2">&quot;transform1&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
 
     <span class="k">for</span> <span class="n">err_msg</span> <span class="ow">in</span> <span class="n">error_msgs</span><span class="p">:</span>
         <span class="n">channel_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^Channel (\w+).*&quot;</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>

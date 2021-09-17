@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasources.tests.test_datasource_api &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.test_datasource_api &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -83,16 +83,16 @@
 
 <span class="kn">from</span> <span class="nn">sqlalchemy.exc</span> <span class="kn">import</span> <span class="n">NoResultFound</span>
 
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">Metadata</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.tests.fixtures</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
-    <span class="n">PG_DE_DB_WITH_SCHEMA</span><span class="p">,</span>
-    <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="p">,</span>
-    <span class="n">SQLALCHEMY_PG_WITH_SCHEMA</span><span class="p">,</span>
-    <span class="n">SQLALCHEMY_TEMPFILE_SQLITE</span><span class="p">,</span>
-    <span class="n">PG_PROG</span><span class="p">,</span>
     <span class="n">DATABASES_TO_TEST</span><span class="p">,</span>
     <span class="n">datasource</span><span class="p">,</span>
+    <span class="n">PG_DE_DB_WITH_SCHEMA</span><span class="p">,</span>
+    <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="p">,</span>
+    <span class="n">PG_PROG</span><span class="p">,</span>
+    <span class="n">SQLALCHEMY_PG_WITH_SCHEMA</span><span class="p">,</span>
+    <span class="n">SQLALCHEMY_TEMPFILE_SQLITE</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">Metadata</span>
 
 
 <div class="viewcode-block" id="test_create_tables"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_create_tables">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
@@ -167,16 +167,12 @@
     <span class="k">assert</span> <span class="n">result3</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;taskmanager1&quot;</span>
     <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">result3</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="s2">&quot;11111111-1111-1111-1111-111111111111&quot;</span>
 
-    <span class="n">result4</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">(</span>
-        <span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="n">yesterday</span>
-    <span class="p">)</span>
+    <span class="n">result4</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="n">yesterday</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result4</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="n">result4</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;taskmanager1&quot;</span>
     <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">result4</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="s2">&quot;11111111-1111-1111-1111-111111111111&quot;</span>
 
-    <span class="n">result5</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">(</span>
-        <span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager2&quot;</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="n">yesterday</span>
-    <span class="p">)</span>
+    <span class="n">result5</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager2&quot;</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="n">yesterday</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result5</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="n">result5</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;taskmanager2&quot;</span>
     <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">result5</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="s2">&quot;22222222-2222-2222-2222-222222222222&quot;</span>
@@ -188,9 +184,7 @@
     <span class="k">assert</span> <span class="n">result6</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;taskmanager2&quot;</span>
     <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">result6</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="s2">&quot;22222222-2222-2222-2222-222222222222&quot;</span>
 
-    <span class="n">result7</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">(</span>
-        <span class="n">start_time</span><span class="o">=</span><span class="n">yesterday</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="n">two_years_future</span>
-    <span class="p">)</span>
+    <span class="n">result7</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">(</span><span class="n">start_time</span><span class="o">=</span><span class="n">yesterday</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="n">two_years_future</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result7</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="n">result7</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;taskmanager2&quot;</span>
     <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">result7</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="s2">&quot;22222222-2222-2222-2222-222222222222&quot;</span></div>
@@ -208,9 +202,7 @@
     <span class="n">result</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">(</span><span class="n">start_time</span><span class="o">=</span><span class="n">two_years_future</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[]</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">(</span>
-        <span class="n">end_time</span><span class="o">=</span><span class="n">last_year</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="n">two_years_future</span>
-    <span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">(</span><span class="n">end_time</span><span class="o">=</span><span class="n">last_year</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="n">two_years_future</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[]</span></div>
 
 
@@ -402,9 +394,7 @@
 <div class="viewcode-block" id="test_insert"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_insert">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_insert</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can we insert new elements&quot;&quot;&quot;</span>
-    <span class="n">primary_key</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span>
-        <span class="s2">&quot;taskmanager3&quot;</span><span class="p">,</span> <span class="s2">&quot;33333333-3333-3333-3333-333333333333&quot;</span>
-    <span class="p">)</span>
+    <span class="n">primary_key</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span><span class="s2">&quot;taskmanager3&quot;</span><span class="p">,</span> <span class="s2">&quot;33333333-3333-3333-3333-333333333333&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">primary_key</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
     <span class="n">header</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">primary_key</span><span class="p">)</span>
@@ -429,9 +419,7 @@
         <span class="p">}</span>
     <span class="p">]</span>
 
-    <span class="n">result2</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_dataproducts</span><span class="p">(</span>
-        <span class="n">taskmanager_id</span><span class="o">=</span><span class="n">primary_key</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;sample_test_key&quot;</span>
-    <span class="p">)</span>
+    <span class="n">result2</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_dataproducts</span><span class="p">(</span><span class="n">taskmanager_id</span><span class="o">=</span><span class="n">primary_key</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;sample_test_key&quot;</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">result1</span> <span class="o">==</span> <span class="n">result2</span></div>
 
@@ -520,12 +508,10 @@
 <div class="viewcode-block" id="test_delete_data_older_than_arg"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_delete_data_older_than_arg">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_delete_data_older_than_arg</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="sd">&quot;&quot;&quot;Can we delete old entries&quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">))</span> <span class="k">as</span> <span class="n">__e</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">),</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;Argument has to be positive, non zero integer&quot;</span><span class="p">):</span>
         <span class="n">datasource</span><span class="o">.</span><span class="n">delete_data_older_than</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">__e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;Argument has to be positive, non zero integer&quot;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">))</span> <span class="k">as</span> <span class="n">__e</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">),</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;Argument has to be positive, non zero integer&quot;</span><span class="p">):</span>
         <span class="n">datasource</span><span class="o">.</span><span class="n">delete_data_older_than</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">__e</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;Argument has to be positive, non zero integer&quot;</span><span class="p">)</span>
 
     <span class="c1"># verify our old record is loaded</span>
     <span class="n">result1</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">)</span>
@@ -536,13 +522,15 @@
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">((</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">NoResultFound</span><span class="p">)):</span>
         <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="test_get_datablock"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_get_datablock">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_get_datablock</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">tm</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">)</span>
     <span class="n">gen_id</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="o">=</span><span class="s2">&quot;taskmanager1&quot;</span><span class="p">)</span>
     <span class="n">result1</span> <span class="o">=</span> <span class="n">datasource</span><span class="o">.</span><span class="n">get_datablock</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="s2">&quot;sequence_id&quot;</span><span class="p">],</span> <span class="n">gen_id</span><span class="p">)</span>
 
-    <span class="k">assert</span> <span class="n">result1</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;my_test_key&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;my_test_value&#39;</span><span class="p">,</span> <span class="s1">&#39;a_test_key&#39;</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;a_test_value&#39;</span><span class="p">}</span></div>
+    <span class="k">assert</span> <span class="n">result1</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;my_test_key&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;my_test_value&quot;</span><span class="p">,</span> <span class="s2">&quot;a_test_key&quot;</span><span class="p">:</span> <span class="sa">b</span><span class="s2">&quot;a_test_value&quot;</span><span class="p">}</span></div>
+
 
 <div class="viewcode-block" id="test_duplicate_datablock"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.test_datasource_api.test_duplicate_datablock">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;datasource&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_duplicate_datablock</span><span class="p">(</span><span class="n">datasource</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>

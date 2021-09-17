@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -80,21 +80,17 @@
 <span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">UserDict</span>
 
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">UserDict</span>
 <span class="kn">from</span> <span class="nn">unittest</span> <span class="kn">import</span> <span class="n">mock</span>
+
 <span class="kn">import</span> <span class="nn">pytest</span>
 
 <span class="kn">from</span> <span class="nn">pytest_postgresql</span> <span class="kn">import</span> <span class="n">factories</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">Metadata</span>
-
-<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.postgresql</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Postgresql</span> <span class="k">as</span> <span class="n">Postgresql_datasource</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.sqlalchemy_ds</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">SQLAlchemyDS</span> <span class="k">as</span> <span class="n">SQLAlchemy_datasource</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.postgresql</span> <span class="kn">import</span> <span class="n">Postgresql</span> <span class="k">as</span> <span class="n">Postgresql_datasource</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.sqlalchemy_ds</span> <span class="kn">import</span> <span class="n">SQLAlchemyDS</span> <span class="k">as</span> <span class="n">SQLAlchemy_datasource</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;DATABASES_TO_TEST&quot;</span><span class="p">,</span>
@@ -109,14 +105,18 @@
 
 <span class="c1"># DE_DB_PORT assigned at random</span>
 <span class="n">PG_PROG</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql_proc</span><span class="p">(</span>
-    <span class="n">user</span><span class="o">=</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">postgres_options</span><span class="o">=</span><span class="s2">&quot;-N 1000&quot;</span><span class="p">,</span>
+    <span class="n">user</span><span class="o">=</span><span class="s2">&quot;postgres&quot;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">postgres_options</span><span class="o">=</span><span class="s2">&quot;-N 1000&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span> <span class="o">=</span> <span class="n">factories</span><span class="o">.</span><span class="n">postgresql</span><span class="p">(</span>
     <span class="s2">&quot;PG_PROG&quot;</span><span class="p">,</span>
     <span class="n">dbname</span><span class="o">=</span><span class="s2">&quot;decisionengine&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span> <span class="o">&gt;</span> <span class="mi">6</span> <span class="ow">and</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_implementation</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;CPython&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span> <span class="o">&gt;</span> <span class="mi">6</span> <span class="ow">and</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_implementation</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;CPython&quot;</span><span class="p">:</span>
     <span class="c1"># sqlite on EL7 is too old for efficient testing</span>
     <span class="c1"># sqlite on pypy is unnecessary and really slow</span>
     <span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span> <span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">,</span> <span class="s2">&quot;SQLALCHEMY_TEMPFILE_SQLITE&quot;</span><span class="p">)</span>
@@ -124,7 +124,7 @@
     <span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span> <span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="PG_DE_DB_WITH_SCHEMA"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.PG_DE_DB_WITH_SCHEMA">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<div class="viewcode-block" id="PG_DE_DB_WITH_SCHEMA"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.PG_DE_DB_WITH_SCHEMA">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITHOUT_SCHEMA&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">PG_DE_DB_WITH_SCHEMA</span><span class="p">(</span><span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -145,7 +145,7 @@
     <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="SQLALCHEMY_PG_WITH_SCHEMA"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_PG_WITH_SCHEMA">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<div class="viewcode-block" id="SQLALCHEMY_PG_WITH_SCHEMA"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_PG_WITH_SCHEMA">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITHOUT_SCHEMA&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">SQLALCHEMY_PG_WITH_SCHEMA</span><span class="p">(</span><span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -168,7 +168,7 @@
             <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="s2">&quot;&#39;&#39;&quot;</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="s1">&#39;&quot;&quot;&#39;</span><span class="p">:</span>
                 <span class="n">db_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">db_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="n">db_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
     <span class="c1"># echo will log all the sql commands to log.debug</span>
     <span class="k">yield</span> <span class="p">{</span>
@@ -181,7 +181,7 @@
     <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="SQLALCHEMY_TEMPFILE_SQLITE"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_TEMPFILE_SQLITE">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<div class="viewcode-block" id="SQLALCHEMY_TEMPFILE_SQLITE"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_TEMPFILE_SQLITE">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">SQLALCHEMY_TEMPFILE_SQLITE</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Setup an SQLite database with the pytest tmp_path fixture.</span>
@@ -241,7 +241,7 @@
     <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="mock_data_block"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.mock_data_block">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<div class="viewcode-block" id="mock_data_block"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.mock_data_block">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">mock_data_block</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This fixture replaces the standard datablock implementation.</span>
@@ -299,21 +299,13 @@
     <span class="p">)</span>  <span class="c1"># _pk=1 probably</span>
     <span class="n">header</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">_pk</span><span class="p">)</span>
     <span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">_pk</span><span class="p">)</span>
-    <span class="n">schema_only_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
-        <span class="n">_pk</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;my_test_key&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;my_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span>
-    <span class="p">)</span>
-    <span class="n">schema_only_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
-        <span class="n">_pk</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;a_test_key&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;a_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span>
-    <span class="p">)</span>
+    <span class="n">schema_only_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">_pk</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;my_test_key&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;my_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+    <span class="n">schema_only_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">_pk</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;a_test_key&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;a_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
 
-    <span class="n">_pk</span> <span class="o">=</span> <span class="n">schema_only_db</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span>
-        <span class="s2">&quot;taskmanager2&quot;</span><span class="p">,</span> <span class="s2">&quot;22222222-2222-2222-2222-222222222222&quot;</span>
-    <span class="p">)</span>  <span class="c1"># _pk=2 probably</span>
+    <span class="n">_pk</span> <span class="o">=</span> <span class="n">schema_only_db</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span><span class="s2">&quot;taskmanager2&quot;</span><span class="p">,</span> <span class="s2">&quot;22222222-2222-2222-2222-222222222222&quot;</span><span class="p">)</span>  <span class="c1"># _pk=2 probably</span>
     <span class="n">header</span> <span class="o">=</span> <span class="n">Header</span><span class="p">(</span><span class="n">_pk</span><span class="p">)</span>
     <span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">_pk</span><span class="p">)</span>
-    <span class="n">schema_only_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
-        <span class="n">_pk</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;other_test_key&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;other_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span>
-    <span class="p">)</span>
+    <span class="n">schema_only_db</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">_pk</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;other_test_key&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;other_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
 
     <span class="c1"># return the connection now that it isn&#39;t just the schema</span>
     <span class="k">return</span> <span class="n">schema_only_db</span></div>

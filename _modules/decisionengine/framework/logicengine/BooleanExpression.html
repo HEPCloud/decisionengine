@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.BooleanExpression &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.logicengine.BooleanExpression &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -84,10 +84,11 @@
 <span class="c1">#   &quot;np.sum(vals) &gt; 40&quot; # WRONG, illegal call to np.sum</span>
 
 <span class="kn">import</span> <span class="nn">ast</span>
-<span class="kn">import</span> <span class="nn">structlog</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span><span class="p">,</span> <span class="n">DELOGGER_CHANNEL_NAME</span>
+<span class="kn">import</span> <span class="nn">structlog</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
 
 <span class="c1"># If support for direct use of numpy and pandas functions is desired,</span>
 <span class="c1"># import the numpy and pandas modules and adjust the facts_globals:</span>
@@ -132,8 +133,8 @@
 <div class="viewcode-block" id="BooleanExpression"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.BooleanExpression.BooleanExpression">[docs]</a><span class="k">class</span> <span class="nc">BooleanExpression</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">expr_str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fail_on_error</span> <span class="o">=</span> <span class="n">maybe_fail_on_error</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">expr</span><span class="p">))</span>
-        <span class="n">source</span> <span class="o">=</span> <span class="s1">&#39;string&#39;</span>
-        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;eval&#39;</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;eval&quot;</span>
         <span class="n">syntax_tree</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">syntax_tree</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expr_str</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
@@ -154,8 +155,9 @@
             <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="p">,</span> <span class="n">_facts_globals</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fail_on_error</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;The following exception was suppressed, and the &quot;</span>
-                                 <span class="s2">&quot;Boolean expression will evaluate to False.&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                    <span class="s2">&quot;The following exception was suppressed, and the &quot;</span> <span class="s2">&quot;Boolean expression will evaluate to False.&quot;</span>
+                <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
             <span class="k">raise</span></div>
 

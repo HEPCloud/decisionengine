@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.util.reaper &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.util.reaper &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -88,12 +88,14 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.config.policies</span> <span class="k">as</span> <span class="nn">policies</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.maintain</span> <span class="kn">import</span> <span class="n">Reaper</span>
+
 <span class="kn">from</span> <span class="nn">decisionengine.framework.config.ValidConfig</span> <span class="kn">import</span> <span class="n">ValidConfig</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.maintain</span> <span class="kn">import</span> <span class="n">Reaper</span>
+
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.reaper.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
     <span class="n">username</span> <span class="o">=</span> <span class="n">pwd</span><span class="o">.</span><span class="n">getpwuid</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">())</span><span class="o">.</span><span class="n">pw_name</span>
-    <span class="k">if</span> <span class="n">username</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="s1">&#39;decisionengine&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">username</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="s2">&quot;decisionengine&quot;</span><span class="p">]:</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;User &#39;</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&#39; is not allowed to run this script.&quot;</span><span class="p">)</span>
 
     <span class="n">config_file</span> <span class="o">=</span> <span class="n">policies</span><span class="o">.</span><span class="n">global_config_file</span><span class="p">()</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.describe &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.modules.describe &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -74,10 +74,13 @@
   <h1>Source code for decisionengine.framework.modules.describe</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.print_description</span> <span class="kn">import</span> <span class="n">print_supported_config</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.print_description</span> <span class="kn">import</span> <span class="n">spec_if_main</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.print_description</span> <span class="kn">import</span> <span class="n">print_produces</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.print_description</span> <span class="kn">import</span> <span class="n">print_consumes</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.print_description</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">print_consumes</span><span class="p">,</span>
+    <span class="n">print_produces</span><span class="p">,</span>
+    <span class="n">print_supported_config</span><span class="p">,</span>
+    <span class="n">spec_if_main</span><span class="p">,</span>
+<span class="p">)</span>
+
 
 <span class="c1"># =============================================================================</span>
 <span class="c1"># Configuration description</span>
@@ -89,6 +92,7 @@
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">par_type</span></div>
 
+
 <div class="viewcode-block" id="_par_default"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Publisher._par_default">[docs]</a><span class="k">def</span> <span class="nf">_par_default</span><span class="p">(</span><span class="n">par_type</span><span class="p">,</span> <span class="n">default_value</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -98,6 +102,7 @@
     <span class="c1"># Specified par_type always wins if it is non-null</span>
     <span class="k">return</span> <span class="n">par_type</span><span class="p">(</span><span class="n">default_value</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="Parameter"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Publisher.Parameter">[docs]</a><span class="k">class</span> <span class="nc">Parameter</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -105,10 +110,13 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">_par_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_type</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred while processing the parameter &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
-                               <span class="sa">f</span><span class="s2">&quot;The specified type &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">my_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; conflicts with the type &quot;</span> <span class="o">+</span>
-                               <span class="sa">f</span><span class="s2">&quot;of the default value &#39;</span><span class="si">{</span><span class="n">default</span><span class="si">}</span><span class="s2">&#39; (type &#39;</span><span class="si">{</span><span class="n">default</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;An error occurred while processing the parameter &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;The specified type &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">my_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; conflicts with the type &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;of the default value &#39;</span><span class="si">{</span><span class="n">default</span><span class="si">}</span><span class="s2">&#39; (type &#39;</span><span class="si">{</span><span class="n">default</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span></div>
+
 
 <div class="viewcode-block" id="supports_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Publisher.supports_config">[docs]</a><span class="k">def</span> <span class="nf">supports_config</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
     <span class="n">supported_config</span> <span class="o">=</span> <span class="p">{</span><span class="n">par</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">(</span><span class="n">par</span><span class="o">.</span><span class="n">my_type</span><span class="p">,</span> <span class="n">par</span><span class="o">.</span><span class="n">default</span><span class="p">,</span> <span class="n">par</span><span class="o">.</span><span class="n">comment</span><span class="p">)</span> <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="n">args</span><span class="p">}</span>
@@ -117,10 +125,11 @@
         <span class="c1"># @supports_config may be called from the base class and any</span>
         <span class="c1"># subclasses--hence why we update the the dictionary and not</span>
         <span class="c1"># create it afresh for each call.</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;_supported_config&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_supported_config&quot;</span><span class="p">,</span> <span class="p">{})</span>
         <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">supported_config</span><span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_supported_config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="k">return</span> <span class="bp">cls</span>
+
     <span class="k">return</span> <span class="n">decorator</span></div>
 
 
@@ -129,12 +138,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_module_spec</span> <span class="o">=</span> <span class="n">module_spec</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cls</span> <span class="o">=</span> <span class="bp">cls</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--describe&#39;</span><span class="p">,</span>
-                                  <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
-                                  <span class="n">help</span><span class="o">=</span><span class="s1">&#39;print config. template along with produces and consumes information&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--config-template&#39;</span><span class="p">,</span>
-                                  <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
-                                  <span class="n">help</span><span class="o">=</span><span class="s1">&#39;print the expected module configuration&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--describe&quot;</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print config. template along with produces and consumes information&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--config-template&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print the expected module configuration&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">invoked</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="ModuleProgramOptions.process_args"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Publisher.ModuleProgramOptions.process_args">[docs]</a>    <span class="k">def</span> <span class="nf">process_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.Module &mdash; decisionengine 1.7.1.dev5+g3800cc2a documentation</title>
+  <title>decisionengine.framework.modules.Module &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -72,13 +72,14 @@
            <div itemprop="articleBody">
              
   <h1>Source code for decisionengine.framework.modules.Module</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">structlog</span>
-
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span> <span class="nn">structlog</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace</span> <span class="kn">import</span> <span class="n">datablock</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">CHANNELLOGGERNAME</span>
+
 
 <div class="viewcode-block" id="Module"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Module.Module">[docs]</a><span class="k">class</span> <span class="nc">Module</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -102,39 +103,44 @@
 <div class="viewcode-block" id="Module.set_data_block"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Module.Module.set_data_block">[docs]</a>    <span class="k">def</span> <span class="nf">set_data_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_block</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span> <span class="o">=</span> <span class="n">data_block</span></div></div>
 
+
 <span class="c1"># ====================================================================================</span>
 <span class="c1"># Auxiliary facilities for produces, consumes, and supports_config</span>
+
 
 <div class="viewcode-block" id="produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Module.produces">[docs]</a><span class="k">def</span> <span class="nf">produces</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">decorator_produces</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_produces</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;@produces has already been called for </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@produces has already been called for </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_produces</span> <span class="o">=</span> <span class="n">kwargs</span>
         <span class="k">return</span> <span class="bp">cls</span>
+
     <span class="k">return</span> <span class="n">decorator_produces</span></div>
 
 
 <div class="viewcode-block" id="consumes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Module.consumes">[docs]</a><span class="k">def</span> <span class="nf">consumes</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">decorator_consumes</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_consumes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;@consumes has already been called for </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@consumes has already been called for </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_consumes</span> <span class="o">=</span> <span class="n">kwargs</span>
         <span class="c1"># Now add product retrievers to class instance</span>
         <span class="n">user_provided_new</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span>
 
         <span class="k">def</span> <span class="nf">new_and_add_members</span><span class="p">(</span><span class="n">class_type</span><span class="p">,</span> <span class="n">module_parameters</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">consumer</span> <span class="o">=</span> <span class="n">user_provided_new</span><span class="p">(</span><span class="n">class_type</span><span class="p">)</span>
-            <span class="n">product_specifications</span> <span class="o">=</span> <span class="n">module_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;product_creators&#39;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">product_specifications</span> <span class="o">=</span> <span class="n">module_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;product_creators&quot;</span><span class="p">,</span> <span class="p">{})</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">product_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_consumes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="c1"># FIXME: Need to adjust configuration usage in next line!</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="n">consumer</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span>
-                        <span class="n">datablock</span><span class="o">.</span><span class="n">ProductRetriever</span><span class="p">(</span><span class="n">name</span><span class="p">,</span>
-                                                   <span class="n">product_type</span><span class="p">,</span>
-                                                   <span class="n">product_specifications</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">Any</span><span class="p">)))</span>
+                <span class="nb">setattr</span><span class="p">(</span>
+                    <span class="n">consumer</span><span class="p">,</span>
+                    <span class="n">name</span><span class="p">,</span>
+                    <span class="n">datablock</span><span class="o">.</span><span class="n">ProductRetriever</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">product_type</span><span class="p">,</span> <span class="n">product_specifications</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">Any</span><span class="p">)),</span>
+                <span class="p">)</span>
             <span class="k">return</span> <span class="n">consumer</span>
 
         <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span> <span class="o">=</span> <span class="n">new_and_add_members</span>
         <span class="k">return</span> <span class="bp">cls</span>
+
     <span class="k">return</span> <span class="n">decorator_consumes</span></div>
 
 
@@ -165,8 +171,8 @@
         <span class="k">if</span> <span class="n">Any</span> <span class="ow">in</span> <span class="p">(</span><span class="n">a_type</span><span class="p">,</span> <span class="n">b_type</span><span class="p">):</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="n">a_type</span> <span class="o">!=</span> <span class="n">b_type</span><span class="p">:</span>
-            <span class="n">a_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">a_type</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="n">b_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">b_type</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">a_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">a_type</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">b_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">b_type</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">mismatched_types</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">a_name</span><span class="p">,</span> <span class="n">b_name</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">mismatched_types</span><span class="p">:</span>
