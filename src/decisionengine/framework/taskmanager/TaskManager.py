@@ -9,8 +9,7 @@ import pandas as pd
 import structlog
 
 from decisionengine.framework.dataspace import datablock
-from decisionengine.framework.logicengine.LogicEngine import LogicEngine
-from decisionengine.framework.logicengine.LogicEngine import passthrough_configuration
+from decisionengine.framework.logicengine.LogicEngine import LogicEngine, passthrough_configuration
 from decisionengine.framework.managers.ComponentManager import ComponentManager
 from decisionengine.framework.modules import Module
 from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME, DELOGGER_CHANNEL_NAME, LOGGERNAME
@@ -35,11 +34,11 @@ def _find_only_one_subclass(module, base_class):
     subclasses = all_subclasses(module, base_class)
     if not subclasses:
         raise RuntimeError(
-            f"Could not find a decision-engine '{base_class.__name__}' in the module:\n" f"  '{module.__name__}'"
+            f"Could not find a decision-engine '{base_class.__name__}' in the module '{module.__name__}'"
         )
     if len(subclasses) > 1:
         error_msg = (
-            f"Found more than one decision-engine '{base_class.__name__}' in the module\n" + f"'{module.__name__}':\n\n"
+            f"Found more than one decision-engine '{base_class.__name__}' in the module '{module.__name__}':\n\n"
         )
         for cls in subclasses:
             error_msg += " - " + cls + "\n"
@@ -115,6 +114,9 @@ class Channel:
         delogger.debug("Creating channel logicengine")
         configured_le_s = channel_dict.get("logicengines")
         if configured_le_s is None:
+            delogger.debug(
+                "No 'logicengines' configuration detected; will use default configuration, which unconditionally executes all configured publishers."
+            )
             configured_le_s = passthrough_configuration(channel_dict["publishers"].keys())
         if len(configured_le_s) > 1:
             raise RuntimeError("Cannot support more than one logic engine per channel.")
