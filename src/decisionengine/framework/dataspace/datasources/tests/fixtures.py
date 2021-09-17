@@ -6,21 +6,17 @@ import os
 import platform
 import sys
 import threading
-from collections import UserDict
 
+from collections import UserDict
 from unittest import mock
+
 import pytest
 
 from pytest_postgresql import factories
 
 from decisionengine.framework.dataspace.datablock import Header, Metadata
-
-from decisionengine.framework.dataspace.datasources.postgresql import (
-    Postgresql as Postgresql_datasource,
-)
-from decisionengine.framework.dataspace.datasources.sqlalchemy_ds import (
-    SQLAlchemyDS as SQLAlchemy_datasource
-)
+from decisionengine.framework.dataspace.datasources.postgresql import Postgresql as Postgresql_datasource
+from decisionengine.framework.dataspace.datasources.sqlalchemy_ds import SQLAlchemyDS as SQLAlchemy_datasource
 
 __all__ = [
     "DATABASES_TO_TEST",
@@ -35,14 +31,18 @@ __all__ = [
 
 # DE_DB_PORT assigned at random
 PG_PROG = factories.postgresql_proc(
-    user="postgres", password=None, host="127.0.0.1", port=None, postgres_options="-N 1000",
+    user="postgres",
+    password=None,
+    host="127.0.0.1",
+    port=None,
+    postgres_options="-N 1000",
 )
 PG_DE_DB_WITHOUT_SCHEMA = factories.postgresql(
     "PG_PROG",
     dbname="decisionengine",
 )
 
-if sys.version_info.major == 3 and sys.version_info.minor > 6 and platform.python_implementation() == 'CPython':
+if sys.version_info.major == 3 and sys.version_info.minor > 6 and platform.python_implementation() == "CPython":
     # sqlite on EL7 is too old for efficient testing
     # sqlite on pypy is unnecessary and really slow
     DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA", "SQLALCHEMY_PG_WITH_SCHEMA", "SQLALCHEMY_TEMPFILE_SQLITE")
@@ -50,7 +50,7 @@ else:
     DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA", "SQLALCHEMY_PG_WITH_SCHEMA")
 
 
-@pytest.fixture
+@pytest.fixture()
 @pytest.mark.usefixtures("PG_DE_DB_WITHOUT_SCHEMA")
 def PG_DE_DB_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
     """
@@ -71,7 +71,7 @@ def PG_DE_DB_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
     gc.collect()
 
 
-@pytest.fixture
+@pytest.fixture()
 @pytest.mark.usefixtures("PG_DE_DB_WITHOUT_SCHEMA")
 def SQLALCHEMY_PG_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
     """
@@ -94,7 +94,7 @@ def SQLALCHEMY_PG_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
             if value != "''" and value != '""':
                 db_info[key] = value
             else:
-                db_info[key] = ''
+                db_info[key] = ""
 
     # echo will log all the sql commands to log.debug
     yield {
@@ -107,7 +107,7 @@ def SQLALCHEMY_PG_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
     gc.collect()
 
 
-@pytest.fixture
+@pytest.fixture()
 def SQLALCHEMY_TEMPFILE_SQLITE(tmp_path):
     """
     Setup an SQLite database with the pytest tmp_path fixture.
@@ -167,7 +167,7 @@ def datasource(request):
     gc.collect()
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_data_block():
     """
     This fixture replaces the standard datablock implementation.
@@ -225,21 +225,13 @@ def load_sample_data_into_datasource(schema_only_db):
     )  # _pk=1 probably
     header = Header(_pk)
     metadata = Metadata(_pk)
-    schema_only_db.insert(
-        _pk, 1, "my_test_key", b"my_test_value", header, metadata
-    )
-    schema_only_db.insert(
-        _pk, 1, "a_test_key", b"a_test_value", header, metadata
-    )
+    schema_only_db.insert(_pk, 1, "my_test_key", b"my_test_value", header, metadata)
+    schema_only_db.insert(_pk, 1, "a_test_key", b"a_test_value", header, metadata)
 
-    _pk = schema_only_db.store_taskmanager(
-        "taskmanager2", "22222222-2222-2222-2222-222222222222"
-    )  # _pk=2 probably
+    _pk = schema_only_db.store_taskmanager("taskmanager2", "22222222-2222-2222-2222-222222222222")  # _pk=2 probably
     header = Header(_pk)
     metadata = Metadata(_pk)
-    schema_only_db.insert(
-        _pk, 2, "other_test_key", b"other_test_value", header, metadata
-    )
+    schema_only_db.insert(_pk, 2, "other_test_key", b"other_test_value", header, metadata)
 
     # return the connection now that it isn't just the schema
     return schema_only_db

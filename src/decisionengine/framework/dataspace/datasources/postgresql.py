@@ -1,22 +1,25 @@
 import platform
 import time
-import structlog
 
 import dbutils.pooled_db as pooled_db
+import structlog
 
-if platform.python_implementation() == 'CPython':
+import decisionengine.framework.dataspace.datasource as ds
+
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
+
+if platform.python_implementation() == "CPython":
     import psycopg2
     import psycopg2.extras
 else:
     # try to load psycopg2cffi dynamically and use psycopg2 namespace
     import importlib
-    importlib.import_module('psycopg2cffi')
-    importlib.import_module('psycopg2cffi.compat')
-    __import__('psycopg2cffi').compat.register()
+
+    importlib.import_module("psycopg2cffi")
+    importlib.import_module("psycopg2cffi.compat")
+    __import__("psycopg2cffi").compat.register()
     import psycopg2.extras
 
-import decisionengine.framework.dataspace.datasource as ds
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 
 MAX_NUMBER_OF_RETRIES = 10
 TIME_TO_SLEEP = 2
@@ -91,48 +94,44 @@ class Postgresql(ds.DataSource):
     """
 
     tables = {
-        'header': [
-            'taskmanager_id TEXT',
-            'generation_id INT',
-            'key TEXT',
-            'create_time REAL',
-            'expiration_time REAL',
-            'scheduled_create_time REAL',
-            'creator TEXT',
-            'schema_id INT',
+        "header": [
+            "taskmanager_id TEXT",
+            "generation_id INT",
+            "key TEXT",
+            "create_time REAL",
+            "expiration_time REAL",
+            "scheduled_create_time REAL",
+            "creator TEXT",
+            "schema_id INT",
         ],
-        'schema': [
-            'schema_id INT',  # Auto generated
-            'schema BLOB',    # keys in the value dict of the dataproduct table
+        "schema": [
+            "schema_id INT",  # Auto generated
+            "schema BLOB",  # keys in the value dict of the dataproduct table
         ],
-        'metadata': [
-            'taskmanager_id TEXT',
-            'generation_id INT',
-            'key TEXT',
-            'state TEXT',
-            'generation_time REAL',
-            'missed_update_count INT',
+        "metadata": [
+            "taskmanager_id TEXT",
+            "generation_id INT",
+            "key TEXT",
+            "state TEXT",
+            "generation_time REAL",
+            "missed_update_count INT",
         ],
-        'dataproduct': [
-            'taskmanager_id TEXT',
-            'generation_id INT',
-            'key TEXT',
-            'value BLOB'
-        ]
+        "dataproduct": ["taskmanager_id TEXT", "generation_id INT", "key TEXT", "value BLOB"],
     }
 
     def __init__(self, config_dict):
         super().__init__(config_dict)
         self.logger = structlog.getLogger(LOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
-        self.logger.debug('Initializing a Postgresql datasource')
+        self.logger.debug("Initializing a Postgresql datasource")
 
         # account for differences between psycopg2 and psycopg2cffi
-        dbname = config_dict.get('database', config_dict.get('dbname', None))
-        self.logger.debug(f"Trying to connect as {config_dict['user']}@{config_dict['host']}:{config_dict['port']}/{dbname}")
+        dbname = config_dict.get("database", config_dict.get("dbname", None))
+        self.logger.debug(
+            f"Trying to connect as {config_dict['user']}@{config_dict['host']}:{config_dict['port']}/{dbname}"
+        )
 
-        self.connection_pool = pooled_db.PooledDB(psycopg2,
-                                                  **config_dict)
+        self.connection_pool = pooled_db.PooledDB(psycopg2, **config_dict)
         self.retries = MAX_NUMBER_OF_RETRIES
         self.timeout = TIME_TO_SLEEP
 
@@ -141,38 +140,32 @@ class Postgresql(ds.DataSource):
 
     def store_taskmanager(self, name, taskmanager_id, datestamp=None):
         if datestamp:
-            return self._update_returning_result("INSERT INTO taskmanager (name, taskmanager_id, datestamp) values (%s, %s, %s)",
-                                                 (name, taskmanager_id, datestamp)).get('sequence_id')
+            return self._update_returning_result(
+                "INSERT INTO taskmanager (name, taskmanager_id, datestamp) values (%s, %s, %s)",
+                (name, taskmanager_id, datestamp),
+            ).get("sequence_id")
 
-        return self._update_returning_result("INSERT INTO taskmanager (name, taskmanager_id) values (%s, %s)",
-                                             (name, taskmanager_id)).get('sequence_id')
+        return self._update_returning_result(
+            "INSERT INTO taskmanager (name, taskmanager_id) values (%s, %s)", (name, taskmanager_id)
+        ).get("sequence_id")
 
     def get_taskmanager(self, taskmanager_name, taskmanager_id=None):
         if taskmanager_id:
             try:
-                return self._select_dictresult(SELECT_TASKMANAGER_BY_NAME_AND_ID,
-                                               (taskmanager_name, taskmanager_id))[0]
+                return self._select_dictresult(SELECT_TASKMANAGER_BY_NAME_AND_ID, (taskmanager_name, taskmanager_id))[0]
             except IndexError:
-                raise KeyError("Taskmanager={} taskmanager_id={} not found".format(
-                    taskmanager_name, taskmanager_id))
+                raise KeyError(f"Taskmanager={taskmanager_name} taskmanager_id={taskmanager_id} not found")
         else:
             try:
-                return self._select_dictresult(SELECT_TASKMANAGER_BY_NAME,
-                                               (taskmanager_name,))[0]
+                return self._select_dictresult(SELECT_TASKMANAGER_BY_NAME, (taskmanager_name,))[0]
             except IndexError:
-                raise KeyError(
-                    "Taskmanager={} not found".format(taskmanager_name))
+                raise KeyError(f"Taskmanager={taskmanager_name} not found")
 
-    def get_taskmanagers(self,
-                         taskmanager_name=None,
-                         start_time=None,
-                         end_time=None):
+    def get_taskmanagers(self, taskmanager_name=None, start_time=None, end_time=None):
 
-        SELECT_TASKMANAGERS = ("SELECT tm.name, "
-                               "tm.sequence_id, "
-                               "tm.taskmanager_id, "
-                               "tm.datestamp "
-                               "FROM taskmanager tm ")
+        SELECT_TASKMANAGERS = (
+            "SELECT tm.name, " "tm.sequence_id, " "tm.taskmanager_id, " "tm.datestamp " "FROM taskmanager tm "
+        )
 
         have_where = False
         if taskmanager_name:
@@ -192,108 +185,127 @@ class Postgresql(ds.DataSource):
                 SELECT_TASKMANAGERS += " WHERE "
             SELECT_TASKMANAGERS += " tm.datestamp <=  '" + end_time + "'"
         try:
-            return self._select_dictresult(SELECT_TASKMANAGERS +
-                                           " ORDER BY tm.datestamp ASC")
+            return self._select_dictresult(SELECT_TASKMANAGERS + " ORDER BY tm.datestamp ASC")
         except IndexError:
             raise KeyError()
 
-    def get_last_generation_id(self,
-                               taskmanager_name,
-                               taskmanager_id=None):
+    def get_last_generation_id(self, taskmanager_name, taskmanager_id=None):
         if taskmanager_id:
             try:
-                generation_id = self._select(SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID,
-                                             (taskmanager_name, taskmanager_id))[0][0]
+                generation_id = self._select(
+                    SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID, (taskmanager_name, taskmanager_id)
+                )[0][0]
                 if not generation_id:
                     raise AssertionError("Failed to retrieve value")
                 return generation_id
             except AssertionError:
-                raise KeyError("Last generation id not found for taskmanager={} taskmanager_id={}".
-                               format(taskmanager_name, taskmanager_id))
+                raise KeyError(
+                    f"Last generation id not found for taskmanager={taskmanager_name} taskmanager_id={taskmanager_id}"
+                )
         else:
             try:
-                generation_id = self._select(SELECT_LAST_GENERATION_ID_BY_NAME,
-                                             (taskmanager_name, ))[0][0]
+                generation_id = self._select(SELECT_LAST_GENERATION_ID_BY_NAME, (taskmanager_name,))[0][0]
                 if not generation_id:
                     raise AssertionError("Failed to retrieve value")
                 return generation_id
             except AssertionError:
-                raise KeyError("Last generation id not found for taskmanager={}".
-                               format(taskmanager_name, ))
+                raise KeyError(f"Last generation id not found for taskmanager={taskmanager_name}")
 
-    def insert(self, taskmanager_id, generation_id, key,
-               value, header, metadata):
+    def insert(self, taskmanager_id, generation_id, key, value, header, metadata):
 
-        self._insert(ds.DataSource.dataproduct_table,
-                     {'taskmanager_id': taskmanager_id,
-                      'generation_id': generation_id,
-                      'key': key,
-                      'value': psycopg2.Binary(value)
-                      })
+        self._insert(
+            ds.DataSource.dataproduct_table,
+            {
+                "taskmanager_id": taskmanager_id,
+                "generation_id": generation_id,
+                "key": key,
+                "value": psycopg2.Binary(value),
+            },
+        )
 
-        self._insert(ds.DataSource.header_table,
-                     {'taskmanager_id': taskmanager_id,
-                      'generation_id': generation_id,
-                      'key': key,
-                      'create_time': header.get('create_time'),
-                      'scheduled_create_time': header.get('scheduled_create_time'),
-                      'expiration_time': header.get('expiration_time'),
-                      'creator': header.get('creator'),
-                      'schema_id': header.get('schema_id')
-                      })
+        self._insert(
+            ds.DataSource.header_table,
+            {
+                "taskmanager_id": taskmanager_id,
+                "generation_id": generation_id,
+                "key": key,
+                "create_time": header.get("create_time"),
+                "scheduled_create_time": header.get("scheduled_create_time"),
+                "expiration_time": header.get("expiration_time"),
+                "creator": header.get("creator"),
+                "schema_id": header.get("schema_id"),
+            },
+        )
 
-        self._insert(ds.DataSource.metadata_table,
-                     {'taskmanager_id': taskmanager_id,
-                      'generation_id': generation_id,
-                      'key': key,
-                      'state': metadata.get('state'),
-                      'generation_time': metadata.get('generation_time'),
-                      'missed_update_count': metadata.get('missed_update_count')
-                      })
+        self._insert(
+            ds.DataSource.metadata_table,
+            {
+                "taskmanager_id": taskmanager_id,
+                "generation_id": generation_id,
+                "key": key,
+                "state": metadata.get("state"),
+                "generation_time": metadata.get("generation_time"),
+                "missed_update_count": metadata.get("missed_update_count"),
+            },
+        )
 
-    def update(self, taskmanager_id, generation_id, key,
-               value, header, metadata):
-        for table in (ds.DataSource.header_table, ds.DataSource.metadata_table,
-                      ds.DataSource.dataproduct_table):
+    def update(self, taskmanager_id, generation_id, key, value, header, metadata):
+        for table in (ds.DataSource.header_table, ds.DataSource.metadata_table, ds.DataSource.dataproduct_table):
             q = SELECT_QUERY.format(table)
             try:
                 self._select(q, (taskmanager_id, generation_id, key))[0]
             except IndexError:
                 # do not log stack trace, Exception thrown is handled by the caller
-                raise KeyError("taskmanager_id={} or generation_id={} or key={} not found in {}".format(
-                    taskmanager_id, generation_id, key, table))
+                raise KeyError(
+                    f"taskmanager_id={taskmanager_id} or generation_id={generation_id} or key={key} not found in {table}"
+                )
 
-        q = """
-            UPDATE {} SET value=%s
+        q = f"""
+            UPDATE {ds.DataSource.dataproduct_table} SET value=%s
                       WHERE taskmanager_id=%s AND generation_id=%s AND key=%s
-            """.format(ds.DataSource.dataproduct_table)
+            """
 
-        self._update(q, (psycopg2.Binary(value),
-                         taskmanager_id, generation_id, key))
+        self._update(q, (psycopg2.Binary(value), taskmanager_id, generation_id, key))
 
-        q = """
-        UPDATE {} SET create_time=%s,
+        q = f"""
+        UPDATE {ds.DataSource.header_table} SET create_time=%s,
                       expiration_time=%s,
                       scheduled_create_time=%s,
                       creator=%s,
                       schema_id=%s
                   WHERE taskmanager_id=%s AND generation_id=%s AND key=%s
-            """.format(ds.DataSource.header_table)
-        self._update(q, (header.get('create_time'),
-                         header.get('expiration_time'),
-                         header.get('scheduled_create_time'),
-                         header.get('creator'), header.get('schema_id'),
-                         taskmanager_id, generation_id, key))
+            """
+        self._update(
+            q,
+            (
+                header.get("create_time"),
+                header.get("expiration_time"),
+                header.get("scheduled_create_time"),
+                header.get("creator"),
+                header.get("schema_id"),
+                taskmanager_id,
+                generation_id,
+                key,
+            ),
+        )
 
-        q = """
-             UPDATE {} SET state=%s,
+        q = f"""
+             UPDATE {ds.DataSource.metadata_table} SET state=%s,
                            generation_time=%s,
                            missed_update_count=%s
                         WHERE taskmanager_id=%s AND generation_id=%s AND key=%s
-            """.format(ds.DataSource.metadata_table)
-        self._update(q, (metadata.get('state'), metadata.get('generation_time'),
-                         metadata.get('missed_update_count'),
-                         taskmanager_id, generation_id, key))
+            """
+        self._update(
+            q,
+            (
+                metadata.get("state"),
+                metadata.get("generation_time"),
+                metadata.get("missed_update_count"),
+                taskmanager_id,
+                generation_id,
+                key,
+            ),
+        )
 
     def get_header(self, taskmanager_id, generation_id, key):
         q = SELECT_QUERY.format(ds.DataSource.header_table)
@@ -301,8 +313,7 @@ class Postgresql(ds.DataSource):
             return self._select(q, (taskmanager_id, generation_id, key))[0]
         except IndexError:
             # do not log stack trace, Exception thrown is handled by the caller
-            raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
-                taskmanager_id, generation_id, key))
+            raise KeyError(f"taskmanager_id={taskmanager_id} or generation_id={generation_id} or key={key} not found")
 
     def get_metadata(self, taskmanager_id, generation_id, key):
         q = SELECT_QUERY.format(ds.DataSource.metadata_table)
@@ -310,8 +321,7 @@ class Postgresql(ds.DataSource):
             return self._select(q, (taskmanager_id, generation_id, key))[0]
         except IndexError:
             # do not log stack trace, Exception thrown is handled by the caller
-            raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
-                taskmanager_id, generation_id, key))
+            raise KeyError(f"taskmanager_id={taskmanager_id} or generation_id={generation_id} or key={key} not found")
 
     def get_dataproducts(self, taskmanager_id, key=None):
         q = SELECT_PRODUCTS.format(ds.DataSource.dataproduct_table)
@@ -321,24 +331,27 @@ class Postgresql(ds.DataSource):
             result = []
             rows = self._select_dictresult(q, (taskmanager_id,))
             for row in rows:
-                result.append({'key': row['key'],
-                               'taskmanager_id': row['taskmanager_id'],
-                               'generation_id': row['generation_id'],
-                               'value': row['value'].tobytes()})
+                result.append(
+                    {
+                        "key": row["key"],
+                        "taskmanager_id": row["taskmanager_id"],
+                        "generation_id": row["generation_id"],
+                        "value": row["value"].tobytes(),
+                    }
+                )
             return result
         except IndexError:
             # do not log stack trace, Exception thrown is handled by the caller
-            raise KeyError("taskmanager_id={} not found".format(taskmanager_id))
+            raise KeyError(f"taskmanager_id={taskmanager_id} not found")
 
     def get_dataproduct(self, taskmanager_id, generation_id, key):
         q = SELECT_QUERY.format(ds.DataSource.dataproduct_table)
         try:
             value_row = self._select_dictresult(q, (taskmanager_id, generation_id, key))[0]
-            return value_row['value'].tobytes()
+            return value_row["value"].tobytes()
         except IndexError:
             # do not log stack trace, Exception thrown is handled by the caller
-            raise KeyError("taskmanager_id={} or generation_id={} or key={} not found".format(
-                taskmanager_id, generation_id, key))
+            raise KeyError(f"taskmanager_id={taskmanager_id} or generation_id={generation_id} or key={key} not found")
 
     def get_datablock(self, taskmanager_id, generation_id):
         q = f"""SELECT key, value FROM {ds.DataSource.dataproduct_table} dp, taskmanager tm
@@ -346,13 +359,13 @@ class Postgresql(ds.DataSource):
         rows = self._select_dictresult(q, (taskmanager_id, generation_id))
         result = {}
         for row in rows:
-            result[row['key']] = row['value'].tobytes()
+            result[row["key"]] = row["value"].tobytes()
         return result
 
-    def duplicate_datablock(self, taskmanager_id, generation_id,
-                            new_generation_id):
-        for q in ("""
-            INSERT INTO {} (taskmanager_id,
+    def duplicate_datablock(self, taskmanager_id, generation_id, new_generation_id):
+        for q in (
+            f"""
+            INSERT INTO {ds.DataSource.dataproduct_table} (taskmanager_id,
                             generation_id,
                             key,
                             value)
@@ -360,11 +373,11 @@ class Postgresql(ds.DataSource):
                           %s,
                           key,
                           value
-                   FROM {}
+                   FROM {ds.DataSource.dataproduct_table}
                    WHERE taskmanager_id=%s AND generation_id=%s
-            """.format(ds.DataSource.dataproduct_table, ds.DataSource.dataproduct_table),
-                  """
-            INSERT INTO {} (taskmanager_id,
+            """,
+            f"""
+            INSERT INTO {ds.DataSource.metadata_table} (taskmanager_id,
                             generation_id,
                             key,
                             state,
@@ -376,11 +389,11 @@ class Postgresql(ds.DataSource):
                           state,
                           generation_time,
                           missed_update_count
-                   FROM {}
+                   FROM {ds.DataSource.metadata_table}
                    WHERE taskmanager_id=%s AND generation_id=%s
-            """.format(ds.DataSource.metadata_table, ds.DataSource.metadata_table),
-                  """
-            INSERT INTO {} (taskmanager_id,
+            """,
+            f"""
+            INSERT INTO {ds.DataSource.header_table} (taskmanager_id,
                         generation_id,
                         key,
                         create_time,
@@ -396,10 +409,11 @@ class Postgresql(ds.DataSource):
                         scheduled_create_time,
                         creator,
                         schema_id
-                 FROM {}
+                 FROM {ds.DataSource.header_table}
                  WHERE taskmanager_id=%s
                  AND   generation_id=%s
-                 """.format(ds.DataSource.header_table, ds.DataSource.header_table)):
+                 """,
+        ):
             self._insert(q, (new_generation_id, taskmanager_id, generation_id))
 
     def delete_data_older_than(self, days):
@@ -410,8 +424,8 @@ class Postgresql(ds.DataSource):
         """
         if days <= 0:
             # do not log stack trace, Exception thrown is handled by the caller
-            raise ValueError("Argument has to be positive, non zero integer. Supplied {}".format(days))
-        self._remove(DELETE_OLD_DATA_QUERY, (days, ))
+            raise ValueError(f"Argument has to be positive, non zero integer. Supplied {days}")
+        self._remove(DELETE_OLD_DATA_QUERY, (days,))
         return
 
     def close(self):
@@ -520,8 +534,7 @@ class Postgresql(ds.DataSource):
         try:
             if record:
                 if isinstance(record, dict):
-                    q = generate_insert_query(
-                        table_name_or_sql_query, list(record.keys()))
+                    q = generate_insert_query(table_name_or_sql_query, list(record.keys()))
                     return self._update(q, list(record.values()))
                 else:
                     return self._update(table_name_or_sql_query, record)
@@ -530,13 +543,11 @@ class Postgresql(ds.DataSource):
         except Exception:
             raise
 
-
     def _insert_returning_result(self, table_name_or_sql_query, record=None):
         try:
             if record:
                 if isinstance(record, dict):
-                    q = generate_insert_query(
-                        table_name_or_sql_query, list(record.keys()))
+                    q = generate_insert_query(table_name_or_sql_query, list(record.keys()))
                     return self._update_returning_result(q, list(record.values()))
                 else:
                     return self._update_returning_result(table_name_or_sql_query, record)
@@ -553,20 +564,16 @@ class Postgresql(ds.DataSource):
 
     def _select_dictresult(self, sql_query, values=None):
         if values:
-            result = self._select(
-                sql_query, values, cursor_factory=psycopg2.extras.RealDictCursor)
+            result = self._select(sql_query, values, cursor_factory=psycopg2.extras.RealDictCursor)
         else:
-            result = self._select(
-                sql_query, cursor_factory=psycopg2.extras.RealDictCursor)
+            result = self._select(sql_query, cursor_factory=psycopg2.extras.RealDictCursor)
         return result
 
     def _select_getresult(self, sql_query, values=None):
         if values:
-            result = self._select(
-                sql_query, values, cursor_factory=psycopg2.extras.DictCursor)
+            result = self._select(sql_query, values, cursor_factory=psycopg2.extras.DictCursor)
         else:
-            result = self._select(
-                sql_query, cursor_factory=psycopg2.extras.DictCursor)
+            result = self._select(sql_query, cursor_factory=psycopg2.extras.DictCursor)
         return result
 
     def _select_tuple(self, sql_query, values):

@@ -5,16 +5,16 @@ import pytest
 from sqlalchemy.exc import NoResultFound
 
 from decisionengine.framework.dataspace import dataspace as ds
+from decisionengine.framework.dataspace.datablock import Header, Metadata
 from decisionengine.framework.dataspace.tests.fixtures import (  # noqa: F401
-    PG_DE_DB_WITH_SCHEMA,
-    PG_DE_DB_WITHOUT_SCHEMA,
-    SQLALCHEMY_PG_WITH_SCHEMA,
-    SQLALCHEMY_TEMPFILE_SQLITE,
-    PG_PROG,
     DATABASES_TO_TEST,
     dataspace,
+    PG_DE_DB_WITH_SCHEMA,
+    PG_DE_DB_WITHOUT_SCHEMA,
+    PG_PROG,
+    SQLALCHEMY_PG_WITH_SCHEMA,
+    SQLALCHEMY_TEMPFILE_SQLITE,
 )
-from decisionengine.framework.dataspace.datablock import Header, Metadata
 
 
 @pytest.mark.usefixtures("dataspace")
@@ -91,16 +91,12 @@ def test_get_taskmanagers(dataspace):  # noqa: F811
     assert result3[0]["name"] == "taskmanager1"
     assert str(result3[0]["taskmanager_id"]) == "11111111-1111-1111-1111-111111111111"
 
-    result4 = dataspace.get_taskmanagers(
-        taskmanager_name="taskmanager1", end_time=yesterday
-    )
+    result4 = dataspace.get_taskmanagers(taskmanager_name="taskmanager1", end_time=yesterday)
     assert len(result4) == 1
     assert result4[0]["name"] == "taskmanager1"
     assert str(result4[0]["taskmanager_id"]) == "11111111-1111-1111-1111-111111111111"
 
-    result5 = dataspace.get_taskmanagers(
-        taskmanager_name="taskmanager2", start_time=yesterday
-    )
+    result5 = dataspace.get_taskmanagers(taskmanager_name="taskmanager2", start_time=yesterday)
     assert len(result5) == 1
     assert result5[0]["name"] == "taskmanager2"
     assert str(result5[0]["taskmanager_id"]) == "22222222-2222-2222-2222-222222222222"
@@ -112,9 +108,7 @@ def test_get_taskmanagers(dataspace):  # noqa: F811
     assert result6[0]["name"] == "taskmanager2"
     assert str(result6[0]["taskmanager_id"]) == "22222222-2222-2222-2222-222222222222"
 
-    result7 = dataspace.get_taskmanagers(
-        start_time=yesterday, end_time=two_years_future
-    )
+    result7 = dataspace.get_taskmanagers(start_time=yesterday, end_time=two_years_future)
     assert len(result7) == 1
     assert result7[0]["name"] == "taskmanager2"
     assert str(result7[0]["taskmanager_id"]) == "22222222-2222-2222-2222-222222222222"
@@ -318,7 +312,7 @@ def test_get_datablock(dataspace):  # noqa: F811
         generation_id=2,
     )
 
-    assert result2 == {'other_test_key': b'other_test_value'}
+    assert result2 == {"other_test_key": b"other_test_value"}
 
 
 @pytest.mark.usefixtures("dataspace")
@@ -335,9 +329,7 @@ def test_get_dataproduct_not_exist(dataspace):  # noqa: F811
 @pytest.mark.usefixtures("dataspace")
 def test_insert(dataspace):  # noqa: F811
     """Can we insert new elements"""
-    primary_key = dataspace.store_taskmanager(
-        "taskmanager3", "33333333-3333-3333-3333-333333333333"
-    )
+    primary_key = dataspace.store_taskmanager("taskmanager3", "33333333-3333-3333-3333-333333333333")
     assert primary_key > 1
 
     header = Header(primary_key)
@@ -362,9 +354,7 @@ def test_insert(dataspace):  # noqa: F811
         }
     ]
 
-    result2 = dataspace.get_dataproducts(
-        taskmanager_id=primary_key, key="sample_test_key"
-    )
+    result2 = dataspace.get_dataproducts(taskmanager_id=primary_key, key="sample_test_key")
 
     assert result1 == result2
 

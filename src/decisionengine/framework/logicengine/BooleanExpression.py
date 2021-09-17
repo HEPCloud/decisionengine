@@ -10,10 +10,11 @@
 #   "np.sum(vals) > 40" # WRONG, illegal call to np.sum
 
 import ast
-import structlog
 import re
 
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
+import structlog
+
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 
 # If support for direct use of numpy and pandas functions is desired,
 # import the numpy and pandas modules and adjust the facts_globals:
@@ -58,8 +59,8 @@ def function_name_from_call(callnode):
 class BooleanExpression:
     def __init__(self, expr):
         self.expr_str, self.fail_on_error = maybe_fail_on_error(str.strip(expr))
-        source = 'string'
-        mode = 'eval'
+        source = "string"
+        mode = "eval"
         syntax_tree = None
         try:
             syntax_tree = ast.parse(self.expr_str, source, mode)
@@ -80,8 +81,9 @@ class BooleanExpression:
             return bool(eval(self.expr, _facts_globals, d))
         except Exception:
             if self.fail_on_error:
-                logger.exception("The following exception was suppressed, and the "
-                                 "Boolean expression will evaluate to False.")
+                logger.exception(
+                    "The following exception was suppressed, and the " "Boolean expression will evaluate to False."
+                )
                 return False
             raise
 

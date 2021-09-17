@@ -1,5 +1,6 @@
-from decisionengine.framework.logicengine.BooleanExpression import BooleanExpression, _facts_globals
 import pytest
+
+from decisionengine.framework.logicengine.BooleanExpression import _facts_globals, BooleanExpression
 
 
 def test_simple_fact():
@@ -41,9 +42,12 @@ def test_fact_with_fail_on_error():
 # seen in the context of the use of the facts.
 #
 # Add in __builtins__ so we can use 'import numpy as np' under a BooleanExpression
-_facts_globals.update({'__builtins__': __builtins__})
+_facts_globals.update({"__builtins__": __builtins__})
+
+
 def make_db(maximum):
     import numpy as np
+
     return {"vals": np.arange(maximum)}
 
 

@@ -12,12 +12,12 @@ __all__ = ["orm_as_dict", "clone_model", "add_engine_pidguard"]
 
 
 def orm_as_dict(obj):
-    """ Based on : https://stackoverflow.com/a/37350445 """
+    """Based on : https://stackoverflow.com/a/37350445"""
     return {c.key: getattr(obj, c.key) for c in sqlalchemy.inspect(obj).mapper.column_attrs}
 
 
 def clone_model(model, **kwargs):
-    """ Based on https://stackoverflow.com/a/55991358 """
+    """Based on https://stackoverflow.com/a/55991358"""
     # will raise AttributeError if data not loaded
     try:
         model.sequence_id  # taskmanager doesn't have an 'id' column
@@ -46,7 +46,7 @@ def add_engine_pidguard(engine):
         https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#foreign-key-support
         https://docs.sqlalchemy.org/en/14/core/pooling.html#using-connection-pools-with-multiprocessing-or-os-fork
         """
-        if 'sqlite' in str(type(dbapi_connection)):
+        if "sqlite" in str(type(dbapi_connection)):
             cursor = dbapi_connection.cursor()
             cursor.execute("PRAGMA foreign_keys=ON")
             cursor.close()
@@ -62,6 +62,5 @@ def add_engine_pidguard(engine):
         if connection_record.info["pid"] != pid:
             connection_record.connection = connection_proxy.connection = None
             raise sqlalchemy.exc.DisconnectionError(
-                "Connection record belongs to pid %s, "
-                "attempting to check out in pid %s" % (connection_record.info["pid"], pid)
+                f"Connection record belongs to pid {connection_record.info['pid']}, attempting to check out in pid {pid}"
             )

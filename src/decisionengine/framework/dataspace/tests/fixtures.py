@@ -1,17 +1,17 @@
 import gc
+
 import pytest
 
 from decisionengine.framework.dataspace import dataspace as ds
-
 from decisionengine.framework.dataspace.datasources.tests.fixtures import (  # noqa: F401
+    DATABASES_TO_TEST,
+    datasource,
+    load_sample_data_into_datasource,
     PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
-    DATABASES_TO_TEST,
     SQLALCHEMY_PG_WITH_SCHEMA,
     SQLALCHEMY_TEMPFILE_SQLITE,
-    datasource,
-    load_sample_data_into_datasource,
 )
 
 __all__ = [
@@ -25,6 +25,7 @@ __all__ = [
     "dataspace",
     "load_sample_data_into_datasource",
 ]
+
 
 @pytest.fixture(params=DATABASES_TO_TEST)
 def dataspace(request):
@@ -65,14 +66,10 @@ def dataspace(request):
     config["dataspace"]["datasource"]["config"] = db_info
 
     if request.param == "PG_DE_DB_WITH_SCHEMA":
-        config["dataspace"]["datasource"][
-            "module"
-        ] = "decisionengine.framework.dataspace.datasources.postgresql"
+        config["dataspace"]["datasource"]["module"] = "decisionengine.framework.dataspace.datasources.postgresql"
         config["dataspace"]["datasource"]["name"] = "Postgresql"
     elif "SQLALCHEMY" in request.param:
-        config["dataspace"]["datasource"][
-            "module"
-        ] = "decisionengine.framework.dataspace.datasources.sqlalchemy_ds"
+        config["dataspace"]["datasource"]["module"] = "decisionengine.framework.dataspace.datasources.sqlalchemy_ds"
         config["dataspace"]["datasource"]["name"] = "SQLAlchemyDS"
 
     my_ds = ds.DataSpace(config)

@@ -1,12 +1,13 @@
 """
 Source Manager
 """
-import time
 import multiprocessing
+import time
+
 import structlog
 
 from decisionengine.framework.dataspace import datablock
-from decisionengine.framework.managers.ComponentManager import create_runner, ComponentManager
+from decisionengine.framework.managers.ComponentManager import ComponentManager, create_runner
 from decisionengine.framework.managers.ProcessingState import State
 from decisionengine.framework.modules.logging_configDict import LOGGERNAME
 
@@ -15,6 +16,7 @@ _DEFAULT_SCHEDULE = 300  # ""
 
 delogger = structlog.getLogger(LOGGERNAME)
 delogger = delogger.bind(module=__name__.split(".")[-1])
+
 
 class SourceRunner:
     """
@@ -117,9 +119,7 @@ class SourceManager(ComponentManager):
                     break
             except Exception:  # pragma: no cover
                 delogger.exception("Exception in the main loop for a source")
-                delogger.error(
-                    "Error occured. Source %s exits with state %s", self.id, self.get_state_name()
-                )
+                delogger.error("Error occured. Source %s exits with state %s", self.id, self.get_state_name())
                 break
         self.take_offline(self.data_block_t0)
         delogger.info(f"Source {self.name} ({self.id}) is ending its loop.")

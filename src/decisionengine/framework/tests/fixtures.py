@@ -6,18 +6,16 @@ import os
 # we need to import all of these to instantiate the other fixtures
 # so that DEServer gets setup correctly
 from decisionengine.framework.engine.tests.fixtures import (
+    DEServer,
     PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     SQLALCHEMY_PG_WITH_SCHEMA,
     SQLALCHEMY_TEMPFILE_SQLITE,
-    DEServer,
 )
 
 # set path to test config
-TEST_CONFIG_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "etc/decisionengine"
-)
+TEST_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "etc/decisionengine")
 TEST_CHANNEL_CONFIG_PATH = os.path.join(TEST_CONFIG_PATH, "config.d")
 
 __all__ = [

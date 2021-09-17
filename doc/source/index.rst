@@ -19,7 +19,7 @@ Developer Documentation
 
 The developer documentation is in the `GitHub Wiki <https://github.com/HEPCloud/decisionengine/wiki/Development-Workflow>`_
 
-Intructions to build the package, or to run unit tests and other CI tests, and to install decisionengine 
+Intructions to build the package, or to run unit tests and other CI tests, and to install decisionengine
 are in the `GitHub Wiki <https://github.com/HEPCloud/decisionengine/wiki/How-to-Run-Decision-Engine>`_ as well.
 
 

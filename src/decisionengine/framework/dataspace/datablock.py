@@ -5,9 +5,12 @@ import threading
 import time
 import uuid
 import zlib
-import structlog
+
 from collections import UserDict
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
+
+import structlog
+
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 
 ###############################################################################
 # TODO:
@@ -18,7 +21,7 @@ from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELO
 # 5) get() needs to error in case of expired data
 ###############################################################################
 
-_ENCODING = 'latin1'
+_ENCODING = "latin1"
 
 
 def zdumps(obj):
@@ -27,9 +30,7 @@ def zdumps(obj):
     :param obj: a python object
     :return: compressed string
     """
-    return zlib.compress(pickle.dumps(obj,
-                                      pickle.HIGHEST_PROTOCOL),
-                         9)
+    return zlib.compress(pickle.dumps(obj, pickle.HIGHEST_PROTOCOL), 9)
 
 
 def zloads(zbytes):
@@ -75,21 +76,19 @@ class InvalidMetadataError(Exception):
     """
     Errors due to invalid Metadata
     """
+
     pass
 
 
 class Metadata(UserDict):
 
     # Minimum information required for the Metadata dict to be valid
-    required_keys = {
-        'taskmanager_id', 'state', 'generation_id',
-        'generation_time', 'missed_update_count'}
+    required_keys = {"taskmanager_id", "state", "generation_id", "generation_time", "missed_update_count"}
 
     # Valid states
-    valid_states = {'NEW', 'START_BACKUP', 'METADATA_UPDATE', 'END_CYCLE'}
+    valid_states = {"NEW", "START_BACKUP", "METADATA_UPDATE", "END_CYCLE"}
 
-    def __init__(self, taskmanager_id, state='NEW', generation_id=None,
-                 generation_time=None, missed_update_count=0):
+    def __init__(self, taskmanager_id, state="NEW", generation_id=None, generation_time=None, missed_update_count=0):
         """
         Initialize Metadata object
 
@@ -101,17 +100,17 @@ class Metadata(UserDict):
         """
         UserDict.__init__(self)
         if state not in Metadata.valid_states:
-            structlog.getLogger(LOGGERNAME).exception(f'Invalid Metadata state: {state}')
+            structlog.getLogger(LOGGERNAME).exception(f"Invalid Metadata state: {state}")
             raise InvalidMetadataError()
         if not generation_time:
             generation_time = time.time()
 
         self.data = {
-            'taskmanager_id': taskmanager_id,
-            'state': state,
-            'generation_id': generation_id,
-            'generation_time': int(generation_time),
-            'missed_update_count': missed_update_count
+            "taskmanager_id": taskmanager_id,
+            "state": state,
+            "generation_id": generation_id,
+            "generation_time": int(generation_time),
+            "missed_update_count": missed_update_count,
         }
 
     def set_state(self, state):
@@ -122,24 +121,35 @@ class Metadata(UserDict):
         """
 
         if state not in Metadata.valid_states:
-            structlog.getLogger(LOGGERNAME).exception(f'{state} is not a valid Metadata state')
+            structlog.getLogger(LOGGERNAME).exception(f"{state} is not a valid Metadata state")
             raise InvalidMetadataError()
-        self.data['state'] = state
+        self.data["state"] = state
 
 
 class Header(UserDict):
 
     # Minimum information required for the Header dict to be valid
     required_keys = {
-        'taskmanager_id', 'create_time', 'expiration_time',
-        'scheduled_create_time', 'creator', 'schema_id'
+        "taskmanager_id",
+        "create_time",
+        "expiration_time",
+        "scheduled_create_time",
+        "creator",
+        "schema_id",
     }
 
     # Default lifetime of the data if the expiration time is not specified
     default_data_lifetime = 1800
 
-    def __init__(self, taskmanager_id, create_time=None, expiration_time=None,
-                 scheduled_create_time=None, creator='module', schema_id=None):
+    def __init__(
+        self,
+        taskmanager_id,
+        create_time=None,
+        expiration_time=None,
+        scheduled_create_time=None,
+        creator="module",
+        schema_id=None,
+    ):
         """
         Initialize Header object
 
@@ -160,12 +170,12 @@ class Header(UserDict):
             scheduled_create_time = time.time()
 
         self.data = {
-            'taskmanager_id': taskmanager_id,
-            'create_time': int(create_time),
-            'expiration_time': int(expiration_time),
-            'scheduled_create_time': int(scheduled_create_time),
-            'creator': creator,
-            'schema_id': schema_id
+            "taskmanager_id": taskmanager_id,
+            "create_time": int(create_time),
+            "expiration_time": int(expiration_time),
+            "scheduled_create_time": int(scheduled_create_time),
+            "creator": creator,
+            "schema_id": schema_id,
         }
 
     def is_valid(self):
@@ -182,8 +192,8 @@ class Header(UserDict):
 class ProductRetriever:
     def __init__(self, product_name, product_type, product_source):
         self.name = product_name
-        self.type = product_type    # Not yet used
-        self.creator = product_source   # Not yet used
+        self.type = product_type  # Not yet used
+        self.creator = product_source  # Not yet used
 
     def __call__(self, datablock):
         return datablock[self.name]
@@ -193,7 +203,6 @@ class ProductRetriever:
 
 
 class DataBlock:
-
     def __init__(self, dataspace, name, taskmanager_id=None, generation_id=None, sequence_id=None):
         """
         Initialize DataBlock object
@@ -208,14 +217,14 @@ class DataBlock:
         self.__internal_data_read_lock = threading.Lock()
         self.logger = structlog.getLogger(LOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
-        self.logger.debug('Initializing a datablock for %s', name)
+        self.logger.debug("Initializing a datablock for %s", name)
         self.dataspace = dataspace
 
         # If taskmanager_id is None create new or
         if taskmanager_id:
             self.taskmanager_id = taskmanager_id
         else:
-            self.taskmanager_id = ('%s' % uuid.uuid1()).upper()
+            self.taskmanager_id = f"{uuid.uuid1()}".upper()
 
         if sequence_id:
             self.sequence_id = sequence_id
@@ -225,23 +234,22 @@ class DataBlock:
         if generation_id:
             self.generation_id = generation_id
         else:
-            self.generation_id = self.dataspace.get_last_generation_id(
-                name, taskmanager_id)
+            self.generation_id = self.dataspace.get_last_generation_id(name, taskmanager_id)
 
         self.lock = threading.Lock()
 
     def __str__(self):
         value = {
-            'taskmanager_id': self.taskmanager_id,
-            'generation_id': self.generation_id,
-            'sequence_id': self.sequence_id,
-            'keys': self.keys(),
+            "taskmanager_id": self.taskmanager_id,
+            "generation_id": self.generation_id,
+            "sequence_id": self.sequence_id,
+            "keys": self.keys(),
         }
         dp = {}
         for key in self.keys():
             dp[key] = self.get(key)
-        value['dataproducts'] = dp
-        return '%s' % value
+        value["dataproducts"] = dp
+        return f"{value}"
 
     def __contains__(self, key):
         return key in self.keys()
@@ -311,8 +319,7 @@ class DataBlock:
         :type header: :obj:`Header`
         :type metadata: :obj:`Metadata`
         """
-        self.dataspace.insert(self.sequence_id, self.generation_id,
-                              key, value, header, metadata)
+        self.dataspace.insert(self.sequence_id, self.generation_id, key, value, header, metadata)
 
     def __update(self, key, value, header, metadata):
         """
@@ -323,8 +330,7 @@ class DataBlock:
         :type header: :obj:`Header`
         :type metadata: :obj:`Metadata`
         """
-        self.dataspace.update(self.sequence_id, self.generation_id,
-                              key, value, header, metadata)
+        self.dataspace.update(self.sequence_id, self.generation_id, key, value, header, metadata)
 
     def _setitem(self, key, value, header, metadata=None):
         """
@@ -337,16 +343,18 @@ class DataBlock:
         """
 
         if not metadata:
-            metadata = Metadata(self.sequence_id, state='NEW',
-                                generation_id=self.generation_id,
-                                generation_time=time.time(),
-                                missed_update_count=0)
+            metadata = Metadata(
+                self.sequence_id,
+                state="NEW",
+                generation_id=self.generation_id,
+                generation_time=time.time(),
+                missed_update_count=0,
+            )
 
         if isinstance(value, dict):
-            store_value = compress({'pickled': False, 'value': value})
+            store_value = compress({"pickled": False, "value": value})
         else:
-            store_value = compress({'pickled': True, 'value': pickle.dumps(value,
-                                                                           protocol=pickle.HIGHEST_PROTOCOL)})
+            store_value = compress({"pickled": True, "value": pickle.dumps(value, protocol=pickle.HIGHEST_PROTOCOL)})
         self.logger.debug("datablock waiting for internal write lock in '_setitem'")
         with self.__internal_data_write_lock:
             if key in self.keys():
@@ -368,10 +376,14 @@ class DataBlock:
                     v = zloads(v.get("value"))
                 else:
                     v = value.get("value")
-                result.append({"key": value["key"],
-                               "generation_id": value["generation_id"],
-                               "taskmanager_id": value["taskmanager_id"],
-                               "value": v})
+                result.append(
+                    {
+                        "key": value["key"],
+                        "generation_id": value["generation_id"],
+                        "taskmanager_id": value["taskmanager_id"],
+                        "value": v,
+                    }
+                )
         except Exception:  # pragma: no cover
             self.logger.exception("Unexpected error in get_dataproducts")
         return result
@@ -386,8 +398,7 @@ class DataBlock:
         """
 
         try:
-            value = self.dataspace.get_dataproduct(self.sequence_id,
-                                                   self.generation_id, key)
+            value = self.dataspace.get_dataproduct(self.sequence_id, self.generation_id, key)
             value = ast.literal_eval(decompress(value))
         except KeyError:
             self.logger.error(f"Did not get key '{key}' in datablock __getitem__")
@@ -397,10 +408,10 @@ class DataBlock:
             self.logger.exception(f"No key '{key}' in datablock __getitem__")
             raise KeyError(f"No key '{key}' in datablock __getitem__")
 
-        if value.get('pickled'):
-            return_value = zloads(value.get('value'))
+        if value.get("pickled"):
+            return_value = zloads(value.get("value"))
         else:
-            return_value = value.get('value')
+            return_value = value.get("value")
         return return_value
 
     def get_header(self, key):
@@ -410,13 +421,15 @@ class DataBlock:
         :type key: :obj:`string`
         :rtype: :obj:`Header`
         """
-        header_row = self.dataspace.get_header(self.sequence_id,
-                                               self.generation_id, key)
-        return Header(header_row[0], create_time=header_row[4],
-                      expiration_time=header_row[5],
-                      scheduled_create_time=header_row[6],
-                      creator=header_row[7],
-                      schema_id=header_row[8])
+        header_row = self.dataspace.get_header(self.sequence_id, self.generation_id, key)
+        return Header(
+            header_row[0],
+            create_time=header_row[4],
+            expiration_time=header_row[5],
+            scheduled_create_time=header_row[6],
+            creator=header_row[7],
+            schema_id=header_row[8],
+        )
 
     def get_metadata(self, key):
         """
@@ -425,12 +438,14 @@ class DataBlock:
         :type key: :obj:`string`
         :rtype: :obj:`Metadata`
         """
-        metadata_row = self.dataspace.get_metadata(self.sequence_id,
-                                                   self.generation_id, key)
-        return Metadata(metadata_row[0], state=metadata_row[4],
-                        generation_id=metadata_row[2],
-                        generation_time=metadata_row[5],
-                        missed_update_count=metadata_row[6])
+        metadata_row = self.dataspace.get_metadata(self.sequence_id, self.generation_id, key)
+        return Metadata(
+            metadata_row[0],
+            state=metadata_row[4],
+            generation_id=metadata_row[2],
+            generation_time=metadata_row[5],
+            missed_update_count=metadata_row[6],
+        )
 
     def duplicate(self):
         """
@@ -449,20 +464,18 @@ class DataBlock:
         with self.__internal_data_write_lock:
             dup_datablock = copy.copy(self)
             self.generation_id += 1
-            self.dataspace.duplicate_datablock(self.sequence_id,
-                                               dup_datablock.generation_id,
-                                               self.generation_id)
+            self.dataspace.duplicate_datablock(self.sequence_id, dup_datablock.generation_id, self.generation_id)
         return dup_datablock
 
     def is_expired(self, key=None):
         """
         Check if the dataproduct for a given key or any key is expired
         """
-        self.logger.info('datablock is checking for expired dataproducts')
+        self.logger.info("datablock is checking for expired dataproducts")
 
     def mark_expired(self, expiration_time):
         """
         Set the expiration_time for the current generation of the dataproduct
         and mark it as expired if expiration_time <= current time
         """
-        self.logger.info('datablock is marking expired dataproducts')
+        self.logger.info("datablock is marking expired dataproducts")

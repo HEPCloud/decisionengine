@@ -1,10 +1,12 @@
-__all__ = ['Parameter', 'Publisher', 'consumes', 'describe', 'supports_config']
-
-from decisionengine.framework.modules.Module import Module, consumes
 from decisionengine.framework.modules import describe
 from decisionengine.framework.modules.describe import Parameter, supports_config
+from decisionengine.framework.modules.Module import consumes, Module
+
+__all__ = ["Parameter", "Publisher", "consumes", "describe", "supports_config"]
+
 
 describe = describe.main_wrapper
+
 
 class Publisher(Module):
     _consumes = {}

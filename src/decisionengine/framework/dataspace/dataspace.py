@@ -1,5 +1,9 @@
 import importlib
+
 import structlog
+
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
+from decisionengine.framework.util.singleton import ScopedSingleton
 
 __all__ = [
     "DataSpaceConfigurationError",
@@ -9,18 +13,16 @@ __all__ = [
     "DataSpace",
 ]
 
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
-from decisionengine.framework.util.singleton import ScopedSingleton
 
 logger = structlog.getLogger(LOGGERNAME)
 logger = logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
-
 
 
 class DataSpaceConfigurationError(Exception):
     """
     Errors related to database access
     """
+
     pass
 
 
@@ -28,6 +30,7 @@ class DataSpaceConnectionError(Exception):
     """
     Errors related to database access
     """
+
     pass
 
 
@@ -35,6 +38,7 @@ class DataSpaceError(Exception):
     """
     Errors related to database access
     """
+
     pass
 
 
@@ -42,6 +46,7 @@ class DataSpaceExistsError(Exception):
     """
     Errors related to database access
     """
+
     pass
 
 
@@ -64,7 +69,7 @@ class DataSourceLoader(metaclass=ScopedSingleton):
         return ds
 
 
-class DataSpace():
+class DataSpace:
     """
     DataSpace class is collection of datablocks and provides interface
     to the database used to store the actual data
@@ -76,52 +81,51 @@ class DataSpace():
         :arg config: Configuration dictionary
         """
 
-        logger.debug('Initializing a dataspace')
+        logger.debug("Initializing a dataspace")
 
         # Validate configuration
-        if not config.get('dataspace'):
+        if not config.get("dataspace"):
             logger.exception("Error in initializing DataSpace!")
-            raise DataSpaceConfigurationError('Configuration is missing dataspace information: dataspace key not found.')
-        elif not isinstance(config.get('dataspace'), dict):
+            raise DataSpaceConfigurationError(
+                "Configuration is missing dataspace information: dataspace key not found."
+            )
+        elif not isinstance(config.get("dataspace"), dict):
             logger.exception("Error in initializing DataSpace!")
-            raise DataSpaceConfigurationError('Invalid dataspace configuration: '
-                                              'dataspace key must correspond to a dictionary')
+            raise DataSpaceConfigurationError(
+                "Invalid dataspace configuration: " "dataspace key must correspond to a dictionary"
+            )
         try:
-            self._db_driver_name = config['dataspace']['datasource']['name']
-            self._db_driver_module = config['dataspace']['datasource']['module']
-            self._db_driver_config = config['dataspace']['datasource']['config']
+            self._db_driver_name = config["dataspace"]["datasource"]["name"]
+            self._db_driver_module = config["dataspace"]["datasource"]["module"]
+            self._db_driver_config = config["dataspace"]["datasource"]["config"]
         except KeyError:
             logger.exception("Error in initializing DataSpace!")
-            raise DataSpaceConfigurationError('Invalid dataspace configuration')
+            raise DataSpaceConfigurationError("Invalid dataspace configuration")
 
         self.config = config
 
         # Connect to the datasource/database
-        self.datasource = DataSourceLoader().create_datasource(self._db_driver_module,
-                                                               self._db_driver_name,
-                                                               self._db_driver_config)
+        self.datasource = DataSourceLoader().create_datasource(
+            self._db_driver_module, self._db_driver_name, self._db_driver_config
+        )
 
         # Datablocks, current and previous, keyed by taskmanager_ids
         self.curr_datablocks = {}
         self.prev_datablocks = {}
 
     def __str__(self):  # pragma: no cover
-        return '%s' % vars(self)
+        return f"{vars(self)}"
 
-    def insert(self, taskmanager_id, generation_id, key,
-               value, header, metadata):
+    def insert(self, taskmanager_id, generation_id, key, value, header, metadata):
         try:
-            self.datasource.insert(taskmanager_id, generation_id, key,
-                                   value, header, metadata)
+            self.datasource.insert(taskmanager_id, generation_id, key, value, header, metadata)
         except Exception:
             logger.exception("Error in dataspace insert!")
             raise
 
-    def update(self, taskmanager_id, generation_id, key,
-               value, header, metadata):
+    def update(self, taskmanager_id, generation_id, key, value, header, metadata):
         try:
-            self.datasource.update(taskmanager_id, generation_id, key,
-                                   value, header, metadata)
+            self.datasource.update(taskmanager_id, generation_id, key, value, header, metadata)
         except Exception:
             logger.exception("Error in dataspace update!")
             raise
@@ -141,10 +145,8 @@ class DataSpace():
     def get_metadata(self, taskmanager_id, generation_id, key):
         return self.datasource.get_metadata(taskmanager_id, generation_id, key)
 
-    def duplicate_datablock(self, taskmanager_id, generation_id,
-                            new_generation_id):
-        return self.datasource.duplicate_datablock(taskmanager_id, generation_id,
-                                                   new_generation_id)
+    def duplicate_datablock(self, taskmanager_id, generation_id, new_generation_id):
+        return self.datasource.duplicate_datablock(taskmanager_id, generation_id, new_generation_id)
 
     def delete(self, taskmanager_id, all_generations=False):
         # Remove the latest generation of the datablock
@@ -165,11 +167,8 @@ class DataSpace():
     def store_taskmanager(self, name, taskmanager_id, datestamp=None):
         return self.datasource.store_taskmanager(name, taskmanager_id, datestamp)
 
-    def get_last_generation_id(self,
-                               taskmanager_name,
-                               taskmanager_id=None):
-        return self.datasource.get_last_generation_id(taskmanager_name,
-                                                      taskmanager_id)
+    def get_last_generation_id(self, taskmanager_name, taskmanager_id=None):
+        return self.datasource.get_last_generation_id(taskmanager_name, taskmanager_id)
 
     def get_taskmanager(self, taskmanager_name, taskmanager_id=None):
         return self.datasource.get_taskmanager(taskmanager_name, taskmanager_id)

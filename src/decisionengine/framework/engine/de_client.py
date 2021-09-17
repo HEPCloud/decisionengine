@@ -6,138 +6,78 @@ import xmlrpc.client
 
 def create_parser():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--port", metavar="<port number>", default="8888", help="Default port is 8888")
+    parser.add_argument("--host", metavar="<hostname>", default="localhost", help="Default hostname is 'localhost'")
     parser.add_argument(
-        "--port",
-        metavar='<port number>',
-        default="8888",
-        help="Default port is 8888")
-    parser.add_argument(
-        "--host",
-        metavar='<hostname>',
-        default="localhost",
-        help="Default hostname is 'localhost'")
-    parser.add_argument(
-        '-v', '--verbose',
-        action='store_true',
-        help="Include exception message in printout if server is inaccessible")
+        "-v", "--verbose", action="store_true", help="Include exception message in printout if server is inaccessible"
+    )
 
     server = parser.add_argument_group("Decision Engine server options")
-    server.add_argument(
-        "--stop",
-        action='store_true',
-        help="stop server")
-    server.add_argument(
-        "--status",
-        action='store_true',
-        help="print server status")
-    server.add_argument(
-        "--show-de-config",
-        action='store_true',
-        help="print server configuration")
-    server.add_argument(
-        "--print-engine-loglevel",
-        action='store_true',
-        help="print engine log level")
-    server.add_argument(
-        "--block-while",
-        metavar='<state>')
+    server.add_argument("--stop", action="store_true", help="stop server")
+    server.add_argument("--status", action="store_true", help="print server status")
+    server.add_argument("--show-de-config", action="store_true", help="print server configuration")
+    server.add_argument("--print-engine-loglevel", action="store_true", help="print engine log level")
+    server.add_argument("--block-while", metavar="<state>")
 
     channels = parser.add_argument_group("Channel-specific options")
-    channels.add_argument(
-        "--start-channels",
-        action='store_true',
-        help="start all channels")
-    channels.add_argument(
-        "--stop-channels",
-        action='store_true',
-        help="stop all channels")
-    channels.add_argument(
-        "--start-channel",
-        metavar="<channel name>")
-    channels.add_argument(
-        "--stop-channel",
-        metavar="<channel name>",
-        help="Attempt clean shutdown of channel.")
+    channels.add_argument("--start-channels", action="store_true", help="start all channels")
+    channels.add_argument("--stop-channels", action="store_true", help="stop all channels")
+    channels.add_argument("--start-channel", metavar="<channel name>")
+    channels.add_argument("--stop-channel", metavar="<channel name>", help="Attempt clean shutdown of channel.")
     channels.add_argument(
         "--kill-channel",
         metavar="<channel name>",
         help="Same as --stop-channel, except the channel process will be killed "
-        "once the server's configured shutdown timeout window is exceeded")
+        "once the server's configured shutdown timeout window is exceeded",
+    )
     kill_options = channels.add_mutually_exclusive_group()
     kill_options.add_argument(
-        '-f', '--force',
-        action='store_true',
-        help="May be used with --kill-channel to immediately kill the channel process")
+        "-f",
+        "--force",
+        action="store_true",
+        help="May be used with --kill-channel to immediately kill the channel process",
+    )
     kill_options.add_argument(
-        '--timeout',
+        "--timeout",
         default=None,
         metavar="<seconds>",
-        help="May be specified with --kill-channel to override the DE server's configured timeout window or max time to wait for --block-while.")
-    channels.add_argument(
-        "--show-config",
-        action='store_true',
-        help="print configuration")
-    channels.add_argument(
-        "--show-channel-config",
-        metavar="<channel name>",
-        help="print channel configuration")
-    channels.add_argument(
-        "--get-channel-loglevel",
-        metavar='<channel name>',
-        help="print channel log level")
+        help="May be specified with --kill-channel to override the DE server's configured timeout window or max time to wait for --block-while.",
+    )
+    channels.add_argument("--show-config", action="store_true", help="print configuration")
+    channels.add_argument("--show-channel-config", metavar="<channel name>", help="print channel configuration")
+    channels.add_argument("--get-channel-loglevel", metavar="<channel name>", help="print channel log level")
     channels.add_argument(
         "--set-channel-loglevel",
         nargs=2,
-        metavar=('<channel name>', '<log level>'),
-        help="Possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL")
+        metavar=("<channel name>", "<log level>"),
+        help="Possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL",
+    )
 
-    products = parser.add_argument_group('Product-specific options')
-    products.add_argument(
-        "--print-product",
-        metavar="<product name>")
-    products.add_argument(
-        "--print-products",
-        action='store_true',
-        help="print products")
-    products.add_argument(
-        "--columns",
-        help="comma separated list of columns")
-    products.add_argument(
-        "--query",
-        help="panda query, e.g. \"FigureOfMerit != infs\"")
-    products.add_argument(
-        "--types",
-        action="store_true",
-        help="print columns types")
-    products.add_argument(
-        "--format",
-        help="Possible formats are 'vertical', 'column-names', 'json'")
+    products = parser.add_argument_group("Product-specific options")
+    products.add_argument("--print-product", metavar="<product name>")
+    products.add_argument("--print-products", action="store_true", help="print products")
+    products.add_argument("--columns", help="comma separated list of columns")
+    products.add_argument("--query", help='panda query, e.g. "FigureOfMerit != infs"')
+    products.add_argument("--types", action="store_true", help="print columns types")
+    products.add_argument("--format", help="Possible formats are 'vertical', 'column-names', 'json'")
 
     reaper = parser.add_argument_group("Database reaper options")
-    reaper.add_argument(
-        "--reaper-start",
-        action='store_true',
-        help="start the database cleanup process")
+    reaper.add_argument("--reaper-start", action="store_true", help="start the database cleanup process")
     reaper.add_argument(
         "--reaper-start-delay-secs",
-        metavar='<number of seconds>',
+        metavar="<number of seconds>",
         default="0",
         type=int,
-        help="Delay the database cleanup process start time by the specified number of seconds.")
-    reaper.add_argument(
-        "--reaper-stop",
-        action='store_true',
-        help="stop the database cleanup process")
-    reaper.add_argument(
-        "--reaper-status",
-        action='store_true',
-        help="show the database cleanup process status")
+        help="Delay the database cleanup process start time by the specified number of seconds.",
+    )
+    reaper.add_argument("--reaper-stop", action="store_true", help="stop the database cleanup process")
+    reaper.add_argument("--reaper-status", action="store_true", help="show the database cleanup process status")
 
     return parser
 
 
 def execute_command_from_args(argsparsed, de_socket):
-    '''argsparsed should be from create_parser in this file'''
+    """argsparsed should be from create_parser in this file"""
 
     # Server-specific options
     if argsparsed.status:
@@ -180,8 +120,7 @@ def execute_command_from_args(argsparsed, de_socket):
         else:
             return de_socket.get_channel_log_level(argsparsed.get_channel_loglevel)
     if argsparsed.set_channel_loglevel:
-        return de_socket.set_channel_log_level(argsparsed.set_channel_loglevel[0],
-                                               argsparsed.set_channel_loglevel[1])
+        return de_socket.set_channel_log_level(argsparsed.set_channel_loglevel[0], argsparsed.set_channel_loglevel[1])
     if argsparsed.show_config:
         return de_socket.show_config("all")
     if argsparsed.show_channel_config:
@@ -191,11 +130,9 @@ def execute_command_from_args(argsparsed, de_socket):
     if argsparsed.print_products:
         return de_socket.print_products()
     if argsparsed.print_product:
-        return de_socket.print_product(argsparsed.print_product,
-                                       argsparsed.columns,
-                                       argsparsed.query,
-                                       argsparsed.types,
-                                       argsparsed.format)
+        return de_socket.print_product(
+            argsparsed.print_product, argsparsed.columns, argsparsed.query, argsparsed.types, argsparsed.format
+        )
 
     # Database-reaper options
     if argsparsed.reaper_stop:
@@ -205,11 +142,11 @@ def execute_command_from_args(argsparsed, de_socket):
     if argsparsed.reaper_status:
         return de_socket.reaper_status()
 
-    return 'No command specified, try --help'
+    return "No command specified, try --help"
 
 
 def main(args_to_parse=None):
-    '''If you pass a list of args, they will be used instead of sys.argv'''
+    """If you pass a list of args, they will be used instead of sys.argv"""
 
     parser = create_parser()
     args = parser.parse_args(args_to_parse)
@@ -218,16 +155,19 @@ def main(args_to_parse=None):
     try:
         return execute_command_from_args(args, de_socket)
     except OSError as e:
-        msg = f"An error occurred while trying to access a DE server at '{url}'\n" + \
-            "Please ensure that the host and port names correspond to a running DE instance."
+        msg = (
+            f"An error occurred while trying to access a DE server at '{url}'\n"
+            + "Please ensure that the host and port names correspond to a running DE instance."
+        )
         if args.verbose:
-            msg += f'\n{e}'
+            msg += f"\n{e}"
         return msg
     except Exception as e:
         msg = f"An error occurred while trying to access a DE server at '{url}'."
         if args.verbose:
-            msg += f'\n{e}'
+            msg += f"\n{e}"
         return msg
+
 
 def console_scripts_main(args_to_parse=None):
     """

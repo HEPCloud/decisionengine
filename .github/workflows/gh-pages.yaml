@@ -12,92 +12,92 @@ jobs:
   build-docs:
     runs-on: ubuntu-latest
     steps:
-    - name: checkout code tree
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+      - name: checkout code tree
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
-        architecture: 'x64'
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+          architecture: "x64"
 
-    - name: Cache pip
-      uses: actions/cache@v2
-      with:
-        # This path is specific to Ubuntu
-        path: ~/.cache/pip
-        # Look to see if there is a cache hit for the corresponding file
-        key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-3.9
-        restore-keys: |
-          ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-
-          ${{ runner.os }}-pip-
-          ${{ runner.os }}-
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding file
+          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-3.9
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
 
-    - name: Note Python version/implementation/cache
-      run: |
-        which python3
-        python3 -c 'import sys; print(sys.version)'
-        python3 -c 'import platform; print(platform.python_implementation())'
-        python3 -m pip cache dir
+      - name: Note Python version/implementation/cache
+        run: |
+          which python3
+          python3 -c 'import sys; print(sys.version)'
+          python3 -c 'import platform; print(platform.python_implementation())'
+          python3 -m pip cache dir
 
-    - name: Configure owner of git commits
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+      - name: Configure owner of git commits
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
 
-    - name: Install sphinx expected fonts within the container
-      run: |
-        sudo apt-get update || true
-        sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
-        sudo python3 -m pip install -U pip
-        sudo python3 -m pip install sphinx
+      - name: Install sphinx expected fonts within the container
+        run: |
+          sudo apt-get update || true
+          sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+          sudo python3 -m pip install -U pip
+          sudo python3 -m pip install sphinx
 
-    - name: Install required modules for AST to parse the codebase
-      run: |
-        python3 -m pip install -e . --user
-        python3 -m pip install -e .[develop] --user
+      - name: Install required modules for AST to parse the codebase
+        run: |
+          python3 -m pip install -e . --user
+          python3 -m pip install -e .[develop] --user
 
-    - name: Setup safe/unique tmp dir for out of tree storage
-      run: rm -rf /tmp/${{ github.sha }}
+      - name: Setup safe/unique tmp dir for out of tree storage
+        run: rm -rf /tmp/${{ github.sha }}
 
-    - name: Ensure version.py exists
-      run: python3 setup.py bdist_wheel
+      - name: Ensure version.py exists
+        run: python3 setup.py bdist_wheel
 
-    - name: Run sphinx to make docs
-      run: |
-        cd doc
-        make rst html latexpdf
-        cd ..
+      - name: Run sphinx to make docs
+        run: |
+          cd doc
+          make rst html latexpdf
+          cd ..
 
-    - name: Move HTML docs someplace safe for the moment
-      run: mv -v doc/build/html /tmp/${{ github.sha }}
+      - name: Move HTML docs someplace safe for the moment
+        run: mv -v doc/build/html /tmp/${{ github.sha }}
 
-    - name: Move PDF docs someplace safe for the moment
-      run: mv -v doc/build/latex/*.pdf /tmp/${{ github.sha }}
+      - name: Move PDF docs someplace safe for the moment
+        run: mv -v doc/build/latex/*.pdf /tmp/${{ github.sha }}
 
-    - name: Make sure repo is clean
-      run: |
-        rm -rf *
-        git reset --hard
+      - name: Make sure repo is clean
+        run: |
+          rm -rf *
+          git reset --hard
 
-    - name: Switch to the gh-pages branch
-      run: |
-        git fetch -a
-        git checkout gh-pages
+      - name: Switch to the gh-pages branch
+        run: |
+          git fetch -a
+          git checkout gh-pages
 
-    - name: Put files where they belong
-      run: rsync -avh /tmp/${{ github.sha }}/* .
+      - name: Put files where they belong
+        run: rsync -avh /tmp/${{ github.sha }}/* .
 
-    - name: Add files
-      run: git add *
+      - name: Add files
+        run: git add *
 
-    - name: Commit files (or do nothing)
-      run: git commit -m "Update doc to match ${{ github.sha }}" || true
+      - name: Commit files (or do nothing)
+        run: git commit -m "Update doc to match ${{ github.sha }}" || true
 
-    - name: Push changes, make take up to 10m to sync to github CDN
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: gh-pages
-        force: True
+      - name: Push changes, make take up to 10m to sync to github CDN
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          force: True

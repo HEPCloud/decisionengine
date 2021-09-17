@@ -12,7 +12,7 @@ from sqlalchemy.orm import scoped_session
 
 import decisionengine.framework.dataspace.datasource as ds
 
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 
 from . import db_schema
 from .utils import add_engine_pidguard, clone_model, orm_as_dict
@@ -552,7 +552,7 @@ class SQLAlchemyDS(ds.DataSource):
         """
         if days <= 0:
             # do not log stack trace, Exception thrown is handled by the caller
-            raise ValueError("Argument has to be positive, non zero integer. Supplied f{days}")
+            raise ValueError(f"Argument has to be positive, non zero integer. Supplied {days}")
 
         to_old = datetime.datetime.now() - datetime.timedelta(days=days)
         with self.session() as session:

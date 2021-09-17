@@ -40,9 +40,7 @@ def test_compress():
     zbytes = datablock.compress(
         {
             "pickled": True,
-            "value": zlib.compress(
-                pickle.dumps({"a": {"b": "c"}}, protocol=pickle.HIGHEST_PROTOCOL), 9
-            ),
+            "value": zlib.compress(pickle.dumps({"a": {"b": "c"}}, protocol=pickle.HIGHEST_PROTOCOL), 9),
         }
     )
     value = ast.literal_eval(datablock.decompress(zbytes))

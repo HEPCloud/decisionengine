@@ -4,12 +4,7 @@ import threading
 
 import pytest
 
-from decisionengine.framework.util.singleton import (
-    ScopedSingleton,
-    Singleton,
-    ScopedSingletonABC,
-    SingletonABC,
-)
+from decisionengine.framework.util.singleton import ScopedSingleton, ScopedSingletonABC, Singleton, SingletonABC
 
 
 class BasicClass(metaclass=Singleton):

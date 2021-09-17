@@ -1,5 +1,6 @@
 from decisionengine.framework.modules.Transform import Transform
 
+
 def test_transform_structure():
     """
     The module.Transform itself is a bit of a skeleton...
@@ -8,8 +9,8 @@ def test_transform_structure():
     test_transform = Transform(params)
     assert test_transform.get_parameters() == {"1": 1, "2": 2, "channel_name": "test"}
 
-    test_transform.set_data_block('example')
-    assert test_transform.get_data_block() == 'example'
+    test_transform.set_data_block("example")
+    assert test_transform.get_data_block() == "example"
 
     assert test_transform._consumes == {}
     assert test_transform._produces == {}

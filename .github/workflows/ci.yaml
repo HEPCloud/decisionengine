@@ -3,8 +3,8 @@ name: Run CI
 on:
   push:
     branches:
-      - '**'          # matches every branch
-      - '!gh-pages'   # excludes gh-pages branch
+      - "**" # matches every branch
+      - "!gh-pages" # excludes gh-pages branch
   pull_request:
     branches:
       - master
@@ -15,9 +15,9 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - '3.6'
-          - '3.9'
-          - 'pypy-3.7'
+          - "3.6"
+          - "3.9"
+          - "pypy-3.7"
 
     name: Python ${{ matrix.python-version }} unit tests
     steps:
@@ -94,8 +94,8 @@ jobs:
 
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
-          architecture: 'x64'
+          python-version: "3.9"
+          architecture: "x64"
 
       - name: Cache pip
         uses: actions/cache@v2
@@ -152,8 +152,8 @@ jobs:
       - name: Run the build in a container (SL7/HEPCloud-CI)
         uses: ./.github/actions/python-command-in-sl7-container
         with:
-          python-command: 'setup.py bdist_rpm'
-          logfile: 'rpmbuild.log'
+          python-command: "setup.py bdist_rpm"
+          logfile: "rpmbuild.log"
 
       - name: Archive rpm
         uses: actions/upload-artifact@v2

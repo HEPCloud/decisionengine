@@ -1,11 +1,13 @@
-import structlog
-import pandas
 from itertools import chain
 
-from decisionengine.framework.logicengine.RuleEngine import RuleEngine
+import pandas
+import structlog
+
 from decisionengine.framework.logicengine.BooleanExpression import BooleanExpression
-from decisionengine.framework.modules.Module import Module
+from decisionengine.framework.logicengine.RuleEngine import RuleEngine
 from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
+from decisionengine.framework.modules.Module import Module
+
 
 class LogicEngine(Module):
     def __init__(self, cfg):
@@ -97,9 +99,5 @@ class LogicEngine(Module):
             rule_name += [rule] * len(facts)
             fact_name += facts.keys()
             fact_value += facts.values()
-        facts = {
-            'rule_name': rule_name,
-            'fact_name': fact_name,
-            'fact_value': fact_value
-        }
+        facts = {"rule_name": rule_name, "fact_name": fact_name, "fact_value": fact_value}
         return pandas.DataFrame(facts)

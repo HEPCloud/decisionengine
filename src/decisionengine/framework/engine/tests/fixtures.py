@@ -1,4 +1,4 @@
-'''pytest defaults'''
+"""pytest defaults"""
 import gc
 import logging
 import threading
@@ -9,34 +9,40 @@ import decisionengine.framework.engine.de_client as de_client
 import decisionengine.framework.engine.de_query_tool as de_query_tool
 
 from decisionengine.framework.dataspace.tests.fixtures import (
+    DATABASES_TO_TEST,
     PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
-    DATABASES_TO_TEST,
     SQLALCHEMY_PG_WITH_SCHEMA,
     SQLALCHEMY_TEMPFILE_SQLITE,
 )
 from decisionengine.framework.engine.DecisionEngine import (
-    _get_de_conf_manager,
     _create_de_server,
+    _get_de_conf_manager,
     _start_de_server,
     parse_program_options,
 )
-from decisionengine.framework.util.sockets import get_random_port
 from decisionengine.framework.taskmanager.TaskManager import State
+from decisionengine.framework.util.sockets import get_random_port
 
-__all__ = ["DATABASES_TO_TEST", "PG_DE_DB_WITH_SCHEMA", "PG_DE_DB_WITHOUT_SCHEMA",
-           "SQLALCHEMY_PG_WITH_SCHEMA", "SQLALCHEMY_TEMPFILE_SQLITE", "PG_PROG",
-           "DEServer"]
+__all__ = [
+    "DATABASES_TO_TEST",
+    "PG_DE_DB_WITH_SCHEMA",
+    "PG_DE_DB_WITHOUT_SCHEMA",
+    "SQLALCHEMY_PG_WITH_SCHEMA",
+    "SQLALCHEMY_TEMPFILE_SQLITE",
+    "PG_PROG",
+    "DEServer",
+]
 
 # Not all test hosts are IPv6, generally IPv4 works fine some test
 # hosts use IPv6 for localhost by default, even when not configured!
 # Python XML RPC Socket server is IPv4 only right now.
-DE_HOST = '127.0.0.1'
+DE_HOST = "127.0.0.1"
 
 
 class DETestWorker(threading.Thread):
-    '''A DE Server process with our test config'''
+    """A DE Server process with our test config"""
 
     def __init__(
         self,
@@ -47,8 +53,8 @@ class DETestWorker(threading.Thread):
         conf_override=None,
         channel_conf_override=None,
     ):
-        '''format of args should match what you set in conf_mamanger'''
-        super().__init__(name='DETestWorker')
+        """format of args should match what you set in conf_mamanger"""
+        super().__init__(name="DETestWorker")
         self.server_address = server_address
 
         self.global_config, self.channel_config_loader = _get_de_conf_manager(
@@ -56,9 +62,9 @@ class DETestWorker(threading.Thread):
         )
 
         # Override global configuration for testing
-        self.global_config['shutdown_timeout'] = 1
-        self.global_config['server_address'] = self.server_address
-        self.global_config['dataspace']['datasource'] = datasource
+        self.global_config["shutdown_timeout"] = 1
+        self.global_config["server_address"] = self.server_address
+        self.global_config["dataspace"]["datasource"] = datasource
 
         self.de_server = _create_de_server(self.global_config, self.channel_config_loader)
 
@@ -66,10 +72,10 @@ class DETestWorker(threading.Thread):
         _start_de_server(self.de_server)
 
     def de_client_run_cli(self, *args):
-        '''
+        """
         Run the DE Client CLI with these args
         The DE Server host/port are automatically set for you
-        '''
+        """
         return de_client.main(
             [
                 "--host",
@@ -108,17 +114,17 @@ def DEServer(
     host=DE_HOST,
     port=None,
 ):
-    '''A DE Server using a private database'''
+    """A DE Server using a private database"""
 
     @pytest.fixture(params=DATABASES_TO_TEST)
     def de_server_factory(request):
-        '''
+        """
         This parameterized fixture will mock up various datasources.
 
         Add datasource objects to DATABASES_TO_TEST once they've got
         our basic schema loaded.  Pytest should take it from there and
         automatically run it throught all the below tests
-        '''
+        """
         logger = logging.getLogger()
         if port:
             host_port = (host, port)
@@ -141,15 +147,15 @@ def DEServer(
             datasource["config"] = {}
             try:
                 # psycopg2
-                datasource["config"]['host'] = conn_fixture.info.host
-                datasource["config"]['port'] = conn_fixture.info.port
-                datasource["config"]['user'] = conn_fixture.info.user
-                datasource["config"]['password'] = conn_fixture.info.password
-                datasource["config"]['database'] = conn_fixture.info.dbname
+                datasource["config"]["host"] = conn_fixture.info.host
+                datasource["config"]["port"] = conn_fixture.info.port
+                datasource["config"]["user"] = conn_fixture.info.user
+                datasource["config"]["password"] = conn_fixture.info.password
+                datasource["config"]["database"] = conn_fixture.info.dbname
             except AttributeError:
                 # psycopg2cffi
                 for element in conn_fixture.dsn.split():
-                    (key, value) = element.split('=')
+                    (key, value) = element.split("=")
                     if value != "''" and value != '""':
                         datasource["config"][key] = value
 
@@ -169,7 +175,9 @@ def DEServer(
         # Ensure the channels have started
         logger.debug(f"DE Fixture: Wait on startup state: is_set={server_proc.de_server.startup_complete.is_set()}")
         server_proc.de_server.startup_complete.wait()
-        logger.debug(f"DE Fixture: Done waiting for startup state: is_set={server_proc.de_server.startup_complete.is_set()}")
+        logger.debug(
+            f"DE Fixture: Done waiting for startup state: is_set={server_proc.de_server.startup_complete.is_set()}"
+        )
 
         # The following block only works if there are
         # active workers; if it is called before any workers
@@ -184,7 +192,7 @@ def DEServer(
         server_proc.de_server.block_while(State.BOOT, timeout=30)
 
         if not server_proc.is_alive():
-            raise RuntimeError('Could not start PrivateDEServer fixture')
+            raise RuntimeError("Could not start PrivateDEServer fixture")
 
         yield server_proc
 

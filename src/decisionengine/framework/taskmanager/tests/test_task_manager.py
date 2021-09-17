@@ -1,29 +1,35 @@
 import os
 import threading
+
 from unittest.mock import patch
 
 import pytest
 
 import decisionengine.framework.config.policies as policies
+
 from decisionengine.framework.config.ValidConfig import ValidConfig
 from decisionengine.framework.dataspace import datablock
 from decisionengine.framework.taskmanager.TaskManager import State, TaskManager
 from decisionengine.framework.taskmanager.tests.fixtures import (  # noqa: F401
     DATABASES_TO_TEST,
+    dataspace,
     PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
-    SQLALCHEMY_TEMPFILE_SQLITE,
     SQLALCHEMY_PG_WITH_SCHEMA,
-    dataspace,
+    SQLALCHEMY_TEMPFILE_SQLITE,
 )
 
 _CWD = os.path.dirname(os.path.abspath(__file__))
 _CONFIG_PATH = os.path.join(_CWD, "../../tests/etc/decisionengine")
 _CHANNEL_CONFIG_DIR = os.path.join(_CWD, "channels")
 
-_TEST_CHANNEL_NAMES = ["test_channel", ]
-_TEST_CHANNEL_NAMES2 = ["test_channel2", ]
+_TEST_CHANNEL_NAMES = [
+    "test_channel",
+]
+_TEST_CHANNEL_NAMES2 = [
+    "test_channel2",
+]
 
 
 class RunChannel:
@@ -45,7 +51,7 @@ def get_channel_config(name):
     return ValidConfig(os.path.join(_CHANNEL_CONFIG_DIR, name + ".jsonnet"))
 
 
-@pytest.fixture
+@pytest.fixture()
 @pytest.mark.usefixtures("dataspace")
 def global_config(dataspace):  # noqa: F811
     conf = ValidConfig(policies.global_config_file(_CONFIG_PATH))

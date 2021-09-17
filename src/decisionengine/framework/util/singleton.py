@@ -1,11 +1,12 @@
 import abc
 import gc
-import structlog
 
 from threading import Lock
 from weakref import WeakValueDictionary
 
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
+import structlog
+
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 
 LOCK = Lock()
 

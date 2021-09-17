@@ -1,10 +1,11 @@
 from decisionengine.framework.dataspace.datasource import DataSource
 
+
 def test_has_methods_we_expect():
-    getattr(DataSource, 'taskmanager_table')
-    getattr(DataSource, 'dataproduct_table')
-    getattr(DataSource, 'header_table')
-    getattr(DataSource, 'metadata_table')
+    getattr(DataSource, "taskmanager_table")
+    getattr(DataSource, "dataproduct_table")
+    getattr(DataSource, "header_table")
+    getattr(DataSource, "metadata_table")
 
     assert True is callable(DataSource)
     assert True is callable(DataSource.get_schema)

@@ -1,13 +1,15 @@
 """
 Logger to use in all modules
 """
-import os
 import logging
-import logging.handlers
 import logging.config
+import logging.handlers
+import os
+
 import structlog
+
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 from decisionengine.framework.modules.logging_configDict import pylogconfig as logconf
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 
 MB = 1000000
 
@@ -48,7 +50,7 @@ def set_logging(
 
     logger.setLevel(getattr(logging, log_level.upper()))
     if logger.handlers:
-        logger.debug('Reusing existing logging handlers')
+        logger.debug("Reusing existing logging handlers")
         return None
 
     # logconf is our global object edited in global space on purpose

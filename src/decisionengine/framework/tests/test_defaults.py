@@ -6,14 +6,14 @@ import json
 import pytest
 
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
+    DEServer,
     PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     SQLALCHEMY_PG_WITH_SCHEMA,
     SQLALCHEMY_TEMPFILE_SQLITE,
-    DEServer,
-    TEST_CONFIG_PATH,
     TEST_CHANNEL_CONFIG_PATH,
+    TEST_CONFIG_PATH,
 )
 
 deserver = DEServer(

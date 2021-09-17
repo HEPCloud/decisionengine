@@ -8,28 +8,29 @@ if this environment variable is not defined the ``DE-Config.py`` file from the `
 
 import argparse
 import enum
-import logging
-import structlog
-import signal
-import sys
-import pandas as pd
-import os
-import tabulate
 import json
-
+import logging
+import os
+import signal
 import socketserver
+import sys
 import xmlrpc.server
 
 from threading import Event
 
-from decisionengine.framework.config import ChannelConfigHandler, ValidConfig, policies
-from decisionengine.framework.dataspace.maintain import Reaper
-from decisionengine.framework.engine.Workers import Worker, Workers
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
+import pandas as pd
+import structlog
+import tabulate
+
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
+
+from decisionengine.framework.config import ChannelConfigHandler, policies, ValidConfig
+from decisionengine.framework.dataspace.maintain import Reaper
+from decisionengine.framework.engine.Workers import Worker, Workers
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 
 
 class StopState(enum.Enum):
@@ -37,24 +38,22 @@ class StopState(enum.Enum):
     Clean = 2
     Terminated = 3
 
+
 def _channel_preamble(name):
-    header = f'Channel: {name}'
-    rule = '=' * len(header)
-    return '\n' + rule + '\n' + header + '\n' + rule + '\n\n'
+    header = f"Channel: {name}"
+    rule = "=" * len(header)
+    return "\n" + rule + "\n" + header + "\n" + rule + "\n\n"
 
 
 class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
-    rpc_paths = ('/RPC2',)
+    rpc_paths = ("/RPC2",)
 
 
-class DecisionEngine(socketserver.ThreadingMixIn,
-                     xmlrpc.server.SimpleXMLRPCServer):
-
+class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServer):
     def __init__(self, global_config, channel_config_loader, server_address):
-        xmlrpc.server.SimpleXMLRPCServer.__init__(self,
-                                                  server_address,
-                                                  logRequests=False,
-                                                  requestHandler=RequestHandler)
+        xmlrpc.server.SimpleXMLRPCServer.__init__(
+            self, server_address, logRequests=False, requestHandler=RequestHandler
+        )
 
         signal.signal(signal.SIGHUP, self.handle_sighup)
         self.workers = Workers()
@@ -81,49 +80,49 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def block_until(self, state, timeout=None):
         with self.workers.unguarded_access() as workers:
             if not workers:
-                self.logger.info('No active channels to wait on.')
-                return 'No active channels.'
+                self.logger.info("No active channels to wait on.")
+                return "No active channels."
             for tm in workers.values():
                 if tm.is_alive():
                     tm.wait_until(state, timeout)
-        return f'No channels in {state} state.'
+        return f"No channels in {state} state."
 
     def block_while(self, state, timeout=None):
         with self.workers.unguarded_access() as workers:
             if not workers:
-                self.logger.info('No active channels to wait on.')
-                return 'No active channels.'
+                self.logger.info("No active channels to wait on.")
+                return "No active channels."
             for tm in workers.values():
                 if tm.is_alive():
                     tm.wait_while(state, timeout)
-        return f'No channels in {state} state.'
+        return f"No channels in {state} state."
 
     def _dataframe_to_table(self, df):
-        return "{}\n".format(tabulate.tabulate(df, headers='keys', tablefmt='psql'))
+        return f"{tabulate.tabulate(df, headers='keys', tablefmt='psql')}\n"
 
     def _dataframe_to_vertical_tables(self, df):
         txt = ""
         for i in range(len(df)):
             txt += f"Row {i}\n"
-            txt += "{}\n".format(tabulate.tabulate(df.T.iloc[:, [i]], tablefmt='psql'))
+            txt += f"{tabulate.tabulate(df.T.iloc[:, [i]], tablefmt='psql')}\n"
         return txt
 
     def _dataframe_to_column_names(self, df):
         columns = df.columns.values.reshape([len(df.columns), 1])
-        return "{}\n".format(tabulate.tabulate(columns, headers=['columns'], tablefmt='psql'))
+        return f"{tabulate.tabulate(columns, headers=['columns'], tablefmt='psql')}\n"
 
     def _dataframe_to_json(self, df):
-        return "{}\n".format(json.dumps(json.loads(df.to_json()), indent=4))
+        return f"{json.dumps(json.loads(df.to_json()), indent=4)}\n"
 
     def _dataframe_to_csv(self, df):
-        return "{}\n".format(df.to_csv())
+        return f"{df.to_csv()}\n"
 
     def rpc_block_while(self, state_str, timeout=None):
         allowed_state = None
         try:
             allowed_state = ProcessingState.State[state_str]
         except Exception:
-            return f'{state_str} is not a valid channel state.'
+            return f"{state_str} is not a valid channel state."
         return self.block_while(allowed_state, timeout)
 
     def rpc_show_config(self, channel):
@@ -134,7 +133,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         """
         txt = ""
         channels = self.channel_config_loader.get_channels()
-        if channel == 'all':
+        if channel == "all":
             for ch in channels:
                 txt += _channel_preamble(ch)
                 txt += self.channel_config_loader.print_channel_config(ch)
@@ -173,28 +172,27 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                 tm = self.dataspace.get_taskmanager(ch)
                 self.logger.debug(f"rpc_print_product - channel:{ch} taskmanager:{tm}")
                 try:
-                    data_block = datablock.DataBlock(self.dataspace,
-                                                     ch,
-                                                     taskmanager_id=tm['taskmanager_id'],
-                                                     sequence_id=tm['sequence_id'])
+                    data_block = datablock.DataBlock(
+                        self.dataspace, ch, taskmanager_id=tm["taskmanager_id"], sequence_id=tm["sequence_id"]
+                    )
                     data_block.generation_id -= 1
                     df = data_block[product]
                     dfj = df.to_json()
                     self.logger.debug(f"rpc_print_product - channel:{ch} task manager:{tm} datablock:{dfj}")
                     df = pd.read_json(dfj)
                     dataframe_formatter = self._dataframe_to_table
-                    if format == 'vertical':
+                    if format == "vertical":
                         dataframe_formatter = self._dataframe_to_vertical_tables
-                    if format == 'column-names':
+                    if format == "column-names":
                         dataframe_formatter = self._dataframe_to_column_names
-                    if format == 'json':
+                    if format == "json":
                         dataframe_formatter = self._dataframe_to_json
                     if types:
                         for column in df.columns:
                             df.insert(
                                 df.columns.get_loc(column) + 1,
                                 f"{column}.type",
-                                df[column].transform(lambda x: type(x).__name__)
+                                df[column].transform(lambda x: type(x).__name__),
                             )
                     column_names = []
                     if columns:
@@ -229,35 +227,27 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                     txt += f"Channel {ch} is in ERROR state\n"
                     continue
 
-                txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
-                                                                                          worker.task_manager_id,
-                                                                                          worker.get_state_name(),
-                                                                                          width=width)
+                txt += f"channel: {ch:<{width}}, id = {worker.task_manager_id:<{width}}, state = {worker.get_state_name():<10} \n"
                 tm = self.dataspace.get_taskmanager(ch)
-                data_block = datablock.DataBlock(self.dataspace,
-                                                 ch,
-                                                 taskmanager_id=tm['taskmanager_id'],
-                                                 sequence_id=tm['sequence_id'])
+                data_block = datablock.DataBlock(
+                    self.dataspace, ch, taskmanager_id=tm["taskmanager_id"], sequence_id=tm["sequence_id"]
+                )
                 data_block.generation_id -= 1
                 channel_config = self.channel_config_loader.get_channels()[ch]
                 produces = worker.get_produces()
-                for i in ("sources",
-                          "transforms",
-                          "logicengines",
-                          "publishers"):
-                    txt += "\t{}:\n".format(i)
+                for i in ("sources", "transforms", "logicengines", "publishers"):
+                    txt += f"\t{i}:\n"
                     modules = channel_config.get(i, {})
                     for mod_name in modules.keys():
-                        txt += "\t\t{}\n".format(mod_name)
+                        txt += f"\t\t{mod_name}\n"
                         products = produces.get(mod_name, [])
                         for product in products:
                             try:
                                 df = data_block[product]
                                 df = pd.read_json(df.to_json())
-                                txt += "{}\n".format(tabulate.tabulate(df,
-                                                                       headers='keys', tablefmt='psql'))
+                                txt += f"{tabulate.tabulate(df, headers='keys', tablefmt='psql')}\n"
                             except Exception as e:  # pragma: no cover
-                                txt += "\t\t\t{}\n".format(e)
+                                txt += f"\t\t\t{e}\n"
         return txt[:-1]
 
     def rpc_status(self):
@@ -269,23 +259,17 @@ class DecisionEngine(socketserver.ThreadingMixIn,
             txt = ""
             width = max(len(x) for x in channel_keys) + 1
             for ch, worker in workers.items():
-                txt += "channel: {:<{width}}, id = {:<{width}}, state = {:<10} \n".format(ch,
-                                                                                          worker.task_manager_id,
-                                                                                          worker.get_state_name(),
-                                                                                          width=width)
+                txt += f"channel: {ch:<{width}}, id = {worker.task_manager_id:<{width}}, state = {worker.get_state_name():<10} \n"
                 produces = worker.get_produces()
                 consumes = worker.get_consumes()
                 channel_config = self.channel_config_loader.get_channels()[ch]
-                for i in ("sources",
-                          "transforms",
-                          "logicengines",
-                          "publishers"):
-                    txt += "\t{}:\n".format(i)
+                for i in ("sources", "transforms", "logicengines", "publishers"):
+                    txt += f"\t{i}:\n"
                     modules = channel_config.get(i, {})
                     for mod_name in modules.keys():
-                        txt += "\t\t{}\n".format(mod_name)
-                        txt += "\t\t\tconsumes : {}\n".format(consumes.get(mod_name, []))
-                        txt += "\t\t\tproduces : {}\n".format(produces.get(mod_name, []))
+                        txt += f"\t\t{mod_name}\n"
+                        txt += f"\t\t\tconsumes : {consumes.get(mod_name, [])}\n"
+                        txt += f"\t\t\tproduces : {produces.get(mod_name, [])}\n"
         return txt + self.reaper_status()
 
     def rpc_stop(self):
@@ -297,24 +281,22 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
     def start_channel(self, channel_name, channel_config):
         generation_id = 1
-        task_manager = TaskManager.TaskManager(channel_name,
-                                               generation_id,
-                                               channel_config,
-                                               self.global_config)
-        worker = Worker(task_manager, self.global_config['logger'])
+        task_manager = TaskManager.TaskManager(channel_name, generation_id, channel_config, self.global_config)
+        worker = Worker(task_manager, self.global_config["logger"])
         with self.workers.access() as workers:
             workers[channel_name] = worker
         self.logger.debug(f"Trying to start {channel_name}")
         worker.start()
-        worker.wait_while(ProcessingState.State['BOOT'])
+        worker.wait_while(ProcessingState.State["BOOT"])
         self.logger.info(f"Channel {channel_name} started")
 
     def start_channels(self):
         self.channel_config_loader.load_all_channels()
 
         if not self.channel_config_loader.get_channels():
-            self.logger.info("No channel configurations available in " +
-                             f"{self.channel_config_loader.channel_config_dir}")
+            self.logger.info(
+                "No channel configurations available in " + f"{self.channel_config_loader.channel_config_dir}"
+            )
         else:
             self.logger.debug(f"Found channels: {self.channel_config_loader.get_channels().items()}")
 
@@ -356,7 +338,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                 return f"Channel {channel} has been killed."
             # Would be better to use something like the inflect
             # module, but that introduces another dependency.
-            suffix = 's' if maybe_timeout > 1 else ''
+            suffix = "s" if maybe_timeout > 1 else ""
             return f"Channel {channel} has been killed due to shutdown timeout ({maybe_timeout} second{suffix})."
         assert rc == StopState.Clean
         return f"Channel {channel} stopped cleanly."
@@ -399,7 +381,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.reaper_stop()
         self.stop_channels()
         self.start_channels()
-        self.reaper_start(delay=self.global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
+        self.reaper_start(delay=self.global_config["dataspace"].get("reaper_start_delay_seconds", 1818))
 
     def rpc_get_log_level(self):
         engineloglevel = self.get_logger().getEffectiveLevel()
@@ -432,11 +414,11 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         return f"Log level changed to : {log_level}"
 
     def rpc_reaper_start(self, delay=0):
-        '''
+        """
         Start the reaper process after 'delay' seconds.
         Default 0 seconds delay.
         :type delay: int
-        '''
+        """
         self.reaper_start(delay)
         return "OK"
 
@@ -453,17 +435,17 @@ class DecisionEngine(socketserver.ThreadingMixIn,
     def rpc_reaper_status(self):
         interval = self.reaper.retention_interval
         state = self.reaper.state.get()
-        return 'reaper:\n\tstate: {}\n\tretention_interval: {}'.format(state, interval)
+        return f"reaper:\n\tstate: {state}\n\tretention_interval: {interval}"
 
     def reaper_status(self):
         interval = self.reaper.retention_interval
         state = self.reaper.state.get()
-        return '\nreaper:\n\tstate: {}\n\tretention_interval: {}\n'.format(state, interval)
+        return f"\nreaper:\n\tstate: {state}\n\tretention_interval: {interval}\n"
 
     def rpc_query_tool(self, product, format=None, start_time=None):
         found = False
         result = pd.DataFrame()
-        txt = "Product {}: ".format(product)
+        txt = f"Product {product}: "
 
         with self.workers.access() as workers:
             for ch, worker in workers.items():
@@ -476,7 +458,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                 if not r:
                     continue
                 found = True
-                txt += " Found in channel {}\n".format(ch)
+                txt += f" Found in channel {ch}\n"
 
                 if start_time:
                     tms = self.dataspace.get_taskmanagers(ch, start_time=start_time)
@@ -484,10 +466,9 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                     tms = [self.dataspace.get_taskmanager(ch)]
                 for tm in tms:
                     try:
-                        data_block = datablock.DataBlock(self.dataspace,
-                                                         ch,
-                                                         taskmanager_id=tm['taskmanager_id'],
-                                                         sequence_id=tm['sequence_id'])
+                        data_block = datablock.DataBlock(
+                            self.dataspace, ch, taskmanager_id=tm["taskmanager_id"], sequence_id=tm["sequence_id"]
+                        )
                         products = data_block.get_dataproducts(product)
                         for p in products:
                             df = p["value"]
@@ -497,7 +478,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
                                 df["generation_id"] = [p["generation_id"]] * df.shape[0]
                                 result = result.append(df)
                     except Exception as e:  # pragma: no cover
-                        txt += "\t\t{}\n".format(e)
+                        txt += f"\t\t{e}\n"
 
         if found:
             dataframe_formatter = self._dataframe_to_table
@@ -514,19 +495,23 @@ class DecisionEngine(socketserver.ThreadingMixIn,
 
 
 def parse_program_options(args=None):
-    ''' If args is a list, it will be used instead of sys.argv '''
+    """If args is a list, it will be used instead of sys.argv"""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--port",
-                        default=8888,
-                        type=int,
-                        choices=range(1, 65535),
-                        metavar="<port number>",
-                        help="Default port number is 8888; allowed values are in the half-open interval [1, 65535).")
-    parser.add_argument("--config",
-                        default=policies.GLOBAL_CONFIG_FILENAME,
-                        metavar="<filename>",
-                        help="Configuration file for initializing server; default behavior is to choose " +
-                        f"'{policies.GLOBAL_CONFIG_FILENAME}' located in the CONFIG_PATH directory.")
+    parser.add_argument(
+        "--port",
+        default=8888,
+        type=int,
+        choices=range(1, 65535),
+        metavar="<port number>",
+        help="Default port number is 8888; allowed values are in the half-open interval [1, 65535).",
+    )
+    parser.add_argument(
+        "--config",
+        default=policies.GLOBAL_CONFIG_FILENAME,
+        metavar="<filename>",
+        help="Configuration file for initializing server; default behavior is to choose "
+        + f"'{policies.GLOBAL_CONFIG_FILENAME}' located in the CONFIG_PATH directory.",
+    )
     return parser.parse_args(args)
 
 
@@ -537,9 +522,9 @@ def _get_global_config(config_file, options):
     except Exception as msg:  # pragma: no cover
         sys.exit(f"Failed to load configuration {config_file}\n{msg}")
 
-    global_config.update({
-        'server_address': ['localhost', options.port]  # Use Jsonnet-supported schema (i.e. not a tuple)
-    })
+    global_config.update(
+        {"server_address": ["localhost", options.port]}  # Use Jsonnet-supported schema (i.e. not a tuple)
+    )
     return global_config
 
 
@@ -555,15 +540,15 @@ def _get_de_conf_manager(global_config_dir, channel_config_dir, options):
 
 
 def _create_de_server(global_config, channel_config_loader):
-    '''Create the DE server with the passed global configuration and config manager'''
-    server_address = tuple(global_config.get('server_address'))
+    """Create the DE server with the passed global configuration and config manager"""
+    server_address = tuple(global_config.get("server_address"))
     return DecisionEngine(global_config, channel_config_loader, server_address)
 
 
 def _start_de_server(server):
-    '''Start the DE server and listen forever'''
+    """Start the DE server and listen forever"""
     try:
-        server.reaper_start(delay=server.global_config['dataspace'].get('reaper_start_delay_seconds', 1818))
+        server.reaper_start(delay=server.global_config["dataspace"].get("reaper_start_delay_seconds", 1818))
         server.start_channels()
         server.startup_complete.set()
         server.serve_forever()
@@ -580,17 +565,16 @@ def _start_de_server(server):
         raise __e
 
 
-
 def main(args=None):
-    '''
+    """
     If args is None, sys.argv will be used instead
     If args is a list, it will be used instead of sys.argv (for unit testing)
-    '''
+    """
     options = parse_program_options(args)
     global_config_dir = policies.global_config_dir()
-    global_config, channel_config_loader = _get_de_conf_manager(global_config_dir,
-                                                                policies.channel_config_dir(),
-                                                                options)
+    global_config, channel_config_loader = _get_de_conf_manager(
+        global_config_dir, policies.channel_config_dir(), options
+    )
     try:
         server = _create_de_server(global_config, channel_config_loader)
         _start_de_server(server)
