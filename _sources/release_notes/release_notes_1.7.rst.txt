@@ -8,13 +8,13 @@ This release features:
 - Added SQLAlchemy object-relational mapper to increase the testability of DB interactions and to allow different database backends.
   Switching between datasource backends requires dropping all objects if you wish to reuse the tablespace.
 - Packaging via setuptools for both decisionengine and decisionengine_modules: Dependencies are not yet fully listed in the RPMs.
-- A new, optional, configuration parameter called "channel_name" is available. "channel_name" is one of the keys in the output dictionary of the structured logging and will be used in the upcoming monitoring. If the variable is not defined in the configuration file, then it is taken from the name of the file, e.g. the job_classification.jsonnet config file gives a default "channel_name" value of "job_classification".  
+- A new, optional, configuration parameter called "channel_name" is available. "channel_name" is one of the keys in the output dictionary of the structured logging and will be used in the upcoming monitoring. If the variable is not defined in the configuration file, then it is taken from the name of the file, e.g. the job_classification.jsonnet config file gives a default "channel_name" value of "job_classification".
 
 .. note::
     Added requirement on SQLAlchemy (for new datasource backend).
     Non-SQLAlchemy users should ensure the indexes from `13c2f283 <https://github.com/HEPCloud/decisionengine/commit/13c2f28325d697701d9417fb2116364f018da535>`_ are in their database.
 .. note::
-    Added requirement on prometheus-client. 
+    Added requirement on prometheus-client.
     Prometheus will be used as optional monitoring component.
 .. note::
     The "channel_name" key in the Source Proxy config dictionaries needs to be changed to "source_channel". "channel_name" is now being used to describe the name of the channel itself, not the name of the channel the Source Proxy is gettting information from.

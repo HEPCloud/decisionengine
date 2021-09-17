@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.ProcessingState &mdash; decisionengine 1.7.1.dev3+g85a16f3b documentation</title>
+  <title>decisionengine.framework.taskmanager.ProcessingState &mdash; decisionengine 1.7.1.dev4+g1d42eb0d documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -176,6 +176,10 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="ProcessingState.get_state_value"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.get_state_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">value</span></div>
 
 <div class="viewcode-block" id="ProcessingState.has_value"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.ProcessingState.ProcessingState.has_value">[docs]</a>    <span class="k">def</span> <span class="nf">has_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
