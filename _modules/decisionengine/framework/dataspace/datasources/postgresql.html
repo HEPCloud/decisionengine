@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.1.dev2+gbed2f5d9 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.1.dev3+g85a16f3b documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -278,7 +278,8 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">generation_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">SELECT_LAST_GENERATION_ID_BY_NAME_AND_ID</span><span class="p">,</span>
                                              <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">assert</span> <span class="n">generation_id</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">generation_id</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Failed to retrieve value&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">generation_id</span>
             <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Last generation id not found for taskmanager=</span><span class="si">{}</span><span class="s2"> taskmanager_id=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
@@ -287,7 +288,8 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">generation_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">SELECT_LAST_GENERATION_ID_BY_NAME</span><span class="p">,</span>
                                              <span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">assert</span> <span class="n">generation_id</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">generation_id</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;Failed to retrieve value&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">generation_id</span>
             <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Last generation id not found for taskmanager=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
