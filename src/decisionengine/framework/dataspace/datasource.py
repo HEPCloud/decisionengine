@@ -1,20 +1,23 @@
 import abc
+
 import structlog
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
+
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
+
 
 class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
 
     #: Name of the taskmanager table
-    taskmanager_table = 'taskmanager'
+    taskmanager_table = "taskmanager"
 
     #: Name of the dataproduct table
-    dataproduct_table = 'dataproduct'
+    dataproduct_table = "dataproduct"
 
     #: Name of the header table
-    header_table = 'header'
+    header_table = "header"
 
     #: Name of the metadata table
-    metadata_table = 'metadata'
+    metadata_table = "metadata"
 
     def __init__(self, config):
         """
@@ -25,13 +28,13 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         self.config = config
         self.logger = structlog.getLogger(LOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
-        self.logger.debug('Initializing a datasource')
+        self.logger.debug("Initializing a datasource")
 
     def __repr__(self):  # pragma: no cover
         return self.__str__()
 
     def __str__(self):  # pragma: no cover
-        return '%s' % vars(self)
+        return f"{vars(self)}"
 
     @abc.abstractmethod
     def get_schema(self, table=None):
@@ -41,43 +44,38 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type table: :obj:`string`
         :arg table: Name of the table
         """
-        self.logger.info('getting the datasource schema')
+        self.logger.info("getting the datasource schema")
 
         schemas = {
-            'taskmanager': [
-                'sequence_id INT',
-                'taskmanager_id TEXT',
-                'name TEXT',
-                'datestamp timestamp with timezone',
+            "taskmanager": [
+                "sequence_id INT",
+                "taskmanager_id TEXT",
+                "name TEXT",
+                "datestamp timestamp with timezone",
             ],
-            'header': [
-                'taskmanager_id INT',
-                'generation_id INT',
-                'key TEXT',
-                'create_time REAL',
-                'expiration_time REAL',
-                'scheduled_create_time REAL',
-                'creator TEXT',
-                'schema_id INT',
+            "header": [
+                "taskmanager_id INT",
+                "generation_id INT",
+                "key TEXT",
+                "create_time REAL",
+                "expiration_time REAL",
+                "scheduled_create_time REAL",
+                "creator TEXT",
+                "schema_id INT",
             ],
-            'schema': [
-                'schema_id INT',  # Auto generated
-                'schema BLOB',   # keys in the value dict of the dataproduct table
+            "schema": [
+                "schema_id INT",  # Auto generated
+                "schema BLOB",  # keys in the value dict of the dataproduct table
             ],
-            'metadata': [
-                'taskmanager_id INT',
-                'generation_id INT',
-                'key TEXT',
-                'state TEXT',
-                'generation_time REAL',
-                'missed_update_count INT',
+            "metadata": [
+                "taskmanager_id INT",
+                "generation_id INT",
+                "key TEXT",
+                "state TEXT",
+                "generation_time REAL",
+                "missed_update_count INT",
             ],
-            'dataproduct': [
-                'taskmanager_id INT',
-                'generation_id INT',
-                'key TEXT',
-                'value BLOB'
-            ]
+            "dataproduct": ["taskmanager_id INT", "generation_id INT", "key TEXT", "value BLOB"],
         }
 
         if table:
@@ -89,7 +87,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         """
         Create a pool of database connections
         """
-        self.logger.info('datasource is creating the database connections')
+        self.logger.info("datasource is creating the database connections")
         return
 
     @abc.abstractmethod
@@ -97,7 +95,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         """
         Drop any cached connections and reconnect to the database
         """
-        self.logger.info('datasource is resetting database the connections')
+        self.logger.info("datasource is resetting database the connections")
         return
 
     @abc.abstractmethod
@@ -105,12 +103,11 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         """
         Create database tables
         """
-        self.logger.info('datasource is creating the database tables')
+        self.logger.info("datasource is creating the database tables")
         return
 
     @abc.abstractmethod
-    def insert(self, taskmanager_id, generation_id, key,
-               value, header, metadata):
+    def insert(self, taskmanager_id, generation_id, key, value, header, metadata):
         """
         Insert data into respective tables for the given
         taskmanager_id, generation_id, key
@@ -128,12 +125,11 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type metadata: :obj:`~datablock.Metadata`
         :arg header: Metadata for the value
         """
-        self.logger.info('datasource is inserting data into the database tables')
+        self.logger.info("datasource is inserting data into the database tables")
         return
 
     @abc.abstractmethod
-    def update(self, taskmanager_id, generation_id, key,
-               value, header, metadata):
+    def update(self, taskmanager_id, generation_id, key, value, header, metadata):
         """
         Update the data in respective tables for the given
         taskmanager_id, generation_id, key
@@ -151,7 +147,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type metadata: :obj:`~datablock.Metadata`
         :arg header: Metadata for the value
         """
-        self.logger.info('datasource is updating data in the database tables')
+        self.logger.info("datasource is updating data in the database tables")
         return
 
     @abc.abstractmethod
@@ -167,7 +163,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type key: :obj:`string`
         :arg key: key for the value
         """
-        self.logger.info('datasource is getting a dataproduct for a taskmanger')
+        self.logger.info("datasource is getting a dataproduct for a taskmanger")
         return
 
     @abc.abstractmethod
@@ -180,7 +176,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type key: :obj:`string`
         :arg key: data product key
         """
-        self.logger.info('datasource is getting all dataproducts for a taskmanger')
+        self.logger.info("datasource is getting all dataproducts for a taskmanger")
         return
 
     @abc.abstractmethod
@@ -196,7 +192,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type key: :obj:`string`
         :arg key: key for the value
         """
-        self.logger.info('datasource is getting the header for a taskmanger')
+        self.logger.info("datasource is getting the header for a taskmanger")
         return
 
     @abc.abstractmethod
@@ -212,7 +208,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type key: :obj:`string`
         :arg key: key for the value
         """
-        self.logger.info('datasource is getting the metadata for a taskmanger')
+        self.logger.info("datasource is getting the metadata for a taskmanger")
         return
 
     @abc.abstractmethod
@@ -226,12 +222,11 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type generation_id: :obj:`int`
         :arg generation_id: generation_id of the data
         """
-        self.logger.info('datasource is getting the datablock for a taskmanger')
+        self.logger.info("datasource is getting the datablock for a taskmanger")
         return
 
     @abc.abstractmethod
-    def duplicate_datablock(self, taskmanager_id, generation_id,
-                            new_generation_id):
+    def duplicate_datablock(self, taskmanager_id, generation_id, new_generation_id):
         """
         For the given taskmanager_id, make a copy of the datablock with given
         generation_id, set the generation_id for the datablock copy
@@ -243,7 +238,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type new_generation_id: :obj:`int`
         :arg new_generation_id: generation_id of the new datablock created
         """
-        self.logger.info('datasource is duplicating a datablock for a taskmanger')
+        self.logger.info("datasource is duplicating a datablock for a taskmanger")
         return
 
     @abc.abstractmethod
@@ -257,7 +252,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type taskmanager_id: :obj:`string`
         :arg taskmanager_id: task manager id
         """
-        self.logger.info('datasource is getting the last generation id for a taskmanager')
+        self.logger.info("datasource is getting the last generation id for a taskmanager")
         return
 
     @abc.abstractmethod
@@ -265,7 +260,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         """
         Close all connections to the database
         """
-        self.logger.info('datasource is closing database connections')
+        self.logger.info("datasource is closing database connections")
         return
 
     @abc.abstractmethod
@@ -279,7 +274,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type datestamp: :obj:`datetime`
         :arg datestamp: datetime of created object, defaults to 'now'
         """
-        self.logger.info('datasource is storing a taskmanager')
+        self.logger.info("datasource is storing a taskmanager")
         return
 
     @abc.abstractmethod
@@ -291,7 +286,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type taskmanager_id: :obj:`string`
         :arg taskmanager_id: id of taskmanager to retrieve
         """
-        self.logger.info('datasource is getting all taskmanagers')
+        self.logger.info("datasource is getting all taskmanagers")
         return
 
     @abc.abstractmethod
@@ -303,7 +298,7 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type taskmanager_id: :obj:`string`
         :arg taskmanager_id: id of taskmanager to retrieve
         """
-        self.logger.info('datasource is getting a taskmanager')
+        self.logger.info("datasource is getting a taskmanager")
         return
 
     @abc.abstractmethod
@@ -313,5 +308,5 @@ class DataSource(metaclass=abc.ABCMeta):  # pragma: no cover
         :type days: :obj:`long`
         :arg days: remove data older than interval
         """
-        self.logger.info('datasource is deleting data')
+        self.logger.info("datasource is deleting data")
         return

@@ -1,8 +1,10 @@
-from decisionengine.framework.logicengine.LogicEngine import LogicEngine
-import pytest
 import pandas as pd
+import pytest
 
-@pytest.fixture
+from decisionengine.framework.logicengine.LogicEngine import LogicEngine
+
+
+@pytest.fixture()
 def myengine():
     facts = {"f1": "val > 10"}
     rules = {}

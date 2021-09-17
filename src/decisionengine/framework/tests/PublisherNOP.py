@@ -1,10 +1,10 @@
-from decisionengine.framework.modules import Publisher
 import pandas as pd
+
+from decisionengine.framework.modules import Publisher
 
 
 @Publisher.consumes(bar=pd.DataFrame)
 class PublisherNOP(Publisher.Publisher):
-
     def __init__(self, config):
         super().__init__(config)
 

@@ -1,25 +1,27 @@
 import os
+
 from pathlib import Path
+
 import structlog
 
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 
 logger = structlog.getLogger(LOGGERNAME)
 logger = logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
 
 
 def files_with_extensions(dir_path, *extensions):
-    '''
+    """
     Return all files in dir_path that match the provided extensions.
 
     If no extensions are given, then all files in dir_path are returned.
 
     Results are sorted by channel name to ensure stable output.
-    '''
+    """
     logger.debug(f"dir_path is {dir_path}!")
 
     if len(extensions) == 0:
-        extensions = ('')
+        extensions = ""
         logger.info("file extensions have zero length")
 
     name_to_path = []
@@ -34,7 +36,7 @@ def files_with_extensions(dir_path, *extensions):
     except FileNotFoundError:
         logger.exception("invalid path to config file given")
         raise
-    except Exception: # pragma: no cover
+    except Exception:  # pragma: no cover
         logger.exception("Unexpected error!")
         raise
     else:

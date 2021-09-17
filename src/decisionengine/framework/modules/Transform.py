@@ -1,10 +1,12 @@
-__all__ = ['Parameter', 'Transform', 'consumes', 'describe', 'produces', 'supports_config']
-
-from decisionengine.framework.modules.Module import Module, consumes, produces
 from decisionengine.framework.modules import describe
 from decisionengine.framework.modules.describe import Parameter, supports_config
+from decisionengine.framework.modules.Module import consumes, Module, produces
+
+__all__ = ["Parameter", "Transform", "consumes", "describe", "produces", "supports_config"]
+
 
 describe = describe.main_wrapper
+
 
 class Transform(Module):
     _consumes = {}
@@ -14,6 +16,7 @@ class Transform(Module):
         super().__init__(set_of_parameters)
         self.name_list = []
         self.logger.bind(class_module=__name__.split(".")[-1])
+
     """
     decide: The action function for a Transform. Will
     retrieve from the DataBlock the data products
@@ -22,5 +25,6 @@ class Transform(Module):
     DataBlock "put" transaction for each of the data
     products promised in the produces list
     """
+
     def transform(self):
         print("Called Transform.transform")

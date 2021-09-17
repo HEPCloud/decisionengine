@@ -2,17 +2,16 @@ import ast
 
 import pytest
 
+from decisionengine.framework.dataspace import datablock
 from decisionengine.framework.dataspace.tests.fixtures import (  # noqa: F401
-    PG_DE_DB_WITH_SCHEMA,
-    PG_DE_DB_WITHOUT_SCHEMA,
-    SQLALCHEMY_PG_WITH_SCHEMA,
-    SQLALCHEMY_TEMPFILE_SQLITE,
-    PG_PROG,
     DATABASES_TO_TEST,
     dataspace,
+    PG_DE_DB_WITH_SCHEMA,
+    PG_DE_DB_WITHOUT_SCHEMA,
+    PG_PROG,
+    SQLALCHEMY_PG_WITH_SCHEMA,
+    SQLALCHEMY_TEMPFILE_SQLITE,
 )
-
-from decisionengine.framework.dataspace import datablock
 
 
 @pytest.mark.usefixtures("dataspace")
@@ -38,13 +37,9 @@ def test_DataBlock_to_str(dataspace):  # noqa: F811
 
     expected = {
         "taskmanager_id": my_tm["taskmanager_id"],
-        "generation_id": dataspace.get_last_generation_id(
-            my_tm["name"], my_tm["taskmanager_id"]
-        ),
+        "generation_id": dataspace.get_last_generation_id(my_tm["name"], my_tm["taskmanager_id"]),
         "sequence_id": len(dataspace.get_dataproducts(my_tm["sequence_id"])) + 1,
-        "keys": (
-            "example_test_key",
-        ),
+        "keys": ("example_test_key",),
         "dataproducts": {"example_test_key": "example_test_value"},
     }
 
@@ -63,9 +58,7 @@ def test_DataBlock_key_management(dataspace):  # noqa: F811
     header = datablock.Header(my_tm["taskmanager_id"])
     metadata = datablock.Metadata(
         my_tm["taskmanager_id"],
-        generation_id=dataspace.get_last_generation_id(
-            my_tm["name"], my_tm["taskmanager_id"]
-        ),
+        generation_id=dataspace.get_last_generation_id(my_tm["name"], my_tm["taskmanager_id"]),
     )
     dblock = datablock.DataBlock(dataspace, my_tm["name"], my_tm["taskmanager_id"])
 
@@ -80,10 +73,7 @@ def test_DataBlock_key_management(dataspace):  # noqa: F811
     # Test product-retriever interface
     retriever = datablock.ProductRetriever("example_test_key", None, None)
     assert retriever(dblock) == "example_test_value"
-    assert (
-        str(retriever)
-        == "Product retriever for {'name': 'example_test_key', 'type': None, 'creator': None}"
-    )
+    assert str(retriever) == r"Product retriever for {'name': 'example_test_key', 'type': None, 'creator': None}"
 
     # test new key with manual metadata and dict value
     newDict = {"subKey": "newValue"}
@@ -136,9 +126,7 @@ def test_DataBlock_get_metadata(dataspace):  # noqa: F811
     header = datablock.Header(my_tm["taskmanager_id"])
     metadata = datablock.Metadata(
         my_tm["taskmanager_id"],
-        generation_id=dataspace.get_last_generation_id(
-            my_tm["name"], my_tm["taskmanager_id"]
-        ),
+        generation_id=dataspace.get_last_generation_id(my_tm["name"], my_tm["taskmanager_id"]),
     )
     dblock = datablock.DataBlock(dataspace, my_tm["name"], my_tm["taskmanager_id"])
 
@@ -155,10 +143,7 @@ def test_DataBlock_get_taskmanager(dataspace):  # noqa: F811
 
     dblock.put("example_test_key", "example_test_value", header)
 
-    assert (
-        dblock.get_taskmanager(my_tm["name"])["taskmanager_id"]
-        == my_tm["taskmanager_id"]
-    )
+    assert dblock.get_taskmanager(my_tm["name"])["taskmanager_id"] == my_tm["taskmanager_id"]
 
 
 @pytest.mark.usefixtures("dataspace")
@@ -253,18 +238,14 @@ def test_Metadata_constructor(dataspace):  # noqa: F811
     metadata = datablock.Metadata(
         my_tm["taskmanager_id"],
         state=state,
-        generation_id=dataspace.get_last_generation_id(
-            my_tm["name"], my_tm["taskmanager_id"]
-        ),
+        generation_id=dataspace.get_last_generation_id(my_tm["name"], my_tm["taskmanager_id"]),
         generation_time=genTime,
         missed_update_count=missCount,
     )
 
     assert metadata.data["taskmanager_id"] == my_tm["taskmanager_id"]
     assert metadata.data["state"] == state
-    assert metadata.data["generation_id"] == dataspace.get_last_generation_id(
-        my_tm["name"], my_tm["taskmanager_id"]
-    )
+    assert metadata.data["generation_id"] == dataspace.get_last_generation_id(my_tm["name"], my_tm["taskmanager_id"])
     assert metadata.data["generation_time"] == genTime
     assert metadata.data["missed_update_count"] == missCount
 
@@ -272,9 +253,7 @@ def test_Metadata_constructor(dataspace):  # noqa: F811
         metadata = datablock.Metadata(
             my_tm["taskmanager_id"],
             state="NO SUCH STATE EXISTS",
-            generation_id=dataspace.get_last_generation_id(
-                my_tm["name"], my_tm["taskmanager_id"]
-            ),
+            generation_id=dataspace.get_last_generation_id(my_tm["name"], my_tm["taskmanager_id"]),
             generation_time=genTime,
             missed_update_count=missCount,
         )

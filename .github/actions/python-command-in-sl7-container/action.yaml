@@ -1,17 +1,17 @@
-name: 'Python Action'
-description: 'Run python3 action in preconfigured SL7 container image'
+name: "Python Action"
+description: "Run python3 action in preconfigured SL7 container image"
 inputs:
   python-command:
-    description: 'What to run'
+    description: "What to run"
     required: true
-    default: '-m pytest'
+    default: "-m pytest"
   logfile:
-    description: 'Where to log output'
+    description: "Where to log output"
     required: true
-    default: 'pytest.log'
+    default: "pytest.log"
 runs:
-  using: 'docker'
-  image: '../../../package/ci/Dockerfile'
+  using: "docker"
+  image: "../../../package/ci/Dockerfile"
   args:
     - ${{ inputs.python-command }}
     - ${{ inputs.logfile }}

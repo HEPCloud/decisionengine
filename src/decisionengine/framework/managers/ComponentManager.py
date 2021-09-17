@@ -3,17 +3,16 @@ Decision Engine ComponentManager
 (Base class for ChannelManager and SourceManager)
 """
 
-#import importlib # Disabled until it is needed by SourceManager and ChannelManager
+# import importlib # Disabled until it is needed by SourceManager and ChannelManager
 import logging
 import multiprocessing
 import uuid
 
-from decisionengine.framework.dataspace import dataspace
-from decisionengine.framework.dataspace import datablock
-from decisionengine.framework.taskmanager.ProcessingState import State, ProcessingState
+from decisionengine.framework.dataspace import datablock, dataspace
+from decisionengine.framework.taskmanager.ProcessingState import ProcessingState, State
 
 # Disabled until it is needed by SourceManager and ChannelManager
-#def create_runner(module_name, class_name, parameters):
+# def create_runner(module_name, class_name, parameters):
 #    """
 #    Create instance of dynamically loaded module
 #    """
@@ -35,16 +34,13 @@ class ComponentManager:
         :arg generation_id: Source Manager generation id provided by caller
         :type global_config: :obj:`dict`
         :arg global_config: global configuration
-         """
+        """
         self.id = str(uuid.uuid4()).upper()
         self.dataspace = dataspace.DataSpace(global_config)
-        self.data_block_t0 = datablock.DataBlock(self.dataspace,
-                                                 name,
-                                                 self.id,
-                                                 generation_id)  # my current data block
+        self.data_block_t0 = datablock.DataBlock(self.dataspace, name, self.id, generation_id)  # my current data block
         self.name = name
         self.state = ProcessingState()
-        self.loglevel = multiprocessing.Value('i', logging.WARNING)
+        self.loglevel = multiprocessing.Value("i", logging.WARNING)
 
     def get_state_value(self):
         return self.state.get_state_value()
@@ -79,16 +75,16 @@ class ComponentManager:
         """
 
         if not isinstance(data, dict):
-            logging.getLogger().error(f'data_block put expecting {dict} type, got {type(data)}')
+            logging.getLogger().error(f"data_block put expecting {dict} type, got {type(data)}")
             return
-        logging.getLogger().debug(f'data_block_put {data}')
+        logging.getLogger().debug(f"data_block_put {data}")
         with data_block.lock:
             # This is too long to find, so im leaving it here to make it obvious whats going on
             #   you'll want to update it eventually.
-            #metadata = datablock.Metadata(data_block.component_manager_id,
-            metadata = datablock.Metadata(data_block.taskmanager_id,
-                                          state='END_CYCLE',
-                                          generation_id=data_block.generation_id)
+            # metadata = datablock.Metadata(data_block.component_manager_id,
+            metadata = datablock.Metadata(
+                data_block.taskmanager_id, state="END_CYCLE", generation_id=data_block.generation_id
+            )
             for key, product in data.items():
                 data_block.put(key, product, header, metadata=metadata)
 

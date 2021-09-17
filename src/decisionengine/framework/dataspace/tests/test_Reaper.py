@@ -3,17 +3,19 @@ import logging
 import time
 
 from unittest import mock
+
 import pytest
 
 import decisionengine.framework.dataspace.dataspace as dataspace
+
+from decisionengine.framework.dataspace.datasources.null import NullDataSource
 from decisionengine.framework.dataspace.maintain import Reaper
 from decisionengine.framework.taskmanager.ProcessingState import State
-from decisionengine.framework.dataspace.datasources.null import NullDataSource
 
 logger = logging.getLogger()
 
 
-@pytest.fixture
+@pytest.fixture()
 def config():
 
     yield {
@@ -30,7 +32,7 @@ def config():
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def reaper(request):
     config_fixture = request.getfixturevalue("config")
     reaper = Reaper(config_fixture)
@@ -147,36 +149,36 @@ def test_fail_small_run_interval(reaper):
 def test_fail_start_two_reapers(reaper):
     reaper.start()
     assert reaper.state.get() in (State.IDLE, State.ACTIVE, State.STEADY)
+    logger.debug("running second start")
     with pytest.raises(RuntimeError):
-        logger.debug("running second start")
         reaper.start()
 
 
 @pytest.mark.usefixtures("reaper", "config")
 def test_fail_missing_config(reaper, config):
+    del config["dataspace"]
     with pytest.raises(dataspace.DataSpaceConfigurationError):
-        del config["dataspace"]
         Reaper(config)
 
 
 @pytest.mark.usefixtures("reaper", "config")
 def test_fail_bad_config(reaper, config):
+    config["dataspace"] = "somestring"
     with pytest.raises(dataspace.DataSpaceConfigurationError):
-        config["dataspace"] = "somestring"
         Reaper(config)
 
 
 @pytest.mark.usefixtures("reaper", "config")
 def test_fail_missing_config_key(reaper, config):
+    del config["dataspace"]["retention_interval_in_days"]
     with pytest.raises(dataspace.DataSpaceConfigurationError):
-        del config["dataspace"]["retention_interval_in_days"]
         Reaper(config)
 
 
 @pytest.mark.usefixtures("reaper", "config")
 def test_fail_wrong_config_key(reaper, config):
+    config["dataspace"]["retention_interval_in_days"] = "abc"
     with pytest.raises(ValueError):
-        config["dataspace"]["retention_interval_in_days"] = "abc"
         Reaper(config)
 
 

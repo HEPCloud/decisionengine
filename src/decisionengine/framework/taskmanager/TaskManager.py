@@ -3,24 +3,22 @@ Task Manager
 """
 import importlib
 import threading
-import structlog
 import time
 
 import pandas as pd
+import structlog
 
 from decisionengine.framework.dataspace import datablock
-from decisionengine.framework.modules import Module
+from decisionengine.framework.logicengine.LogicEngine import LogicEngine
 from decisionengine.framework.managers.ComponentManager import ComponentManager
+from decisionengine.framework.modules import Module
+from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME, DELOGGER_CHANNEL_NAME, LOGGERNAME
 from decisionengine.framework.modules.Publisher import Publisher
 from decisionengine.framework.modules.Source import Source
 from decisionengine.framework.modules.Transform import Transform
-from decisionengine.framework.logicengine.LogicEngine import LogicEngine
-from decisionengine.framework.taskmanager.ProcessingState import State
-from decisionengine.framework.taskmanager.ProcessingState import ProcessingState
 from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
+from decisionengine.framework.taskmanager.ProcessingState import ProcessingState, State
 from decisionengine.framework.util.subclasses import all_subclasses
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
-from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
 
 _TRANSFORMS_TO = 300  # 5 minutes
 _DEFAULT_SCHEDULE = 300  # ""
@@ -65,6 +63,7 @@ def _create_module_instance(config_dict, base_class, channel_name):
 
     class_type = getattr(my_module, class_name)
     return class_type(dict(**config_dict["parameters"], channel_name=channel_name))
+
 
 class Worker:
     """
@@ -135,7 +134,7 @@ class TaskManager(ComponentManager):
         :type global_config: :obj:`dict`
         :arg global_config: global configuration
         """
-        if "channel_name" in channel_dict.keys():
+        if "channel_name" in channel_dict:
             self.name = channel_dict["channel_name"]
         else:
             self.name = name

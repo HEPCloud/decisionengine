@@ -1,9 +1,11 @@
-'''
+"""
 Ensure no circularities in produces and consumes.
-'''
+"""
+
+from collections import OrderedDict
 
 import toposort
-from collections import OrderedDict
+
 
 def _produced_products(*worker_lists):
     result = {}
@@ -17,6 +19,7 @@ def _produced_products(*worker_lists):
                 result.update(dict.fromkeys(produces, name))
     return result, missing_produces
 
+
 def _consumed_products(*worker_lists):
     result = {}
     missing_consumes = []
@@ -29,6 +32,7 @@ def _consumed_products(*worker_lists):
                 result[name] = set(consumes)
     return result, missing_consumes
 
+
 def ensure_no_circularities(sources, transforms, publishers):
     """
     Ensures no circularities among data products.
@@ -40,14 +44,13 @@ def ensure_no_circularities(sources, transforms, publishers):
     if missing_produces:
         err_msg += "\nThe following modules are missing '@produces' declarations:\n\n"
         for module in missing_produces:
-            err_msg += ' - ' + module + '\n'
+            err_msg += " - " + module + "\n"
     if missing_consumes:
         err_msg += "\nThe following modules are missing '@consumes' declarations:\n\n"
         for module in missing_consumes:
-            err_msg += ' - ' + module + '\n'
+            err_msg += " - " + module + "\n"
     if err_msg:
         raise RuntimeError(err_msg)
-
 
     # Check that products to be consumed are actually produced
     all_consumes = set()

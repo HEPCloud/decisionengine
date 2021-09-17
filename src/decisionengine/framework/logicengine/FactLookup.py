@@ -1,14 +1,15 @@
-from decisionengine.framework.logicengine.Rule import Rule
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
-from toposort import toposort_flatten
-
 import structlog
 
-_TOP_LEVEL = ''  # Indicates facts not contained by rules
+from toposort import toposort_flatten
+
+from decisionengine.framework.logicengine.Rule import Rule
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
+
+_TOP_LEVEL = ""  # Indicates facts not contained by rules
 
 
 class FactLookup:
-    '''
+    """
     Establishes a policy for looking up a fact based on the given name.
 
     To wit, the first fact with a given name is the one that is used
@@ -41,7 +42,8 @@ class FactLookup:
     their own facts with the same name.  FactLookup ensures that
     'publish_1' and 'publish_2' will both use the evaluated fact from
     the top-level 'facts' table.
-    '''
+    """
+
     def __init__(self, fact_names, rules_cfg):
         # For the above configuration, the 'self.facts' attribute is a dictionary of the form:
         # {

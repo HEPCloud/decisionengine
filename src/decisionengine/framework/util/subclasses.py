@@ -1,10 +1,12 @@
 import inspect
 
+
 def _derived_class(cls, base_class):
     """
     Only matches subclasses that are not equal to the base class.
     """
     return cls is not base_class and issubclass(cls, base_class)
+
 
 def all_subclasses(module, base_class):
     """

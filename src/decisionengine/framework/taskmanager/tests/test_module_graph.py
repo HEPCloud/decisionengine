@@ -1,6 +1,6 @@
-from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
-
 from unittest.mock import patch
+
+from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
 
 
 def produces_from_dict(*configs):

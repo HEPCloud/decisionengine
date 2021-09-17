@@ -1,15 +1,18 @@
-from decisionengine.framework.logicengine.FactLookup import FactLookup
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 import structlog
 
+from decisionengine.framework.logicengine.FactLookup import FactLookup
+from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
+
+
 class RuleEngine:
-    '''
+    """
     Engine responsible for evaluating logic-engine rules.
 
     This class is responsible for (a) forming a sorted set of rules
     that supports dependencies between them, and (b) evaluating the
     rules according to a specified fact-lookup policy.
-    '''
+    """
+
     def __init__(self, fact_names, rules_cfg):
         self.fact_lookup = FactLookup(fact_names, rules_cfg)
         self.rules = self.fact_lookup.sorted_rules(rules_cfg)

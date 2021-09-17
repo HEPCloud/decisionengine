@@ -2,9 +2,10 @@ from decisionengine.framework.logicengine.BooleanExpression import BooleanExpres
 
 
 class Rule:
-    '''
+    """
     In-memory representation of logic-engine rule, relying on parsing utilities in BooleanExpression.
-    '''
+    """
+
     def __init__(self, rule_name, rule_cfg):
         self.name = rule_name
         self.expr = BooleanExpression(rule_cfg["expression"])
@@ -23,8 +24,10 @@ class Rule:
         return self.expr.evaluate(evaluated_facts)
 
     def __str__(self):  # pragma: no cover
-        return (f"name: {self.name}\n"
-                f"expression: '{self.expr}'\n"
-                f"actions: {self.actions}\n"
-                f"false_actions: {self.false_actions}\n"
-                f"facts: {self.new_facts}")
+        return (
+            f"name: {self.name}\n"
+            f"expression: '{self.expr}'\n"
+            f"actions: {self.actions}\n"
+            f"false_actions: {self.false_actions}\n"
+            f"facts: {self.new_facts}"
+        )

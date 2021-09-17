@@ -13,14 +13,14 @@ https://github.com/HEPCloud/decisionengine/wiki/Development-Workflow
 # Getting Started with development
 
 NOTE: It is recommended you use postgresql 11 or newer.
-      https://www.postgresql.org/download/
+https://www.postgresql.org/download/
 
 NOTE: The python dependencies of this project may require
-      additional OS features for build if python wheels
-      are not available for your platform.
+additional OS features for build if python wheels
+are not available for your platform.
 
 NOTE: This project has a pre-commit config.
-      To install it run `pre-commit install` from the repository root.
+To install it run `pre-commit install` from the repository root.
 
 Make sure you have up to date versions of `pip`, `setuptools`, and `wheel`.
 
@@ -36,7 +36,9 @@ The development environment has a number of extra requirements you can load
 From here `pytest` should "just work".
 
 NOTE:
-* For running tests, make sure you have `C.UTF-8` locale defined
+
+- For running tests, make sure you have `C.UTF-8` locale defined
+
 ```shell
 sudo localedef -v -c -i en_US -f UTF-8 C.UTF-8
 ```
@@ -48,7 +50,7 @@ a python wheel.
 
 ## Using the RPM
 
-The RPM should create the services you need.  But you may not have all the
+The RPM should create the services you need. But you may not have all the
 items you need in the `decisionengine` user's python area (ie not system packages).
 
 This should clean that up, provided you can write to the user home area.

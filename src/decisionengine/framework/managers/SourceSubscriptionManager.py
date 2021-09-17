@@ -2,11 +2,11 @@
 Source Subscription Manager
 """
 
-import queue
-import time
 import collections
-import threading
 import multiprocessing
+import queue
+import threading
+import time
 
 
 class Subscription:
@@ -56,7 +56,7 @@ class SourceSubscriptionManager(threading.Thread):
 
     def send_data_product_to_subscribed(self, new_source_info):
         # Send data product to the channels that are subscribed to the source that generated it
-        source_name = new_source_info['source_name']
+        source_name = new_source_info["source_name"]
         for channel_id in self.source_subscriptions[source_name]:
             self.channel_data_sinks[channel_id].append(new_source_info)
 

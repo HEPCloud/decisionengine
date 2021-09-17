@@ -1,4 +1,4 @@
-'''
+"""
 Decision-engine default configuration policies.
 
 For the decision-engine process, the configuration policies are:
@@ -16,25 +16,25 @@ The utilities provided in this module provide simple means of
 accessing the configuration artifacts according to the policies listed
 above.  Please consult the documentation for each function below for
 more detailed information.
-'''
+"""
 
 import os
 import pathlib
 
-GLOBAL_CONFIG_FILENAME = 'decision_engine.jsonnet'
+GLOBAL_CONFIG_FILENAME = "decision_engine.jsonnet"
 
 
 def valid_dir(path, scope):
-    '''
+    """
     Throws if the supplied path object is not a directory, otherwise returns the path object.
-    '''
+    """
     if not path.is_dir():
         raise RuntimeError(f"{scope} configuration directory '{path}' not found")
     return path
 
 
 def global_config_dir():
-    '''
+    """
     Retrieve global configuration dir as pathlib.Path object.
 
     This is the directory that houses the 'decision_engine.jsonnet'
@@ -44,13 +44,13 @@ def global_config_dir():
     or will use /etc/decisionengine otherwise.  If the path exists as
     a directory, then the directory path is returned as a string;
     otherwise an exception is raised.
-    '''
+    """
     global_config_dir = pathlib.Path(os.getenv("CONFIG_PATH", "/etc/decisionengine"))
-    return valid_dir(global_config_dir, 'Global')
+    return valid_dir(global_config_dir, "Global")
 
 
 def channel_config_dir(parent_dir=None):
-    '''
+    """
     Retrieve the channel configuration directory as a pathlib.Path object.
 
     This function returns a path object according to the following
@@ -70,22 +70,22 @@ def channel_config_dir(parent_dir=None):
     the 'parent_dir' argument is supplied, and the resulting path
     object is not a valid directory, the function will exit with an
     exception and not attempt rule 2 or 3.
-    '''
+    """
     if parent_dir:
-        channel_config_dir = pathlib.Path(parent_dir, 'config.d')
-        return valid_dir(channel_config_dir, 'Channel')
+        channel_config_dir = pathlib.Path(parent_dir, "config.d")
+        return valid_dir(channel_config_dir, "Channel")
 
-    env_value = os.getenv('CHANNEL_CONFIG_PATH')
+    env_value = os.getenv("CHANNEL_CONFIG_PATH")
     if env_value:
         channel_config_dir = pathlib.Path(env_value)
-        return valid_dir(channel_config_dir, 'Channel')
+        return valid_dir(channel_config_dir, "Channel")
 
-    channel_config_dir = global_config_dir().joinpath('config.d')
-    return valid_dir(channel_config_dir, 'Channel')
+    channel_config_dir = global_config_dir().joinpath("config.d")
+    return valid_dir(channel_config_dir, "Channel")
 
 
 def global_config_file(parent_dir=None):
-    '''
+    """
     Return the pathlib.Path object corresponding to the global configuration.
 
     If supplied, the 'parent_dir' is assumed to be the full path
@@ -95,7 +95,7 @@ def global_config_file(parent_dir=None):
     'global_config_dir()' function.
 
     An exception is raised if no 'decision_engine.jsonnet' file is found.
-    '''
+    """
     if parent_dir:
         path = pathlib.Path(parent_dir, GLOBAL_CONFIG_FILENAME)
     else:

@@ -1,10 +1,11 @@
-import structlog
-
 from collections import OrderedDict
 from typing import Any
 
+import structlog
+
 from decisionengine.framework.dataspace import datablock
 from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
+
 
 class Module:
     """
@@ -28,39 +29,44 @@ class Module:
     def set_data_block(self, data_block):
         self.data_block = data_block
 
+
 # ====================================================================================
 # Auxiliary facilities for produces, consumes, and supports_config
+
 
 def produces(**kwargs):
     def decorator_produces(cls):
         if cls._produces:
-            raise RuntimeError(f'@produces has already been called for {cls.__name__}')
+            raise RuntimeError(f"@produces has already been called for {cls.__name__}")
         cls._produces = kwargs
         return cls
+
     return decorator_produces
 
 
 def consumes(**kwargs):
     def decorator_consumes(cls):
         if cls._consumes:
-            raise RuntimeError(f'@consumes has already been called for {cls.__name__}')
+            raise RuntimeError(f"@consumes has already been called for {cls.__name__}")
         cls._consumes = kwargs
         # Now add product retrievers to class instance
         user_provided_new = cls.__new__
 
         def new_and_add_members(class_type, module_parameters, *args, **kwargs):
             consumer = user_provided_new(class_type)
-            product_specifications = module_parameters.get('product_creators', {})
+            product_specifications = module_parameters.get("product_creators", {})
             for name, product_type in cls._consumes.items():
                 # FIXME: Need to adjust configuration usage in next line!
-                setattr(consumer, name,
-                        datablock.ProductRetriever(name,
-                                                   product_type,
-                                                   product_specifications.get(name, Any)))
+                setattr(
+                    consumer,
+                    name,
+                    datablock.ProductRetriever(name, product_type, product_specifications.get(name, Any)),
+                )
             return consumer
 
         cls.__new__ = new_and_add_members
         return cls
+
     return decorator_consumes
 
 
@@ -91,8 +97,8 @@ def verify_products(producer, data):
         if Any in (a_type, b_type):
             continue
         if a_type != b_type:
-            a_name = getattr(a_type, '__name__', None)
-            b_name = getattr(b_type, '__name__', None)
+            a_name = getattr(a_type, "__name__", None)
+            b_name = getattr(b_type, "__name__", None)
             mismatched_types.append((name, a_name, b_name))
 
     if not mismatched_types:

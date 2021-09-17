@@ -1,8 +1,10 @@
 import pandas as pd
-from decisionengine.framework.logicengine.LogicEngine import LogicEngine
 import pytest
 
-@pytest.fixture
+from decisionengine.framework.logicengine.LogicEngine import LogicEngine
+
+
+@pytest.fixture()
 def myengine():
     facts = {"f1": "val > 10"}
     rules = {}
@@ -12,6 +14,7 @@ def myengine():
     rules["r4"] = {"expression": "f4", "actions": ["a4"], "false_actions": ["fa4"]}
 
     yield LogicEngine({"facts": facts, "rules": rules, "channel_name": "test"})
+
 
 def test_rule_that_fires(myengine):
     db = {"val": 20}
@@ -35,6 +38,7 @@ def test_rule_that_fires(myengine):
     assert newfacts_d["r1"] == ["f2", True]
     assert newfacts_d["r2"] == ["f3", True]
     assert newfacts_d["r3"] == ["f4", True]
+
 
 def test_rule_that_does_not_fire(myengine):
     db = {"val": 5}

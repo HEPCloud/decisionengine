@@ -1,15 +1,15 @@
 """
 Channel Manager
 """
-import threading
-import structlog
-import time
 import queue
+import threading
+import time
 
 import pandas as pd
+import structlog
 
 from decisionengine.framework.dataspace import datablock
-from decisionengine.framework.managers.ComponentManager import create_runner, ComponentManager
+from decisionengine.framework.managers.ComponentManager import ComponentManager, create_runner
 from decisionengine.framework.managers.ProcessingState import State
 from decisionengine.framework.managers.SourceSubscriptionManager import Subscription
 from decisionengine.framework.modules.logging_configDict import LOGGERNAME
@@ -19,6 +19,7 @@ _DEFAULT_SCHEDULE = 300  # ""
 
 delogger = structlog.getLogger(LOGGERNAME)
 delogger = delogger.bind(module=__name__.split(".")[-1])
+
 
 class TaskRunner:
     """
@@ -106,7 +107,7 @@ class ChannelManager(ComponentManager):
         delogger.info("Waiting for all channels to run")
 
         try:
-            while not all([e.is_set() for e in events_done]):
+            while not all(e.is_set() for e in events_done):
                 time.sleep(1)
                 if self.state.should_stop():
                     break
@@ -237,9 +238,7 @@ class ChannelManager(ComponentManager):
                     break
             except Exception:  # pragma: no cover
                 delogger.exception("Exception in the channel manager main loop")
-                delogger.error(
-                    "Error occured. Channel Manager %s exits with state %s", self.id, self.get_state_name()
-                )
+                delogger.error("Error occured. Channel Manager %s exits with state %s", self.id, self.get_state_name())
                 break
             time.sleep(1)
 
@@ -352,9 +351,7 @@ class ChannelManager(ComponentManager):
                 break
             loop_counter += 1
             if loop_counter == data_to:
-                delogger.info(
-                    f"transform {transform.name} did not get consumes data" f"in {data_to} seconds. Exiting"
-                )
+                delogger.info(f"transform {transform.name} did not get consumes data" f"in {data_to} seconds. Exiting")
                 break
         transform.data_updated.set()
 
@@ -381,9 +378,7 @@ class ChannelManager(ComponentManager):
                     self.channel.le_s[le].name,
                     rc["newfacts"].to_dict(orient="records"),
                 )
-                delogger.info(
-                    "logic engine %s generated actions: %s", self.channel.le_s[le].name, rc["actions"]
-                )
+                delogger.info("logic engine %s generated actions: %s", self.channel.le_s[le].name, rc["actions"])
 
             # Add new facts to the datablock
             # Add empty dataframe if nothing is available
