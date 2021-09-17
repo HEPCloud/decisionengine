@@ -14,7 +14,6 @@ class Source(Module):
 
     def __init__(self, set_of_parameters):
         super().__init__(set_of_parameters)
-        self.logger.bind(class_module=__name__.split(".")[-1])
 
     # acquire: The action function for a source. Will
     # retrieve data from external sources and issue a

@@ -18,7 +18,7 @@ class Module:
         self.channel_name = set_of_parameters["channel_name"]
 
         self.logger = structlog.getLogger(CHANNELLOGGERNAME)
-        self.logger = self.logger.bind(class_module=__name__.split(".")[-1], channel=self.channel_name)
+        self.logger = self.logger.bind(class_name=type(self).__name__, channel=self.channel_name)
 
     def get_parameters(self):
         return self.parameters
