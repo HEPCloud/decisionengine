@@ -13,7 +13,6 @@ class Publisher(Module):
 
     def __init__(self, set_of_parameters):
         super().__init__(set_of_parameters)
-        self.logger.bind(class_module=__name__.split(".")[-1])
 
     def publish(self, data_block=None):
         pass
