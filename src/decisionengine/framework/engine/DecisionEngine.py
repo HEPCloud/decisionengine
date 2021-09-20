@@ -598,6 +598,19 @@ def parse_program_options(args=None):
     return parser.parse_args(args)
 
 
+def _check_metrics_env(options):
+    if options.no_webserver:
+        return
+    try:
+        assert 'PROMETHEUS_MULTIPROC_DIR' in os.environ
+    except AssertionError as e:
+        msg = "If running with metrics (webserver), PROMETHEUS_MULTIPROC_DIR" \
+            " must be set.  If you wish to run the decision engine without" \
+            " the metrics webserver, please pass the --no-webserver option."
+        print(msg, file=sys.stderr)
+        raise EnvironmentError(msg)
+
+
 def _get_global_config(config_file, options):
     global_config = None
     try:
@@ -659,6 +672,7 @@ def main(args=None):
     If args is a list, it will be used instead of sys.argv (for unit testing)
     """
     options = parse_program_options(args)
+    _check_metrics_env(options)
     global_config_dir = policies.global_config_dir()
     global_config, channel_config_loader = _get_de_conf_manager(
         global_config_dir, policies.channel_config_dir(), options
