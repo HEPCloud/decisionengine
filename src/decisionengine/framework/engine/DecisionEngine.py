@@ -19,11 +19,11 @@ import xmlrpc.server
 
 from threading import Event
 
+import cherrypy
 import pandas as pd
 import structlog
 import tabulate
 
-import cherrypy
 from prometheus_client import multiprocess
 
 import decisionengine.framework.dataspace.datablock as datablock
@@ -35,28 +35,23 @@ from decisionengine.framework.config import ChannelConfigHandler, policies, Vali
 from decisionengine.framework.dataspace.maintain import Reaper
 from decisionengine.framework.engine.Workers import Worker, Workers
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
-
 from decisionengine.framework.util.metrics import *
-
 
 DEFAULT_WEBSERVER_PORT = 8000
 
 
 # DecisionEngine metrics
-STATUS_SUMMARY = Summary(
-    'de_client_status_duration_seconds', 'Time to run de-client --status')
-PRINT_PRODUCT_SUMMARY = Summary(
-    'de_client_print_product_duration_seconds', 'Time to run de-client --print-product')
-START_CHANNEL_SUMMARY = Summary('de_client_start_channel_duration_seconds',
-                                'Time to run de-client --start-channel', ['channel_name'])
-RM_CHANNEL_SUMMARY = Summary('de_client_rm_channel_duration_seconds',
-                             'Time to run de-client --stop-channel', ['channel_name'])
-QUERY_TOOL_SUMMARY = Summary(
-    'de_client_query_duration_seconds', 'Time to run de-client --query', ['product'])
-METRICS_SUMMARY = Summary(
-    'de_client_metrics_duration_seconds', 'Time to run de-client --status')
-WORKERS_COUNT = Gauge(
-    'de_workers_total', 'Number of workers started by the Decision Engine')
+STATUS_SUMMARY = Summary("de_client_status_duration_seconds", "Time to run de-client --status")
+PRINT_PRODUCT_SUMMARY = Summary("de_client_print_product_duration_seconds", "Time to run de-client --print-product")
+START_CHANNEL_SUMMARY = Summary(
+    "de_client_start_channel_duration_seconds", "Time to run de-client --start-channel", ["channel_name"]
+)
+RM_CHANNEL_SUMMARY = Summary(
+    "de_client_rm_channel_duration_seconds", "Time to run de-client --stop-channel", ["channel_name"]
+)
+QUERY_TOOL_SUMMARY = Summary("de_client_query_duration_seconds", "Time to run de-client --query", ["product"])
+METRICS_SUMMARY = Summary("de_client_metrics_duration_seconds", "Time to run de-client --status")
+WORKERS_COUNT = Gauge("de_workers_total", "Number of workers started by the Decision Engine")
 
 
 class StopState(enum.Enum):
@@ -72,7 +67,7 @@ def _channel_preamble(name):
 
 
 class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
-    rpc_paths = ('/RPC2')
+    rpc_paths = ("/RPC2",)
 
 
 class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServer):
@@ -90,9 +85,9 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.logger = structlog.getLogger(LOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
         self.logger.info(f"DecisionEngine started on {server_address}")
-        os.environ['prometheus_multiproc_dir'] = "/tmp/prometheus_metrics"
-        self.register_function(self.rpc_metrics, name='metrics')
-        if not global_config.get('no_webserver'):
+        os.environ["prometheus_multiproc_dir"] = "/tmp/prometheus_metrics"
+        self.register_function(self.rpc_metrics, name="metrics")
+        if not global_config.get("no_webserver"):
             self.start_webserver()  # Make this dependent on flag
 
     def get_logger(self):
@@ -189,8 +184,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             for ch, worker in workers.items():
                 if not worker.is_alive():
                     txt += f"Channel {ch} is in not active\n"
-                    self.logger.debug(
-                        f"Channel:{ch} is in not active when running rpc_print_product")
+                    self.logger.debug(f"Channel:{ch} is in not active when running rpc_print_product")
                     continue
 
                 produces = worker.get_produces()
@@ -201,8 +195,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 txt += f" Found in channel {ch}\n"
                 self.logger.debug(f"Found channel:{ch} active when running rpc_print_product")
                 tm = self.dataspace.get_taskmanager(ch)
-                self.logger.debug(
-                    f"rpc_print_product - channel:{ch} taskmanager:{tm}")
+                self.logger.debug(f"rpc_print_product - channel:{ch} taskmanager:{tm}")
                 try:
                     data_block = datablock.DataBlock(
                         self.dataspace, ch, taskmanager_id=tm["taskmanager_id"], sequence_id=tm["sequence_id"]
@@ -210,8 +203,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                     data_block.generation_id -= 1
                     df = data_block[product]
                     dfj = df.to_json()
-                    self.logger.debug(
-                        f"rpc_print_product - channel:{ch} task manager:{tm} datablock:{dfj}")
+                    self.logger.debug(f"rpc_print_product - channel:{ch} task manager:{tm} datablock:{dfj}")
                     df = pd.read_json(dfj)
                     dataframe_formatter = self._dataframe_to_table
                     if format == "vertical":
@@ -232,8 +224,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                         column_names = columns.split(",")
                     if query:
                         if column_names:
-                            txt += dataframe_formatter(
-                                df.loc[:, column_names].query(query))
+                            txt += dataframe_formatter(df.loc[:, column_names].query(query))
                         else:
                             txt += dataframe_formatter(df.query(query))
 
@@ -289,8 +280,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         with self.workers.access() as workers:
             channel_keys = workers.keys()
             if not channel_keys:
-                return "No channels are currently active.\n" + self.reaper_status(
-                )
+                return "No channels are currently active.\n" + self.reaper_status()
 
             txt = ""
             width = max(len(x) for x in channel_keys) + 1
@@ -336,8 +326,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 "No channel configurations available in " + f"{self.channel_config_loader.channel_config_dir}"
             )
         else:
-            self.logger.debug(
-                f"Found channels: {self.channel_config_loader.get_channels().items()}")
+            self.logger.debug(f"Found channels: {self.channel_config_loader.get_channels().items()}")
 
         for name, config in self.channel_config_loader.get_channels().items():
             try:
@@ -490,23 +479,22 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             found = False
             result = pd.DataFrame()
             txt = f"Product {product}: "
-    
+
             with self.workers.access() as workers:
                 for ch, worker in workers.items():
                     if not worker.is_alive():
                         txt += f"Channel {ch} is in not active\n"
                         continue
-    
+
                     produces = worker.get_produces()
                     r = [x for x in list(produces.items()) if product in x[1]]
                     if not r:
                         continue
                     found = True
                     txt += f" Found in channel {ch}\n"
-    
+
                     if start_time:
-                        tms = self.dataspace.get_taskmanagers(
-                            ch, start_time=start_time)
+                        tms = self.dataspace.get_taskmanagers(ch, start_time=start_time)
                     else:
                         tms = [self.dataspace.get_taskmanager(ch)]
                     for tm in tms:
@@ -519,14 +507,12 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                                 df = p["value"]
                                 if df.shape[0] > 0:
                                     df["channel"] = [tm["name"]] * df.shape[0]
-                                    df["taskmanager_id"] = [p["taskmanager_id"]
-                                                            ] * df.shape[0]
-                                    df["generation_id"] = [p["generation_id"]
-                                                           ] * df.shape[0]
+                                    df["taskmanager_id"] = [p["taskmanager_id"]] * df.shape[0]
+                                    df["generation_id"] = [p["generation_id"]] * df.shape[0]
                                     result = result.append(df)
                         except Exception as e:  # pragma: no cover
                             txt += f"\t\t{e}\n"
-    
+
             if found:
                 dataframe_formatter = self._dataframe_to_table
                 if format == "csv":
@@ -544,15 +530,11 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         Start CherryPy webserver using configured port.  If port is not configured
         use default webserver port.
         """
-        if self.global_config.get('webserver') and isinstance(self.global_config.get('webserver'), dict):
-            _port = self.global_config['webserver'].get(
-                'port', DEFAULT_WEBSERVER_PORT)
+        if self.global_config.get("webserver") and isinstance(self.global_config.get("webserver"), dict):
+            _port = self.global_config["webserver"].get("port", DEFAULT_WEBSERVER_PORT)
         else:
             _port = DEFAULT_WEBSERVER_PORT
-        cherrypy.config.update({
-            'server.socket_port': _port,
-            'server.socket_host': '0.0.0.0'
-        })
+        cherrypy.config.update({"server.socket_port": _port, "server.socket_host": "0.0.0.0"})
         cherrypy.tree.mount(self)
         cherrypy.engine.start()
 
@@ -592,8 +574,8 @@ def parse_program_options(args=None):
     parser.add_argument(
         "--no-webserver",
         action="store_true",
-        help="Run the decision engine without the accompanying webserver. " +
-        "Note that if this option is given, metrics collection will not work."
+        help="Run the decision engine without the accompanying webserver. "
+        + "Note that if this option is given, metrics collection will not work.",
     )
     return parser.parse_args(args)
 
@@ -602,13 +584,15 @@ def _check_metrics_env(options):
     if options.no_webserver:
         return
     try:
-        assert 'PROMETHEUS_MULTIPROC_DIR' in os.environ
-    except AssertionError as e:
-        msg = "If running with metrics (webserver), PROMETHEUS_MULTIPROC_DIR" \
-            " must be set.  If you wish to run the decision engine without" \
+        assert "PROMETHEUS_MULTIPROC_DIR" in os.environ
+    except AssertionError:
+        msg = (
+            "If running with metrics (webserver), PROMETHEUS_MULTIPROC_DIR"
+            " must be set.  If you wish to run the decision engine without"
             " the metrics webserver, please pass the --no-webserver option."
+        )
         print(msg, file=sys.stderr)
-        raise EnvironmentError(msg)
+        raise OSError(msg)
 
 
 def _get_global_config(config_file, options):
@@ -623,9 +607,7 @@ def _get_global_config(config_file, options):
     )
 
     if options.no_webserver:
-        global_config.update({
-            'no_webserver': True
-        })
+        global_config.update({"no_webserver": True})
 
     return global_config
 
@@ -636,8 +618,7 @@ def _get_de_conf_manager(global_config_dir, channel_config_dir, options):
         raise Exception(f"Config file '{config_file}' not found")
 
     global_config = _get_global_config(config_file, options)
-    conf_manager = ChannelConfigHandler.ChannelConfigHandler(
-        global_config, channel_config_dir)
+    conf_manager = ChannelConfigHandler.ChannelConfigHandler(global_config, channel_config_dir)
 
     return (global_config, conf_manager)
 
@@ -678,7 +659,6 @@ def main(args=None):
         global_config_dir, policies.channel_config_dir(), options
     )
     try:
-        # app.run()
         server = _create_de_server(global_config, channel_config_loader)
         _start_de_server(server)
 

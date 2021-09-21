@@ -20,58 +20,90 @@ from decisionengine.framework.taskmanager.module_graph import ensure_no_circular
 from decisionengine.framework.taskmanager.ProcessingState import State
 from decisionengine.framework.util.subclasses import all_subclasses
 from decisionengine.framework.util.metrics import *
-
+from decisionengine.framework.util.subclasses import all_subclasses
 
 _DEFAULT_SCHEDULE = 300  # 5 minutes
 
 # Metrics for monitoring TaskManager
-CHANNEL_STATE_GAUGE = Gauge('de_channel_state', 'Channel state', [
-    'channel_name',
-])
+CHANNEL_STATE_GAUGE = Gauge(
+    "de_channel_state",
+    "Channel state",
+    [
+        "channel_name",
+    ],
+)
 
-SOURCE_ACQUIRE_GAUGE = Gauge('de_source_last_acquire_timestamp_seconds', 'Last time a source '
-                             'successfully ran its acquire function', [
-                                 'channel_name',
-                                 'source_name',
-                             ])
+SOURCE_ACQUIRE_GAUGE = Gauge(
+    "de_source_last_acquire_timestamp_seconds",
+    "Last time a source " "successfully ran its acquire function",
+    [
+        "channel_name",
+        "source_name",
+    ],
+)
 
-LOGICENGINE_RUN_GAUGE = Gauge('de_logicengine_last_run_timestamp_seconds', 'Last time '
-                              'a logicengine successfully ran', [
-                                  'channel_name',
-                                  'logicengine_name',
-                              ])
+LOGICENGINE_RUN_GAUGE = Gauge(
+    "de_logicengine_last_run_timestamp_seconds",
+    "Last time " "a logicengine successfully ran",
+    [
+        "channel_name",
+        "logicengine_name",
+    ],
+)
 
-TRANSFORM_RUN_GAUGE = Gauge('de_transform_last_run_timestamp_seconds', 'Last time a '
-                            'transform successfully ran', [
-                                'channel_name',
-                                'transform_name',
-                            ])
+TRANSFORM_RUN_GAUGE = Gauge(
+    "de_transform_last_run_timestamp_seconds",
+    "Last time a " "transform successfully ran",
+    [
+        "channel_name",
+        "transform_name",
+    ],
+)
 
-PUBLISHER_RUN_GAUGE = Gauge('de_publisher_last_run_timestamp_seconds', 'Last time '
-                            'a publisher successfully ran', [
-                                'channel_name',
-                                'publisher_name',
-                            ])
+PUBLISHER_RUN_GAUGE = Gauge(
+    "de_publisher_last_run_timestamp_seconds",
+    "Last time " "a publisher successfully ran",
+    [
+        "channel_name",
+        "publisher_name",
+    ],
+)
 
-SOURCE_RUN_SUMMARY = Summary('de_source_run_seconds', 'Time spent running source', [
-    'channel_name',
-    'source_name',
-])
+SOURCE_RUN_SUMMARY = Summary(
+    "de_source_run_seconds",
+    "Time spent running source",
+    [
+        "channel_name",
+        "source_name",
+    ],
+)
 
-LOGICENGINE_RUN_SUMMARY = Summary('de_logicengine_run_seconds', 'Time spent running logicengine', [
-    'channel_name',
-    'logicengine_name',
-])
+LOGICENGINE_RUN_SUMMARY = Summary(
+    "de_logicengine_run_seconds",
+    "Time spent running logicengine",
+    [
+        "channel_name",
+        "logicengine_name",
+    ],
+)
 
-TRANSFORM_RUN_SUMMARY = Summary('de_transform_run_seconds', 'Time spent running transform', [
-    'channel_name',
-    'transform_name',
-])
+TRANSFORM_RUN_SUMMARY = Summary(
+    "de_transform_run_seconds",
+    "Time spent running transform",
+    [
+        "channel_name",
+        "transform_name",
+    ],
+)
 
-PUBLISHER_RUN_SUMMARY = Summary('de_publisher_run_seconds', 'Time spent running publisher', [
-    'channel_name',
-    'publisher_name',
-])
+PUBLISHER_RUN_SUMMARY = Summary(
+    "de_publisher_run_seconds",
+    "Time spent running publisher",
+    [
+        "channel_name",
+        "publisher_name",
+    ],
+)
 
 delogger = structlog.getLogger(LOGGERNAME)
 delogger = delogger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
@@ -266,9 +298,7 @@ class TaskManager(ComponentManager):
         if not self.state.has_value(State.BOOT):
             for thread in source_threads:
                 thread.join()
-            self.logger.error(
-                f"Error occured during initial run of sources. Task Manager {self.name} exits"
-            )
+            self.logger.error(f"Error occured during initial run of sources. Task Manager {self.name} exits")
             return
 
         self.start_cycles(done_events)
@@ -294,8 +324,7 @@ class TaskManager(ComponentManager):
                         # If we are signaled to stop, don't override that state
                         # otherwise the last decision_cycle completed without error
                         self.state.set(State.STEADY)
-                        CHANNEL_STATE_GAUGE.labels(
-                            self.name).set(self.get_state_value())
+                        CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
                 if not self.state.should_stop():
                     self.wait_for_any(done_events)
             except Exception:  # pragma: no cover
@@ -354,15 +383,13 @@ class TaskManager(ComponentManager):
         """
 
         if not isinstance(data, dict):
-            self.logger.error(
-                f"data_block put expecting {dict} type, got {type(data)}")
+            self.logger.error(f"data_block put expecting {dict} type, got {type(data)}")
             return
         self.logger.debug(f"data_block_put {data}")
         with data_block.lock:
             metadata = datablock.Metadata(
-                data_block.taskmanager_id,
-                state="END_CYCLE",
-                generation_id=data_block.generation_id)
+                data_block.taskmanager_id, state="END_CYCLE", generation_id=data_block.generation_id
+            )
             for key, product in data.items():
                 data_block.put(key, product, header, metadata=metadata)
 
@@ -403,8 +430,7 @@ class TaskManager(ComponentManager):
 
         for a_f in actions_facts:
             try:
-                self.run_publishers(a_f["actions"], a_f["newfacts"],
-                                    data_block_t1)
+                self.run_publishers(a_f["actions"], a_f["newfacts"], data_block_t1)
             except Exception:  # pragma: no cover
                 self.logger.exception("Error in decision cycle(publishers) ")
                 self.take_offline()
@@ -421,13 +447,13 @@ class TaskManager(ComponentManager):
         while not self.state.should_stop():
             try:
                 self.logger.info(f"Src {worker.name} calling acquire")
-                with SOURCE_RUN_SUMMARY.labels(self.name, src.name).time():
+                with SOURCE_RUN_SUMMARY.labels(self.name, worker.name).time():
                     data = worker.module_instance.acquire()
                     Module.verify_products(worker.module_instance, data)
                 self.logger.info(f"Src {worker.name} acquire returned")
                 self.logger.info(f"Src {worker.name} filling header")
                 SOURCE_ACQUIRE_GAUGE.labels(self.name,
-                                            src.name).set_to_current_time()
+                                            worker.name).set_to_current_time()
                 if data:
                     t = time.time()
                     header = datablock.Header(self.data_block_t0.taskmanager_id, create_time=t, creator=worker.module)
@@ -463,8 +489,7 @@ class TaskManager(ComponentManager):
             self.logger.info(f"starting loop for {key}")
             event_list.append(source.data_updated)
             SOURCE_ACQUIRE_GAUGE.labels(self.name, source.name)
-            thread = threading.Thread(
-                target=self.run_source, name=source.name, args=(source,))
+            thread = threading.Thread(target=self.run_source, name=source.name, args=(source,))
             source_threads.append(thread)
             # Cannot catch exception from function called in separate thread
             thread.start()
@@ -529,7 +554,7 @@ class TaskManager(ComponentManager):
 
         try:
             for le in self.workflow.le_s:
-                with LOGICENGINE_RUN_SUMMARY.labels(self.name, self.channel.le_s[le].name).time():
+                with LOGICENGINE_RUN_SUMMARY.labels(self.name, self.workflow.le_s[le].name).time():
                     self.logger.info("run logic engine %s", self.workflow.le_s[le].name)
                     self.logger.debug("run logic engine %s %s", self.workflow.le_s[le].name, data_block)
                     rc = self.workflow.le_s[le].module_instance.evaluate(data_block)
@@ -537,7 +562,7 @@ class TaskManager(ComponentManager):
                     self.logger.info("run logic engine %s done", self.workflow.le_s[le].name)
                     LOGICENGINE_RUN_GAUGE.labels(
                         self.name,
-                        self.channel.le_s[le].name).set_to_current_time()
+                        self.workflow.le_s[le].name).set_to_current_time()
                     self.logger.info(
                         "logic engine %s generated newfacts: %s",
                         self.workflow.le_s[le].name,
@@ -548,18 +573,14 @@ class TaskManager(ComponentManager):
             # Add new facts to the datablock
             # Add empty dataframe if nothing is available
             if le_list:
-                all_facts = pd.concat([i["newfacts"]
-                                      for i in le_list], ignore_index=True)
+                all_facts = pd.concat([i["newfacts"] for i in le_list], ignore_index=True)
             else:
-                self.logger.info(
-                    "Logic engine(s) did not return any new facts")
+                self.logger.info("Logic engine(s) did not return any new facts")
                 all_facts = pd.DataFrame()
 
             data = {"de_logicengine_facts": all_facts}
             t = time.time()
-            header = datablock.Header(data_block.taskmanager_id,
-                                      create_time=t,
-                                      creator="logicengine")
+            header = datablock.Header(data_block.taskmanager_id, create_time=t, creator="logicengine")
             self.data_block_put(data, header, data_block)
         except Exception:  # pragma: no cover
             self.logger.exception("Unexpected error!")
@@ -591,9 +612,7 @@ class TaskManager(ComponentManager):
                                                        name).set_to_current_time()
                     except KeyError as e:
                         if self.state.should_stop():
-                            self.logger.warning(
-                                f"TaskManager stopping, ignore exception {name} publish() call: {e}"
-                            )
+                            self.logger.warning(f"TaskManager stopping, ignore exception {name} publish() call: {e}")
                             continue
                         else:
                             raise

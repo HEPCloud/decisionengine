@@ -25,8 +25,7 @@ echo "%attr(0640,decisionengine,decisionengine) %config(noreplace) /%{_sysconfdi
 echo "%dir %attr(0750,decisionengine,decisionengine) %{_sysconfdir}/decisionengine/config.d/" >> INSTALLED_FILES
 [ "$(ls -A %{buildroot}/%{_sysconfdir}/decisionengine/config.d)" ] && echo "%attr(0640decisionengine,decisionengine) %config(noreplace) %{_sysconfdir}/decisionengine/config.d/*" >> INSTALLED_FILES
 
-mkdir -p %{buildroot}/%{_sysconfdir}/sysconfig
-touch %{buildroot}/%{_sysconfdir}/sysconfig/decisionengine
+install -m 0644 -D package/systemd/decisionengine_sysconfig %{buildroot}/%{_sysconfdir}/sysconfig/decisionengine
 echo "%attr(0640,root,decisionengine) %config(noreplace) %{_sysconfdir}/sysconfig/decisionengine" >> INSTALLED_FILES
 
 mkdir -p %{buildroot}/%{_defaultdocdir}/%{name}/datasources/
