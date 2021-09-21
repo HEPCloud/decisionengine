@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.de_logger &mdash; decisionengine 1.7.1.dev10+g9521d3ce documentation</title>
+  <title>decisionengine.framework.modules.de_logger &mdash; decisionengine 1.7.1.dev11+gd7f44015 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -75,6 +75,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Logger to use in all modules</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">logging.config</span>
 <span class="kn">import</span> <span class="nn">logging.handlers</span>
@@ -82,13 +83,19 @@
 
 <span class="kn">import</span> <span class="nn">structlog</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">pylogconfig</span> <span class="k">as</span> <span class="n">logconf</span>
+<span class="kn">import</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="k">as</span> <span class="nn">logconf</span>
 
 <span class="n">MB</span> <span class="o">=</span> <span class="mi">1000000</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logconf</span><span class="o">.</span><span class="n">LOGGERNAME</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">logconf</span><span class="o">.</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="_reset_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.de_logger._reset_config">[docs]</a><span class="k">def</span> <span class="nf">_reset_config</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reset the logconf.pylogconfig dictionary</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">logconf</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="set_logging"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.de_logger.set_logging">[docs]</a><span class="k">def</span> <span class="nf">set_logging</span><span class="p">(</span>
@@ -127,28 +134,28 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Reusing existing logging handlers&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="c1"># logconf is our global object edited in global space on purpose</span>
+    <span class="c1"># logconf.pylogconfig is our global object edited in global space on purpose</span>
 
-    <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_file_name</span><span class="si">}</span><span class="s2">_debug.log&quot;</span><span class="p">})</span>
-    <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_file_name</span><span class="si">}</span><span class="s2">.log&quot;</span><span class="p">})</span>
-    <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;file_structlog_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_file_name</span><span class="si">}</span><span class="s2">_structlog_debug.log&quot;</span><span class="p">})</span>
+    <span class="n">logconf</span><span class="o">.</span><span class="n">pylogconfig</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_file_name</span><span class="si">}</span><span class="s2">_debug.log&quot;</span><span class="p">})</span>
+    <span class="n">logconf</span><span class="o">.</span><span class="n">pylogconfig</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_file_name</span><span class="si">}</span><span class="s2">.log&quot;</span><span class="p">})</span>
+    <span class="n">logconf</span><span class="o">.</span><span class="n">pylogconfig</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;file_structlog_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_file_name</span><span class="si">}</span><span class="s2">_structlog_debug.log&quot;</span><span class="p">})</span>
 
     <span class="k">if</span> <span class="n">file_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span>
-        <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="n">logconf</span><span class="o">.</span><span class="n">pylogconfig</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;logging.handlers.RotatingFileHandler&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;maxBytes&quot;</span><span class="p">:</span> <span class="n">max_file_size</span><span class="p">,</span>
                 <span class="s2">&quot;backupCount&quot;</span><span class="p">:</span> <span class="n">max_backup_count</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
-        <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="n">logconf</span><span class="o">.</span><span class="n">pylogconfig</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;logging.handlers.RotatingFileHandler&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;maxBytes&quot;</span><span class="p">:</span> <span class="n">max_file_size</span><span class="p">,</span>
                 <span class="s2">&quot;backupCount&quot;</span><span class="p">:</span> <span class="n">max_backup_count</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
-        <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;file_structlog_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="n">logconf</span><span class="o">.</span><span class="n">pylogconfig</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;file_structlog_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;logging.handlers.RotatingFileHandler&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;maxBytes&quot;</span><span class="p">:</span> <span class="n">max_file_size</span><span class="p">,</span>
@@ -157,21 +164,21 @@
         <span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">file_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
-        <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="n">logconf</span><span class="o">.</span><span class="n">pylogconfig</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;logging.handlers.TimedRotatingFileHandler&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;when&quot;</span><span class="p">:</span> <span class="n">rotation_time_unit</span><span class="p">,</span>
                 <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="n">rotation_interval</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
-        <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="n">logconf</span><span class="o">.</span><span class="n">pylogconfig</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;de_file_info&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;logging.handlers.TimedRotatingFileHandler&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;when&quot;</span><span class="p">:</span> <span class="n">rotation_time_unit</span><span class="p">,</span>
                 <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="n">rotation_interval</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
-        <span class="n">logconf</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;file_structlog_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="n">logconf</span><span class="o">.</span><span class="n">pylogconfig</span><span class="p">[</span><span class="s2">&quot;handlers&quot;</span><span class="p">][</span><span class="s2">&quot;file_structlog_debug&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;logging.handlers.TimedRotatingFileHandler&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;when&quot;</span><span class="p">:</span> <span class="n">rotation_time_unit</span><span class="p">,</span>
@@ -181,7 +188,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect &#39;file_rotate_by&#39;:&#39;</span><span class="si">{</span><span class="n">file_rotate_by</span><span class="si">}</span><span class="s2">:&#39;&quot;</span><span class="p">)</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">logconf</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">logconf</span><span class="o">.</span><span class="n">pylogconfig</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;de logging setup complete&quot;</span><span class="p">)</span></div>
 
 
