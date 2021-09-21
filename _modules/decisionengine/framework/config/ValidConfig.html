@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.config.ValidConfig &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
+  <title>decisionengine.framework.config.ValidConfig &mdash; decisionengine 1.7.1.dev8+ga48dd7d8 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -94,63 +94,15 @@
 <span class="kn">import</span> <span class="nn">_jsonnet</span>
 
 
-<div class="viewcode-block" id="_convert_to_json"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ValidConfig._convert_to_json">[docs]</a><span class="k">def</span> <span class="nf">_convert_to_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Attempt to convert JSON non-compliant configuration into a compliant one.</span>
-
-<span class="sd">    This is a temporary facility to aid the migration of Python-based</span>
-<span class="sd">    configurations to Jsonnet-based ones.  Python dictionaries that</span>
-<span class="sd">    are similar in structure to JSON documents are generally trivially</span>
-<span class="sd">    convertible.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">global_config</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">global_config</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Configuration file </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2"> contains errors:</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;The supplied configuration must be a valid Jsonnet/JSON document.&quot;</span>
-                <span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to read configuration file </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The supplied configuration must be a valid Jsonnet/JSON document.&quot;</span><span class="p">)</span>
-
-    <span class="n">json_config</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">json_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The supplied configuration is not convertible to a Jsonnet/JSON document.&quot;</span><span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;The supplied configuration file </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2"> is not a valid Jsonnet/JSON document.</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="s2">&quot;It has been converted to a valid JSON construct, but it should be fixed.&quot;</span><span class="p">,</span>
-        <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">json_config</span></div>
-
-
 <div class="viewcode-block" id="_config_from_file"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ValidConfig._config_from_file">[docs]</a><span class="k">def</span> <span class="nf">_config_from_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Empty configuration file </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">config_str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">basename</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">config_str</span> <span class="o">=</span> <span class="n">_jsonnet</span><span class="o">.</span><span class="n">evaluate_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">config_file</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s2">&quot;.jsonnet&quot;</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please rename &#39;</span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">.jsonnet&#39;.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="c1"># Conversion allowed only for files that do not yet have a</span>
-        <span class="c1"># &#39;.jsonnet&#39; extension.</span>
-        <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s2">&quot;.jsonnet&quot;</span><span class="p">:</span>
-            <span class="n">config_str</span> <span class="o">=</span> <span class="n">_convert_to_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span>
-
+    <span class="n">config_str</span> <span class="o">=</span> <span class="n">_jsonnet</span><span class="o">.</span><span class="n">evaluate_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">config_file</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s2">&quot;.jsonnet&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please rename &#39;</span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">.jsonnet&#39;.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">config_str</span><span class="p">)</span></div>
 
 

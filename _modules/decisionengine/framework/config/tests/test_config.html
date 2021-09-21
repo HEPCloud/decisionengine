@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.config.tests.test_config &mdash; decisionengine 1.7.1.dev7+ga6a81ce7 documentation</title>
+  <title>decisionengine.framework.config.tests.test_config &mdash; decisionengine 1.7.1.dev8+ga48dd7d8 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -111,16 +111,11 @@
 
 
 <span class="c1"># --------------------------------------------------------------------</span>
-<span class="c1"># These tests demonstrate failure modes when reading a DE</span>
-<span class="c1"># application configuration file.</span>
+
+
 <div class="viewcode-block" id="test_empty_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_empty_config">[docs]</a><span class="k">def</span> <span class="nf">test_empty_config</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;Empty configuration file .*/empty</span><span class="se">\\</span><span class="s2">.conf&quot;</span><span class="p">):</span>
-        <span class="n">load</span><span class="p">(</span><span class="s2">&quot;empty.conf&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="test_wrong_type"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_wrong_type">[docs]</a><span class="k">def</span> <span class="nf">test_wrong_type</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;The supplied configuration must be a valid Jsonnet/JSON document&quot;</span><span class="p">):</span>
-        <span class="n">load</span><span class="p">(</span><span class="s2">&quot;wrong_type.conf&quot;</span><span class="p">)</span></div>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;Empty configuration file .*/empty</span><span class="se">\\</span><span class="s2">.jsonnet&quot;</span><span class="p">):</span>
+        <span class="n">load</span><span class="p">(</span><span class="s2">&quot;empty.jsonnet&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_syntax_error_in_config_names_bad_file"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_syntax_error_in_config_names_bad_file">[docs]</a><span class="k">def</span> <span class="nf">test_syntax_error_in_config_names_bad_file</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
@@ -128,37 +123,19 @@
         <span class="n">load</span><span class="p">(</span><span class="s2">&quot;invalid.jsonnet&quot;</span><span class="p">)</span></div>
 
 
-<span class="c1"># --------------------------------------------------------------------</span>
-<span class="c1"># These tests yield valid DE configuration structures. However, the</span>
-<span class="c1"># configurations are missing a logger configuration, which is the next</span>
-<span class="c1"># failure mode after reading the configuration files.</span>
-<div class="viewcode-block" id="test_empty_dict"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_empty_dict">[docs]</a><span class="k">def</span> <span class="nf">test_empty_dict</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
+<div class="viewcode-block" id="test_valid_but_empty_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_valid_but_empty_config">[docs]</a><span class="k">def</span> <span class="nf">test_valid_but_empty_config</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
+    <span class="c1"># This tests a valid Jsonnet structure; however, the configuration</span>
+    <span class="c1"># is missing a logger configuration, which is the next failure</span>
+    <span class="c1"># mode after reading the configuration file.</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;No logger configuration has been specified&quot;</span><span class="p">):</span>
-        <span class="n">load</span><span class="p">(</span><span class="s2">&quot;empty_dict.conf&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="test_empty_dict_with_leading_comment"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_empty_dict_with_leading_comment">[docs]</a><span class="k">def</span> <span class="nf">test_empty_dict_with_leading_comment</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;No logger configuration has been specified&quot;</span><span class="p">):</span>
-        <span class="n">load</span><span class="p">(</span><span class="s2">&quot;empty_dict_with_leading_comment.conf&quot;</span><span class="p">)</span></div>
-
-
-<span class="c1"># --------------------------------------------------------------------</span>
-<span class="c1"># These tests validate well-formed DE configurations, but they also</span>
-<span class="c1"># check that the appropriate warning messages are emitted regarding</span>
-<span class="c1"># Python support for a Jsonnet configuration system.</span>
-<div class="viewcode-block" id="test_minimal_python"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_minimal_python">[docs]</a><span class="k">def</span> <span class="nf">test_minimal_python</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">capsys</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">)</span>
-    <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">capsys</span><span class="o">.</span><span class="n">readouterr</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="ow">not</span> <span class="n">stdout</span>
-    <span class="n">expected</span> <span class="o">=</span> <span class="s2">&quot;The supplied configuration.*has been converted to a valid JSON construct&quot;</span>
-    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">stderr</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span></div>
+        <span class="n">load</span><span class="p">(</span><span class="s2">&quot;valid_but_empty.jsonnet&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_minimal_jsonnet_wrong_extension"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_minimal_jsonnet_wrong_extension">[docs]</a><span class="k">def</span> <span class="nf">test_minimal_jsonnet_wrong_extension</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">capsys</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_jsonnet.conf&quot;</span><span class="p">)</span>
+    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.conf&quot;</span><span class="p">)</span>
     <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">capsys</span><span class="o">.</span><span class="n">readouterr</span><span class="p">()</span>
     <span class="k">assert</span> <span class="ow">not</span> <span class="n">stdout</span>
-    <span class="n">expected</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Please rename &#39;.*/minimal_jsonnet\.conf&#39; to &#39;.*/minimal_jsonnet\.jsonnet&#39;&quot;</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;Please rename &#39;.*/minimal\.conf&#39; to &#39;.*/minimal\.jsonnet&#39;&quot;</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">stderr</span><span class="p">)</span></div>
 
 
@@ -169,64 +146,58 @@
     <span class="k">assert</span> <span class="ow">not</span> <span class="n">stderr</span></div>
 
 
-<span class="c1"># --------------------------------------------------------------------</span>
-<span class="c1"># These tests verify expected behavior for channel (not DE)</span>
-<span class="c1"># configurations.</span>
 <div class="viewcode-block" id="test_channel_no_config_files"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_no_config_files">[docs]</a><span class="k">def</span> <span class="nf">test_channel_no_config_files</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/no_config_files&quot;</span><span class="p">)</span></div>
+    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.jsonnet&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/no_config_files&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="test_channel_empty_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_empty_config">[docs]</a><span class="k">def</span> <span class="nf">test_channel_empty_config</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">capsys</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/empty_config&quot;</span><span class="p">)</span>
-    <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">capsys</span><span class="o">.</span><span class="n">readouterr</span><span class="p">()</span>
-    <span class="n">expected</span> <span class="o">=</span> <span class="s2">&quot;The supplied configuration.*has been converted to a valid JSON construct&quot;</span>
-    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">stderr</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+<div class="viewcode-block" id="test_channel_empty_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_empty_config">[docs]</a><span class="k">def</span> <span class="nf">test_channel_empty_config</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
+    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.jsonnet&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/empty_config&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;Empty configuration file .*</span><span class="se">\\</span><span class="s2">.jsonnet&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_channel_empty_dictionary"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_empty_dictionary">[docs]</a><span class="k">def</span> <span class="nf">test_channel_empty_dictionary</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/empty_dictionary&quot;</span><span class="p">)</span>
+    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.jsonnet&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/empty_dictionary&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;channel is missing one or more mandatory keys&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_channel_no_modules"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_no_modules">[docs]</a><span class="k">def</span> <span class="nf">test_channel_no_modules</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/no_modules&quot;</span><span class="p">)</span></div>
+    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.jsonnet&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/no_modules&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_channel_invalid_modules_string"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_invalid_modules_string">[docs]</a><span class="k">def</span> <span class="nf">test_channel_invalid_modules_string</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/invalid_modules_string&quot;</span><span class="p">)</span>
+    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.jsonnet&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/invalid_modules_string&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is not a dictionary:&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_channel_invalid_modules_list"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_invalid_modules_list">[docs]</a><span class="k">def</span> <span class="nf">test_channel_invalid_modules_list</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/invalid_modules_list&quot;</span><span class="p">)</span>
+    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.jsonnet&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/invalid_modules_list&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is not a dictionary:&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_channel_invalid_modules_no_keys"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_invalid_modules_no_keys">[docs]</a><span class="k">def</span> <span class="nf">test_channel_invalid_modules_no_keys</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/invalid_modules_no_keys&quot;</span><span class="p">)</span>
+    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.jsonnet&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/invalid_modules_no_keys&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is not a dictionary:&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_channel_module_missing_all"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_module_missing_all">[docs]</a><span class="k">def</span> <span class="nf">test_channel_module_missing_all</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/module_missing_all&quot;</span><span class="p">)</span>
+    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.jsonnet&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/module_missing_all&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is missing one or more mandatory keys&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_channel_module_missing_module"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_module_missing_module">[docs]</a><span class="k">def</span> <span class="nf">test_channel_module_missing_module</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/module_missing_module&quot;</span><span class="p">)</span>
+    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.jsonnet&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/module_missing_module&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is missing one or more mandatory keys&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_channel_module_missing_parameters"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_module_missing_parameters">[docs]</a><span class="k">def</span> <span class="nf">test_channel_module_missing_parameters</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
-    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/module_missing_parameters&quot;</span><span class="p">)</span>
+    <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.jsonnet&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/module_missing_parameters&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;is missing one or more mandatory keys&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
 
 
 <span class="c1"># --------------------------------------------------------------------</span>
 <span class="c1"># Test channel names based on channel configuration file names</span>
 <div class="viewcode-block" id="test_channel_names"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_channel_names">[docs]</a><span class="k">def</span> <span class="nf">test_channel_names</span><span class="p">(</span><span class="n">load</span><span class="p">):</span>
-    <span class="n">handler</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal_python.conf&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/no_modules&quot;</span><span class="p">)</span>
+    <span class="n">handler</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s2">&quot;minimal.jsonnet&quot;</span><span class="p">,</span> <span class="n">relative_channel_config_dir</span><span class="o">=</span><span class="s2">&quot;channels/no_modules&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;no_modules&quot;</span><span class="p">]</span>
     <span class="n">handler</span><span class="o">.</span><span class="n">print_channel_config</span><span class="p">(</span><span class="s2">&quot;no_modules&quot;</span><span class="p">)</span></div>
 
