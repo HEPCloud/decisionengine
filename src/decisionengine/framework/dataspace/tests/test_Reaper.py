@@ -1,3 +1,4 @@
+import contextlib
 import gc
 import logging
 import time
@@ -39,12 +40,10 @@ def reaper(request):
 
     yield reaper
 
-    try:
+    with contextlib.suppress(Exception):
         if reaper.thread.is_alive() or not reaper.state.should_stop():
             reaper.state.set(State.OFFLINE)
             reaper.join(timeout=1)
-    except Exception:
-        pass
 
     del reaper
     gc.collect()

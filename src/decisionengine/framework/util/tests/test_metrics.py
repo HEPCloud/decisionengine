@@ -35,7 +35,7 @@ def Counter():
     yield _counter
 
 
-@pytest.fixture
+@pytest.fixture()
 def OtherMetric():
     from decisionengine.framework.util.metrics import Histogram, Summary
 

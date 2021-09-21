@@ -357,7 +357,7 @@ class DataBlock:
             store_value = compress({"pickled": True, "value": pickle.dumps(value, protocol=pickle.HIGHEST_PROTOCOL)})
         self.logger.debug("datablock waiting for internal write lock in '_setitem'")
         with self.__internal_data_write_lock:
-            if key in self.keys():
+            if key in self:
                 # This has been already inserted, so you are working on a copy
                 # that was backed up. You need to update and adjust the update
                 # counter

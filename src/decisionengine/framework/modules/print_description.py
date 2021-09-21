@@ -6,7 +6,7 @@ from decisionengine.framework.util.subclasses import all_subclasses
 
 
 def _print_value(v):
-    return f'"{v}"' if type(v) is str else f"{v}"
+    return f'"{v}"' if isinstance(v, str) else f"{v}"
 
 
 def _print_type(type_or_value):

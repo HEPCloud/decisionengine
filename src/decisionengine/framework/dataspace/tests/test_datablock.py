@@ -65,6 +65,7 @@ def test_DataBlock_key_management(dataspace):  # noqa: F811
     # test with automatic metadata and string value
     dblock.put("example_test_key", "example_test_value", header)
 
+    # verify __contains__ matches .keys()
     assert "example_test_key" in dblock.keys()
     assert "example_test_key" in dblock
 
