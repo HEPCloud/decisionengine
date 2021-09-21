@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.1.dev8+ga48dd7d8 documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.1.dev10+g9521d3ce documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -83,7 +83,7 @@
 <span class="kn">import</span> <span class="nn">structlog</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace</span> <span class="kn">import</span> <span class="n">datablock</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.LogicEngine</span> <span class="kn">import</span> <span class="n">LogicEngine</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.LogicEngine</span> <span class="kn">import</span> <span class="n">LogicEngine</span><span class="p">,</span> <span class="n">passthrough_configuration</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.managers.ComponentManager</span> <span class="kn">import</span> <span class="n">ComponentManager</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Module</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">CHANNELLOGGERNAME</span><span class="p">,</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
@@ -108,11 +108,11 @@
     <span class="n">subclasses</span> <span class="o">=</span> <span class="n">all_subclasses</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">base_class</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">subclasses</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Could not find a decision-engine &#39;</span><span class="si">{</span><span class="n">base_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; in the module:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="sa">f</span><span class="s2">&quot;  &#39;</span><span class="si">{</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not find a decision-engine &#39;</span><span class="si">{</span><span class="n">base_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; in the module &#39;</span><span class="si">{</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subclasses</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">error_msg</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Found more than one decision-engine &#39;</span><span class="si">{</span><span class="n">base_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; in the module</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Found more than one decision-engine &#39;</span><span class="si">{</span><span class="n">base_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; in the module &#39;</span><span class="si">{</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">:</span>
             <span class="n">error_msg</span> <span class="o">+=</span> <span class="s2">&quot; - &quot;</span> <span class="o">+</span> <span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -181,10 +181,21 @@
 
         <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel source&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">],</span> <span class="n">Source</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
-        <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel logicengine&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">le_s</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;logicengines&quot;</span><span class="p">],</span> <span class="n">LogicEngine</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
+
         <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel publisher&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">publishers</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;publishers&quot;</span><span class="p">],</span> <span class="n">Publisher</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
+
+        <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel logicengine&quot;</span><span class="p">)</span>
+        <span class="n">configured_le_s</span> <span class="o">=</span> <span class="n">channel_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logicengines&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">configured_le_s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;No &#39;logicengines&#39; configuration detected; will use default configuration, which unconditionally executes all configured publishers.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">configured_le_s</span> <span class="o">=</span> <span class="n">passthrough_configuration</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;publishers&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">configured_le_s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot support more than one logic engine per channel.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">le_s</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">configured_le_s</span><span class="p">,</span> <span class="n">LogicEngine</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
 
         <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel transform&quot;</span><span class="p">)</span>
         <span class="n">transforms</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;transforms&quot;</span><span class="p">],</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>

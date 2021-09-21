@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.1.dev8+ga48dd7d8 documentation</title>
+  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 1.7.1.dev10+g9521d3ce documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -78,8 +78,7 @@
 <span class="sd">The ChannelConfigHandler manages only channel configurations and not</span>
 <span class="sd">the global decision-engine configuration.  It is responsible for</span>
 <span class="sd">loading channel configuration files and validating that the channels</span>
-<span class="sd">have the correct configuration artifacts and inter-module product</span>
-<span class="sd">dependencies.</span>
+<span class="sd">have the correct configuration artifacts.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
@@ -90,8 +89,8 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.config</span> <span class="kn">import</span> <span class="n">ValidConfig</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span>
 
-<span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sources&quot;</span><span class="p">,</span> <span class="s2">&quot;logicengines&quot;</span><span class="p">,</span> <span class="s2">&quot;transforms&quot;</span><span class="p">,</span> <span class="s2">&quot;publishers&quot;</span><span class="p">}</span>
-<span class="n">_ALLOWED_CHANNEL_KEYS</span> <span class="o">=</span> <span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">|</span> <span class="p">{</span><span class="s2">&quot;task_manager&quot;</span><span class="p">}</span>
+<span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sources&quot;</span><span class="p">,</span> <span class="s2">&quot;transforms&quot;</span><span class="p">,</span> <span class="s2">&quot;publishers&quot;</span><span class="p">}</span>
+<span class="n">_ALLOWED_CHANNEL_KEYS</span> <span class="o">=</span> <span class="n">_MANDATORY_CHANNEL_KEYS</span> <span class="o">|</span> <span class="p">{</span><span class="s2">&quot;logicengines&quot;</span><span class="p">,</span> <span class="s2">&quot;task_manager&quot;</span><span class="p">}</span>
 <span class="n">_MANDATORY_MODULE_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">}</span>
 
 
@@ -164,7 +163,7 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
                 <span class="kc">False</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;Failed to open channel configuration file </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s2">&quot;contains error</span><span class="se">\n</span><span class="s2">-&gt; </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;Failed to open channel configuration file </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> contains error</span><span class="se">\n</span><span class="s2">-&gt; </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -172,7 +171,7 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">msg</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
                 <span class="kc">False</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;The channel configuration file </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> contains a &quot;</span> <span class="sa">f</span><span class="s2">&quot;validation error</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;The channel configuration file </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> contains a validation error</span><span class="se">\n</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">SKIPPING channel&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2"> config is valid.&quot;</span><span class="p">)</span>
 
