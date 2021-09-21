@@ -10,9 +10,9 @@ import structlog
 
 from decisionengine.framework.dataspace import datablock
 from decisionengine.framework.managers.ComponentManager import ComponentManager, create_runner
-from decisionengine.framework.managers.ProcessingState import State
 from decisionengine.framework.managers.SourceSubscriptionManager import Subscription
 from decisionengine.framework.modules.logging_configDict import LOGGERNAME
+from decisionengine.framework.taskmanager.ProcessingState import State
 
 _TRANSFORMS_TO = 300  # 5 minutes
 _DEFAULT_SCHEDULE = 300  # ""
