@@ -1,3 +1,4 @@
+import contextlib
 import platform
 import time
 
@@ -479,11 +480,9 @@ class Postgresql(ds.DataSource):
             # do not log stack trace, Exception thrown is handled by the caller
             raise
         finally:
-            try:
-                list(x.close if x else None for x in (cursor, db))
-            except psycopg2.Error:  # pragma: no cover
+            with contextlib.suppress(psycopg2.Error):
                 # do not log stack trace, Exception thrown is handled by the caller
-                pass
+                list(x.close if x else None for x in (cursor, db))
 
     def _update(self, query_string, values=None):
         db, cursor = None, None
@@ -520,12 +519,10 @@ class Postgresql(ds.DataSource):
             res = cursor.fetchone()
             db.commit()
             return res
-        except psycopg2.Error:
-            try:
+        except psycopg2.Error:  # pragma: no cover
+            with contextlib.suppress(psycopg2.Error):
                 if db:
                     db.rollback()
-            except psycopg2.Error:  # pragma: no cover
-                pass
             raise
         finally:
             list(x.close if x else None for x in (cursor, db))

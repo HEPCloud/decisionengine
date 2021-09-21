@@ -7,6 +7,7 @@ if this environment variable is not defined the ``DE-Config.py`` file from the `
 """
 
 import argparse
+import contextlib
 import enum
 import json
 import logging
@@ -557,10 +558,8 @@ def _start_de_server(server):
               Fatal Error: {__e}"""
         print(msg, file=sys.stderr)
 
-        try:
+        with contextlib.suppress(Exception):
             server.get_logger().error(msg)
-        except Exception:  # pragma: no cover
-            pass
 
         raise __e
 

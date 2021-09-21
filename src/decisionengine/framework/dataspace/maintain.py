@@ -86,7 +86,7 @@ class Reaper:
         if int(value) < self.MIN_SECONDS_BETWEEN_RUNS:
             self.logger.exception("Error in initializing Reaper!")
             raise ValueError(
-                "For performance the time between runs to be greater than {self.MIN_SECONDS_BETWEEN_RUNS} seconds"
+                f"For performance the time between runs to be greater than {self.MIN_SECONDS_BETWEEN_RUNS} seconds"
             )
         self.logger.debug(f"Reaper setting seconds_between_runs to {value}.")
         self.__seconds_between_runs = int(value)
