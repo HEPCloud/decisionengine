@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>decisionengine.framework.managers.SourceSubscriptionManager &mdash; decisionengine 1.7.1.dev12+g2a328c25 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> decisionengine
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.7.html">Latest</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">decisionengine</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>decisionengine.framework.managers.SourceSubscriptionManager</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for decisionengine.framework.managers.SourceSubscriptionManager</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Source Subscription Manager</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+
+<div class="viewcode-block" id="Subscription"><a class="viewcode-back" href="../../../../code/decisionengine.framework.managers.html#decisionengine.framework.managers.SourceSubscriptionManager.Subscription">[docs]</a><span class="k">class</span> <span class="nc">Subscription</span><span class="p">:</span>
+    <span class="c1"># Subscriptions are used as an abstraction of all the information required by the SourceSubscriptionManager to bind a Channel to its Sources</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_manager_id</span><span class="p">,</span> <span class="n">channel_manager_name</span><span class="p">,</span> <span class="n">source_names</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_manager_id</span> <span class="o">=</span> <span class="n">channel_manager_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_manager_name</span> <span class="o">=</span> <span class="n">channel_manager_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">source_names</span></div>
+
+
+<div class="viewcode-block" id="SourceSubscriptionManager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.managers.html#decisionengine.framework.managers.SourceSubscriptionManager.SourceSubscriptionManager">[docs]</a><span class="k">class</span> <span class="nc">SourceSubscriptionManager</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This implements the communication between Sources and Channels</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keep_running</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_product_queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>  <span class="c1"># Incoming data blocks from source processes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscribe_queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>  <span class="c1"># Incoming source subscriptions by channels</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">manager</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Manager</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_subscribed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>  <span class="c1"># Notify channel when subscription process has completed</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_subscriptions</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span>
+            <span class="nb">list</span>
+        <span class="p">)</span>  <span class="c1"># Map sources to a list of channel ids subscribed to those sources</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># Map sources to lists of source ids</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_data_sinks</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span>
+            <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Queue</span>
+        <span class="p">)</span>  <span class="c1"># Maintain an multiprocessing Queue for each channel to have data products communicated to it</span>
+
+<div class="viewcode-block" id="SourceSubscriptionManager.get_new_subscriptions"><a class="viewcode-back" href="../../../../code/decisionengine.framework.managers.html#decisionengine.framework.managers.SourceSubscriptionManager.SourceSubscriptionManager.get_new_subscriptions">[docs]</a>    <span class="k">def</span> <span class="nf">get_new_subscriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># This thread should construct the datablocks for the channels and manage the source content within them for a channel.i</span>
+        <span class="c1">#   This prevents us from having to communicate anything more complex than Python builtin classes accross process boundaries.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_subscription</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscribe_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">sub_id</span> <span class="o">=</span> <span class="n">new_subscription</span><span class="o">.</span><span class="n">channel_manager_id</span>
+
+            <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">new_subscription</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">source_subscriptions</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sub_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel_subscribed</span><span class="p">[</span><span class="n">sub_id</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="SourceSubscriptionManager.send_data_product_to_subscribed"><a class="viewcode-back" href="../../../../code/decisionengine.framework.managers.html#decisionengine.framework.managers.SourceSubscriptionManager.SourceSubscriptionManager.send_data_product_to_subscribed">[docs]</a>    <span class="k">def</span> <span class="nf">send_data_product_to_subscribed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_source_info</span><span class="p">):</span>
+        <span class="c1"># Send data product to the channels that are subscribed to the source that generated it</span>
+        <span class="n">source_name</span> <span class="o">=</span> <span class="n">new_source_info</span><span class="p">[</span><span class="s2">&quot;source_name&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">channel_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_subscriptions</span><span class="p">[</span><span class="n">source_name</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel_data_sinks</span><span class="p">[</span><span class="n">channel_id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_source_info</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SourceSubscriptionManager.run"><a class="viewcode-back" href="../../../../code/decisionengine.framework.managers.html#decisionengine.framework.managers.SourceSubscriptionManager.SourceSubscriptionManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_new_subscriptions</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Check for new data blocks</span>
+                <span class="c1"># source_new_info = { &#39;source_name&#39;: source_name, &#39;source_id&#39;: source_id , &#39;data&#39;: data, &#39;header&#39;: header }</span>
+                <span class="n">new_source_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_product_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send_data_product_to_subscribed</span><span class="p">(</span><span class="n">new_source_info</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Fermilab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
