@@ -3,7 +3,7 @@ Decision Engine ComponentManager
 (Base class for ChannelManager and SourceManager)
 """
 
-# import importlib # Disabled until it is needed by SourceManager and ChannelManager
+import importlib
 import logging
 import multiprocessing
 import uuid
@@ -11,14 +11,14 @@ import uuid
 from decisionengine.framework.dataspace import datablock, dataspace
 from decisionengine.framework.taskmanager.ProcessingState import ProcessingState, State
 
-# Disabled until it is needed by SourceManager and ChannelManager
-# def create_runner(module_name, class_name, parameters):
-#    """
-#    Create instance of dynamically loaded module
-#    """
-#    my_module = importlib.import_module(module_name)
-#    class_type = getattr(my_module, class_name)
-#    return class_type(parameters)
+
+def create_runner(module_name, class_name, parameters):
+    """
+    Create instance of dynamically loaded module
+    """
+    my_module = importlib.import_module(module_name)
+    class_type = getattr(my_module, class_name)
+    return class_type(parameters)
 
 
 class ComponentManager:
