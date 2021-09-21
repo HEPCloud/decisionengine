@@ -19,14 +19,8 @@ def create_parser():
     server.add_argument("--show-de-config", action="store_true", help="print server configuration")
     server.add_argument("--print-engine-loglevel", action="store_true", help="print engine log level")
     server.add_argument("--block-while", metavar="<state>")
-    server.add_argument(   
-        "--metrics",
-        action='store_true',
-        help="print metrics")
-    server.add_argument(  
-        "--list-rpc-methods",
-        action='store_true',
-        help="print all rpc methods")
+    server.add_argument("--metrics", action="store_true", help="print metrics")
+    server.add_argument("--list-rpc-methods", action="store_true", help="print all rpc methods")
 
     channels = parser.add_argument_group("Channel-specific options")
     channels.add_argument("--start-channels", action="store_true", help="start all channels")

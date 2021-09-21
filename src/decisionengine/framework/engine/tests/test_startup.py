@@ -1,11 +1,8 @@
-import pytest
 import tempfile
 
-from decisionengine.framework.engine.DecisionEngine import (
-    parse_program_options,
-    _get_global_config,
-    _check_metrics_env
-)
+import pytest
+
+from decisionengine.framework.engine.DecisionEngine import _check_metrics_env, _get_global_config, parse_program_options
 
 # Because we just want to ensure correct behavior of program options
 # overriding a configuration, it is not necessary to have a valid DE
@@ -29,6 +26,7 @@ def metrics_env_setup(tmp_path, monkeypatch):
     yield
     monkeypatch.delenv("PROMETHEUS_MULTIPROC_DIR")
 
+
 # We do not call the DE's _get_de_conf_manager as that assumes the
 # presence of configuration directories, which are unnecessary for
 # this test.
@@ -50,13 +48,12 @@ def test_change_port():
 
 
 def test_check_metrics_env_no_webserver():
-    arguments = ['--no-webserver']
+    arguments = ["--no-webserver"]
     options = parse_program_options(arguments)
     try:
         _check_metrics_env(options)
     except Exception as e:
-        pytest.fail(f"--no-webserver should have skipped the metrics env check,"
-                    " but instead we got an exception {e}")
+        pytest.fail(f"--no-webserver should have skipped the metrics env check, but instead we got an exception {e}")
 
 
 @pytest.mark.usefixtures("metrics_env_setup")
@@ -66,9 +63,9 @@ def test_check_metrics_env_var_set():
     try:
         _check_metrics_env(options)
     except Exception as e:
-        pytest.fail(f"PROMETHEUS_MULTIPROC_DIR should be set, so"
-                    " check_metrics_env should have passed but instead we got"
-                    " an exception {e}")
+        pytest.fail(
+            f"PROMETHEUS_MULTIPROC_DIR should be set, so check_metrics_env should have passed but instead we got an exception {e}"
+        )
 
 
 def test_check_metrics_env_var_unset():

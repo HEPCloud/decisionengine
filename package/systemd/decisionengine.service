@@ -8,7 +8,8 @@ Type = simple
 EnvironmentFile = -/etc/sysconfig/decisionengine
 User = decisionengine
 Group = decisionengine
-ExecStart = /usr/bin/decisionengine
+PrivateTmp = true
+ExecStart = /usr/bin/decisionengine "$DE_OPTS"
 ExecStop = /usr/bin/echo "Running /usr/bin/de-client --stop" >&2
 ExecStop = /usr/bin/de-client --stop
 

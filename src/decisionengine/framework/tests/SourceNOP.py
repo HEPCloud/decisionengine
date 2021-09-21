@@ -1,12 +1,10 @@
 import pandas as pd
 
-from decisionengine.framework.modules import Source
 from prometheus_client import Gauge
 
-sourcenop_test_values = Gauge('sourcenop_test_values',
-	  "Test metric",
-	  labelnames=['key1'],
-	  multiprocess_mode='liveall')
+from decisionengine.framework.modules import Source
+
+sourcenop_test_values = Gauge("sourcenop_test_values", "Test metric", labelnames=["key1"], multiprocess_mode="liveall")
 
 
 @Source.produces(foo=pd.DataFrame)
@@ -15,7 +13,7 @@ class SourceNOP(Source.Source):
         super().__init__(config)
 
     def acquire(self):
-        return {
+        result = {
             "foo": pd.DataFrame(
                 [
                     {"key1": "value1", "key2": 0.1},
@@ -24,9 +22,9 @@ class SourceNOP(Source.Source):
                 ]
             )
         }
-        for _, row in result['foo'].iterrows():
-            if isinstance(row['key2'], (float, int)):
-                sourcenop_test_values.labels(row['key1']).set(row['key2'])
+        for _, row in result["foo"].iterrows():
+            if isinstance(row["key2"], (float, int)):
+                sourcenop_test_values.labels(row["key1"]).set(row["key2"])
 
         return result
 
