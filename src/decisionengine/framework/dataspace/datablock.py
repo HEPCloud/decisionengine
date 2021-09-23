@@ -252,7 +252,7 @@ class DataBlock:
         return f"{value}"
 
     def __contains__(self, key):
-        return key in self.keys()
+        return key in self.keys()  # noqa: SIM118
 
     def keys(self):
         self.logger.debug("datablock waiting for internal read lock in 'keys'")

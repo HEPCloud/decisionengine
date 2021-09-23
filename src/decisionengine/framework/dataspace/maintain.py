@@ -147,14 +147,13 @@ class Reaper:
         if self.state.should_stop() and not self.state.inactive():
             self.logger.debug(f"Reaper asked to start during stop: {self.state.get()}.")
 
-        if isinstance(self.thread, threading.Thread):
-            if self.thread.is_alive():
-                try:
-                    # threads need to end, else we orphan one and make a new thread
-                    raise RuntimeError("Reaper asked to start, but it is running already.")
-                except RuntimeError as __e:
-                    self.logger.exception(__e)
-                    raise
+        if isinstance(self.thread, threading.Thread) and self.thread.is_alive():
+            try:
+                # threads need to end, else we orphan one and make a new thread
+                raise RuntimeError("Reaper asked to start, but it is running already.")
+            except RuntimeError as __e:
+                self.logger.exception(__e)
+                raise
 
         try:
             # each invocation must be a new thread

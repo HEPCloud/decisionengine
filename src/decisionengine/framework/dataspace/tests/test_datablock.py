@@ -66,7 +66,7 @@ def test_DataBlock_key_management(dataspace):  # noqa: F811
     dblock.put("example_test_key", "example_test_value", header)
 
     # verify __contains__ matches .keys()
-    assert "example_test_key" in dblock.keys()
+    assert "example_test_key" in dblock.keys()  # noqa: SIM118
     assert "example_test_key" in dblock
 
     assert dblock.get("example_test_key") == "example_test_value"
