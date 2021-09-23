@@ -21,6 +21,8 @@ are not available for your platform.
 
 NOTE: This project has a pre-commit config.
 To install it run `pre-commit install` from the repository root.
+You may want to setup automatic notifications for pre-commit enabled
+repos: https://pre-commit.com/index.html#automatically-enabling-pre-commit-on-repositories
 
 Make sure you have up to date versions of `pip`, `setuptools`, and `wheel`.
 
