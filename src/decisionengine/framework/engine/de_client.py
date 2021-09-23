@@ -94,12 +94,10 @@ def execute_command_from_args(argsparsed, de_socket):
     # Channel-specific options
     if argsparsed.stop_channel:
         return de_socket.stop_channel(argsparsed.stop_channel)
-    if argsparsed.force:
-        if not argsparsed.kill_channel:
-            return "The --force (-f) option may be used only with --kill-channel."
-    if argsparsed.timeout:
-        if not argsparsed.kill_channel and not argsparsed.block_while:
-            return "The --timeout option may be used only with --kill-channel or --block-while."
+    if argsparsed.force and not argsparsed.kill_channel:
+        return "The --force (-f) option may be used only with --kill-channel."
+    if argsparsed.timeout and not argsparsed.kill_channel and not argsparsed.block_while:
+        return "The --timeout option may be used only with --kill-channel or --block-while."
     if argsparsed.kill_channel:
         timeout = None  # Use server-configured timeout
         if argsparsed.force:

@@ -495,12 +495,10 @@ class Postgresql(ds.DataSource):
             else:
                 cursor.execute(query_string)
             db.commit()
-        except psycopg2.Error:
-            try:
+        except psycopg2.Error:  # pragma: no cover
+            with contextlib.suppress(psycopg2.Error):
                 if db:
                     db.rollback()
-            except psycopg2.Error:  # pragma: no cover
-                pass
             raise
         finally:
             list(x.close if x else None for x in (cursor, db))
