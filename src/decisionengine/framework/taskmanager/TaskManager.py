@@ -19,7 +19,7 @@ from decisionengine.framework.modules.Transform import Transform
 from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
 from decisionengine.framework.taskmanager.ProcessingState import State
 from decisionengine.framework.util.subclasses import all_subclasses
-from decisionengine.framework.util.metrics import *
+from decisionengine.framework.util.metrics import Gauge, Summary
 from decisionengine.framework.util.subclasses import all_subclasses
 
 _DEFAULT_SCHEDULE = 300  # 5 minutes
