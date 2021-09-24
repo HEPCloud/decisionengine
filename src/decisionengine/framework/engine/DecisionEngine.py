@@ -35,10 +35,9 @@ from decisionengine.framework.config import ChannelConfigHandler, policies, Vali
 from decisionengine.framework.dataspace.maintain import Reaper
 from decisionengine.framework.engine.Workers import Worker, Workers
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
-from decisionengine.framework.util.metrics import *
+from decisionengine.framework.util.metrics import display_metrics, Gauge, Summary
 
 DEFAULT_WEBSERVER_PORT = 8000
-
 
 # DecisionEngine metrics
 STATUS_SUMMARY = Summary("de_client_status_duration_seconds", "Time to run de-client --status")
@@ -603,7 +602,8 @@ def _get_global_config(config_file, options):
         sys.exit(f"Failed to load configuration {config_file}\n{msg}")
 
     global_config.update(
-        {"server_address": ["localhost", options.port]}  # Use Jsonnet-supported schema (i.e. not a tuple)
+        # Use Jsonnet-supported schema (i.e. not a tuple)
+        {"server_address": ["localhost", options.port]}
     )
 
     if options.no_webserver:
