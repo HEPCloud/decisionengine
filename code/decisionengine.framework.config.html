@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.config package &mdash; decisionengine 1.7.1.dev15+ga4a7938c documentation</title>
+  <title>decisionengine.framework.config package &mdash; decisionengine 1.7.1.dev16+g590bea3f documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -101,6 +101,7 @@
 <li class="toctree-l1"><a class="reference internal" href="decisionengine.framework.config.tests.html">decisionengine.framework.config.tests package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.config.tests.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.config.tests.html#module-decisionengine.framework.config.tests.test_config">decisionengine.framework.config.tests.test_config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.config.tests.html#module-decisionengine.framework.config.tests.test_de_std">decisionengine.framework.config.tests.test_de_std module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.config.tests.html#module-decisionengine.framework.config.tests.test_policies">decisionengine.framework.config.tests.test_policies module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.config.tests.html#module-decisionengine.framework.config.tests">Module contents</a></li>
 </ul>
@@ -177,14 +178,13 @@ of the supplied method argument.</p>
 <p>ValidConfig represents a valid JSON document.</p>
 <p>The decision engine requires each of its configuration files to be
 valid JSON.  This is achieved by either supplying a valid Jsonnet or
-JSON document upfront, or by providing a Python dictionary that can be
-trivially converted to a JSON document.</p>
+JSON document upfront.</p>
 <p>Vetting of a file for JSON validity happens upon construction of a
 ‘ValidConfig’ object.  A fully constructed ‘ValidConfig’ object thus
 corresponds to a valid JSON document.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="decisionengine.framework.config.ValidConfig.ValidConfig">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.config.ValidConfig.</span></span><span class="sig-name descname"><span class="pre">ValidConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/config/ValidConfig.html#ValidConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.config.ValidConfig.ValidConfig" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.config.ValidConfig.</span></span><span class="sig-name descname"><span class="pre">ValidConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jpathdirs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/config/ValidConfig.html#ValidConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.config.ValidConfig.ValidConfig" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.UserDict</span></code></p>
 <p>ValidConfig represents a valid JSON configuration in the form of a dictionary.</p>
 <p>In addition to the normal dictionary operations, users may call ‘dump()’ to print
@@ -204,7 +204,7 @@ out in a string form the JSON configuration.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="decisionengine.framework.config.ValidConfig._config_from_file">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.config.ValidConfig.</span></span><span class="sig-name descname"><span class="pre">_config_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/config/ValidConfig.html#_config_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.config.ValidConfig._config_from_file" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.config.ValidConfig.</span></span><span class="sig-name descname"><span class="pre">_config_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jpaths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/config/ValidConfig.html#_config_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.config.ValidConfig._config_from_file" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
