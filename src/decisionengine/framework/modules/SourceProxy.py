@@ -24,8 +24,15 @@ must_have = ("source_channel", "Dataproducts")
     Parameter("retry_interval", default=RETRY_INTERVAL, comment="Number of seconds to wait between retries."),
 )
 class SourceProxy(Source.Source):
+    # We do not want anybody to inherit from SourceProxy.  The PyPI
+    # 'final-class' package can also be used to prevent such
+    # inheritance.
+    def __init_subclass__(cls):
+        raise RuntimeError("Cannot inherit from SourceProxy.")
+
     def __init__(self, config):
         super().__init__(config)
+
         if not set(must_have).issubset(set(config.keys())):
             raise RuntimeError(f"SourceProxy misconfigured. Must have {must_have} defined")
         self.source_channel = config["source_channel"]
@@ -33,10 +40,7 @@ class SourceProxy(Source.Source):
         self.max_attempts = config.get("max_attempts", MAX_ATTEMPTS)
         self.retry_interval = config.get("retry_interval", RETRY_INTERVAL)
 
-        # Hack - it is possible for a subclass to declare @produces,
-        #        in which case, we do not want to override that.
-        if not self._produces:
-            self._produces = {new_name: Any for new_name in self.data_keys.values()}
+        self._produces = {new_name: Any for new_name in self.data_keys.values()}
 
     def post_create(self, global_config):
         self.dataspace = dataspace.DataSpace(global_config)

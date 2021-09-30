@@ -1,7 +1,7 @@
 {
   sources: {
     source1: {
-      module: "decisionengine.framework.tests.WorkingSourceProxy",
+      module: "decisionengine.framework.modules.SourceProxy",
       parameters: {
         source_channel: "test_channel",
         Dataproducts: ["foo"],

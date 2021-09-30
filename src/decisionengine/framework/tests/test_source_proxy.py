@@ -7,6 +7,7 @@ import re
 import pytest
 
 from decisionengine.framework.dataspace.datasources.tests.fixtures import mock_data_block  # noqa: F401
+from decisionengine.framework.modules.SourceProxy import SourceProxy
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITH_SCHEMA,
@@ -19,6 +20,13 @@ from decisionengine.framework.tests.fixtures import (  # noqa: F401
 
 _channel_config_dir = os.path.join(TEST_CONFIG_PATH, "test-source-proxy")  # noqa: F405
 deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir)  # pylint: disable=invalid-name
+
+
+def test_cannot_inherit_from_source_proxy():
+    with pytest.raises(RuntimeError, match="Cannot inherit from SourceProxy."):
+
+        class CannotInheritFrom(SourceProxy):
+            pass
 
 
 @pytest.mark.usefixtures("deserver")
