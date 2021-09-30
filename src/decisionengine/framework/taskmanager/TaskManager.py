@@ -20,8 +20,7 @@ from decisionengine.framework.taskmanager.module_graph import ensure_no_circular
 from decisionengine.framework.taskmanager.ProcessingState import ProcessingState, State
 from decisionengine.framework.util.subclasses import all_subclasses
 
-_TRANSFORMS_TO = 300  # 5 minutes
-_DEFAULT_SCHEDULE = 300  # ""
+_DEFAULT_SCHEDULE = 300  # 5 minutes
 
 delogger = structlog.getLogger(LOGGERNAME)
 delogger = delogger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)

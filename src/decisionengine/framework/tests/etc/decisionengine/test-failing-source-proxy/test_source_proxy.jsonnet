@@ -5,8 +5,7 @@
       "parameters": {
         "source_channel": "test_channel",
         "Dataproducts": ["foo"],
-        "retries": 1,
-        "retry_to": 0
+        "max_attempts": 1,
       },
       "schedule": 1
      }
@@ -15,8 +14,7 @@
    "transforms": {
      "transform1": {
        "module": "decisionengine.framework.tests.TransformNOP",
-       "parameters": {},
-       "schedule": 1
+       "parameters": {}
      }
    },
 
