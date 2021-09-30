@@ -11,7 +11,6 @@
     "transform1": {
       "module": "decisionengine.framework.tests.TransformNOP",
       "parameters": {},
-      "schedule": 1
     }
   },
   "publishers": {

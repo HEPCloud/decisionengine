@@ -14,7 +14,7 @@ from decisionengine.framework.managers.SourceSubscriptionManager import Subscrip
 from decisionengine.framework.modules.logging_configDict import LOGGERNAME
 from decisionengine.framework.taskmanager.ProcessingState import State
 
-_TRANSFORMS_TO = 300  # 5 minutes
+_MAX_WAIT = 300  # 5 minutes
 _DEFAULT_SCHEDULE = 300  # ""
 
 delogger = structlog.getLogger(LOGGERNAME)
@@ -321,7 +321,7 @@ class ChannelManager(ComponentManager):
         :type data_block: :obj:`~datablock.DataBlock`
         :arg data_block: data block
         """
-        data_to = self.channel.channel_manager.get("data_TO", _TRANSFORMS_TO)
+        max_wait = self.channel.channel_manager.get("data_TO", _MAX_WAIT)
         consume_keys = transform.runner.consumes()
 
         delogger.info(
@@ -350,8 +350,8 @@ class ChannelManager(ComponentManager):
                 delogger.info(f"received stop_running signal for {transform.name}")
                 break
             loop_counter += 1
-            if loop_counter == data_to:
-                delogger.info(f"transform {transform.name} did not get consumes data" f"in {data_to} seconds. Exiting")
+            if loop_counter == max_wait:
+                delogger.info(f"transform {transform.name} did not get consumes data" f"in {max_wait} seconds. Exiting")
                 break
         transform.data_updated.set()
 

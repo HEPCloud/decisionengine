@@ -14,16 +14,16 @@ from decisionengine.framework.modules import Source
 from decisionengine.framework.modules.Source import Parameter
 from decisionengine.framework.modules.translate_product_name import translate_all
 
-RETRIES = 10
-RETRY_TO = 60
+MAX_ATTEMPTS = 10
+RETRY_INTERVAL = 60
 must_have = ("source_channel", "Dataproducts")
 
 
 @Source.supports_config(
     Parameter("source_channel", type=str, comment="Channel from which to retrieve data products."),
     Parameter("Dataproducts", type=list, comment="List of data products to retrieve."),
-    Parameter("retries", default=RETRIES, comment="Number of attempts allowed to fetch products."),
-    Parameter("retry_timeout", default=RETRY_TO, comment="Number of seconds to wait between retries."),
+    Parameter("max_attempts", default=MAX_ATTEMPTS, comment="Number of attempts allowed to fetch products."),
+    Parameter("retry_interval", default=RETRY_INTERVAL, comment="Number of seconds to wait between retries."),
 )
 class SourceProxy(Source.Source):
     def __init__(self, config):
@@ -32,8 +32,8 @@ class SourceProxy(Source.Source):
             raise RuntimeError(f"SourceProxy misconfigured. Must have {must_have} defined")
         self.source_channel = config["source_channel"]
         self.data_keys = translate_all(config["Dataproducts"])
-        self.retries = config.get("retries", RETRIES)
-        self.retry_to = config.get("retry_timeout", RETRY_TO)
+        self.max_attempts = config.get("max_attempts", MAX_ATTEMPTS)
+        self.retry_interval = config.get("retry_interval", RETRY_INTERVAL)
 
         # Hack - it is possible for a subclass to declare @produces,
         #        in which case, we do not want to override that.
@@ -60,7 +60,7 @@ class SourceProxy(Source.Source):
         Overrides Source class method
         """
         data_block = None
-        for _ in range(self.retries):
+        for _ in range(self.max_attempts):
             try:
                 tm = self.dataspace.get_taskmanager(self.source_channel)
                 self.logger.debug("task manager %s", tm)
@@ -80,14 +80,14 @@ class SourceProxy(Source.Source):
             except Exception as detail:
                 self.logger.error("Error getting datablock for %s %s", self.source_channel, detail)
 
-            time.sleep(self.retry_to)
+            time.sleep(self.retry_interval)
 
         if not data_block:
             raise RuntimeError("Could not get data.")
 
         rc = {}
         filled_keys = []
-        for _ in range(self.retries):
+        for _ in range(self.max_attempts):
             if len(filled_keys) != len(self.data_keys):
                 for k_in, k_out in self.data_keys.items():
                     if k_in not in filled_keys:
@@ -99,7 +99,7 @@ class SourceProxy(Source.Source):
             if len(filled_keys) == len(self.data_keys):
                 break
             # expected data is not ready yet
-            time.sleep(self.retry_to)
+            time.sleep(self.retry_interval)
 
         if len(filled_keys) != len(self.data_keys):
             raise RuntimeError(f"Could not get all data. Expected {self.data_keys} Filled {filled_keys}")
