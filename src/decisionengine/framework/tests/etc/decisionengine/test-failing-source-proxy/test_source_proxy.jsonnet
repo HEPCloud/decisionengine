@@ -1,11 +1,11 @@
 {
   sources: {
     source1: {
-      module: "decisionengine.framework.tests.FailingSourceProxy",
+      module: "decisionengine.framework.modules.SourceProxy",
       parameters: {
         source_channel: "test_channel",
         Dataproducts: ["foo"],
-        max_attempts: 1,
+        max_attempts: 0,
       },
       schedule: 1,
     },
