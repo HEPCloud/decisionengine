@@ -39,7 +39,7 @@
 // 'sources_from' helper utility skips over any sources that contain
 // the field 'source_channel' in the nested 'parameters' table.
 
-local append(res, block, skip_if="") =
+local append(res, block, skip_if) =
   local current_keys = std.objectFields(res);
   local new_keys = std.objectFields(block);
   local duplicate_keys = std.setInter(current_keys, new_keys);
@@ -52,7 +52,7 @@ local append(res, block, skip_if="") =
       if skip_if == "" || !std.objectHas(block[k].parameters, skip_if)
     };
 
-local gather_from(arr, field, skip_if) =
+local gather_from(arr, field, skip_if="") =
   std.foldl(function(res, config) append(res, config[field], skip_if), arr, {});
 
 {
