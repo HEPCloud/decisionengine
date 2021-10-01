@@ -11,6 +11,11 @@ def myengine():
     yield LogicEngine({"facts": facts, "rules": rules, "channel_name": "test"})
 
 
+def test_error_on_bad_names(myengine):
+    with pytest.raises(NameError, match=r"is not defined"):
+        myengine.evaluate_facts(dict())
+
+
 def test_rule_that_fires(myengine):
     db = {"val": 20}
     ef = myengine.evaluate_facts(db)
