@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.SourceProxy &mdash; decisionengine 1.7.1.dev19+ge021419b documentation</title>
+  <title>decisionengine.framework.modules.SourceProxy &mdash; decisionengine 1.7.1.dev20+gc4fc5997 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -88,16 +88,16 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Source</span> <span class="kn">import</span> <span class="n">Parameter</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.translate_product_name</span> <span class="kn">import</span> <span class="n">translate_all</span>
 
-<span class="n">RETRIES</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">RETRY_TO</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">MAX_ATTEMPTS</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">RETRY_INTERVAL</span> <span class="o">=</span> <span class="mi">60</span>
 <span class="n">must_have</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;source_channel&quot;</span><span class="p">,</span> <span class="s2">&quot;Dataproducts&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="SourceProxy"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.SourceProxy">[docs]</a><span class="nd">@Source</span><span class="o">.</span><span class="n">supports_config</span><span class="p">(</span>
     <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;source_channel&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Channel from which to retrieve data products.&quot;</span><span class="p">),</span>
     <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;Dataproducts&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;List of data products to retrieve.&quot;</span><span class="p">),</span>
-    <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;retries&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">RETRIES</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Number of attempts allowed to fetch products.&quot;</span><span class="p">),</span>
-    <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;retry_timeout&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">RETRY_TO</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Number of seconds to wait between retries.&quot;</span><span class="p">),</span>
+    <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;max_attempts&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">MAX_ATTEMPTS</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Number of attempts allowed to fetch products.&quot;</span><span class="p">),</span>
+    <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;retry_interval&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">RETRY_INTERVAL</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Number of seconds to wait between retries.&quot;</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="k">class</span> <span class="nc">SourceProxy</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">Source</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
@@ -106,8 +106,8 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SourceProxy misconfigured. Must have </span><span class="si">{</span><span class="n">must_have</span><span class="si">}</span><span class="s2"> defined&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source_channel</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;source_channel&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span> <span class="o">=</span> <span class="n">translate_all</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;Dataproducts&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;retries&quot;</span><span class="p">,</span> <span class="n">RETRIES</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;retry_timeout&quot;</span><span class="p">,</span> <span class="n">RETRY_TO</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_attempts&quot;</span><span class="p">,</span> <span class="n">MAX_ATTEMPTS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retry_interval</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;retry_interval&quot;</span><span class="p">,</span> <span class="n">RETRY_INTERVAL</span><span class="p">)</span>
 
         <span class="c1"># Hack - it is possible for a subclass to declare @produces,</span>
         <span class="c1">#        in which case, we do not want to override that.</span>
@@ -134,7 +134,7 @@
 <span class="sd">        Overrides Source class method</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_block</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retries</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">tm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_channel</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;task manager </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">tm</span><span class="p">)</span>
@@ -154,14 +154,14 @@
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">detail</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error getting datablock for </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_channel</span><span class="p">,</span> <span class="n">detail</span><span class="p">)</span>
 
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_interval</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">data_block</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Could not get data.&quot;</span><span class="p">)</span>
 
         <span class="n">rc</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">filled_keys</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retries</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filled_keys</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">k_in</span><span class="p">,</span> <span class="n">k_out</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">k_in</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filled_keys</span><span class="p">:</span>
@@ -173,7 +173,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filled_keys</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">):</span>
                 <span class="k">break</span>
             <span class="c1"># expected data is not ready yet</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_to</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">retry_interval</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filled_keys</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not get all data. Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="si">}</span><span class="s2"> Filled </span><span class="si">{</span><span class="n">filled_keys</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
