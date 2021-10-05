@@ -17,7 +17,7 @@ from decisionengine.framework.modules.Publisher import Publisher
 from decisionengine.framework.modules.Source import Source
 from decisionengine.framework.modules.Transform import Transform
 from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
-from decisionengine.framework.taskmanager.ProcessingState import ProcessingState, State
+from decisionengine.framework.taskmanager.ProcessingState import State
 from decisionengine.framework.util.subclasses import all_subclasses
 
 _DEFAULT_SCHEDULE = 300  # 5 minutes
@@ -153,7 +153,6 @@ class TaskManager(ComponentManager):
         self.logger = structlog.getLogger(CHANNELLOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=self.name)
         self.channel = Channel(channel_dict, self.name)
-        self.state = ProcessingState()
         self.lock = threading.Lock()
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
