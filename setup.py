@@ -4,11 +4,15 @@
 #  but setuptools must first gain support for parsing that
 
 import importlib
+import os
 import pathlib
 import site
 import sys
 
 from setuptools import find_packages, setup
+
+if os.geteuid() == 0:
+    raise RuntimeError("You should not run this as root, make a wheel or rpm as not root")
 
 here = pathlib.Path(__file__).parent.resolve()
 
