@@ -5,8 +5,6 @@ import time
 
 from typing import Any
 
-import pandas as pd
-
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 
@@ -92,7 +90,7 @@ class SourceProxy(Source.Source):
                 for k_in, k_out in self.data_keys.items():
                     if k_in not in filled_keys:
                         try:
-                            rc[k_out] = pd.DataFrame(self._get_data(data_block, k_in))
+                            rc[k_out] = self._get_data(data_block, k_in)
                             filled_keys.append(k_in)
                         except KeyError as ke:
                             self.logger.debug("KEYERROR %s", ke)
