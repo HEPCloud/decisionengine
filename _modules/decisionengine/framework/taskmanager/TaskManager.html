@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.1.dev20+gc4fc5997 documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.1.dev21+g28919b16 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -91,7 +91,7 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Source</span> <span class="kn">import</span> <span class="n">Source</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Transform</span> <span class="kn">import</span> <span class="n">Transform</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.module_graph</span> <span class="kn">import</span> <span class="n">ensure_no_circularities</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">ProcessingState</span><span class="p">,</span> <span class="n">State</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">State</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.subclasses</span> <span class="kn">import</span> <span class="n">all_subclasses</span>
 
 <span class="n">_DEFAULT_SCHEDULE</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes</span>
@@ -227,7 +227,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">CHANNELLOGGERNAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">Channel</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">ProcessingState</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="c1"># The rest of this function will go away once the source-proxy</span>
         <span class="c1"># has been reimplemented.</span>

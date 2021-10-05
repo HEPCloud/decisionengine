@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.1.dev20+gc4fc5997 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.1.dev21+g28919b16 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -362,8 +362,8 @@
             <span class="n">workers</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">worker</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to start </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="n">worker</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="p">[</span><span class="s2">&quot;BOOT&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2"> started&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2"> started&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">worker</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.start_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channels">[docs]</a>    <span class="k">def</span> <span class="nf">start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">load_all_channels</span><span class="p">()</span>
@@ -379,7 +379,9 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">start_channel</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> failed to start : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> failed to start : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_start_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channel">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
@@ -389,7 +391,7 @@
         <span class="n">success</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">load_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">result</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_start_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channels">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
