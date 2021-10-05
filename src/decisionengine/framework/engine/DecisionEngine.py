@@ -288,8 +288,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             workers[channel_name] = worker
         self.logger.debug(f"Trying to start {channel_name}")
         worker.start()
-        worker.wait_while(ProcessingState.State["BOOT"])
         self.logger.info(f"Channel {channel_name} started")
+        return worker
 
     def start_channels(self):
         self.channel_config_loader.load_all_channels()
@@ -307,6 +307,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             except Exception as e:
                 self.logger.exception(f"Channel {name} failed to start : {e}")
 
+        self.block_while(ProcessingState.State.BOOT)
+
     def rpc_start_channel(self, channel_name):
         with self.workers.access() as workers:
             if channel_name in workers:
@@ -315,7 +317,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         success, result = self.channel_config_loader.load_channel(channel_name)
         if not success:
             return result
-        self.start_channel(channel_name, result)
+        self.start_channel(channel_name, result).wait_while(ProcessingState.State.BOOT)
         return "OK"
 
     def rpc_start_channels(self):
