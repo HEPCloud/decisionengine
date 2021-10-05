@@ -40,8 +40,7 @@ runtime_require = [
 
 devel_req = [
     "setuptools >= 51.2",
-    "setuptools-scm >= 6.0.1",
-    "setuptools-scm[toml] >= 6.0.1",
+    "setuptools_scm >= 6.3.1",
     "toml >= 0.10.2",
     "packaging >= 20.4",
     "wheel >= 0.36.2",
