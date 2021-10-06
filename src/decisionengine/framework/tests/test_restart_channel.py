@@ -22,7 +22,7 @@ _port = get_random_port()
 @pytest.fixture()
 def deserver_mock_data_block(mock_data_block):  # noqa: F811
     global_config, channel_config_handler = _get_de_conf_manager(
-        _CONFIG_PATH, _CHANNEL_CONFIG_PATH, parse_program_options([f"--port={_port}"])
+        _CONFIG_PATH, _CHANNEL_CONFIG_PATH, parse_program_options([f"--port={_port}", "--no-webserver"])
     )
     server = _create_de_server(global_config, channel_config_handler)
     server.start_channels()
