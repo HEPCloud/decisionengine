@@ -38,7 +38,6 @@ DEFAULT_OUTPUT = (
 @pytest.mark.usefixtures("deserver")
 def test_query_tool_default(deserver):
     # Test default output
-    deserver.de_client_run_cli("--block-while", "BOOT"),
     output = deserver.de_query_tool_run_cli("foo")
     assert output.startswith(DEFAULT_OUTPUT)
 
@@ -46,7 +45,6 @@ def test_query_tool_default(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_query_tool_csv(deserver):
     # Test csv output
-    deserver.de_client_run_cli("--block-while", "BOOT"),
     output = deserver.de_query_tool_run_cli("foo", "--format=csv")
     assert output.startswith(
         "Product foo:  Found in channel test_channel\n"
@@ -63,7 +61,6 @@ def test_query_tool_csv(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_query_tool_json(deserver):
     # Test json output
-    deserver.de_client_run_cli("--block-while", "BOOT"),
     output = deserver.de_query_tool_run_cli("foo", "--format=json")
     assert output.startswith("Product foo:  Found in channel test_channel\n")
 
@@ -96,8 +93,6 @@ def test_query_tool_json(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_query_tool_since(deserver):
     recently = datetime.datetime.now() - datetime.timedelta(minutes=3)
-    # give the channel a moment to complete setup
-    deserver.de_client_run_cli("--block-while", "BOOT"),
     output = deserver.de_query_tool_run_cli("foo", f'--since="{recently.strftime("%Y-%m-%d %H:%M:%S")}"')
     assert output.startswith(DEFAULT_OUTPUT)
 
@@ -105,6 +100,5 @@ def test_query_tool_since(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_query_tool_invalid_product(deserver):
     # Test invalid product output
-    deserver.de_client_run_cli("--block-while", "BOOT"),
     output = deserver.de_query_tool_run_cli("not_foo")
     assert output == "Product not_foo: Not produced by any module\n"

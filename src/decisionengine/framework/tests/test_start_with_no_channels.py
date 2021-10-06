@@ -14,7 +14,6 @@ from decisionengine.framework.engine.DecisionEngine import (
     _get_de_conf_manager,
     parse_program_options,
 )
-from decisionengine.framework.taskmanager.TaskManager import State
 from decisionengine.framework.tests.fixtures import TEST_CHANNEL_CONFIG_PATH, TEST_CONFIG_PATH
 from decisionengine.framework.util.sockets import get_random_port
 
@@ -30,7 +29,6 @@ def deserver_mock_data_block(mock_data_block):  # noqa: F811
     )
     server = _create_de_server(global_config, channel_config_handler)
     server.start_channels()
-    server.block_while(State.BOOT)
     yield server
     server.stop_channels()
 
@@ -54,7 +52,6 @@ def test_start_from_nothing(deserver_mock_data_block):
 
     # Activate channel and check for steady state
     deserver.rpc_start_channel("test_channel")
-    deserver.block_while(State.BOOT)
     output = deserver.rpc_status()
     assert re.search("test_channel.*state = STEADY", output)
 
@@ -68,7 +65,6 @@ def test_start_from_nothing(deserver_mock_data_block):
 
     # Bring channel back online
     deserver.rpc_start_channel("test_channel")
-    deserver.block_while(State.BOOT)
     output = deserver.rpc_status()
     assert re.search("test_channel.*state = STEADY", output)
 

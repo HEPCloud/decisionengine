@@ -47,7 +47,6 @@ def _expected_circularity(test_str):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_get_products_no_channels(deserver, caplog):
     """Verify client can get channel products even when none are run"""
-    deserver.de_client_run_cli("--block-while", "BOOT"),
     output = deserver.de_client_run_cli("--print-products")
     assert "No channels are currently active." in output
 

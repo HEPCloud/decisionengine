@@ -23,10 +23,6 @@ deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_confi
 
 @pytest.mark.usefixtures("deserver")
 def test_working_source_proxy(deserver):
-    # The following 'block-while' call be unnecessary once the
-    # deserver fixture can reliably block when no workers have yet
-    # been constructed.
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--status")
     assert re.search("test_source_proxy.*state = STEADY", output, re.DOTALL)
     deserver.de_client_run_cli("--stop-channel", "test_source_proxy")
@@ -42,10 +38,6 @@ deserver_fail = DEServer(
 
 @pytest.mark.usefixtures("deserver_fail")
 def test_stop_failing_source_proxy(deserver_fail):
-    # The following 'block-while' call be unnecessary once the
-    # deserver fixture can reliably block when no workers have yet
-    # been constructed.
-    deserver_fail.de_client_run_cli("--block-while", "BOOT")
     output = deserver_fail.de_client_run_cli("--status")
     assert re.search("test_source_proxy.*state = OFFLINE", output, re.DOTALL)
     deserver_fail.de_client_run_cli("--stop-channel", "test_source_proxy")

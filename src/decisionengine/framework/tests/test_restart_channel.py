@@ -10,7 +10,6 @@ from decisionengine.framework.engine.DecisionEngine import (
     _get_de_conf_manager,
     parse_program_options,
 )
-from decisionengine.framework.taskmanager.TaskManager import State
 from decisionengine.framework.util.sockets import get_random_port
 
 _this_dir = pathlib.Path(__file__).parent.resolve()
@@ -27,7 +26,6 @@ def deserver_mock_data_block(mock_data_block):  # noqa: F811
     )
     server = _create_de_server(global_config, channel_config_handler)
     server.start_channels()
-    server.block_while(State.BOOT)
     yield server
     server.stop_channels()
 

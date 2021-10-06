@@ -22,7 +22,6 @@ from decisionengine.framework.engine.DecisionEngine import (
     _start_de_server,
     parse_program_options,
 )
-from decisionengine.framework.taskmanager.TaskManager import State
 from decisionengine.framework.util.sockets import get_random_port
 
 __all__ = [
@@ -178,18 +177,6 @@ def DEServer(
         logger.debug(
             f"DE Fixture: Done waiting for startup state: is_set={server_proc.de_server.startup_complete.is_set()}"
         )
-
-        # The following block only works if there are
-        # active workers; if it is called before any workers
-        # exist, then it will return and not block as requested.
-        # so long as your config contains at least one worker,
-        # this will work as you'd expect.
-        #
-        # Some unit tests will hang forver under some unknown conditions
-        # if there is no timeout.  30 seconds should easily cover any working
-        # tests and not block forever on any non-working ones.
-        logger.debug("DE Fixture: Waiting on channels to start, timeout=30")
-        server_proc.de_server.block_while(State.BOOT, timeout=30)
 
         if not server_proc.is_alive():
             raise RuntimeError("Could not start PrivateDEServer fixture")
