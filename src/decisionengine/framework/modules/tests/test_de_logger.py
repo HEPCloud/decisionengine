@@ -16,6 +16,7 @@ def log_setup():
     # make sure it is in a known "unconfigured state"
     while len(my_log.handlers) > 0:
         my_log.removeHandler(my_log.handlers[0])
+    de_logger._reset_config()
 
     yield my_log
 
