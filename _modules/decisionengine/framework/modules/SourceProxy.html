@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.SourceProxy &mdash; decisionengine 1.7.1.dev21+g28919b16 documentation</title>
+  <title>decisionengine.framework.modules.SourceProxy &mdash; decisionengine 1.7.1.dev22+gaebe7d49 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -78,8 +78,6 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="k">as</span> <span class="nn">datablock</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
@@ -166,7 +164,7 @@
                 <span class="k">for</span> <span class="n">k_in</span><span class="p">,</span> <span class="n">k_out</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">k_in</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filled_keys</span><span class="p">:</span>
                         <span class="k">try</span><span class="p">:</span>
-                            <span class="n">rc</span><span class="p">[</span><span class="n">k_out</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_data</span><span class="p">(</span><span class="n">data_block</span><span class="p">,</span> <span class="n">k_in</span><span class="p">))</span>
+                            <span class="n">rc</span><span class="p">[</span><span class="n">k_out</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data</span><span class="p">(</span><span class="n">data_block</span><span class="p">,</span> <span class="n">k_in</span><span class="p">)</span>
                             <span class="n">filled_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k_in</span><span class="p">)</span>
                         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">ke</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;KEYERROR </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ke</span><span class="p">)</span>
