@@ -24,8 +24,6 @@ import pandas as pd
 import structlog
 import tabulate
 
-from prometheus_client import multiprocess
-
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
@@ -84,7 +82,6 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.logger = structlog.getLogger(LOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
         self.logger.info(f"DecisionEngine started on {server_address}")
-        os.environ["prometheus_multiproc_dir"] = "/tmp/prometheus_metrics"
         self.register_function(self.rpc_metrics, name="metrics")
         if not global_config.get("no_webserver"):
             self.start_webserver()  # Make this dependent on flag
