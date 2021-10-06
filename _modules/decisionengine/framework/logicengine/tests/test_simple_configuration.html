@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.tests.test_simple_configuration &mdash; decisionengine 1.7.1.dev24+g6c132924 documentation</title>
+  <title>decisionengine.framework.logicengine.tests.test_simple_configuration &mdash; decisionengine 1.7.1.dev25+gcd345701 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -83,6 +83,11 @@
     <span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;f1&quot;</span><span class="p">:</span> <span class="s2">&quot;val &gt; 10&quot;</span><span class="p">}</span>
     <span class="n">rules</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;expression&quot;</span><span class="p">:</span> <span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="s2">&quot;actions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;a1&quot;</span><span class="p">,</span> <span class="s2">&quot;a2&quot;</span><span class="p">]}}</span>
     <span class="k">yield</span> <span class="n">LogicEngine</span><span class="p">({</span><span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="n">facts</span><span class="p">,</span> <span class="s2">&quot;rules&quot;</span><span class="p">:</span> <span class="n">rules</span><span class="p">,</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="test_error_on_bad_names"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_simple_configuration.test_error_on_bad_names">[docs]</a><span class="k">def</span> <span class="nf">test_error_on_bad_names</span><span class="p">(</span><span class="n">myengine</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">NameError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;is not defined&quot;</span><span class="p">):</span>
+        <span class="n">myengine</span><span class="o">.</span><span class="n">evaluate_facts</span><span class="p">(</span><span class="nb">dict</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="test_rule_that_fires"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_simple_configuration.test_rule_that_fires">[docs]</a><span class="k">def</span> <span class="nf">test_rule_that_fires</span><span class="p">(</span><span class="n">myengine</span><span class="p">):</span>

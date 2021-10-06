@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.tests.test_Module &mdash; decisionengine 1.7.1.dev25+gcd345701 documentation</title>
+  <title>decisionengine.framework.logicengine.tests.test_bool_function_name &mdash; decisionengine 1.7.1.dev25+gcd345701 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -62,7 +62,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../../../index.html">Module code</a> &raquo;</li>
-      <li>decisionengine.framework.modules.tests.test_Module</li>
+      <li>decisionengine.framework.logicengine.tests.test_bool_function_name</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -71,20 +71,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for decisionengine.framework.modules.tests.test_Module</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Module</span> <span class="kn">import</span> <span class="n">Module</span>
+  <h1>Source code for decisionengine.framework.logicengine.tests.test_bool_function_name</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ast</span>
+
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.BooleanExpression</span> <span class="kn">import</span> <span class="n">function_name_from_call</span><span class="p">,</span> <span class="n">LogicError</span>
 
 
-<div class="viewcode-block" id="test_module_structure"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_Module.test_module_structure">[docs]</a><span class="k">def</span> <span class="nf">test_module_structure</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The module.Module itself is a bit of a skeleton...</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">}</span>
-    <span class="n">test_module</span> <span class="o">=</span> <span class="n">Module</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">test_module</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">}</span>
-
-    <span class="n">test_module</span><span class="o">.</span><span class="n">set_data_block</span><span class="p">(</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">test_module</span><span class="o">.</span><span class="n">get_data_block</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;example&quot;</span></div>
+<div class="viewcode-block" id="test_error_conditions"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_bool_function_name.test_error_conditions">[docs]</a><span class="k">def</span> <span class="nf">test_error_conditions</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">LogicError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;not a call node&quot;</span><span class="p">):</span>
+        <span class="n">function_name_from_call</span><span class="p">(</span><span class="s2">&quot;asdf&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">LogicError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;unknown node type&quot;</span><span class="p">):</span>
+        <span class="n">function_name_from_call</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="s2">&quot;print&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
