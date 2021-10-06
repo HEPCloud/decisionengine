@@ -25,7 +25,7 @@ EMPTY_DIR = tempfile.TemporaryDirectory()
 @pytest.fixture()
 def deserver_mock_data_block(mock_data_block):  # noqa: F811
     global_config, channel_config_handler = _get_de_conf_manager(
-        TEST_CONFIG_PATH, EMPTY_DIR.name, parse_program_options([f"--port={_port}"])
+        TEST_CONFIG_PATH, EMPTY_DIR.name, parse_program_options([f"--port={_port}", "--no-webserver"])
     )
     server = _create_de_server(global_config, channel_config_handler)
     server.start_channels()
