@@ -29,3 +29,8 @@ def test_combine_one_level_skip_proxies():
 def test_error_on_duplicate_keys():
     with pytest.raises(RuntimeError, match=".*duplicate keys have been detected.*s1_a1.*s2_a1"):
         config("error_on_duplicate_keys.jsonnet")
+
+
+def test_allow_duplicate_source_proxy_keys():
+    cfg = config("allow_duplicate_source_proxy_keys.jsonnet")
+    assert cfg["test"] == cfg["reference"]

@@ -40,17 +40,18 @@
 // the field 'source_channel' in the nested 'parameters' table.
 
 local append(res, block, skip_if) =
+  local new_configurations = {
+    [k]: block[k]
+    for k in std.objectFields(block)
+    if skip_if == "" || !std.objectHas(block[k].parameters, skip_if)
+  };
   local current_keys = std.objectFields(res);
-  local new_keys = std.objectFields(block);
+  local new_keys = std.objectFields(new_configurations);
   local duplicate_keys = std.setInter(current_keys, new_keys);
   if std.length(duplicate_keys) != 0 then
     error "The following duplicate keys have been detected: " + std.toString(duplicate_keys)
   else
-    res + {
-      [k]: block[k]
-      for k in new_keys
-      if skip_if == "" || !std.objectHas(block[k].parameters, skip_if)
-    };
+    res + new_configurations;
 
 local gather_from(arr, field, skip_if="") =
   std.foldl(function(res, config) append(res, config[field], skip_if), arr, {});
