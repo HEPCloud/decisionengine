@@ -28,7 +28,6 @@ _STOPPED_CHANNEL_OPTS = [
 @pytest.mark.usefixtures("deserver")
 def test_client_can_get_de_server_status(deserver):
     """Verify channel enters stable state"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--status")
     assert "state = STEADY" in output
 
@@ -37,7 +36,6 @@ def test_client_can_get_de_server_status(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_wait_timeout_works(deserver):
     """Verify channel enters stable state and timeout works too"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     deserver.de_client_run_cli("--block-while", "STABLE", "--timeout", "3")
     output = deserver.de_client_run_cli("--status")
     assert "state = STEADY" in output
@@ -46,7 +44,6 @@ def test_client_wait_timeout_works(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_stop_server(deserver):
     """Verify de-client can run --stop"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--status")
     assert "state = STEADY" in output
     output = deserver.de_client_run_cli("--stop")
@@ -56,7 +53,6 @@ def test_client_can_stop_server(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_get_products(deserver):
     """Verify client can get channel products"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--print-products")
     assert "source1" in output
     assert "transform1" in output
@@ -65,7 +61,6 @@ def test_client_can_get_products(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_get_products_no_channels(deserver):
     """Verify client can get channel products even when none are run"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--stop-channels")
     output = deserver.de_client_run_cli("--print-products")
     assert "No channels are currently active." in output
@@ -74,7 +69,6 @@ def test_client_can_get_products_no_channels(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_cannot_double_start(deserver):
     """Verify client cannot double start channels"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--show-config")
     assert "decisionengine.framework.tests.SourceNOP" in output
     assert "decisionengine.framework.tests.TransformNOP" in output
@@ -85,7 +79,6 @@ def test_client_cannot_double_start(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_stop_channels(deserver):
     """Verify client can stop channels"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--show-config")
     assert "decisionengine.framework.tests.SourceNOP" in output
     assert "decisionengine.framework.tests.TransformNOP" in output
@@ -97,7 +90,6 @@ def test_client_can_stop_channels(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_stop_one_channel(deserver):
     """Verify client can stop a single channel"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--stop-channel", "test_channel")
     assert "Channel test_channel stopped cleanly." in output
     output = deserver.de_client_run_cli("--status")
@@ -108,7 +100,6 @@ def test_client_can_stop_one_channel(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_start_one_channel(deserver):
     """Verify client can start a single channel"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--stop-channel", "test_channel")
     assert "Channel test_channel stopped cleanly." in output
     output = deserver.de_client_run_cli("--status")
@@ -121,7 +112,6 @@ def test_client_can_start_one_channel(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_start_all_channel(deserver):
     """Verify client can start all channel"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--stop-channel", "test_channel")
     assert "Channel test_channel stopped cleanly." in output
     output = deserver.de_client_run_cli("--status")
@@ -134,7 +124,6 @@ def test_client_can_start_all_channel(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_kill_one_channel(deserver):
     """Verify client can kill a single channel"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--status")
     assert "test_channel" in output
     assert "state = STEADY" in output
@@ -148,7 +137,6 @@ def test_client_can_kill_one_channel(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_kill_one_channel_force(deserver):
     """Verify client can kill a single channel with force"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--status")
     assert "test_channel" in output
     assert "state = STEADY" in output
@@ -162,7 +150,6 @@ def test_client_can_kill_one_channel_force(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_kill_one_channel_timeout(deserver):
     """Verify client can kill a single channel with timeout"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--status")
     assert "test_channel" in output
     assert "state = STEADY" in output
@@ -175,7 +162,6 @@ def test_client_can_kill_one_channel_timeout(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_get_de_server_show_config(deserver):
     """Verify config has expected items"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--show-config")
     assert "decisionengine.framework.tests.SourceNOP" in output
     assert "decisionengine.framework.tests.TransformNOP" in output
@@ -184,7 +170,6 @@ def test_client_can_get_de_server_show_config(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_get_de_server_channel_config(deserver):
     """Verify config has expected items"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--show-channel-config", "test_channel")
     assert "test_channel" in output
     assert "decisionengine.framework.tests.SourceNOP" in output
@@ -194,7 +179,6 @@ def test_client_can_get_de_server_channel_config(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_get_non_real_channel(deserver):
     """Verify config for missing channel does what it should"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--show-channel-config", "ISNT_REAL")
     assert "There is no active channel named ISNT_REAL." in output
 
@@ -202,7 +186,6 @@ def test_client_get_non_real_channel(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_start_non_real_channel(deserver):
     """Verify start for missing channel does what it should"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--start-channel", "ISNT_REAL")
     assert "Failed to open channel configuration file" in output
 
@@ -210,7 +193,6 @@ def test_client_start_non_real_channel(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_stop_non_real_channel(deserver):
     """Verify stop for missing channel does what it should"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--stop-channel", "ISNT_REAL")
     assert "No channel found with the name ISNT_REAL." in output
 
@@ -218,7 +200,6 @@ def test_client_stop_non_real_channel(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_get_de_server_show_logger_level(deserver):
     """Verify can fetch log level"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--print-engine-loglevel")
     assert output in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
@@ -226,7 +207,6 @@ def test_client_can_get_de_server_show_logger_level(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_get_de_server_channel_log_level(deserver):
     """Verify can fetch log level for a channel"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--get-channel-loglevel", "test_channel")
     assert output in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
@@ -234,7 +214,6 @@ def test_client_can_get_de_server_channel_log_level(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_set_de_server_channel_log_level(deserver):
     """Verify set log level for a channel"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--set-channel-loglevel", "test_channel", "DEBUG")
     output = deserver.de_client_run_cli("--get-channel-loglevel", "test_channel")
     assert output == "DEBUG"
@@ -243,7 +222,6 @@ def test_client_can_set_de_server_channel_log_level(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_can_double_set_de_server_channel_log_level(deserver):
     """Verify set log level to current level isn't an error"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--set-channel-loglevel", "test_channel", "DEBUG")
     output = deserver.de_client_run_cli("--get-channel-loglevel", "test_channel")
     assert output == "DEBUG"
@@ -255,7 +233,6 @@ def test_client_can_double_set_de_server_channel_log_level(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_get_channel_log_fails_cleanly(deserver):
     """Verify graceful fail on bogus channel"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--get-channel-loglevel", "ISNT_REAL")
     assert output == "No channel found with the name ISNT_REAL."
 
@@ -263,6 +240,5 @@ def test_client_get_channel_log_fails_cleanly(deserver):
 @pytest.mark.usefixtures("deserver")
 def test_client_set_channel_log_fails_cleanly(deserver):
     """Verify graceful fail on bogus channel"""
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--set-channel-loglevel", "ISNT_REAL", "DEBUG")
     assert output == "No channel found with the name ISNT_REAL."

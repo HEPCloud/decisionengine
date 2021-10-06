@@ -18,9 +18,5 @@ deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_confi
 
 @pytest.mark.usefixtures("deserver")
 def test_source_only_channel(deserver):
-    # The following 'block-while' call will be unnecessary once the
-    # deserver fixture can reliably block when no workers have yet
-    # been constructed.
-    deserver.de_client_run_cli("--block-while", "BOOT")
     output = deserver.de_client_run_cli("--stop-channel", "error_on_acquire")
     assert output == "Channel error_on_acquire stopped cleanly."
