@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_restart_channel &mdash; decisionengine 1.7.1.dev27+g1e78a889 documentation</title>
+  <title>decisionengine.framework.tests.test_restart_channel &mdash; decisionengine 1.7.1.dev28+gd4a05299 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -84,7 +84,6 @@
     <span class="n">_get_de_conf_manager</span><span class="p">,</span>
     <span class="n">parse_program_options</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.TaskManager</span> <span class="kn">import</span> <span class="n">State</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.sockets</span> <span class="kn">import</span> <span class="n">get_random_port</span>
 
 <span class="n">_this_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
@@ -101,7 +100,6 @@
     <span class="p">)</span>
     <span class="n">server</span> <span class="o">=</span> <span class="n">_create_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_handler</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
     <span class="k">yield</span> <span class="n">server</span>
     <span class="n">server</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span></div>
 

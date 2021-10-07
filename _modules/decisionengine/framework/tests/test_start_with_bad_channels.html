@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 1.7.1.dev27+g1e78a889 documentation</title>
+  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 1.7.1.dev28+gd4a05299 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -121,7 +121,6 @@
 <div class="viewcode-block" id="test_client_can_get_products_no_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_bad_channels.test_client_can_get_products_no_channels">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client_can_get_products_no_channels</span><span class="p">(</span><span class="n">deserver</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Verify client can get channel products even when none are run&quot;&quot;&quot;</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--block-while&quot;</span><span class="p">,</span> <span class="s2">&quot;BOOT&quot;</span><span class="p">),</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--print-products&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s2">&quot;No channels are currently active.&quot;</span> <span class="ow">in</span> <span class="n">output</span>
 

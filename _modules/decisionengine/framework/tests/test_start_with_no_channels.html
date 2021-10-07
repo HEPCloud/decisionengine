@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_start_with_no_channels &mdash; decisionengine 1.7.1.dev27+g1e78a889 documentation</title>
+  <title>decisionengine.framework.tests.test_start_with_no_channels &mdash; decisionengine 1.7.1.dev28+gd4a05299 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -88,7 +88,6 @@
     <span class="n">_get_de_conf_manager</span><span class="p">,</span>
     <span class="n">parse_program_options</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.TaskManager</span> <span class="kn">import</span> <span class="n">State</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="n">TEST_CHANNEL_CONFIG_PATH</span><span class="p">,</span> <span class="n">TEST_CONFIG_PATH</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.sockets</span> <span class="kn">import</span> <span class="n">get_random_port</span>
 
@@ -104,7 +103,6 @@
     <span class="p">)</span>
     <span class="n">server</span> <span class="o">=</span> <span class="n">_create_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_handler</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
     <span class="k">yield</span> <span class="n">server</span>
     <span class="n">server</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span></div>
 
@@ -128,7 +126,6 @@
 
     <span class="c1"># Activate channel and check for steady state</span>
     <span class="n">deserver</span><span class="o">.</span><span class="n">rpc_start_channel</span><span class="p">(</span><span class="s2">&quot;test_channel&quot;</span><span class="p">)</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">rpc_status</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test_channel.*state = STEADY&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
@@ -142,7 +139,6 @@
 
     <span class="c1"># Bring channel back online</span>
     <span class="n">deserver</span><span class="o">.</span><span class="n">rpc_start_channel</span><span class="p">(</span><span class="s2">&quot;test_channel&quot;</span><span class="p">)</span>
-    <span class="n">deserver</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">rpc_status</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test_channel.*state = STEADY&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
