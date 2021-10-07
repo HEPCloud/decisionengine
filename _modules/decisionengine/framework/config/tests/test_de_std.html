@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.config.tests.test_de_std &mdash; decisionengine 1.7.1.dev28+gd4a05299 documentation</title>
+  <title>decisionengine.framework.config.tests.test_de_std &mdash; decisionengine 1.7.1.dev30+g31b0f30b documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -103,6 +103,11 @@
 <div class="viewcode-block" id="test_error_on_duplicate_keys"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_de_std.test_error_on_duplicate_keys">[docs]</a><span class="k">def</span> <span class="nf">test_error_on_duplicate_keys</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;.*duplicate keys have been detected.*s1_a1.*s2_a1&quot;</span><span class="p">):</span>
         <span class="n">config</span><span class="p">(</span><span class="s2">&quot;error_on_duplicate_keys.jsonnet&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="test_allow_duplicate_source_proxy_keys"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_de_std.test_allow_duplicate_source_proxy_keys">[docs]</a><span class="k">def</span> <span class="nf">test_allow_duplicate_source_proxy_keys</span><span class="p">():</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">config</span><span class="p">(</span><span class="s2">&quot;allow_duplicate_source_proxy_keys.jsonnet&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;reference&quot;</span><span class="p">]</span></div>
 </pre></div>
 
            </div>
