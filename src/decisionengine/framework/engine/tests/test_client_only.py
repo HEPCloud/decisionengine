@@ -11,17 +11,13 @@ import decisionengine.framework.engine.de_client as de_client
 def test_client_help(capfd):
     this_dir = os.path.dirname(os.path.abspath(__file__))
     de_client_cmd = os.path.join(this_dir, "../de_client.py")
-    output = subprocess.run([de_client_cmd, "-h"], stdout=subprocess.PIPE)
-    assert re.match(
-        b"usage.*"
-        + b"optional arguments.*"
-        + b"Decision Engine server options.*"
-        + b"Channel-specific options.*"
-        + b"Product-specific options.*"
-        + b"Database reaper options.*",
-        output.stdout,
-        flags=re.DOTALL,
-    )
+    output = subprocess.run([de_client_cmd, "-h"], stdout=subprocess.PIPE, universal_newlines=True).stdout
+    assert re.match("usage", output) is not None
+    assert re.search("optional arguments", output) is not None
+    assert re.search("Decision Engine server options", output) is not None
+    assert re.search("Channel-specific options", output) is not None
+    assert re.search("Product-specific options", output) is not None
+    assert re.search("Database reaper options", output) is not None
 
 
 def test_client_with_no_server():

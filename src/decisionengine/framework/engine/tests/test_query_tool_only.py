@@ -9,10 +9,10 @@ import decisionengine.framework.engine.de_query_tool as de_query_tool
 # output for testing.
 def test_query_tool_help():
     de_query_tool_cmd = de_query_tool.__file__
-    output = subprocess.run([de_query_tool_cmd, "-h"], stdout=subprocess.PIPE)
-    assert re.match(
-        b"usage: de_query_tool.py.*" b"positional arguments.*" b"optional arguments.*", output.stdout, flags=re.DOTALL
-    )
+    output = subprocess.run([de_query_tool_cmd, "-h"], stdout=subprocess.PIPE, universal_newlines=True).stdout
+    assert re.match("usage: de_query_tool.py", output) is not None
+    assert re.search("positional arguments", output) is not None
+    assert re.search("optional arguments", output) is not None
 
 
 def test_query_tool_with_no_server():
