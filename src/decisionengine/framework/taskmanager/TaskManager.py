@@ -52,7 +52,6 @@ def _create_module_instance(config_dict, base_class, channel_name):
     """
     my_module = importlib.import_module(config_dict["module"])
     class_name = config_dict.get("name")
-    delogger.debug(f"in TaskManager, importlib has imported module {class_name}")
     if class_name is None:
         if base_class == LogicEngine:
             # Icky kludge until we remove explicit LogicEngine 'module' specification
@@ -60,6 +59,7 @@ def _create_module_instance(config_dict, base_class, channel_name):
         else:
             class_name = _find_only_one_subclass(my_module, base_class)
 
+    delogger.debug(f"in TaskManager, importlib has imported module {class_name}")
     class_type = getattr(my_module, class_name)
     return class_type(dict(**config_dict["parameters"], channel_name=channel_name))
 
