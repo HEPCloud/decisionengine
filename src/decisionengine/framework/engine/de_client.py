@@ -6,9 +6,10 @@ import xmlrpc.client
 
 def create_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--port", metavar="<port number>", default="8888", help="Default port is 8888")
-    parser.add_argument("--host", metavar="<hostname>", default="localhost", help="Default hostname is 'localhost'")
-    parser.add_argument(
+    optional = parser.add_argument_group("optional arguments")
+    optional.add_argument("--port", metavar="<port number>", default="8888", help="Default port is 8888")
+    optional.add_argument("--host", metavar="<hostname>", default="localhost", help="Default hostname is 'localhost'")
+    optional.add_argument(
         "-v", "--verbose", action="store_true", help="Include exception message in printout if server is inaccessible"
     )
 

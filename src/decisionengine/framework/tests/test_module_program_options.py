@@ -3,9 +3,9 @@ from decisionengine.framework.tests import ModuleProgramOptions as opts
 
 def test_help():
     opts.Help("SourceNOP").test()
-    opts.Help("SourceWithSampleConfigNOP").test(has_sample_config=True)
     opts.Help("TransformNOP").test()
     opts.Help("PublisherNOP").test()
+    opts.Help("SourceWithSampleConfigNOP").test(has_sample_config=True)
 
 
 def test_config_templates():

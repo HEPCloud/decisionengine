@@ -19,9 +19,10 @@ def _run_as_main(name, *program_options):
         [sys.executable, "-m", "decisionengine.framework.tests." + name, *program_options],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        universal_newlines=True,
         env=my_env,
     )
-    return rc.returncode, rc.stdout.decode().strip(), rc.stderr.decode().strip()
+    return rc.returncode, rc.stdout.strip(), rc.stderr.strip()
 
 
 def _normalize(string):
@@ -36,16 +37,22 @@ class Help:
     def test(self, has_sample_config=False):
         rc, stdout, _ = _run_as_main(self.name, "--help")
         assert rc == 0
+
+        simple_stdout = _normalize(stdout).replace("optional arguments:", "options:")
+        assert simple_stdout
+
         if "Source" in self.name:
-            assert _normalize(stdout) == _expected_source_help(self.name, has_sample_config)
+            check_text = _expected_source_help(self.name, has_sample_config)
         else:
-            assert _normalize(stdout) == _expected_help(self.name)
+            check_text = _expected_help(self.name)
+
+        assert simple_stdout == check_text
 
 
 def _expected_help(name):
     help_msg = (
         f"usage: {name}.py [-h] [--describe] [--config-template] "
-        + "optional arguments:"
+        + "options:"
         + "  -h, --help         show this help message and exit"
         + "  --describe         print config. template along with produces and consumes"
         + "                     information"
@@ -58,7 +65,7 @@ def _expected_source_help(name, has_sample_config=False):
     help_msg = f"usage: {name}.py [-h] [--describe] [--config-template] [-c <channel config. file>] "
     if has_sample_config:
         help_msg += "[-s] "
-    help_msg += """optional arguments:
+    help_msg += """options:
   -h, --help            show this help message and exit
   --describe            print config. template along with produces and
                         consumes information
