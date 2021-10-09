@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.FailingSourceProxy &mdash; decisionengine 1.7.1.dev31+gc1cb8258 documentation</title>
+  <title>decisionengine.framework.modules.EmptySource &mdash; decisionengine 1.7.1.dev31+gc1cb8258 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -62,7 +62,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
-      <li>decisionengine.framework.tests.FailingSourceProxy</li>
+      <li>decisionengine.framework.modules.EmptySource</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -71,16 +71,37 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for decisionengine.framework.tests.FailingSourceProxy</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">SourceProxy</span>
+  <h1>Source code for decisionengine.framework.modules.EmptySource</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This dummy source takes the name of a source datablock</span>
+<span class="sd">from config file as parameter &quot;data_product_name&quot; and produces</span>
+<span class="sd">an empty pandas DataFrame as a datablock with that name</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Source</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Source</span> <span class="kn">import</span> <span class="n">Parameter</span>
 
 
-<div class="viewcode-block" id="FailingSourceProxy"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.FailingSourceProxy.FailingSourceProxy">[docs]</a><span class="k">class</span> <span class="nc">FailingSourceProxy</span><span class="p">(</span><span class="n">SourceProxy</span><span class="o">.</span><span class="n">SourceProxy</span><span class="p">):</span>
+<div class="viewcode-block" id="EmptySource"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.EmptySource.EmptySource">[docs]</a><span class="nd">@Source</span><span class="o">.</span><span class="n">supports_config</span><span class="p">(</span>
+    <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;data_product_name&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="k">class</span> <span class="nc">EmptySource</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">Source</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
-<div class="viewcode-block" id="FailingSourceProxy.acquire"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.FailingSourceProxy.FailingSourceProxy.acquire">[docs]</a>    <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Failing source proxy test&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_product_name</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data_product_name&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_product_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No data_product_name found in configuration&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_produces</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_product_name</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">}</span>
+
+<div class="viewcode-block" id="EmptySource.acquire"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.EmptySource.EmptySource.acquire">[docs]</a>    <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;in EmptySource: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_product_name</span><span class="si">}</span><span class="s2"> acquire&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_product_name</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()}</span></div></div>
+
+
+<span class="n">Source</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">EmptySource</span><span class="p">)</span>
 </pre></div>
 
            </div>
