@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.tests.test_query_tool_only &mdash; decisionengine 1.7.1.dev31+gc1cb8258 documentation</title>
+  <title>decisionengine.framework.engine.tests.test_query_tool_only &mdash; decisionengine 1.7.1.dev33+g355ccd45 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -83,10 +83,10 @@
 <span class="c1"># output for testing.</span>
 <div class="viewcode-block" id="test_query_tool_help"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_query_tool_only.test_query_tool_help">[docs]</a><span class="k">def</span> <span class="nf">test_query_tool_help</span><span class="p">():</span>
     <span class="n">de_query_tool_cmd</span> <span class="o">=</span> <span class="n">de_query_tool</span><span class="o">.</span><span class="vm">__file__</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">de_query_tool_cmd</span><span class="p">,</span> <span class="s2">&quot;-h&quot;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
-        <span class="sa">b</span><span class="s2">&quot;usage: de_query_tool.py.*&quot;</span> <span class="sa">b</span><span class="s2">&quot;positional arguments.*&quot;</span> <span class="sa">b</span><span class="s2">&quot;optional arguments.*&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span>
-    <span class="p">)</span></div>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">de_query_tool_cmd</span><span class="p">,</span> <span class="s2">&quot;-h&quot;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">stdout</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;usage: de_query_tool.py&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;positional arguments&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;optional arguments&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="test_query_tool_with_no_server"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_query_tool_only.test_query_tool_with_no_server">[docs]</a><span class="k">def</span> <span class="nf">test_query_tool_with_no_server</span><span class="p">():</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.ModuleProgramOptions &mdash; decisionengine 1.7.1.dev31+gc1cb8258 documentation</title>
+  <title>decisionengine.framework.tests.ModuleProgramOptions &mdash; decisionengine 1.7.1.dev33+g355ccd45 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -93,9 +93,10 @@
         <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;decisionengine.framework.tests.&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">program_options</span><span class="p">],</span>
         <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
         <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+        <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">env</span><span class="o">=</span><span class="n">my_env</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">rc</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">rc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">rc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">rc</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">rc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">rc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="_normalize"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._normalize">[docs]</a><span class="k">def</span> <span class="nf">_normalize</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
@@ -110,16 +111,22 @@
 <div class="viewcode-block" id="Help.test"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions.Help.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">has_sample_config</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;--help&quot;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span>
+
+        <span class="n">simple_stdout</span> <span class="o">=</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;optional arguments:&quot;</span><span class="p">,</span> <span class="s2">&quot;options:&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">simple_stdout</span>
+
         <span class="k">if</span> <span class="s2">&quot;Source&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span> <span class="o">==</span> <span class="n">_expected_source_help</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">has_sample_config</span><span class="p">)</span>
+            <span class="n">check_text</span> <span class="o">=</span> <span class="n">_expected_source_help</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">has_sample_config</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span> <span class="o">==</span> <span class="n">_expected_help</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div></div>
+            <span class="n">check_text</span> <span class="o">=</span> <span class="n">_expected_help</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">simple_stdout</span> <span class="o">==</span> <span class="n">check_text</span></div></div>
 
 
 <div class="viewcode-block" id="_expected_help"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._expected_help">[docs]</a><span class="k">def</span> <span class="nf">_expected_help</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="n">help_msg</span> <span class="o">=</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;usage: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.py [-h] [--describe] [--config-template] &quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;optional arguments:&quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;options:&quot;</span>
         <span class="o">+</span> <span class="s2">&quot;  -h, --help         show this help message and exit&quot;</span>
         <span class="o">+</span> <span class="s2">&quot;  --describe         print config. template along with produces and consumes&quot;</span>
         <span class="o">+</span> <span class="s2">&quot;                     information&quot;</span>
@@ -132,7 +139,7 @@
     <span class="n">help_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;usage: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.py [-h] [--describe] [--config-template] [-c &lt;channel config. file&gt;] &quot;</span>
     <span class="k">if</span> <span class="n">has_sample_config</span><span class="p">:</span>
         <span class="n">help_msg</span> <span class="o">+=</span> <span class="s2">&quot;[-s] &quot;</span>
-    <span class="n">help_msg</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;optional arguments:</span>
+    <span class="n">help_msg</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;options:</span>
 <span class="s2">  -h, --help            show this help message and exit</span>
 <span class="s2">  --describe            print config. template along with produces and</span>
 <span class="s2">                        consumes information</span>
