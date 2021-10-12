@@ -1,5 +1,5 @@
 {
-  "sources": "",
-  "transforms": {},
-  "publishers": {}
+  sources: "",
+  transforms: {},
+  publishers: {},
 }

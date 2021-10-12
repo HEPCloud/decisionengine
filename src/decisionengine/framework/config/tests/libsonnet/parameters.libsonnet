@@ -1,5 +1,5 @@
 {
   config: {
-    parameters: {}
-  }
+    parameters: {},
+  },
 }

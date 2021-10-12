@@ -43,6 +43,17 @@ repos:
         additional_dependencies:
           - "prettier"
           - "prettier-plugin-toml@0.3.1"
+  - repo: https://github.com/google/go-jsonnet.git
+    rev: 2f2f6d664f06d064c4b3525ea34a789c1ac95cda
+    hooks:
+      - id: jsonnet-format
+        exclude: "empty.*|invalid.jsonnet"
+        args:
+          - "--in-place"
+          - "--string-style"
+          - "d"
+          - "--comment-style"
+          - "s"
   - repo: "https://github.com/asottile/pyupgrade"
     rev: v2.29.0
     hooks:
