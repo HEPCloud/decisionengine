@@ -1,4 +1,4 @@
-local default = import 'parameters.libsonnet';
+local default = import "parameters.libsonnet";
 
 {
   sources: {
@@ -6,11 +6,11 @@ local default = import 'parameters.libsonnet';
     s2_a1: default.config,
     s3_a1: {
       parameters: {
-        source_channel: "A0"
-      }
-    }
+        source_channel: "A0",
+      },
+    },
   },
   transforms: {
-    t_a1: default.config
-  }
+    t_a1: default.config,
+  },
 }

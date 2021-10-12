@@ -3,7 +3,7 @@
   transforms: {},
   logicengines: {
     le1: {},
-    le2: {}
+    le2: {},
   },
-  publishers: {}
+  publishers: {},
 }

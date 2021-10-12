@@ -1,7 +1,7 @@
 {
-  "sources": {
-    "source1": {}
+  sources: {
+    source1: {},
   },
-  "transforms": {},
-  "publishers": {}
+  transforms: {},
+  publishers: {},
 }
