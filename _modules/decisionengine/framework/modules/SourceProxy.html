@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.SourceProxy &mdash; decisionengine 1.7.1.dev34+ge95071fd documentation</title>
+  <title>decisionengine.framework.modules.SourceProxy &mdash; decisionengine 1.7.1.dev35+ge72eb3fd documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -98,8 +98,15 @@
     <span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;retry_interval&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">RETRY_INTERVAL</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;Number of seconds to wait between retries.&quot;</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="k">class</span> <span class="nc">SourceProxy</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">Source</span><span class="p">):</span>
+    <span class="c1"># We do not want anybody to inherit from SourceProxy.  The PyPI</span>
+    <span class="c1"># &#39;final-class&#39; package can also be used to prevent such</span>
+    <span class="c1"># inheritance.</span>
+    <span class="k">def</span> <span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot inherit from SourceProxy.&quot;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">must_have</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SourceProxy misconfigured. Must have </span><span class="si">{</span><span class="n">must_have</span><span class="si">}</span><span class="s2"> defined&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source_channel</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;source_channel&quot;</span><span class="p">]</span>
@@ -107,10 +114,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_attempts&quot;</span><span class="p">,</span> <span class="n">MAX_ATTEMPTS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">retry_interval</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;retry_interval&quot;</span><span class="p">,</span> <span class="n">RETRY_INTERVAL</span><span class="p">)</span>
 
-        <span class="c1"># Hack - it is possible for a subclass to declare @produces,</span>
-        <span class="c1">#        in which case, we do not want to override that.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_produces</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_produces</span> <span class="o">=</span> <span class="p">{</span><span class="n">new_name</span><span class="p">:</span> <span class="n">Any</span> <span class="k">for</span> <span class="n">new_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="o">.</span><span class="n">values</span><span class="p">()}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_produces</span> <span class="o">=</span> <span class="p">{</span><span class="n">new_name</span><span class="p">:</span> <span class="n">Any</span> <span class="k">for</span> <span class="n">new_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_keys</span><span class="o">.</span><span class="n">values</span><span class="p">()}</span>
 
 <div class="viewcode-block" id="SourceProxy.post_create"><a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.SourceProxy.SourceProxy.post_create">[docs]</a>    <span class="k">def</span> <span class="nf">post_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_config</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span></div>

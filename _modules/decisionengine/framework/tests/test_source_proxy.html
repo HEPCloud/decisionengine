@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_source_proxy &mdash; decisionengine 1.7.1.dev34+ge95071fd documentation</title>
+  <title>decisionengine.framework.tests.test_source_proxy &mdash; decisionengine 1.7.1.dev35+ge72eb3fd documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -81,6 +81,7 @@
 <span class="kn">import</span> <span class="nn">pytest</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.tests.fixtures</span> <span class="kn">import</span> <span class="n">mock_data_block</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.SourceProxy</span> <span class="kn">import</span> <span class="n">SourceProxy</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
     <span class="n">DEServer</span><span class="p">,</span>
     <span class="n">PG_DE_DB_WITH_SCHEMA</span><span class="p">,</span>
@@ -93,6 +94,13 @@
 
 <span class="n">_channel_config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="s2">&quot;test-source-proxy&quot;</span><span class="p">)</span>  <span class="c1"># noqa: F405</span>
 <span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">_channel_config_dir</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+
+
+<div class="viewcode-block" id="test_cannot_inherit_from_source_proxy"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_source_proxy.test_cannot_inherit_from_source_proxy">[docs]</a><span class="k">def</span> <span class="nf">test_cannot_inherit_from_source_proxy</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;Cannot inherit from SourceProxy.&quot;</span><span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">CannotInheritFrom</span><span class="p">(</span><span class="n">SourceProxy</span><span class="p">):</span>
+            <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="test_working_source_proxy"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_source_proxy.test_working_source_proxy">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
