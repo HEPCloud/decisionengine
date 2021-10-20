@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.1.dev36+g30951a5b documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.1.dev39+g814669d5 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -126,7 +126,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">my_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
     <span class="n">class_name</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
-    <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;in TaskManager, importlib has imported module </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">class_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">base_class</span> <span class="o">==</span> <span class="n">LogicEngine</span><span class="p">:</span>
             <span class="c1"># Icky kludge until we remove explicit LogicEngine &#39;module&#39; specification</span>
@@ -134,6 +133,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">class_name</span> <span class="o">=</span> <span class="n">_find_only_one_subclass</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">base_class</span><span class="p">)</span>
 
+    <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;in TaskManager, importlib has imported module </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">class_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">class_type</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span> <span class="n">channel_name</span><span class="o">=</span><span class="n">channel_name</span><span class="p">))</span></div>
 

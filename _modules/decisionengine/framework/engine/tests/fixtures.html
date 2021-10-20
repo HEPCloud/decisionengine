@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.1.dev36+g30951a5b documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.1.dev39+g814669d5 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -140,6 +140,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datasource</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">de_server</span> <span class="o">=</span> <span class="n">_create_de_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout_at_setup</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">_start_de_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">de_server</span><span class="p">)</span>
@@ -190,7 +191,7 @@
     <span class="sd">&quot;&quot;&quot;A DE Server using a private database&quot;&quot;&quot;</span>
 
     <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">DATABASES_TO_TEST</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">de_server_factory</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">de_server_factory</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">capsys</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This parameterized fixture will mock up various datasources.</span>
 
@@ -248,6 +249,8 @@
         <span class="c1"># Ensure the channels have started</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture: Wait on startup state: is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">server_proc</span><span class="o">.</span><span class="n">stdout_at_setup</span> <span class="o">=</span> <span class="n">capsys</span><span class="o">.</span><span class="n">readouterr</span><span class="p">()</span><span class="o">.</span><span class="n">out</span>
+
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;DE Fixture: Done waiting for startup state: is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
