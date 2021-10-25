@@ -1,7 +1,5 @@
 import prometheus_client
 
-from prometheus_client import multiprocess
-
 __all__ = ["Gauge", "Counter", "Histogram", "Summary", "display_metrics"]
 
 
@@ -37,6 +35,6 @@ class Summary(prometheus_client.Summary):
 
 def display_metrics():
     registry = prometheus_client.CollectorRegistry()
-    multiprocess.MultiProcessCollector(registry)
+    prometheus_client.multiprocess.MultiProcessCollector(registry)
     data = prometheus_client.generate_latest(registry=registry)
     return data.decode()
