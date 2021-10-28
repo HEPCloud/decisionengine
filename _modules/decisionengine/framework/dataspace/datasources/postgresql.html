@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.1.dev40+g3ba3e8e6 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.postgresql &mdash; decisionengine 1.7.1.dev41+g1cbc7334 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -73,28 +73,16 @@
              
   <h1>Source code for decisionengine.framework.dataspace.datasources.postgresql</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">contextlib</span>
-<span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">import</span> <span class="nn">dbutils.pooled_db</span> <span class="k">as</span> <span class="nn">pooled_db</span>
+<span class="kn">import</span> <span class="nn">psycopg2</span>
+<span class="kn">import</span> <span class="nn">psycopg2.extras</span>
 <span class="kn">import</span> <span class="nn">structlog</span>
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datasource</span> <span class="k">as</span> <span class="nn">ds</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
-
-<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_implementation</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;CPython&quot;</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">psycopg2</span>
-    <span class="kn">import</span> <span class="nn">psycopg2.extras</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="c1"># try to load psycopg2cffi dynamically and use psycopg2 namespace</span>
-    <span class="kn">import</span> <span class="nn">importlib</span>
-
-    <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;psycopg2cffi&quot;</span><span class="p">)</span>
-    <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;psycopg2cffi.compat&quot;</span><span class="p">)</span>
-    <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;psycopg2cffi&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">compat</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
-    <span class="kn">import</span> <span class="nn">psycopg2.extras</span>
-
 
 <span class="n">MAX_NUMBER_OF_RETRIES</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">TIME_TO_SLEEP</span> <span class="o">=</span> <span class="mi">2</span>
