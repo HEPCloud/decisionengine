@@ -1,26 +1,14 @@
 import contextlib
-import platform
 import time
 
 import dbutils.pooled_db as pooled_db
+import psycopg2
+import psycopg2.extras
 import structlog
 
 import decisionengine.framework.dataspace.datasource as ds
 
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
-
-if platform.python_implementation() == "CPython":
-    import psycopg2
-    import psycopg2.extras
-else:
-    # try to load psycopg2cffi dynamically and use psycopg2 namespace
-    import importlib
-
-    importlib.import_module("psycopg2cffi")
-    importlib.import_module("psycopg2cffi.compat")
-    __import__("psycopg2cffi").compat.register()
-    import psycopg2.extras
-
 
 MAX_NUMBER_OF_RETRIES = 10
 TIME_TO_SLEEP = 2
