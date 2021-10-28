@@ -46,19 +46,12 @@ def dataspace(request):
         db_info["url"] = conn_fixture["url"]
         db_info["echo"] = True  # put into extra chatty mode for tests
     except TypeError:
-        try:
-            # psycopg2
-            db_info["host"] = conn_fixture.info.host
-            db_info["port"] = conn_fixture.info.port
-            db_info["user"] = conn_fixture.info.user
-            db_info["password"] = conn_fixture.info.password
-            db_info["database"] = conn_fixture.info.dbname
-        except AttributeError:
-            # psycopg2cffi
-            for element in conn_fixture.dsn.split():
-                (key, value) = element.split("=")
-                if value != "''" and value != '""':
-                    db_info[key] = value
+        # psycopg2
+        db_info["host"] = conn_fixture.info.host
+        db_info["port"] = conn_fixture.info.port
+        db_info["user"] = conn_fixture.info.user
+        db_info["password"] = conn_fixture.info.password
+        db_info["database"] = conn_fixture.info.dbname
 
     config = {}
     config["dataspace"] = {}

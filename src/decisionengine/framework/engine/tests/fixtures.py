@@ -145,19 +145,13 @@ def DEServer(
             datasource["module"] = "decisionengine.framework.dataspace.datasources.postgresql"
             datasource["name"] = "Postgresql"
             datasource["config"] = {}
-            try:
-                # psycopg2
-                datasource["config"]["host"] = conn_fixture.info.host
-                datasource["config"]["port"] = conn_fixture.info.port
-                datasource["config"]["user"] = conn_fixture.info.user
-                datasource["config"]["password"] = conn_fixture.info.password
-                datasource["config"]["database"] = conn_fixture.info.dbname
-            except AttributeError:
-                # psycopg2cffi
-                for element in conn_fixture.dsn.split():
-                    (key, value) = element.split("=")
-                    if value != "''" and value != '""':
-                        datasource["config"][key] = value
+
+            # psycopg2
+            datasource["config"]["host"] = conn_fixture.info.host
+            datasource["config"]["port"] = conn_fixture.info.port
+            datasource["config"]["user"] = conn_fixture.info.user
+            datasource["config"]["password"] = conn_fixture.info.password
+            datasource["config"]["database"] = conn_fixture.info.dbname
 
         logger.debug(f"DE Fixture has datasource config: {datasource}")
 
