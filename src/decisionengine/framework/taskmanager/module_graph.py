@@ -12,7 +12,7 @@ def _produced_products(*worker_lists):
     missing_produces = []
     for worker_list in worker_lists:
         for name, worker in worker_list.items():
-            produces = worker.worker._produces.keys()
+            produces = worker.module_instance._produces.keys()
             if not produces:
                 missing_produces.append(name)
             else:
@@ -25,7 +25,7 @@ def _consumed_products(*worker_lists):
     missing_consumes = []
     for worker_list in worker_lists:
         for name, worker in worker_list.items():
-            consumes = worker.worker._consumes.keys()
+            consumes = worker.module_instance._consumes.keys()
             if not consumes:
                 missing_consumes.append(name)
             else:

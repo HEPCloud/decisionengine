@@ -361,7 +361,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             self.logger.debug("Trying to shutdown worker")
             worker.task_manager.set_to_shutdown()
             self.logger.debug("Trying to take worker offline")
-            worker.task_manager.take_offline(None)
+            worker.task_manager.take_offline()
             worker.join(timeout)
         if worker.exitcode is None:
             worker.terminate()
