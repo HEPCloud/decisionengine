@@ -9,7 +9,7 @@ import decisionengine.framework.config.policies as policies
 
 from decisionengine.framework.config.ValidConfig import ValidConfig
 from decisionengine.framework.dataspace import datablock
-from decisionengine.framework.taskmanager.TaskManager import Channel, State, TaskManager
+from decisionengine.framework.taskmanager.TaskManager import State, TaskManager, Workflow
 from decisionengine.framework.taskmanager.tests.fixtures import (  # noqa: F401
     DATABASES_TO_TEST,
     dataspace,
@@ -90,7 +90,7 @@ def test_take_task_manager_offline(global_config):
     for channel in _TEST_CHANNEL_NAMES:
         with RunChannel(global_config, channel) as task_manager:
             task_manager.state.wait_while(State.BOOT)
-            task_manager.take_offline(None)
+            task_manager.take_offline()
             assert task_manager.state.has_value(State.OFFLINE)
             assert task_manager.get_state_value() == State.OFFLINE.value
 
@@ -109,7 +109,7 @@ def test_bad_datablock(global_config, dataspace, caplog):  # noqa: F811
             task_manager.state.wait_while(State.BOOT)
             dblock = datablock.DataBlock(dataspace, channel)
             task_manager.data_block_put("bad_string", "header", dblock)
-            task_manager.take_offline(None)
+            task_manager.take_offline()
             assert "data_block put expecting" in caplog.text
 
 
@@ -121,9 +121,9 @@ def test_no_data_to_transform(global_config):
             task_manager.run_transforms()
             task_manager.run_publishers("action", "facts")
             task_manager.run_logic_engine()
-            task_manager.take_offline(None)
+            task_manager.take_offline()
 
 
 def test_multiple_logic_engines_not_supported():
     with pytest.raises(RuntimeError, match="Cannot support more than one logic engine per channel."):
-        Channel(get_channel_config("multiple_logic_engines"), "multiple_logic_engines")
+        Workflow(get_channel_config("multiple_logic_engines"), "multiple_logic_engines")

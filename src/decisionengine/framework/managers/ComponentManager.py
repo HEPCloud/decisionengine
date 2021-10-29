@@ -88,10 +88,8 @@ class ComponentManager:
             for key, product in data.items():
                 data_block.put(key, product, header, metadata=metadata)
 
-    def take_offline(self, current_data_block):
+    def take_offline(self):
         """
-        offline and stop this component manager
+        Adjust status to offline
         """
         self.state.set(State.OFFLINE)
-        # invalidate data block
-        # not implemented yet

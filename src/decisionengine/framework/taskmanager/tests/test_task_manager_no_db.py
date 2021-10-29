@@ -68,7 +68,7 @@ def test_set_to_shutdown(mock_data_block):  # noqa: F811
 def test_take_task_manager_offline(mock_data_block):  # noqa: F811
     with RunChannel("test_channel") as task_manager:
         task_manager.state.wait_while(State.BOOT)
-        task_manager.take_offline(None)
+        task_manager.take_offline()
         assert task_manager.state.has_value(State.OFFLINE)
         assert task_manager.get_state_value() == State.OFFLINE.value
 
@@ -84,9 +84,9 @@ def test_failing_publisher(mock_data_block):  # noqa: F811
 def test_bad_datablock(mock_data_block, caplog):  # noqa: F811
     with RunChannel("test_channel") as task_manager:
         task_manager.state.wait_while(State.BOOT)
-        task_manager.take_offline(None)
+        task_manager.take_offline()
         task_manager.data_block_put("bad_string", "header", mock_data_block)
-        task_manager.take_offline(None)
+        task_manager.take_offline()
         assert "data_block put expecting" in caplog.text
 
 
@@ -97,4 +97,4 @@ def test_no_data_to_transform(mock_data_block):  # noqa: F811
         task_manager.run_transforms()
         task_manager.run_publishers("action", "facts")
         task_manager.run_logic_engine()
-        task_manager.take_offline(None)
+        task_manager.take_offline()
