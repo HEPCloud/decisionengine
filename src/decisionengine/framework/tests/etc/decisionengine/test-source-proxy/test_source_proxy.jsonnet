@@ -5,7 +5,7 @@
       parameters: {
         source_channel: "test_channel",
         Dataproducts: ["foo"],
-        max_attempts: 1,
+        max_attempts: 5,
       },
       schedule: 1,
     },
