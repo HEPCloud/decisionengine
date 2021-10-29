@@ -118,8 +118,6 @@ def test_no_data_to_transform(global_config):
         with RunChannel(global_config, channel) as task_manager:
             task_manager.state.wait_while(State.BOOT)
             task_manager.run_transforms()
-            task_manager.run_publishers("action", "facts")
-            task_manager.run_logic_engine()
             task_manager.take_offline()
 
 

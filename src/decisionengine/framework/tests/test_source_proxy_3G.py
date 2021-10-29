@@ -2,7 +2,6 @@
 # pylint: disable=redefined-outer-name
 
 import os
-import platform
 import re
 
 import pytest
@@ -21,10 +20,6 @@ _channel_config_dir = os.path.join(TEST_CONFIG_PATH, "test-source-proxy-3g")  # 
 deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir)  # pylint: disable=invalid-name
 
 
-@pytest.mark.skipif(
-    platform.python_implementation() == "PyPy",
-    reason="Times out under PyPy with the PG_DE_DB_WITH_SCHEMA fixture value.",
-)
 @pytest.mark.usefixtures("deserver")
 def test_many_source_proxies(deserver):
     output = deserver.de_client_run_cli("--status")

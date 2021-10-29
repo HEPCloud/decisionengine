@@ -28,6 +28,7 @@ def test_cannot_inherit_from_source_proxy():
             pass
 
 
+@pytest.mark.timeout(180)
 @pytest.mark.usefixtures("deserver")
 def test_single_source_proxy(deserver):
     output = deserver.de_client_run_cli("--status")

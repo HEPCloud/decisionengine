@@ -1,12 +1,16 @@
 """
-Task Manager
+Task manager
 """
 import importlib
+import socket
 import threading
 import time
 
 import pandas as pd
 import structlog
+
+from kombu import Connection, Exchange, Queue
+from kombu.pools import connections, producers
 
 from decisionengine.framework.dataspace import datablock
 from decisionengine.framework.logicengine.LogicEngine import LogicEngine, passthrough_configuration
@@ -152,13 +156,15 @@ class Worker:
     execution
     """
 
-    def __init__(self, conf_dict, base_class, channel_name):
+    def __init__(self, key, conf_dict, base_class, channel_name):
         """
         :type conf_dict: :obj:`dict`
         :arg conf_dict: configuration dictionary describing the worker
         """
         self.module_instance = _create_module_instance(conf_dict, base_class, channel_name)
         self.module = conf_dict["module"]
+        self.module_key = key
+        self.full_key = f"{channel_name}-{self.module_key}"
         self.name = self.module_instance.__class__.__name__
         self.schedule = conf_dict.get("schedule", _DEFAULT_SCHEDULE)
         self.data_updated = threading.Event()
@@ -171,7 +177,7 @@ class Worker:
 
 
 def _make_workers_for(configs, base_class, channel_name):
-    return {name: Worker(e, base_class, channel_name) for name, e in configs.items()}
+    return {key: Worker(key, e, base_class, channel_name) for key, e in configs.items()}
 
 
 class Workflow:
@@ -186,13 +192,13 @@ class Workflow:
         :arg channel_dict: channel configuration
         """
 
-        delogger.debug("Creating channel source")
+        delogger.debug("Creating channel sources")
         self.source_workers = _make_workers_for(channel_dict["sources"], Source, channel_name)
 
-        delogger.debug("Creating channel publisher")
+        delogger.debug("Creating channel publishers")
         self.publisher_workers = _make_workers_for(channel_dict["publishers"], Publisher, channel_name)
 
-        delogger.debug("Creating channel logicengine")
+        delogger.debug("Creating channel logic engines")
         configured_le_s = channel_dict.get("logicengines")
         if configured_le_s is None:
             delogger.debug(
@@ -204,7 +210,7 @@ class Workflow:
 
         self.le_s = _make_workers_for(configured_le_s, LogicEngine, channel_name)
 
-        delogger.debug("Creating channel transform")
+        delogger.debug("Creating channel transforms")
         transform_workers = _make_workers_for(channel_dict["transforms"], Transform, channel_name)
         self.transform_workers = ensure_no_circularities(self.source_workers, transform_workers, self.publisher_workers)
         self.task_manager = channel_dict.get("task_manager", {})
@@ -212,7 +218,7 @@ class Workflow:
 
 class TaskManager(ComponentManager):
     """
-    Task Manager
+    Task manager
     """
 
     def __init__(self, name, generation_id, channel_dict, global_config):
@@ -220,22 +226,42 @@ class TaskManager(ComponentManager):
         :type name: :obj:`str`
         :arg name: Name of channel corresponding to this task manager
         :type generation_id: :obj:`int`
-        :arg generation_id: Task Manager generation id provided by caller
+        :arg generation_id: Task manager generation id provided by caller
         :type channel_dict: :obj:`dict`
         :arg channel_dict: channel configuration
         :type global_config: :obj:`dict`
         :arg global_config: global configuration
         """
-        if "channel_name" in channel_dict:
-            self.name = channel_dict["channel_name"]
-        else:
-            self.name = name
+        self.name = channel_dict.get("channel_name", name)
 
         super().__init__(self.name, generation_id, global_config)
         self.logger = structlog.getLogger(CHANNELLOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=self.name)
         self.workflow = Workflow(channel_dict, self.name)
         self.lock = threading.Lock()
+        self.broker_url = global_config.get("broker_url", "memory:///")
+
+        self.exchange = Exchange("example_topic_exchange", "topic")
+        self.connection = Connection(self.broker_url)
+
+        # Caching fun...
+        #   Just keeping track of instance names will not work
+        #   whenever we have multiple source instances of the same
+        #   source type.
+        expected_source_products = set()
+        queues = {}
+        for worker in self.workflow.source_workers.values():
+            expected_source_products.update(worker.module_instance._produces.keys())
+            queues[worker.full_key] = Queue(
+                worker.module_key,
+                exchange=self.exchange,
+                routing_key=f"*.{self.name}.{worker.module_key}",
+                auto_delete=True,
+            )
+        self.expected_source_products = expected_source_products
+        self.queues = queues
+        self.sources_have_run_once = False
+        self.source_product_cache = {}
 
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
@@ -263,44 +289,22 @@ class TaskManager(ComponentManager):
             self.logger.exception("Unexpected error!")
             raise
 
-    def wait_for_any(self, events_done):
-        """
-        Wait for any sources to finish
-
-        :type events_done: :obj:`list`
-        :arg events_done: list of events to wait for
-        """
-        try:
-            while not any(e.is_set() for e in events_done):
-                time.sleep(1)
-                if self.state.should_stop():
-                    break
-
-            for e in events_done:
-                if e.is_set():
-                    e.clear()
-        except Exception:  # pragma: no cover
-            self.logger.exception("Unexpected error!")
-            raise
-
     def run(self):
         """
-        Task Manager main loop
+        Task manager main loop
         """
         self.logger.setLevel(self.loglevel.value)
-        self.logger.info(f"Starting Task Manager {self.id}")
-        done_events, source_threads = self.start_sources()
-        # This is a boot phase
-        # Wait until all sources run at least one time
-        self.wait_for_all(done_events)
+        self.logger.info(f"Starting task manager {self.id}")
+        self.logger.debug(f"Expected source products {self.expected_source_products}")
+        source_threads = self.start_sources()
         self.logger.info("All sources finished")
         if not self.state.has_value(State.BOOT):
             for thread in source_threads:
                 thread.join()
-            self.logger.error(f"Error occured during initial run of sources. Task Manager {self.name} exits")
+            self.logger.error(f"Error occured during initial run of sources. Task manager {self.name} exits")
             return
 
-        self.start_cycles(done_events)
+        self.start_cycles()
 
         for source in self.workflow.source_workers.values():
             source.stop_running.set()
@@ -308,30 +312,71 @@ class TaskManager(ComponentManager):
         for thread in source_threads:
             thread.join()
 
-    def start_cycles(self, done_events):
+    def start_cycles(self):
         """
         Start decision cycles
-
-        :type done_events: :obj:`list`
-        :arg done_events: list of events to wait for
         """
-        while not self.state.should_stop():
-            try:
-                self.decision_cycle()
-                with self.state.lock:
-                    if not self.state.should_stop():
-                        # If we are signaled to stop, don't override that state
-                        # otherwise the last decision_cycle completed without error
-                        self.state.set(State.STEADY)
-                        CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
-                if not self.state.should_stop():
-                    self.wait_for_any(done_events)
-            except Exception:  # pragma: no cover
-                self.logger.exception("Exception in the task manager main loop")
-                self.logger.error("Error occured. Task Manager %s exits with state %s", self.id, self.get_state_name())
-                self.take_offline()
+        _cl = Connection(self.broker_url)
+        with connections[_cl].acquire(block=True) as conn:
 
-        self.logger.info(f"Task Manager {self.id} received a stop signal and is exiting")
+            def run_cycle(body, message):
+                module_spec = body["source_module"]
+                module_name = body["class_name"]
+                data = body["data"]
+                self.logger.debug(f"Data received from {module_name}: {data}")
+                if not data:
+                    self.logger.warning("No data acquired")
+                    message.ack()
+                    return
+
+                if not self.sources_have_run_once:
+                    self.source_product_cache.update(**data)
+                    missing_products = self.expected_source_products - set(self.source_product_cache.keys())
+                    if missing_products:
+                        self.logger.info(f"Waiting on more data (missing {missing_products})")
+                        message.ack()
+                        return
+                    data = self.source_product_cache
+                    self.sources_have_run_once = True
+
+                header = datablock.Header(
+                    self.data_block_t0.taskmanager_id, create_time=time.time(), creator=module_spec
+                )
+                self.logger.info(f"Source {module_name} header done")
+                self.data_block_put(data, header, self.data_block_t0)
+                self.logger.info(f"Source {module_name} data block put done")
+
+                self.logger.info(f"Message on bus: {body}")
+                try:
+                    self.decision_cycle()
+                    with self.state.lock:
+                        if not self.state.should_stop():
+                            # If we are signaled to stop, don't override that state
+                            # otherwise the last decision_cycle completed without error
+                            self.state.set(State.STEADY)
+                            CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
+                except Exception:  # pragma: no cover
+                    self.logger.exception("Exception in the task manager main loop")
+                    self.logger.error(
+                        "Error occured. Task manager %s exits with state %s", self.id, self.get_state_name()
+                    )
+                message.ack()
+
+            with conn.Consumer(self.queues.values(), accept=["pickle"], callbacks=[run_cycle]):
+                while not self.state.should_stop():
+                    try:
+                        # If source has been brought offline while the drain_events method is
+                        # executing, it will stall.  We therefore impose an arbitrary 5-second
+                        # timeout so that the 'should_stop()' method called in the while condition
+                        # will yield false and thus terminate the loop.
+                        conn.drain_events(timeout=5)
+                    except TimeoutError:
+                        # no events found in time
+                        pass
+                    except socket.timeout:
+                        # no events found in time
+                        pass
+                self.logger.info(f"Task manager {self.id} received stop signal and is exiting")
 
     def get_produces(self):
         # FIXME: What happens if a transform and source have the same name?
@@ -397,7 +442,7 @@ class TaskManager(ComponentManager):
 
         for a_f in actions_facts:
             try:
-                self.run_publishers(a_f["actions"], a_f["newfacts"], data_block_t1)
+                self.run_publishers(a_f["actions"], data_block_t1)
             except Exception:  # pragma: no cover
                 self.logger.exception("Error in decision cycle(publishers) ")
                 self.take_offline()
@@ -410,39 +455,41 @@ class TaskManager(ComponentManager):
         :type worker: :obj:`~Worker`
         :arg worker: Source worker
         """
-        # If task manager is in offline state, do not keep executing sources.
-        while not self.state.should_stop():
-            try:
-                self.logger.info(f"Src {worker.name} calling acquire")
-                with SOURCE_RUN_SUMMARY.labels(self.name, worker.name).time():
+        with producers[self.connection].acquire(block=True) as producer:
+            # If task manager is in offline state, do not keep executing sources.
+            while not self.state.should_stop():
+                try:
+                    self.logger.info(f"Source {worker.name} calling acquire")
                     data = worker.module_instance.acquire()
                     Module.verify_products(worker.module_instance, data)
-                self.logger.info(f"Src {worker.name} acquire returned")
-                self.logger.info(f"Src {worker.name} filling header")
-                SOURCE_ACQUIRE_GAUGE.labels(self.name, worker.name).set_to_current_time()
-                if data:
-                    t = time.time()
-                    header = datablock.Header(self.data_block_t0.taskmanager_id, create_time=t, creator=worker.module)
-                    self.logger.info(f"Src {worker.name} header done")
-                    self.data_block_put(data, header, self.data_block_t0)
-                    self.logger.info(f"Src {worker.name} data block put done")
-                else:
-                    self.logger.warning(f"Src {worker.name} acquire returned no data")
-                worker.data_updated.set()
-                self.logger.info(f"Src {worker.name} {worker.module} finished cycle")
-            except Exception:
-                self.logger.exception(f"Exception running source {worker.name} ")
-                self.take_offline()
-                break
-            if worker.schedule > 0:
-                s = worker.stop_running.wait(worker.schedule)
-                if s:
-                    self.logger.info(f"received stop_running signal for {worker.name}")
+                    self.logger.info(f"Source {worker.name} acquire returned")
+                    self.logger.debug(f"Source {worker.name} produced {data}")
+                    SOURCE_ACQUIRE_GAUGE.labels(self.name, worker.name).set_to_current_time()
+                    producer.publish(
+                        dict(source_module=worker.module, class_name=worker.name, data=data),
+                        routing_key=f"test.{self.name}.{worker.module_key}",
+                        exchange=self.exchange,
+                        serializer="pickle",
+                        declare=[
+                            self.exchange,
+                            self.queues[worker.full_key],
+                        ],  # FIXME: maybe_declare=[self.exchange, self.queues[worker.full_key]] is better but fails for some reason.
+                    )
+                    worker.data_updated.set()
+                    self.logger.info(f"Source {worker.name} {worker.module} finished cycle")
+                except Exception:
+                    self.logger.exception(f"Exception running source {worker.name} ")
+                    self.take_offline()
                     break
-            else:
-                self.logger.info(f"source {worker.name} runs only once")
-                break
-        self.logger.info(f"stopped {worker.name}")
+                if worker.schedule > 0:
+                    s = worker.stop_running.wait(worker.schedule)
+                    if s:
+                        self.logger.info(f"Received stop_running signal for {worker.name}")
+                        break
+                else:
+                    self.logger.info(f"Source {worker.name} runs only once")
+                    break
+        self.logger.info(f"Stopped {worker.name}")
 
     def start_sources(self):
         """
@@ -459,7 +506,11 @@ class TaskManager(ComponentManager):
             source_threads.append(thread)
             # Cannot catch exception from function called in separate thread
             thread.start()
-        return (event_list, source_threads)
+
+        # This is the boot phase
+        # Wait until all sources run at least once
+        self.wait_for_all(event_list)
+        return source_threads
 
     def run_transforms(self, data_block=None):
         """
@@ -494,7 +545,7 @@ class TaskManager(ComponentManager):
         self.logger.info(
             "transform: %s expected keys: %s provided keys: %s", worker.name, consume_keys, list(data_block.keys())
         )
-        self.logger.info("run transform %s", worker.name)
+        self.logger.info("Run transform %s", worker.name)
         try:
             with TRANSFORM_RUN_SUMMARY.labels(self.name, worker.name).time():
                 data = worker.module_instance.transform(data_block)
@@ -507,7 +558,7 @@ class TaskManager(ComponentManager):
             self.logger.exception(f"exception from transform {worker.name} ")
             self.take_offline()
 
-    def run_logic_engine(self, data_block=None):
+    def run_logic_engine(self, data_block):
         """
         Run Logic Engine.
 
@@ -516,7 +567,7 @@ class TaskManager(ComponentManager):
         """
         le_list = []
         if not data_block:
-            return
+            return le_list
 
         try:
             for le in self.workflow.le_s:
@@ -554,7 +605,7 @@ class TaskManager(ComponentManager):
         else:
             return le_list
 
-    def run_publishers(self, actions, facts, data_block=None):
+    def run_publishers(self, actions, data_block):
         """
         Run Publishers in main process.
 
@@ -569,8 +620,8 @@ class TaskManager(ComponentManager):
                 for action in action_list:
                     worker = self.workflow.publisher_workers[action]
                     name = worker.name
-                    self.logger.info(f"run publisher {name}")
-                    self.logger.debug(f"run publisher {name} {data_block}")
+                    self.logger.info(f"Run publisher {name}")
+                    self.logger.debug(f"Run publisher {name} {data_block}")
                     try:
                         with PUBLISHER_RUN_SUMMARY.labels(self.name, name).time():
                             worker.module_instance.publish(data_block)
@@ -579,8 +630,7 @@ class TaskManager(ComponentManager):
                         if self.state.should_stop():
                             self.logger.warning(f"TaskManager stopping, ignore exception {name} publish() call: {e}")
                             continue
-                        else:
-                            raise
+                        raise
         except Exception:  # pragma: no cover
             self.logger.exception("Unexpected error!")
             raise
