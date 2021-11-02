@@ -1,7 +1,6 @@
 """
 Logger to use in all modules
 """
-import importlib
 import logging
 import logging.config
 import logging.handlers
@@ -10,23 +9,18 @@ import os
 import structlog
 
 import decisionengine.framework.modules.logging_configDict as logconf
+import decisionengine.framework.modules.QueueLogger as QueueLogger
 
 MB = 1000000
 
-logger = structlog.getLogger(logconf.LOGGERNAME)
-logger = logger.bind(module=__name__.split(".")[-1], channel=logconf.DELOGGER_CHANNEL_NAME)
+delogger = structlog.getLogger(logconf.LOGGERNAME)
+delogger = delogger.bind(module=__name__.split(".")[-1], channel=logconf.DELOGGER_CHANNEL_NAME)
+queue_logger = QueueLogger.QueueLogger()
 
 
-def _reset_config():
-    """
-    Reset the logconf.pylogconfig dictionary
-    """
-    importlib.reload(logconf)
-
-
-def set_logging(
-    log_level,
-    file_rotate_by,
+def configure_logging(
+    log_level="DEBUG",
+    file_rotate_by="size",
     rotation_time_unit="D",
     rotation_interval=1,
     max_backup_count=6,
@@ -55,67 +49,49 @@ def set_logging(
     if dirname and not os.path.exists(dirname):
         os.makedirs(dirname)
 
-    logger.setLevel(getattr(logging, log_level.upper()))
-    if logger.handlers:
-        logger.debug("Reusing existing logging handlers")
+    delogger.setLevel(getattr(logging, log_level.upper()))
+    if delogger.handlers:
+        delogger.debug("Reusing existing logging handlers")
         return None
 
-    # logconf.pylogconfig is our global object edited in global space on purpose
-
-    logconf.pylogconfig["handlers"]["de_file_debug"].update({"filename": f"{log_file_name}_debug.log"})
-    logconf.pylogconfig["handlers"]["de_file_info"].update({"filename": f"{log_file_name}.log"})
-    logconf.pylogconfig["handlers"]["file_structlog_debug"].update({"filename": f"{log_file_name}_structlog_debug.log"})
+    # configure handlers
+    handlers_list = []
 
     if file_rotate_by == "size":
-        logconf.pylogconfig["handlers"]["de_file_debug"].update(
-            {
-                "class": "logging.handlers.RotatingFileHandler",
-                "maxBytes": max_file_size,
-                "backupCount": max_backup_count,
-            }
-        )
-        logconf.pylogconfig["handlers"]["de_file_info"].update(
-            {
-                "class": "logging.handlers.RotatingFileHandler",
-                "maxBytes": max_file_size,
-                "backupCount": max_backup_count,
-            }
-        )
-        logconf.pylogconfig["handlers"]["file_structlog_debug"].update(
-            {
-                "class": "logging.handlers.RotatingFileHandler",
-                "maxBytes": max_file_size,
-                "backupCount": max_backup_count,
-            }
-        )
+        for files in logconf.de_outfile_info:
+            handler = logging.handlers.RotatingFileHandler(
+                filename=f"{log_file_name}" + files[0], maxBytes=max_file_size, backupCount=max_backup_count
+            )
+            handler.setLevel(files[1])
+            handler.setFormatter(logging.Formatter(files[2]))
+            handlers_list.append(handler)
 
     elif file_rotate_by == "time":
-        logconf.pylogconfig["handlers"]["de_file_debug"].update(
-            {
-                "class": "logging.handlers.TimedRotatingFileHandler",
-                "when": rotation_time_unit,
-                "interval": rotation_interval,
-            }
-        )
-        logconf.pylogconfig["handlers"]["de_file_info"].update(
-            {
-                "class": "logging.handlers.TimedRotatingFileHandler",
-                "when": rotation_time_unit,
-                "interval": rotation_interval,
-            }
-        )
-        logconf.pylogconfig["handlers"]["file_structlog_debug"].update(
-            {
-                "class": "logging.handlers.TimedRotatingFileHandler",
-                "when": rotation_time_unit,
-                "interval": rotation_interval,
-            }
-        )
+        for files in logconf.de_outfile_info:
+            handler = logging.handlers.TimedRotatingFileHandler(
+                filename=f"{log_file_name}" + files[0],
+                when=rotation_time_unit,
+                interval=rotation_interval,
+                backupCount=max_backup_count,
+            )
+            handler.setLevel(files[1])
+            handler.setFormatter(logging.Formatter(files[2]))
+            handlers_list.append(handler)
+
     else:
         raise ValueError(f"Incorrect 'file_rotate_by':'{file_rotate_by}:'")
 
-    logging.config.dictConfig(logconf.pylogconfig)
-    logger.debug("de logging setup complete")
+    structlog_handlers_list = [handlers_list.pop(i) for i in logconf.structlog_file_index]
+
+    # setup standard file handlers
+    for h in handlers_list:
+        delogger.addHandler(h)
+
+    # setup the queue logger
+    queue_logger.setup_queue_logging(delogger, structlog_handlers_list)
+    queue_logger.start()
+
+    delogger.debug("de logging setup complete")
 
 
 def get_logger():
@@ -123,11 +99,19 @@ def get_logger():
     get default logger - "decisionengine"
     :rtype: :class:`logging.Logger` - rotating file logger
     """
-    return logger
+    return delogger
+
+
+def get_queue_logger():
+    """
+    get QueueLogger which owns the logging queues and listeners
+    :rtype: :class:`decisionengine.framework.modules.QueueLogger``
+    """
+    return queue_logger
 
 
 if __name__ == "__main__":
-    set_logging(
+    configure_logging(
         "ERROR",
         "size",
         "D",
@@ -136,6 +120,6 @@ if __name__ == "__main__":
         max_file_size=100000,
         log_file_name=f"{os.environ.get('HOME')}/de_log/decision_engine_log0",
     )
-    logger.error("THIS IS ERROR")
-    logger.info("THIS IS INFO")
-    logger.debug("THIS IS DEBUG")
+    delogger.error("THIS IS ERROR")
+    delogger.info("THIS IS INFO")
+    delogger.debug("THIS IS DEBUG")
