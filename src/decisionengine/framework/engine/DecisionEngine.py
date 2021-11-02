@@ -25,6 +25,7 @@ import tabulate
 
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
+import decisionengine.framework.modules.de_logger as de_logger
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
 
@@ -278,6 +279,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.stop_channels()
         self.reaper_stop()
         self.dataspace.close()
+        de_logger.get_queue_logger().stop()
         return "OK"
 
     def start_channel(self, channel_name, channel_config):

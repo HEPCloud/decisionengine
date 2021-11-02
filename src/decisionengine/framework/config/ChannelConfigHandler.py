@@ -25,7 +25,7 @@ def _make_de_logger(global_config):
         raise RuntimeError("No logger configuration has been specified.")
     try:
         logger_config = global_config["logger"]
-        de_logger.set_logging(
+        de_logger.configure_logging(
             log_level=logger_config.get("log_level", "INFO"),
             file_rotate_by=logger_config.get("file_rotate_by", "size"),
             rotation_time_unit=logger_config.get("rotation_time_unit", "D"),
