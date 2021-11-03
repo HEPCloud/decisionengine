@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 1.7.1.dev43+gdd990d2c documentation</title>
+  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 1.7.1.dev46+g4f920dcc documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -233,14 +233,6 @@ sync between threads if need be.</p>
 <span id="decisionengine-framework-taskmanager-taskmanager-module"></span><h2>decisionengine.framework.taskmanager.TaskManager module<a class="headerlink" href="#module-decisionengine.framework.taskmanager.TaskManager" title="Permalink to this headline"></a></h2>
 <p>Task Manager</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.Channel">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></span><span class="sig-name descname"><span class="pre">Channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#Channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.Channel" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Decision Channel.
-Instantiates workers according to channel configuration</p>
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></span><span class="sig-name descname"><span class="pre">TaskManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="decisionengine.framework.managers.html#decisionengine.framework.managers.ComponentManager.ComponentManager" title="decisionengine.framework.managers.ComponentManager.ComponentManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">decisionengine.framework.managers.ComponentManager.ComponentManager</span></code></a></p>
@@ -302,24 +294,24 @@ Instantiates workers according to channel configuration</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.run_source">
-<span class="sig-name descname"><span class="pre">run_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.run_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_source" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.run_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_source" title="Permalink to this definition"></a></dt>
 <dd><p>Get the data from source
 and put it into the data block</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>src</strong> (<a class="reference internal" href="#decisionengine.framework.taskmanager.TaskManager.Worker" title="decisionengine.framework.taskmanager.TaskManager.Worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Worker</span></code></a>) – source Worker</p>
+<dd class="field-odd"><p><strong>worker</strong> (<a class="reference internal" href="#decisionengine.framework.taskmanager.TaskManager.Worker" title="decisionengine.framework.taskmanager.TaskManager.Worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Worker</span></code></a>) – Source worker</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.run_transform">
-<span class="sig-name descname"><span class="pre">run_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.run_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_transform" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.run_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_transform" title="Permalink to this definition"></a></dt>
 <dd><p>Run a transform</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>transform</strong> (<a class="reference internal" href="#decisionengine.framework.taskmanager.TaskManager.Worker" title="decisionengine.framework.taskmanager.TaskManager.Worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Worker</span></code></a>) – source Worker</p></li>
+<li><p><strong>worker</strong> (<a class="reference internal" href="#decisionengine.framework.taskmanager.TaskManager.Worker" title="decisionengine.framework.taskmanager.TaskManager.Worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Worker</span></code></a>) – Transform worker</p></li>
 <li><p><strong>data_block</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">DataBlock</span></code>) – data block</p></li>
 </ul>
 </dd>
@@ -344,14 +336,20 @@ So far in main process.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.start_sources">
-<span class="sig-name descname"><span class="pre">start_sources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.start_sources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.start_sources" title="Permalink to this definition"></a></dt>
-<dd><p>Start sources, each in a separate thread</p>
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.start_cycles">
+<span class="sig-name descname"><span class="pre">start_cycles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">done_events</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.start_cycles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.start_cycles" title="Permalink to this definition"></a></dt>
+<dd><p>Start decision cycles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data_block</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">DataBlock</span></code>) – data block</p>
+<dd class="field-odd"><p><strong>done_events</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>) – list of events to wait for</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.start_sources">
+<span class="sig-name descname"><span class="pre">start_sources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.start_sources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.start_sources" title="Permalink to this definition"></a></dt>
+<dd><p>Start sources, each in a separate thread</p>
 </dd></dl>
 
 <dl class="py method">
@@ -384,6 +382,14 @@ So far in main process.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Provides interface to loadable modules an events to sycronise
 execution</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.Workflow">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></span><span class="sig-name descname"><span class="pre">Workflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#Workflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.Workflow" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Decision Channel.
+Instantiates workers according to channel configuration</p>
 </dd></dl>
 
 <dl class="py function">

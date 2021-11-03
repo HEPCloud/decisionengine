@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.module_graph &mdash; decisionengine 1.7.1.dev43+gdd990d2c documentation</title>
+  <title>decisionengine.framework.taskmanager.module_graph &mdash; decisionengine 1.7.1.dev46+g4f920dcc documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -86,7 +86,7 @@
     <span class="n">missing_produces</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">worker_list</span> <span class="ow">in</span> <span class="n">worker_lists</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">worker_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">produces</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">_produces</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">produces</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">_produces</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">produces</span><span class="p">:</span>
                 <span class="n">missing_produces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -99,7 +99,7 @@
     <span class="n">missing_consumes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">worker_list</span> <span class="ow">in</span> <span class="n">worker_lists</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">worker_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">consumes</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">_consumes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">consumes</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">_consumes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">consumes</span><span class="p">:</span>
                 <span class="n">missing_consumes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
