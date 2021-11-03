@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>decisionengine.framework.util.logparser &mdash; decisionengine 1.7.1.dev43+gdd990d2c documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> decisionengine
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_1.7.html">Latest</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">decisionengine</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>decisionengine.framework.util.logparser</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for decisionengine.framework.util.logparser</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">fileinput</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="create_parser"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.logparser.create_parser">[docs]</a><span class="k">def</span> <span class="nf">create_parser</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Simple log file parser to filter the records and print only part of them.&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># need to use the default group, otherwise --help is in a separate group by itself</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--fields&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;fields&gt;&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;comma separated list of field numbers to select in the structured log message. Start from 0&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-k&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--keys&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;keys&gt;&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;comma separated list of keys to select in the structured log message&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-i&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--input_separator&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;input separator&gt;&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot; - &quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;input separator. Defaults to &#39; - &#39;.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="s2">&quot;--separator&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;separator&gt;&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output separator. Defaults to comma, &#39;,&#39;&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--constraint&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;constraint&gt;&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;line selection constraint. Repeat the option for multiple constraints. Format: &#39;(field # | key) value&#39;.&quot;</span>
+        <span class="s2">&quot; Integers are always considered field numbers.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-l&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--loglevel&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;loglevel&gt;&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;add constraint for log level. Same as &#39;-c 3 &lt;loglevel&gt;&#39;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-e&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--logdirectory&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;logdirectory&gt;&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/var/log/decisionengine&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;log files directory. Default is &#39;/var/log/decisionengine&#39;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Include exception messages&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable debug, e.g. to use for unit test&quot;</span><span class="p">)</span>
+    <span class="n">positional</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;positional arguments&quot;</span><span class="p">)</span>
+    <span class="n">positional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;logfile&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;logfile&gt;&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;log file to parse. File names without directory are searched also in the default log files directory.&quot;</span>
+        <span class="s2">&quot; Using stdin if &#39;-&#39; or if none is provided&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+<div class="viewcode-block" id="parse_constraints"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.logparser.parse_constraints">[docs]</a><span class="k">def</span> <span class="nf">parse_constraints</span><span class="p">(</span><span class="n">constraints</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parse and combine the constraints</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        constraints (list|None): List of constraints</span>
+<span class="sd">        loglevel (str): Logging level, e.g. DEBUG, INFO, ...</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: combined constraint dictionary</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">constraints</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">loglevel</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">constraint</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;keys&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="k">if</span> <span class="n">loglevel</span><span class="p">:</span>
+        <span class="c1"># The log level is the 4th field in each log line</span>
+        <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">constraints</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">:</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">v</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="c1"># TODO: add also time constraints: before, after, ...</span>
+                <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;keys&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">constraint</span></div>
+
+
+<div class="viewcode-block" id="matches_constraint"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.logparser.matches_constraint">[docs]</a><span class="k">def</span> <span class="nf">matches_constraint</span><span class="p">(</span><span class="n">constraint</span><span class="p">,</span> <span class="n">linelist</span><span class="p">,</span> <span class="n">linedict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return True if all constraints are marched</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        constraint (dict|None): combined constraints</span>
+<span class="sd">        linelist (list): List of line fields</span>
+<span class="sd">        linedict (dict): Dictionary with structured elements</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True is all constraints are matched, False otherwise</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">constraint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="c1"># if constraint is not None, it will always have &quot;fields&quot; and &quot;keys&quot;</span>
+    <span class="k">if</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">linelist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">v</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="c1"># In case records have variable number of fields (change in the log format)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;keys&quot;</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">linedict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">constraint</span><span class="p">[</span><span class="s2">&quot;keys&quot;</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># Some records may have keys not present in others. Only positive matches are True</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="execute_command_from_args"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.logparser.execute_command_from_args">[docs]</a><span class="k">def</span> <span class="nf">execute_command_from_args</span><span class="p">(</span><span class="n">argsparsed</span><span class="p">,</span> <span class="n">logfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parse the log file as requested.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        argsparsed (Namespace): Parsed arguments from create_parser in this file.</span>
+<span class="sd">        logfile (path): Log file path.</span>
+<span class="sd">        constraint (dict): Combined constraints dictionary</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Output of the command.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">outlines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fields</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No field or key specified&quot;</span><span class="p">)</span>
+
+    <span class="c1"># If you would call fileinput.input() without files it would try to process all arguments.</span>
+    <span class="c1"># We pass &#39;-&#39; as only file when argparse got no files which will cause fileinput to read from stdin</span>
+    <span class="k">with</span> <span class="n">fileinput</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="p">(</span><span class="n">logfile</span><span class="p">,)</span> <span class="k">if</span> <span class="n">logfile</span> <span class="k">else</span> <span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">full_line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">full_line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+                <span class="c1"># Skip empty lines</span>
+                <span class="k">continue</span>
+            <span class="n">linelist</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">input_separator</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">linelist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;{&quot;</span><span class="p">:</span>
+                <span class="n">linedict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">linelist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">linedict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">matches_constraint</span><span class="p">(</span><span class="n">constraint</span><span class="p">,</span> <span class="n">linelist</span><span class="p">,</span> <span class="n">linedict</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">outline</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="c1"># Guaranteed to have at least one field or key</span>
+            <span class="c1"># IndexError and KeyError needed to cover irregular lines</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">outline</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">separator</span><span class="si">}{</span><span class="n">linelist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="n">outline</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">separator</span><span class="si">}</span><span class="s2">NOT_AVAILABLE&quot;</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">outline</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">separator</span><span class="si">}{</span><span class="n">linedict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">outline</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">separator</span><span class="si">}</span><span class="s2">NOT_AVAILABLE&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">outline</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span> <span class="p">:])</span>
+            <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+                <span class="n">outlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">outline</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">separator</span><span class="p">)</span> <span class="p">:])</span>
+
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outlines</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.logparser.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Main function for logparser</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        args_to_parse (list, optional): If you pass a list of args, they will be used instead of sys.argv.</span>
+<span class="sd">        Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Parsing result</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">create_parser</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args_to_parse</span><span class="p">)</span>
+    <span class="n">logfile</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">logfile</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">logfile</span>
+        <span class="ow">and</span> <span class="n">logfile</span> <span class="o">!=</span> <span class="s2">&quot;-&quot;</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">logfile</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">logdirectory</span><span class="p">,</span> <span class="n">logfile</span><span class="p">))</span>
+    <span class="p">):</span>
+        <span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">logdirectory</span><span class="p">,</span> <span class="n">logfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found log file in the default log directory: &#39;</span><span class="si">{</span><span class="n">logfile</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">constraint</span> <span class="o">=</span> <span class="n">parse_constraints</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">constraint</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">loglevel</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">execute_command_from_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">logfile</span><span class="p">,</span> <span class="n">constraint</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="c1"># When working in a pipe from stdin must be interrupted w/ a signal</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;An error occurred while trying to parse &#39;</span><span class="si">{</span><span class="n">logfile</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;Please ensure that you requested some fields or keys.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">msg</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;An error occurred while trying to parse &#39;</span><span class="si">{</span><span class="n">logfile</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;Please ensure that the log file name is correct.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">msg</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;An error occurred while trying to parse &#39;</span><span class="si">{</span><span class="n">logfile</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">msg</span></div>
+
+
+<div class="viewcode-block" id="console_scripts_main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.logparser.console_scripts_main">[docs]</a><span class="k">def</span> <span class="nf">console_scripts_main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the entry point for the setuptools auto generated scripts.</span>
+<span class="sd">    Setuptools thinks a return from this function is an error message.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;An error occurred while trying to parse&quot;</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">msg</span></div>
+    <span class="c1"># Regular output already printed line by line.</span>
+    <span class="c1"># Returned here only for test purposes when bebug is enabled</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">mmsg</span> <span class="o">=</span> <span class="n">console_scripts_main</span><span class="p">()</span>
+    <span class="c1"># Checking the return value to emulate the behavior of the setuptools invoker</span>
+    <span class="k">if</span> <span class="n">mmsg</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mmsg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot; &quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">mmsg</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Fermilab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
