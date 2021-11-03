@@ -360,38 +360,6 @@ class TaskManager(ComponentManager):
         self.state.set(State.SHUTDOWN)
         CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
 
-    def take_offline(self, current_data_block):
-        """
-        offline and stop task manager
-        """
-        self.state.set(State.OFFLINE)
-        CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
-        # invalidate data block
-        # not implemented yet
-
-    def data_block_put(self, data, header, data_block):
-        """
-        Put data into data block
-
-        :type data: :obj:`dict`
-        :arg data: key, value pairs
-        :type header: :obj:`~datablock.Header`
-        :arg header: data header
-        :type data_block: :obj:`~datablock.DataBlock`
-        :arg data_block: data block
-        """
-
-        if not isinstance(data, dict):
-            self.logger.error(f"data_block put expecting {dict} type, got {type(data)}")
-            return
-        self.logger.debug(f"data_block_put {data}")
-        with data_block.lock:
-            metadata = datablock.Metadata(
-                data_block.taskmanager_id, state="END_CYCLE", generation_id=data_block.generation_id
-            )
-            for key, product in data.items():
-                data_block.put(key, product, header, metadata=metadata)
-
     def do_backup(self):
         """
         Duplicate current data block and return its copy
@@ -451,8 +419,7 @@ class TaskManager(ComponentManager):
                     Module.verify_products(worker.module_instance, data)
                 self.logger.info(f"Src {worker.name} acquire returned")
                 self.logger.info(f"Src {worker.name} filling header")
-                SOURCE_ACQUIRE_GAUGE.labels(self.name,
-                                            worker.name).set_to_current_time()
+                SOURCE_ACQUIRE_GAUGE.labels(self.name, worker.name).set_to_current_time()
                 if data:
                     t = time.time()
                     header = datablock.Header(self.data_block_t0.taskmanager_id, create_time=t, creator=worker.module)
@@ -529,13 +496,13 @@ class TaskManager(ComponentManager):
         )
         self.logger.info("run transform %s", worker.name)
         try:
-            with TRANSFORM_RUN_SUMMARY.labels(self.name, transform.name).time():
+            with TRANSFORM_RUN_SUMMARY.labels(self.name, worker.name).time():
                 data = worker.module_instance.transform(data_block)
                 self.logger.debug(f"transform returned {data}")
                 header = datablock.Header(data_block.taskmanager_id, create_time=time.time(), creator=worker.name)
                 self.data_block_put(data, header, data_block)
                 self.logger.info("transform put data")
-                TRANSFORM_RUN_GAUGE.labels(self.name, transform.name).set(t)
+                TRANSFORM_RUN_GAUGE.labels(self.name, worker.name).set_to_current_time()
         except Exception:  # pragma: no cover
             self.logger.exception(f"exception from transform {worker.name} ")
             self.take_offline()
@@ -559,15 +526,15 @@ class TaskManager(ComponentManager):
                     rc = self.workflow.le_s[le].module_instance.evaluate(data_block)
                     le_list.append(rc)
                     self.logger.info("run logic engine %s done", self.workflow.le_s[le].name)
-                    LOGICENGINE_RUN_GAUGE.labels(
-                        self.name,
-                        self.workflow.le_s[le].name).set_to_current_time()
+                    LOGICENGINE_RUN_GAUGE.labels(self.name, self.workflow.le_s[le].name).set_to_current_time()
                     self.logger.info(
                         "logic engine %s generated newfacts: %s",
                         self.workflow.le_s[le].name,
                         rc["newfacts"].to_dict(orient="records"),
                     )
-                    self.logger.info("logic engine %s generated actions: %s", self.workflow.le_s[le].name, rc["actions"])
+                    self.logger.info(
+                        "logic engine %s generated actions: %s", self.workflow.le_s[le].name, rc["actions"]
+                    )
 
             # Add new facts to the datablock
             # Add empty dataframe if nothing is available
@@ -607,8 +574,7 @@ class TaskManager(ComponentManager):
                     try:
                         with PUBLISHER_RUN_SUMMARY.labels(self.name, name).time():
                             worker.module_instance.publish(data_block)
-                            PUBLISHER_RUN_GAUGE.labels(self.name,
-                                                       name).set_to_current_time()
+                            PUBLISHER_RUN_GAUGE.labels(self.name, name).set_to_current_time()
                     except KeyError as e:
                         if self.state.should_stop():
                             self.logger.warning(f"TaskManager stopping, ignore exception {name} publish() call: {e}")
