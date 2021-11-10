@@ -52,6 +52,7 @@ class Worker(multiprocessing.Process):
     def run(self):
         myname = self.task_manager.name
         myfilename = os.path.join(os.path.dirname(self.logger_config["log_file"]), myname + ".log")
+        unit_testing = self.logger_config.get("unit_testing", False)
 
         self.logger = structlog.getLogger(logconf.CHANNELLOGGERNAME)
 
@@ -81,7 +82,9 @@ class Worker(multiprocessing.Process):
         handler.setFormatter(logging.Formatter(logconf.userformat))
 
         self.logger.addHandler(handler)
-        self.logger.addHandler(de_logger.get_queue_logger().structlog_q_handler)
+
+        if unit_testing is False:
+            self.logger.addHandler(de_logger.get_queue_logger().structlog_q_handler)
 
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=myname)
 

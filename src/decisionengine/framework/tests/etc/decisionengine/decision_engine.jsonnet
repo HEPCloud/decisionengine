@@ -8,6 +8,7 @@
     file_rotate_by: "size",
     log_level: "DEBUG",
     global_channel_log_level: "DEBUG",
+    unit_testing: "True",
   },
 
   server_address: ["localhost", 8888],

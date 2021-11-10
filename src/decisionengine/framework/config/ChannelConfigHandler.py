@@ -33,6 +33,7 @@ def _make_de_logger(global_config):
             max_backup_count=logger_config.get("max_backup_count", 6),
             max_file_size=logger_config.get("max_file_size", 1000000),
             log_file_name=logger_config["log_file"],
+            unit_testing=logger_config.get("unit_testing", False),
         )
         return de_logger.get_logger()
     except Exception as msg:  # pragma: no cover

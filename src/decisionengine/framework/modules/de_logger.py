@@ -15,6 +15,7 @@ MB = 1000000
 
 delogger = structlog.getLogger(logconf.LOGGERNAME)
 delogger = delogger.bind(module=__name__.split(".")[-1], channel=logconf.DELOGGER_CHANNEL_NAME)
+
 queue_logger = QueueLogger.QueueLogger()
 
 
@@ -26,6 +27,7 @@ def configure_logging(
     max_backup_count=6,
     max_file_size=200 * MB,
     log_file_name="/tmp/decision_engine_logs/decisionengine.log",
+    unit_testing=False,
 ):
     """
 
@@ -88,8 +90,9 @@ def configure_logging(
         delogger.addHandler(h)
 
     # setup the queue logger
-    queue_logger.setup_queue_logging(delogger, structlog_handlers_list)
-    queue_logger.start()
+    if unit_testing is False:
+        queue_logger.setup_queue_logging(delogger, structlog_handlers_list)
+        queue_logger.start()
 
     delogger.debug("de logging setup complete")
 

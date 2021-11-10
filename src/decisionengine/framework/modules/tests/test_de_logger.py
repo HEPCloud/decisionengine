@@ -44,11 +44,16 @@ def test_by_size(log_setup):
     with tempfile.NamedTemporaryFile() as log:
         log.flush()
         de_logger.configure_logging(
-            log_level="INFO", max_backup_count=6, file_rotate_by="size", max_file_size=1000000, log_file_name=log.name
+            log_level="INFO",
+            max_backup_count=6,
+            file_rotate_by="size",
+            max_file_size=1000000,
+            log_file_name=log.name,
+            unit_testing="True",
         )
 
         assert log_setup.hasHandlers() is True
-        assert "QueueHandler" in str(log_setup.handlers)
+        assert "RotatingFileHandler" in str(log_setup.handlers)
         assert log_setup.debug("debug") is None
         assert log_setup.info("infomsg") is None
 
@@ -58,10 +63,15 @@ def test_by_time(log_setup):
     with tempfile.NamedTemporaryFile() as log:
         log.flush()
         de_logger.configure_logging(
-            log_level="INFO", rotation_interval=1, file_rotate_by="time", rotation_time_unit="D", log_file_name=log.name
+            log_level="INFO",
+            rotation_interval=1,
+            file_rotate_by="time",
+            rotation_time_unit="D",
+            log_file_name=log.name,
+            unit_testing="True",
         )
 
         assert log_setup.hasHandlers() is True
-        assert "QueueHandler" in str(log_setup.handlers)
+        assert "TimedRotatingFileHandler" in str(log_setup.handlers)
         assert log_setup.debug("debug") is None
         assert log_setup.info("infomsg") is None
