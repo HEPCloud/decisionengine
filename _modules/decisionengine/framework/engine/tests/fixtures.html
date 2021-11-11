@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.1.dev67+g164b36d3 documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.1.dev69+g9cbffe94 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -75,6 +75,8 @@
 <span></span><span class="sd">&quot;&quot;&quot;pytest defaults&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">gc</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 
 <span class="kn">import</span> <span class="nn">pytest</span>
@@ -84,7 +86,6 @@
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.tests.fixtures</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DATABASES_TO_TEST</span><span class="p">,</span>
-    <span class="n">PG_DE_DB_WITH_SCHEMA</span><span class="p">,</span>
     <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="p">,</span>
     <span class="n">PG_PROG</span><span class="p">,</span>
     <span class="n">SQLALCHEMY_PG_WITH_SCHEMA</span><span class="p">,</span>
@@ -100,7 +101,6 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;DATABASES_TO_TEST&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span>
     <span class="s2">&quot;PG_DE_DB_WITHOUT_SCHEMA&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SQLALCHEMY_TEMPFILE_SQLITE&quot;</span><span class="p">,</span>
@@ -129,6 +129,8 @@
         <span class="sd">&quot;&quot;&quot;format of args should match what you set in conf_mamanger&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;DETestWorker&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span> <span class="o">=</span> <span class="n">server_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conf_path</span> <span class="o">=</span> <span class="n">conf_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_conf_path</span> <span class="o">=</span> <span class="n">channel_conf_path</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span> <span class="o">=</span> <span class="n">_get_de_conf_manager</span><span class="p">(</span>
             <span class="n">conf_path</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">parse_program_options</span><span class="p">([])</span>
@@ -188,11 +190,12 @@
     <span class="n">channel_conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">host</span><span class="o">=</span><span class="n">DE_HOST</span><span class="p">,</span>
     <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">make_conf_dirs_if_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A DE Server using a private database&quot;&quot;&quot;</span>
 
     <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">DATABASES_TO_TEST</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">de_server_factory</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">capsys</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">de_server_factory</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">capsys</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This parameterized fixture will mock up various datasources.</span>
 
@@ -209,51 +212,57 @@
         <span class="n">conn_fixture</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">getfixturevalue</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">param</span><span class="p">)</span>
 
         <span class="n">datasource</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># SQL Alchemy</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.sqlalchemy_ds&quot;</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;SQLAlchemyDS&quot;</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">][</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">][</span><span class="s2">&quot;echo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.postgresql&quot;</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Postgresql&quot;</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
-            <span class="c1"># psycopg2</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">][</span><span class="s2">&quot;host&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">host</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">][</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">port</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">][</span><span class="s2">&quot;user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">user</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">][</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">password</span>
-            <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">][</span><span class="s2">&quot;database&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dbname</span>
+        <span class="c1"># SQL Alchemy</span>
+        <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.sqlalchemy_ds&quot;</span>
+        <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;SQLAlchemyDS&quot;</span>
+        <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">][</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
+        <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">][</span><span class="s2">&quot;echo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture has datasource config: </span><span class="si">{</span><span class="n">datasource</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">server_proc</span> <span class="o">=</span> <span class="n">DETestWorker</span><span class="p">(</span>
-            <span class="n">conf_path</span><span class="p">,</span>
-            <span class="n">channel_conf_path</span><span class="p">,</span>
-            <span class="n">host_port</span><span class="p">,</span>
-            <span class="n">datasource</span><span class="p">,</span>
-            <span class="n">conf_override</span><span class="p">,</span>
-            <span class="n">channel_conf_override</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting DE Fixture&quot;</span><span class="p">)</span>
-        <span class="n">server_proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="c1"># make it easy to give each fixture a unique private config path</span>
+        <span class="c1"># for more flexible startup options</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">tmp_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmppath</span><span class="p">:</span>
+            <span class="k">nonlocal</span> <span class="n">conf_path</span>
+            <span class="k">nonlocal</span> <span class="n">channel_conf_path</span>
+            <span class="k">if</span> <span class="n">conf_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">conf_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span> <span class="s2">&quot;conf.d&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">channel_conf_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">channel_conf_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span> <span class="s2">&quot;channel.conf.d&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Ensure the channels have started</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture: Wait on startup state: is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-        <span class="n">server_proc</span><span class="o">.</span><span class="n">stdout_at_setup</span> <span class="o">=</span> <span class="n">capsys</span><span class="o">.</span><span class="n">readouterr</span><span class="p">()</span><span class="o">.</span><span class="n">out</span>
+            <span class="k">if</span> <span class="n">make_conf_dirs_if_missing</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">conf_path</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture making </span><span class="si">{</span><span class="n">conf_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">conf_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">make_conf_dirs_if_missing</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">channel_conf_path</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture making </span><span class="si">{</span><span class="n">channel_conf_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">channel_conf_path</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;DE Fixture: Done waiting for startup state: is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+            <span class="n">server_proc</span> <span class="o">=</span> <span class="n">DETestWorker</span><span class="p">(</span>
+                <span class="n">conf_path</span><span class="p">,</span>
+                <span class="n">channel_conf_path</span><span class="p">,</span>
+                <span class="n">host_port</span><span class="p">,</span>
+                <span class="n">datasource</span><span class="p">,</span>
+                <span class="n">conf_override</span><span class="p">,</span>
+                <span class="n">channel_conf_override</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting DE Fixture&quot;</span><span class="p">)</span>
+            <span class="n">server_proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Could not start PrivateDEServer fixture&quot;</span><span class="p">)</span>
+            <span class="c1"># Ensure the channels have started</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture: Wait on startup state: is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+            <span class="n">server_proc</span><span class="o">.</span><span class="n">stdout_at_setup</span> <span class="o">=</span> <span class="n">capsys</span><span class="o">.</span><span class="n">readouterr</span><span class="p">()</span><span class="o">.</span><span class="n">out</span>
 
-        <span class="k">yield</span> <span class="n">server_proc</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;DE Fixture: Done waiting for startup state: is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Could not start PrivateDEServer fixture&quot;</span><span class="p">)</span>
+
+            <span class="k">yield</span> <span class="n">server_proc</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DE Fixture: beginning cleanup&quot;</span><span class="p">)</span>
 

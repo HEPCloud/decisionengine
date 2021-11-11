@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.7.1.dev67+g164b36d3 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.tests.fixtures &mdash; decisionengine 1.7.1.dev69+g9cbffe94 documentation</title>
       <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -76,7 +76,6 @@
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">gc</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">threading</span>
@@ -89,13 +88,11 @@
 <span class="kn">from</span> <span class="nn">pytest_postgresql</span> <span class="kn">import</span> <span class="n">factories</span>
 
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="kn">import</span> <span class="n">Header</span><span class="p">,</span> <span class="n">Metadata</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.postgresql</span> <span class="kn">import</span> <span class="n">Postgresql</span> <span class="k">as</span> <span class="n">Postgresql_datasource</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.datasources.sqlalchemy_ds</span> <span class="kn">import</span> <span class="n">SQLAlchemyDS</span> <span class="k">as</span> <span class="n">SQLAlchemy_datasource</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;DATABASES_TO_TEST&quot;</span><span class="p">,</span>
     <span class="s2">&quot;PG_PROG&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span>
     <span class="s2">&quot;PG_DE_DB_WITHOUT_SCHEMA&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SQLALCHEMY_TEMPFILE_SQLITE&quot;</span><span class="p">,</span>
@@ -119,30 +116,9 @@
 <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span> <span class="o">&gt;</span> <span class="mi">6</span> <span class="ow">and</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_implementation</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;CPython&quot;</span><span class="p">:</span>
     <span class="c1"># sqlite on EL7 is too old for efficient testing</span>
     <span class="c1"># sqlite on pypy is unnecessary and really slow</span>
-    <span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span> <span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">,</span> <span class="s2">&quot;SQLALCHEMY_TEMPFILE_SQLITE&quot;</span><span class="p">)</span>
+    <span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">,</span> <span class="s2">&quot;SQLALCHEMY_TEMPFILE_SQLITE&quot;</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">,</span> <span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="PG_DE_DB_WITH_SCHEMA"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.PG_DE_DB_WITH_SCHEMA">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;PG_DE_DB_WITHOUT_SCHEMA&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">PG_DE_DB_WITH_SCHEMA</span><span class="p">(</span><span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load our PG schema into the database via this fixture</span>
-<span class="sd">    so pytest knows the limitations on parallel usage of this</span>
-<span class="sd">    database scope.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/../postgresql.sql&quot;</span>
-    <span class="p">)</span> <span class="k">as</span> <span class="n">_fd</span><span class="p">,</span> <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
-        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">_fd</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-
-    <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-    <span class="k">yield</span> <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span>
-
-    <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-    <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>
+    <span class="n">DATABASES_TO_TEST</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">,)</span>
 
 
 <div class="viewcode-block" id="SQLALCHEMY_PG_WITH_SCHEMA"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.tests.html#decisionengine.framework.dataspace.datasources.tests.fixtures.SQLALCHEMY_PG_WITH_SCHEMA">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
@@ -213,11 +189,7 @@
         <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">password</span>
         <span class="n">db_info</span><span class="p">[</span><span class="s2">&quot;database&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">dbname</span>
 
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span> <span class="o">==</span> <span class="s2">&quot;PG_DE_DB_WITH_SCHEMA&quot;</span><span class="p">:</span>
-        <span class="n">my_ds</span> <span class="o">=</span> <span class="n">Postgresql_datasource</span><span class="p">(</span><span class="n">db_info</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">my_ds</span> <span class="o">=</span> <span class="n">SQLAlchemy_datasource</span><span class="p">(</span><span class="n">db_info</span><span class="p">)</span>
-
+    <span class="n">my_ds</span> <span class="o">=</span> <span class="n">SQLAlchemy_datasource</span><span class="p">(</span><span class="n">db_info</span><span class="p">)</span>
     <span class="n">load_sample_data_into_datasource</span><span class="p">(</span><span class="n">my_ds</span><span class="p">)</span>
 
     <span class="k">yield</span> <span class="n">my_ds</span>
