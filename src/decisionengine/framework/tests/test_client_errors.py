@@ -5,7 +5,6 @@ import pytest
 
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
-    PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     SQLALCHEMY_PG_WITH_SCHEMA,

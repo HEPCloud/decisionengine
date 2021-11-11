@@ -2,7 +2,6 @@
 import datetime
 import gc
 import logging
-import os
 import platform
 import sys
 import threading
@@ -15,13 +14,11 @@ import pytest
 from pytest_postgresql import factories
 
 from decisionengine.framework.dataspace.datablock import Header, Metadata
-from decisionengine.framework.dataspace.datasources.postgresql import Postgresql as Postgresql_datasource
 from decisionengine.framework.dataspace.datasources.sqlalchemy_ds import SQLAlchemyDS as SQLAlchemy_datasource
 
 __all__ = [
     "DATABASES_TO_TEST",
     "PG_PROG",
-    "PG_DE_DB_WITH_SCHEMA",
     "PG_DE_DB_WITHOUT_SCHEMA",
     "SQLALCHEMY_PG_WITH_SCHEMA",
     "SQLALCHEMY_TEMPFILE_SQLITE",
@@ -45,30 +42,9 @@ PG_DE_DB_WITHOUT_SCHEMA = factories.postgresql(
 if sys.version_info.major == 3 and sys.version_info.minor > 6 and platform.python_implementation() == "CPython":
     # sqlite on EL7 is too old for efficient testing
     # sqlite on pypy is unnecessary and really slow
-    DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA", "SQLALCHEMY_PG_WITH_SCHEMA", "SQLALCHEMY_TEMPFILE_SQLITE")
+    DATABASES_TO_TEST = ("SQLALCHEMY_PG_WITH_SCHEMA", "SQLALCHEMY_TEMPFILE_SQLITE")
 else:
-    DATABASES_TO_TEST = ("PG_DE_DB_WITH_SCHEMA", "SQLALCHEMY_PG_WITH_SCHEMA")
-
-
-@pytest.fixture()
-@pytest.mark.usefixtures("PG_DE_DB_WITHOUT_SCHEMA")
-def PG_DE_DB_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
-    """
-    Load our PG schema into the database via this fixture
-    so pytest knows the limitations on parallel usage of this
-    database scope.
-    """
-    with open(
-        os.path.dirname(os.path.abspath(__file__)) + "/../postgresql.sql"
-    ) as _fd, PG_DE_DB_WITHOUT_SCHEMA.cursor() as cursor:
-        cursor.execute(_fd.read())
-
-    PG_DE_DB_WITHOUT_SCHEMA.commit()
-    yield PG_DE_DB_WITHOUT_SCHEMA
-
-    PG_DE_DB_WITHOUT_SCHEMA.close()
-
-    gc.collect()
+    DATABASES_TO_TEST = ("SQLALCHEMY_PG_WITH_SCHEMA",)
 
 
 @pytest.fixture()
@@ -139,11 +115,7 @@ def datasource(request):
         db_info["password"] = conn_fixture.info.password
         db_info["database"] = conn_fixture.info.dbname
 
-    if request.param == "PG_DE_DB_WITH_SCHEMA":
-        my_ds = Postgresql_datasource(db_info)
-    else:
-        my_ds = SQLAlchemy_datasource(db_info)
-
+    my_ds = SQLAlchemy_datasource(db_info)
     load_sample_data_into_datasource(my_ds)
 
     yield my_ds

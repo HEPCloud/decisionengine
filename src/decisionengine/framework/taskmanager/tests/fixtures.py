@@ -2,7 +2,6 @@ from decisionengine.framework.dataspace.datasources.tests.fixtures import mock_d
 from decisionengine.framework.dataspace.tests.fixtures import (
     DATABASES_TO_TEST,
     dataspace,
-    PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     SQLALCHEMY_PG_WITH_SCHEMA,
@@ -10,7 +9,6 @@ from decisionengine.framework.dataspace.tests.fixtures import (
 )
 
 __all__ = [
-    "PG_DE_DB_WITH_SCHEMA",
     "PG_DE_DB_WITHOUT_SCHEMA",
     "PG_PROG",
     "DATABASES_TO_TEST",

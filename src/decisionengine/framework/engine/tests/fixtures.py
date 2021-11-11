@@ -10,7 +10,6 @@ import decisionengine.framework.engine.de_query_tool as de_query_tool
 
 from decisionengine.framework.dataspace.tests.fixtures import (
     DATABASES_TO_TEST,
-    PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     SQLALCHEMY_PG_WITH_SCHEMA,
@@ -26,7 +25,6 @@ from decisionengine.framework.util.sockets import get_random_port
 
 __all__ = [
     "DATABASES_TO_TEST",
-    "PG_DE_DB_WITH_SCHEMA",
     "PG_DE_DB_WITHOUT_SCHEMA",
     "SQLALCHEMY_PG_WITH_SCHEMA",
     "SQLALCHEMY_TEMPFILE_SQLITE",
@@ -135,24 +133,13 @@ def DEServer(
         conn_fixture = request.getfixturevalue(request.param)
 
         datasource = {}
-        try:
-            # SQL Alchemy
-            datasource["config"] = {}
-            datasource["module"] = "decisionengine.framework.dataspace.datasources.sqlalchemy_ds"
-            datasource["name"] = "SQLAlchemyDS"
-            datasource["config"]["url"] = conn_fixture["url"]
-            datasource["config"]["echo"] = True
-        except TypeError:
-            datasource["module"] = "decisionengine.framework.dataspace.datasources.postgresql"
-            datasource["name"] = "Postgresql"
-            datasource["config"] = {}
 
-            # psycopg2
-            datasource["config"]["host"] = conn_fixture.info.host
-            datasource["config"]["port"] = conn_fixture.info.port
-            datasource["config"]["user"] = conn_fixture.info.user
-            datasource["config"]["password"] = conn_fixture.info.password
-            datasource["config"]["database"] = conn_fixture.info.dbname
+        # SQL Alchemy
+        datasource["config"] = {}
+        datasource["module"] = "decisionengine.framework.dataspace.datasources.sqlalchemy_ds"
+        datasource["name"] = "SQLAlchemyDS"
+        datasource["config"]["url"] = conn_fixture["url"]
+        datasource["config"]["echo"] = True
 
         logger.debug(f"DE Fixture has datasource config: {datasource}")
 

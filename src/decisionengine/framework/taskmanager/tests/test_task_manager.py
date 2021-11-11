@@ -13,7 +13,6 @@ from decisionengine.framework.taskmanager.TaskManager import State, TaskManager,
 from decisionengine.framework.taskmanager.tests.fixtures import (  # noqa: F401
     DATABASES_TO_TEST,
     dataspace,
-    PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     SQLALCHEMY_PG_WITH_SCHEMA,
