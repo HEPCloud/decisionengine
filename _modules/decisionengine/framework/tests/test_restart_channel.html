@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_restart_channel &mdash; decisionengine 1.7.1.dev49+g7b0f641b documentation</title>
+  <title>decisionengine.framework.tests.test_restart_channel &mdash; decisionengine 1.7.1.dev66+g91f7a76f documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -96,7 +96,7 @@
 <div class="viewcode-block" id="deserver_mock_data_block"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_restart_channel.deserver_mock_data_block">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">deserver_mock_data_block</span><span class="p">(</span><span class="n">mock_data_block</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_handler</span> <span class="o">=</span> <span class="n">_get_de_conf_manager</span><span class="p">(</span>
-        <span class="n">_CONFIG_PATH</span><span class="p">,</span> <span class="n">_CHANNEL_CONFIG_PATH</span><span class="p">,</span> <span class="n">parse_program_options</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;--port=</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+        <span class="n">_CONFIG_PATH</span><span class="p">,</span> <span class="n">_CHANNEL_CONFIG_PATH</span><span class="p">,</span> <span class="n">parse_program_options</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;--port=</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;--no-webserver&quot;</span><span class="p">])</span>
     <span class="p">)</span>
     <span class="n">server</span> <span class="o">=</span> <span class="n">_create_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_handler</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.1.dev49+g7b0f641b documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.1.dev66+g91f7a76f documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -92,9 +92,91 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Transform</span> <span class="kn">import</span> <span class="n">Transform</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.module_graph</span> <span class="kn">import</span> <span class="n">ensure_no_circularities</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">State</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.util.metrics</span> <span class="kn">import</span> <span class="n">Gauge</span><span class="p">,</span> <span class="n">Summary</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.subclasses</span> <span class="kn">import</span> <span class="n">all_subclasses</span>
 
 <span class="n">_DEFAULT_SCHEDULE</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes</span>
+
+<span class="c1"># Metrics for monitoring TaskManager</span>
+<span class="n">CHANNEL_STATE_GAUGE</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
+    <span class="s2">&quot;de_channel_state&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Channel state&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;channel_name&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">SOURCE_ACQUIRE_GAUGE</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
+    <span class="s2">&quot;de_source_last_acquire_timestamp_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Last time a source &quot;</span> <span class="s2">&quot;successfully ran its acquire function&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;channel_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source_name&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">LOGICENGINE_RUN_GAUGE</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
+    <span class="s2">&quot;de_logicengine_last_run_timestamp_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Last time &quot;</span> <span class="s2">&quot;a logicengine successfully ran&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;channel_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;logicengine_name&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">TRANSFORM_RUN_GAUGE</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
+    <span class="s2">&quot;de_transform_last_run_timestamp_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Last time a &quot;</span> <span class="s2">&quot;transform successfully ran&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;channel_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;transform_name&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">PUBLISHER_RUN_GAUGE</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
+    <span class="s2">&quot;de_publisher_last_run_timestamp_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Last time &quot;</span> <span class="s2">&quot;a publisher successfully ran&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;channel_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;publisher_name&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">SOURCE_RUN_SUMMARY</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+    <span class="s2">&quot;de_source_run_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time spent running source&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;channel_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source_name&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">LOGICENGINE_RUN_SUMMARY</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+    <span class="s2">&quot;de_logicengine_run_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time spent running logicengine&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;channel_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;logicengine_name&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">TRANSFORM_RUN_SUMMARY</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+    <span class="s2">&quot;de_transform_run_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time spent running transform&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;channel_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;transform_name&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">PUBLISHER_RUN_SUMMARY</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+    <span class="s2">&quot;de_publisher_run_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time spent running publisher&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;channel_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;publisher_name&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
 
 <span class="n">delogger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
 <span class="n">delogger</span> <span class="o">=</span> <span class="n">delogger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
@@ -228,6 +310,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span> <span class="o">=</span> <span class="n">Workflow</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
         <span class="c1"># The rest of this function will go away once the source-proxy</span>
         <span class="c1"># has been reimplemented.</span>
         <span class="k">for</span> <span class="n">src_worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -314,6 +397,7 @@
                         <span class="c1"># If we are signaled to stop, don&#39;t override that state</span>
                         <span class="c1"># otherwise the last decision_cycle completed without error</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="p">)</span>
+                        <span class="n">CHANNEL_STATE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_state_value</span><span class="p">())</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_any</span><span class="p">(</span><span class="n">done_events</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
@@ -343,10 +427,12 @@
 
 <div class="viewcode-block" id="TaskManager.set_to_shutdown"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.set_to_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">set_to_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="p">)</span>
+        <span class="n">CHANNEL_STATE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_state_value</span><span class="p">())</span>
         <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Shutting down. Will call shutdown on all publishers&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">publisher_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTDOWN</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTDOWN</span><span class="p">)</span>
+        <span class="n">CHANNEL_STATE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_state_value</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TaskManager.do_backup"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.do_backup">[docs]</a>    <span class="k">def</span> <span class="nf">do_backup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -398,15 +484,16 @@
 <span class="sd">        :type worker: :obj:`~Worker`</span>
 <span class="sd">        :arg worker: Source worker</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="c1"># If task manager is in offline state, do not keep executing sources.</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Src </span><span class="si">{</span><span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> calling acquire&quot;</span><span class="p">)</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
-                <span class="n">Module</span><span class="o">.</span><span class="n">verify_products</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">SOURCE_RUN_SUMMARY</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+                    <span class="n">Module</span><span class="o">.</span><span class="n">verify_products</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Src </span><span class="si">{</span><span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> acquire returned&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Src </span><span class="si">{</span><span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> filling header&quot;</span><span class="p">)</span>
+                <span class="n">SOURCE_ACQUIRE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set_to_current_time</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
                     <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
                     <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">create_time</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">creator</span><span class="o">=</span><span class="n">worker</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
@@ -441,6 +528,7 @@
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;starting loop for </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">event_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">data_updated</span><span class="p">)</span>
+            <span class="n">SOURCE_ACQUIRE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_source</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">source</span><span class="p">,))</span>
             <span class="n">source_threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
             <span class="c1"># Cannot catch exception from function called in separate thread</span>
@@ -482,11 +570,13 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;run transform </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data_block</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;transform returned </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">data_block</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">create_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">creator</span><span class="o">=</span><span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data_block_put</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;transform put data&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">TRANSFORM_RUN_SUMMARY</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data_block</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;transform returned </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">data_block</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">create_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">creator</span><span class="o">=</span><span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_block_put</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;transform put data&quot;</span><span class="p">)</span>
+                <span class="n">TRANSFORM_RUN_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set_to_current_time</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;exception from transform </span><span class="si">{</span><span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">take_offline</span><span class="p">()</span></div>
@@ -504,17 +594,21 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">le</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;run logic engine </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;run logic engine </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
-                <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">data_block</span><span class="p">)</span>
-                <span class="n">le_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;run logic engine </span><span class="si">%s</span><span class="s2"> done&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="s2">&quot;logic engine </span><span class="si">%s</span><span class="s2"> generated newfacts: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">rc</span><span class="p">[</span><span class="s2">&quot;newfacts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">),</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;logic engine </span><span class="si">%s</span><span class="s2"> generated actions: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">])</span>
+                <span class="k">with</span> <span class="n">LOGICENGINE_RUN_SUMMARY</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;run logic engine </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;run logic engine </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
+                    <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">data_block</span><span class="p">)</span>
+                    <span class="n">le_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;run logic engine </span><span class="si">%s</span><span class="s2"> done&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="n">LOGICENGINE_RUN_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set_to_current_time</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;logic engine </span><span class="si">%s</span><span class="s2"> generated newfacts: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">rc</span><span class="p">[</span><span class="s2">&quot;newfacts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">),</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;logic engine </span><span class="si">%s</span><span class="s2"> generated actions: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">]</span>
+                    <span class="p">)</span>
 
             <span class="c1"># Add new facts to the datablock</span>
             <span class="c1"># Add empty dataframe if nothing is available</span>
@@ -552,7 +646,9 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run publisher </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run publisher </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">data_block</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">data_block</span><span class="p">)</span>
+                        <span class="k">with</span> <span class="n">PUBLISHER_RUN_SUMMARY</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+                            <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">data_block</span><span class="p">)</span>
+                            <span class="n">PUBLISHER_RUN_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set_to_current_time</span><span class="p">()</span>
                     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TaskManager stopping, ignore exception </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> publish() call: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

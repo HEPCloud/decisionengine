@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.de_client &mdash; decisionengine 1.7.1.dev49+g7b0f641b documentation</title>
+  <title>decisionengine.framework.engine.de_client &mdash; decisionengine 1.7.1.dev66+g91f7a76f documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -93,6 +93,8 @@
     <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--show-de-config&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print server configuration&quot;</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--print-engine-loglevel&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print engine log level&quot;</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--block-while&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;state&gt;&quot;</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--metrics&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print metrics&quot;</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--list-rpc-methods&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print all rpc methods&quot;</span><span class="p">)</span>
 
     <span class="n">channels</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Channel-specific options&quot;</span><span class="p">)</span>
     <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--start-channels&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;start all channels&quot;</span><span class="p">)</span>
@@ -165,6 +167,8 @@
         <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">get_log_level</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">block_while</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">block_while</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">metrics</span><span class="p">()</span>
 
     <span class="c1"># Channel-specific options</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">:</span>

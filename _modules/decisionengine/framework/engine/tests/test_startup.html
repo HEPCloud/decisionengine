@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.tests.test_startup &mdash; decisionengine 1.7.1.dev49+g7b0f641b documentation</title>
+  <title>decisionengine.framework.engine.tests.test_startup &mdash; decisionengine 1.7.1.dev66+g91f7a76f documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -74,7 +74,9 @@
   <h1>Source code for decisionengine.framework.engine.tests.test_startup</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">tempfile</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="kn">import</span> <span class="n">_get_global_config</span><span class="p">,</span> <span class="n">parse_program_options</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.DecisionEngine</span> <span class="kn">import</span> <span class="n">_check_metrics_env</span><span class="p">,</span> <span class="n">_get_global_config</span><span class="p">,</span> <span class="n">parse_program_options</span>
 
 <span class="c1"># Because we just want to ensure correct behavior of program options</span>
 <span class="c1"># overriding a configuration, it is not necessary to have a valid DE</span>
@@ -85,9 +87,25 @@
 <span class="n">global_config_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="n">global_config_file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
+<span class="c1"># For some of the metrics environment tests, we need to set up the environment</span>
+
+
+<div class="viewcode-block" id="metrics_env_setup"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_startup.metrics_env_setup">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">metrics_env_setup</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure we have a directory set for PROMETHEUS_MULTIPROC_DIR so that</span>
+<span class="sd">    metric instantiation gives us multiprocess metrics&quot;&quot;&quot;</span>
+    <span class="c1"># Get a fixed dir</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">tmp_path</span>
+    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setenv</span><span class="p">(</span><span class="s2">&quot;PROMETHEUS_MULTIPROC_DIR&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+    <span class="k">yield</span>
+    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">delenv</span><span class="p">(</span><span class="s2">&quot;PROMETHEUS_MULTIPROC_DIR&quot;</span><span class="p">)</span></div>
+
+
 <span class="c1"># We do not call the DE&#39;s _get_de_conf_manager as that assumes the</span>
 <span class="c1"># presence of configuration directories, which are unnecessary for</span>
 <span class="c1"># this test.</span>
+
+
 <div class="viewcode-block" id="_check_override"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_startup._check_override">[docs]</a><span class="k">def</span> <span class="nf">_check_override</span><span class="p">(</span><span class="n">arguments</span><span class="p">):</span>
     <span class="n">options</span> <span class="o">=</span> <span class="n">parse_program_options</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_get_global_config</span><span class="p">(</span><span class="n">global_config_file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span></div>
@@ -101,6 +119,35 @@
 <div class="viewcode-block" id="test_change_port"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_startup.test_change_port">[docs]</a><span class="k">def</span> <span class="nf">test_change_port</span><span class="p">():</span>
     <span class="n">arguments</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--port=54321&quot;</span><span class="p">]</span>
     <span class="k">assert</span> <span class="n">_check_override</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;server_address&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">54321</span><span class="p">]}</span></div>
+
+
+<div class="viewcode-block" id="test_check_metrics_env_no_webserver"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_startup.test_check_metrics_env_no_webserver">[docs]</a><span class="k">def</span> <span class="nf">test_check_metrics_env_no_webserver</span><span class="p">():</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;--no-webserver&quot;</span><span class="p">]</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">parse_program_options</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_check_metrics_env</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">pytest</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--no-webserver should have skipped the metrics env check, but instead we got an exception </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="test_check_metrics_env_var_set"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_startup.test_check_metrics_env_var_set">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;metrics_env_setup&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_check_metrics_env_var_set</span><span class="p">():</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">parse_program_options</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_check_metrics_env</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">pytest</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;PROMETHEUS_MULTIPROC_DIR should be set, so check_metrics_env should have passed but instead we got an exception </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="test_check_metrics_env_var_unset"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_startup.test_check_metrics_env_var_unset">[docs]</a><span class="k">def</span> <span class="nf">test_check_metrics_env_var_unset</span><span class="p">():</span>
+    <span class="n">arguments</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="n">parse_program_options</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">EnvironmentError</span><span class="p">)</span> <span class="k">as</span> <span class="n">excinfo</span><span class="p">:</span>
+        <span class="n">_check_metrics_env</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s2">&quot;PROMETHEUS_MULTIPROC_DIR must be set&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">excinfo</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
