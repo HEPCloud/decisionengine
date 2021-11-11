@@ -1,6 +1,8 @@
 """pytest defaults"""
 import gc
 import logging
+import os
+import tempfile
 import threading
 
 import pytest
@@ -53,6 +55,8 @@ class DETestWorker(threading.Thread):
         """format of args should match what you set in conf_mamanger"""
         super().__init__(name="DETestWorker")
         self.server_address = server_address
+        self.conf_path = conf_path
+        self.channel_conf_path = channel_conf_path
 
         self.global_config, self.channel_config_loader = _get_de_conf_manager(
             conf_path, channel_conf_path, parse_program_options([])
@@ -112,11 +116,12 @@ def DEServer(
     channel_conf_override=None,
     host=DE_HOST,
     port=None,
+    make_conf_dirs_if_missing=False,
 ):
     """A DE Server using a private database"""
 
     @pytest.fixture(params=DATABASES_TO_TEST)
-    def de_server_factory(request, capsys):
+    def de_server_factory(tmp_path, request, capsys):
         """
         This parameterized fixture will mock up various datasources.
 
@@ -143,30 +148,47 @@ def DEServer(
 
         logger.debug(f"DE Fixture has datasource config: {datasource}")
 
-        server_proc = DETestWorker(
-            conf_path,
-            channel_conf_path,
-            host_port,
-            datasource,
-            conf_override,
-            channel_conf_override,
-        )
-        logger.debug("Starting DE Fixture")
-        server_proc.start()
+        # make it easy to give each fixture a unique private config path
+        # for more flexible startup options
+        with tempfile.TemporaryDirectory(dir=tmp_path) as tmppath:
+            nonlocal conf_path
+            nonlocal channel_conf_path
+            if conf_path is None:
+                conf_path = os.path.join(tmppath, "conf.d")
+            if channel_conf_path is None:
+                channel_conf_path = os.path.join(tmppath, "channel.conf.d")
 
-        # Ensure the channels have started
-        logger.debug(f"DE Fixture: Wait on startup state: is_set={server_proc.de_server.startup_complete.is_set()}")
-        server_proc.de_server.startup_complete.wait()
-        server_proc.stdout_at_setup = capsys.readouterr().out
+            if make_conf_dirs_if_missing and not os.path.exists(conf_path):
+                logger.debug(f"DE Fixture making {conf_path}")
+                os.makedirs(conf_path)
+            if make_conf_dirs_if_missing and not os.path.exists(channel_conf_path):
+                logger.debug(f"DE Fixture making {channel_conf_path}")
+                os.makedirs(channel_conf_path)
 
-        logger.debug(
-            f"DE Fixture: Done waiting for startup state: is_set={server_proc.de_server.startup_complete.is_set()}"
-        )
+            server_proc = DETestWorker(
+                conf_path,
+                channel_conf_path,
+                host_port,
+                datasource,
+                conf_override,
+                channel_conf_override,
+            )
+            logger.debug("Starting DE Fixture")
+            server_proc.start()
 
-        if not server_proc.is_alive():
-            raise RuntimeError("Could not start PrivateDEServer fixture")
+            # Ensure the channels have started
+            logger.debug(f"DE Fixture: Wait on startup state: is_set={server_proc.de_server.startup_complete.is_set()}")
+            server_proc.de_server.startup_complete.wait()
+            server_proc.stdout_at_setup = capsys.readouterr().out
 
-        yield server_proc
+            logger.debug(
+                f"DE Fixture: Done waiting for startup state: is_set={server_proc.de_server.startup_complete.is_set()}"
+            )
+
+            if not server_proc.is_alive():
+                raise RuntimeError("Could not start PrivateDEServer fixture")
+
+            yield server_proc
 
         logger.debug("DE Fixture: beginning cleanup")
 
