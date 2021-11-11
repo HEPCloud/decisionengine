@@ -84,7 +84,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.logger.info(f"DecisionEngine started on {server_address}")
         self.register_function(self.rpc_metrics, name="metrics")
         if not global_config.get("no_webserver"):
-            self.start_webserver()  # Make this dependent on flag
+            self.start_webserver()
 
     def get_logger(self):
         return self.logger
