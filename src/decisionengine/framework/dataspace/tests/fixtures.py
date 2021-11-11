@@ -7,7 +7,6 @@ from decisionengine.framework.dataspace.datasources.tests.fixtures import (  # n
     DATABASES_TO_TEST,
     datasource,
     load_sample_data_into_datasource,
-    PG_DE_DB_WITH_SCHEMA,
     PG_DE_DB_WITHOUT_SCHEMA,
     PG_PROG,
     SQLALCHEMY_PG_WITH_SCHEMA,
@@ -15,7 +14,6 @@ from decisionengine.framework.dataspace.datasources.tests.fixtures import (  # n
 )
 
 __all__ = [
-    "PG_DE_DB_WITH_SCHEMA",
     "PG_DE_DB_WITHOUT_SCHEMA",
     "PG_PROG",
     "DATABASES_TO_TEST",
@@ -58,12 +56,8 @@ def dataspace(request):
     config["dataspace"]["datasource"] = {}
     config["dataspace"]["datasource"]["config"] = db_info
 
-    if request.param == "PG_DE_DB_WITH_SCHEMA":
-        config["dataspace"]["datasource"]["module"] = "decisionengine.framework.dataspace.datasources.postgresql"
-        config["dataspace"]["datasource"]["name"] = "Postgresql"
-    elif "SQLALCHEMY" in request.param:
-        config["dataspace"]["datasource"]["module"] = "decisionengine.framework.dataspace.datasources.sqlalchemy_ds"
-        config["dataspace"]["datasource"]["name"] = "SQLAlchemyDS"
+    config["dataspace"]["datasource"]["module"] = "decisionengine.framework.dataspace.datasources.sqlalchemy_ds"
+    config["dataspace"]["datasource"]["name"] = "SQLAlchemyDS"
 
     my_ds = ds.DataSpace(config)
     load_sample_data_into_datasource(my_ds)

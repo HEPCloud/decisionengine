@@ -18,16 +18,10 @@
     retention_interval_in_days: 370,
 
     datasource: {
-      module: "decisionengine.framework.dataspace.datasources.postgresql",
-      name: "Postgresql",
+      module: "decisionengine.framework.dataspace.datasources.sqlalchemy_ds",
+      name: "SQLAlchemyDS",
       config: {
-        user: "postgres",
-        blocking: "True",
-        host: "localhost",
-        port: 5432,
-        database: "decisionengine",
-        maxconnections: 100,
-        maxcached: 10,
+        url: "postgresql://postgres:@localhost/decisionengine",
       },
     },
   },
