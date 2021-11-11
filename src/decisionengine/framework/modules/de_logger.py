@@ -116,6 +116,7 @@ def set_logging(
 
     logging.config.dictConfig(logconf.pylogconfig)
     logger.debug("de logging setup complete")
+    logger.debug("test_statement")
 
 
 def get_logger():
