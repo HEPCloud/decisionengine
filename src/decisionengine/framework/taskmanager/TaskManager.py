@@ -38,7 +38,7 @@ CHANNEL_STATE_GAUGE = Gauge(
 
 SOURCE_ACQUIRE_GAUGE = Gauge(
     "de_source_last_acquire_timestamp_seconds",
-    "Last time a source " "successfully ran its acquire function",
+    "Last time a source successfully ran its acquire function",
     [
         "channel_name",
         "source_name",
@@ -47,7 +47,7 @@ SOURCE_ACQUIRE_GAUGE = Gauge(
 
 LOGICENGINE_RUN_GAUGE = Gauge(
     "de_logicengine_last_run_timestamp_seconds",
-    "Last time " "a logicengine successfully ran",
+    "Last time a logicengine successfully ran",
     [
         "channel_name",
         "logicengine_name",
@@ -56,7 +56,7 @@ LOGICENGINE_RUN_GAUGE = Gauge(
 
 TRANSFORM_RUN_GAUGE = Gauge(
     "de_transform_last_run_timestamp_seconds",
-    "Last time a " "transform successfully ran",
+    "Last time a transform successfully ran",
     [
         "channel_name",
         "transform_name",
@@ -65,7 +65,7 @@ TRANSFORM_RUN_GAUGE = Gauge(
 
 PUBLISHER_RUN_GAUGE = Gauge(
     "de_publisher_last_run_timestamp_seconds",
-    "Last time " "a publisher successfully ran",
+    "Last time a publisher successfully ran",
     [
         "channel_name",
         "publisher_name",
@@ -164,7 +164,7 @@ class Worker:
         self.module_instance = _create_module_instance(conf_dict, base_class, channel_name)
         self.module = conf_dict["module"]
         self.module_key = key
-        self.full_key = f"{channel_name}-{self.module_key}"
+        self.full_key = f"{channel_name}.{self.module_key}"
         self.name = self.module_instance.__class__.__name__
         self.schedule = conf_dict.get("schedule", _DEFAULT_SCHEDULE)
         self.data_updated = threading.Event()
@@ -241,25 +241,29 @@ class TaskManager(ComponentManager):
         self.lock = threading.Lock()
         self.broker_url = global_config.get("broker_url", "memory:///")
 
-        self.exchange = Exchange("example_topic_exchange", "topic")
+        exchange_name = global_config.get("exchange_name", "hepcloud_topic_exchange")
+        self.logger.debug(f"Creating topic exchange {exchange_name} for channel {self.name}")
+        self.exchange = Exchange(exchange_name, "topic")
         self.connection = Connection(self.broker_url)
 
-        # Caching fun...
-        #   Just keeping track of instance names will not work
-        #   whenever we have multiple source instances of the same
-        #   source type.
         expected_source_products = set()
         queues = {}
         for worker in self.workflow.source_workers.values():
+            # FIXME: Just keeping track of instance names will not
+            #        work whenever we have multiple source instances
+            #        of the same source type.
             expected_source_products.update(worker.module_instance._produces.keys())
+            self.logger.debug(f"Creating queue {worker.full_key} with routing key {worker.full_key}")
             queues[worker.full_key] = Queue(
-                worker.module_key,
+                worker.full_key,
                 exchange=self.exchange,
-                routing_key=f"*.{self.name}.{worker.module_key}",
+                routing_key=worker.full_key,
                 auto_delete=True,
             )
         self.expected_source_products = expected_source_products
         self.queues = queues
+
+        # Caching to determine if all sources have run at least once.
         self.sources_have_run_once = False
         self.source_product_cache = {}
 
@@ -323,11 +327,8 @@ class TaskManager(ComponentManager):
                 module_spec = body["source_module"]
                 module_name = body["class_name"]
                 data = body["data"]
+                assert data
                 self.logger.debug(f"Data received from {module_name}: {data}")
-                if not data:
-                    self.logger.warning("No data acquired")
-                    message.ack()
-                    return
 
                 if not self.sources_have_run_once:
                     self.source_product_cache.update(**data)
@@ -363,6 +364,7 @@ class TaskManager(ComponentManager):
                 message.ack()
 
             with conn.Consumer(self.queues.values(), accept=["pickle"], callbacks=[run_cycle]):
+                self.logger.debug(f"Channel {self.name} is listening for events")
                 while not self.state.should_stop():
                     try:
                         # If source has been brought offline while the drain_events method is
@@ -370,10 +372,10 @@ class TaskManager(ComponentManager):
                         # timeout so that the 'should_stop()' method called in the while condition
                         # will yield false and thus terminate the loop.
                         conn.drain_events(timeout=5)
-                    except TimeoutError:
+                    except TimeoutError:  # pragma: no cover
                         # no events found in time
                         pass
-                    except socket.timeout:
+                    except socket.timeout:  # pragma: no cover
                         # no events found in time
                         pass
                 self.logger.info(f"Task manager {self.id} received stop signal and is exiting")
@@ -463,11 +465,11 @@ class TaskManager(ComponentManager):
                     data = worker.module_instance.acquire()
                     Module.verify_products(worker.module_instance, data)
                     self.logger.info(f"Source {worker.name} acquire returned")
-                    self.logger.debug(f"Source {worker.name} produced {data}")
                     SOURCE_ACQUIRE_GAUGE.labels(self.name, worker.name).set_to_current_time()
+                    self.logger.debug(f"Publishing data to queue {worker.full_key} with routing key {worker.full_key}")
                     producer.publish(
                         dict(source_module=worker.module, class_name=worker.name, data=data),
-                        routing_key=f"test.{self.name}.{worker.module_key}",
+                        routing_key=worker.full_key,
                         exchange=self.exchange,
                         serializer="pickle",
                         declare=[
@@ -565,10 +567,10 @@ class TaskManager(ComponentManager):
         :type data_block: :obj:`~datablock.DataBlock`
         :arg data_block: data block
         """
-        le_list = []
         if not data_block:
-            return le_list
+            raise RuntimeError("Cannot run logic engine on data block that is 'None'.")
 
+        le_list = []
         try:
             for le in self.workflow.le_s:
                 with LOGICENGINE_RUN_SUMMARY.labels(self.name, self.workflow.le_s[le].name).time():
@@ -630,7 +632,7 @@ class TaskManager(ComponentManager):
                         if self.state.should_stop():
                             self.logger.warning(f"TaskManager stopping, ignore exception {name} publish() call: {e}")
                             continue
-                        raise
+                        raise  # pragma: no cover
         except Exception:  # pragma: no cover
             self.logger.exception("Unexpected error!")
             raise

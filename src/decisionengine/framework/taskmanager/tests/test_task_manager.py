@@ -38,6 +38,7 @@ class RunChannel:
 
     def __enter__(self):
         self._thread.start()
+        self._tm.state.wait_while(State.BOOT)
         return self._tm
 
     def __exit__(self, type, value, traceback):
@@ -76,7 +77,6 @@ def test_taskmanager_channel_name_in_config(global_config):
 def test_set_to_shutdown(global_config):
     for channel in _TEST_CHANNEL_NAMES:
         with RunChannel(global_config, channel) as task_manager:
-            task_manager.state.wait_while(State.BOOT)
             m = "decisionengine.framework.tests.PublisherNOP.PublisherNOP.shutdown"
             with patch(m) as mocked_shutdown:
                 task_manager.set_to_shutdown()
@@ -88,7 +88,6 @@ def test_set_to_shutdown(global_config):
 def test_take_task_manager_offline(global_config):
     for channel in _TEST_CHANNEL_NAMES:
         with RunChannel(global_config, channel) as task_manager:
-            task_manager.state.wait_while(State.BOOT)
             task_manager.take_offline()
             assert task_manager.state.has_value(State.OFFLINE)
             assert task_manager.get_state_value() == State.OFFLINE.value
@@ -105,7 +104,6 @@ def test_failing_publisher(global_config):
 def test_bad_datablock(global_config, dataspace, caplog):  # noqa: F811
     for channel in _TEST_CHANNEL_NAMES:
         with RunChannel(global_config, channel) as task_manager:
-            task_manager.state.wait_while(State.BOOT)
             dblock = datablock.DataBlock(dataspace, channel)
             task_manager.data_block_put("bad_string", "header", dblock)
             task_manager.take_offline()
@@ -116,9 +114,16 @@ def test_bad_datablock(global_config, dataspace, caplog):  # noqa: F811
 def test_no_data_to_transform(global_config):
     for channel in _TEST_CHANNEL_NAMES:
         with RunChannel(global_config, channel) as task_manager:
-            task_manager.state.wait_while(State.BOOT)
             task_manager.run_transforms()
+            with pytest.raises(RuntimeError, match="Cannot run logic engine on data block that is 'None'."):
+                task_manager.run_logic_engine(None)
             task_manager.take_offline()
+
+
+@pytest.mark.usefixtures("global_config")
+def test_run_source_only_once(global_config):
+    with RunChannel(global_config, "run_source_once") as task_manager:
+        task_manager.take_offline()
 
 
 def test_multiple_logic_engines_not_supported():
