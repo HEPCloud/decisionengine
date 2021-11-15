@@ -110,8 +110,12 @@ def test_state_sets_timer_and_uses_it(reaper):
         assert reaper.seconds_between_runs == 1
         reaper.state.wait_while(State.IDLE)  # Make sure the reaper started
         assert reaper.state.get() == State.ACTIVE
+        reaper.seconds_between_runs = 2  # adjust time between runs
         reaper.state.wait_while(State.ACTIVE)  # let the reaper finish its scan
         reaper.state.wait_while(State.IDLE)  # Make sure the reaper started a second time
+        reaper.state.wait_while(State.ACTIVE)  # let the reaper finish its scan
+        reaper.state.wait_while(State.IDLE)  # Make sure the reaper running when we try to stop it
+        reaper.stop()
         reaper.state.wait_while(State.ACTIVE)  # let the reaper finish its scan
 
 
