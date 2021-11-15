@@ -28,7 +28,7 @@ def _make_de_logger(global_config):
         raise RuntimeError("No logger configuration has been specified.")
     try:
         logger_config = global_config["logger"]
-        de_logger.set_logging(
+        de_logger.configure_logging(
             log_level=logger_config.get("log_level", "INFO"),
             file_rotate_by=logger_config.get("file_rotate_by", "size"),
             rotation_time_unit=logger_config.get("rotation_time_unit", "D"),
@@ -36,6 +36,7 @@ def _make_de_logger(global_config):
             max_backup_count=logger_config.get("max_backup_count", 6),
             max_file_size=logger_config.get("max_file_size", 1000000),
             log_file_name=logger_config["log_file"],
+            start_q_logger=logger_config.get("start_q_logger", "True"),
         )
         return de_logger.get_logger()
     except Exception as msg:  # pragma: no cover
