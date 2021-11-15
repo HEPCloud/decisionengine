@@ -28,6 +28,7 @@ from decisionengine.framework.engine.Workers import Worker, Workers
 from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
+import decisionengine.framework.modules.de_logger as de_logger
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 import decisionengine.framework.taskmanager.TaskManager as TaskManager
 
@@ -293,6 +294,7 @@ class DecisionEngine(socketserver.ThreadingMixIn,
         self.stop_channels()
         self.reaper_stop()
         self.dataspace.close()
+        de_logger.stop_queue_logger()
         return "OK"
 
     def start_channel(self, channel_name, channel_config):
