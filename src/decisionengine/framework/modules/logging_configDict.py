@@ -1,14 +1,33 @@
 """
 Global Logger config dictionary used by all loggers (in their own subkeys)
 """
+import logging
+
 import structlog
 
 LOGGERNAME = "decisionengine"
 DELOGGER_CHANNEL_NAME = "engine"
 
+# name of loggers for all channels
+# note, these loggers exist in different processes, so they can have the same
+# name but still be accurately accessed within that channel
+# (the channel name as recorded in the logs is by default the name of the config file
+# for the channel OR alternately can be set in the config file using the key "channel_name")
 CHANNELLOGGERNAME = "channel"
 
+# name suffixes and log levels of the output files from the main logger
+# the base name is given by the "log_file" config parameter in the config file
+# since the channel logger also log to the structlog file, we need to index of
+# that element to correctly identifiy it in the Workers
 userformat = "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s"
+
+de_outfile_info = (
+    ("_debug.log", logging.DEBUG, userformat),
+    (".log", logging.INFO, userformat),
+    ("_structlog_debug.log", logging.DEBUG, "%(message)s"),
+)
+
+structlog_file_index = [2]
 
 timestamper = structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S")
 
@@ -17,68 +36,6 @@ pre_chain = [
     structlog.stdlib.add_log_level,
     timestamper,
 ]
-
-
-pylogconfig = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "plain": {
-            "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.dev.ConsoleRenderer(colors=False),
-            # "foreign_pre_chain": pre_chain,
-            "format": userformat,
-        },
-        "for_JSON": {
-            "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.dev.ConsoleRenderer(colors=False),
-            "format": "%(message)s",
-        },
-    },
-    "handlers": {
-        "default": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
-            "formatter": "plain",
-        },
-        # "file_all_debug": {
-        #                   "level": "DEBUG",
-        #                   "class": "logging.handlers.RotatingFileHandler",
-        #                   "filename": "/var/log/decisionengine/all_debug.log",
-        #                   "maxBytes": 200*1000000,
-        #                   "backupCount": 2,
-        #                   "formatter": "plain",
-        # },
-        "de_file_debug": {
-            "level": "DEBUG",
-            "formatter": "plain",
-        },
-        "de_file_info": {
-            "level": "INFO",
-            "formatter": "plain",
-        },
-        "file_structlog_debug": {
-            "level": "DEBUG",
-            "formatter": "for_JSON",
-        },
-    },
-    "loggers": {
-        "default": {
-            "handlers": ["default"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
-        "decisionengine": {
-            "handlers": ["file_structlog_debug", "de_file_debug", "de_file_info"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
-        # "": {#this gives me ALL logging at handler level into handler file
-        #   "handlers": ["file_all_debug"],
-        #   "propagate": True,
-        # },
-    },
-}
 
 structlog.configure(
     processors=pre_chain

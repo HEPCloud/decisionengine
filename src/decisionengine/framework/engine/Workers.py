@@ -5,12 +5,11 @@ import threading
 
 import structlog
 
+import decisionengine.framework.modules.de_logger as de_logger
+import decisionengine.framework.modules.logging_configDict as logconf
 import decisionengine.framework.taskmanager.ProcessingState as ProcessingState
 
-from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
-from decisionengine.framework.modules.logging_configDict import pylogconfig as logconf
-
-MAX_CHANNEL_FILE_SIZE = 200 * 1000000
+MB = 1000000
 
 
 class Worker(multiprocessing.Process):
@@ -48,65 +47,51 @@ class Worker(multiprocessing.Process):
     def get_consumes(self):
         return self.task_manager.get_consumes()
 
-    def run(self):
-
+    def setup_logger(self):
         myname = self.task_manager.name
         myfilename = os.path.join(os.path.dirname(self.logger_config["log_file"]), myname + ".log")
+        start_q_logger = self.logger_config.get("start_q_logger", "True")
 
-        self.logger = structlog.getLogger(CHANNELLOGGERNAME)
+        self.logger = structlog.getLogger(logconf.CHANNELLOGGERNAME)
 
         # setting a default value here. value from config file is set in call
         # self.task_manager.set_loglevel_value after logger configuration is completed
-        logging.getLogger(CHANNELLOGGERNAME).setLevel(logging.DEBUG)
+        logging.getLogger(logconf.CHANNELLOGGERNAME).setLevel(logging.DEBUG)
 
-        # TODO:
-        # alter decisionengine.framework.modules.de_logger set_logging
-        # so we can reuse it here and reduce duplication
         logger_rotate_by = self.logger_config.get("file_rotate_by", "size")
-
-        # logconf is our global object edited in global space on purpose
-
         if logger_rotate_by == "size":
-            logconf["handlers"].update(
-                {
-                    myname: {
-                        "level": "DEBUG",
-                        "filename": myfilename,
-                        "formatter": "plain",
-                        "class": "logging.handlers.RotatingFileHandler",
-                        "maxBytes": MAX_CHANNEL_FILE_SIZE,
-                        "backupCount": self.logger_config.get("max_backup_count", 6),
-                    }
-                }
+            handler = logging.handlers.RotatingFileHandler(
+                filename=myfilename,
+                maxBytes=self.logger_config.get("max_file_size", 200 * MB),
+                backupCount=self.logger_config.get("max_backup_count", 6),
             )
+
         elif logger_rotate_by == "time":
-            logconf["handlers"].update(
-                {
-                    myname: {
-                        "level": "DEBUG",
-                        "filename": myfilename,
-                        "formatter": "plain",
-                        "class": "logging.handlers.TimedRotatingFileHandler",
-                        "when": "D",
-                        "interval": 1,
-                    }
-                }
+            handler = logging.handlers.TimedRotatingFileHandler(
+                filename=myfilename,
+                when=self.logger_config.get("rotation_time_unit", "D"),
+                interval=self.logger_config.get("rotation_time_interval", 1),
+                backupCount=self.logger_config.get("max_backup_count", 6),
             )
         else:
             self.task_manager.state.set(ProcessingState.State.ERROR)
             raise ValueError(f"Incorrect 'logger_rotate_by':'{logger_rotate_by}:'")
 
-        logconf["loggers"].update(
-            {
-                CHANNELLOGGERNAME: {
-                    "handlers": [myname, "file_structlog_debug"],
-                }
-            }
-        )
-        logging.config.dictConfig(logconf)
+        handler.setLevel(logging.DEBUG)
+        handler.setFormatter(logging.Formatter(logconf.userformat))
+
+        self.logger.addHandler(handler)
+
+        if start_q_logger == "True":
+            self.logger.addHandler(de_logger.get_queue_logger().structlog_q_handler)
+
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=myname)
 
         channel_log_level = self.logger_config.get("global_channel_log_level", "WARNING")
         self.task_manager.set_loglevel_value(channel_log_level)
+
+    def run(self):
+        self.setup_logger()
         self.task_manager.run()
 
 
