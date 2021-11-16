@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_source_proxy &mdash; decisionengine 1.7.1.dev70+g82faa271 documentation</title>
+  <title>decisionengine.framework.tests.test_source_proxy &mdash; decisionengine 1.7.1.dev72+gc939a6ed documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -102,7 +102,8 @@
             <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="test_single_source_proxy"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_source_proxy.test_single_source_proxy">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="test_single_source_proxy"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_source_proxy.test_single_source_proxy">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">180</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_single_source_proxy</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test_source_proxy.*state = STEADY&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_source_proxy_3G &mdash; decisionengine 1.7.1.dev70+g82faa271 documentation</title>
+  <title>decisionengine.framework.tests.test_source_proxy_3G &mdash; decisionengine 1.7.1.dev72+gc939a6ed documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -76,7 +76,6 @@
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">import</span> <span class="nn">pytest</span>
@@ -95,11 +94,7 @@
 <span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">_channel_config_dir</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="test_many_source_proxies"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_source_proxy_3G.test_many_source_proxies">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">skipif</span><span class="p">(</span>
-    <span class="n">platform</span><span class="o">.</span><span class="n">python_implementation</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;PyPy&quot;</span><span class="p">,</span>
-    <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Times out under PyPy with the PG_DE_DB_WITH_SCHEMA fixture value.&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="test_many_source_proxies"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_source_proxy_3G.test_many_source_proxies">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_many_source_proxies</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;last.*state = STEADY&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
