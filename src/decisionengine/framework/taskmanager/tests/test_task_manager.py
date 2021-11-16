@@ -9,7 +9,7 @@ import decisionengine.framework.config.policies as policies
 
 from decisionengine.framework.config.ValidConfig import ValidConfig
 from decisionengine.framework.dataspace import datablock
-from decisionengine.framework.taskmanager.TaskManager import State, TaskManager, Workflow
+from decisionengine.framework.taskmanager.TaskManager import State, TaskManager
 from decisionengine.framework.taskmanager.tests.fixtures import (  # noqa: F401
     DATABASES_TO_TEST,
     dataspace,
@@ -33,7 +33,7 @@ _TEST_CHANNEL_NAMES2 = [
 
 class RunChannel:
     def __init__(self, global_config, channel):
-        self._tm = TaskManager(channel, 1, get_channel_config(channel), global_config)
+        self._tm = TaskManager(channel, get_channel_config(channel), global_config)
         self._thread = threading.Thread(name=channel, target=self._tm.run)
 
     def __enter__(self):
@@ -62,14 +62,14 @@ def global_config(dataspace):  # noqa: F811
 @pytest.mark.usefixtures("global_config")
 def test_taskmanager_init(global_config):
     for channel in _TEST_CHANNEL_NAMES:
-        task_manager = TaskManager(channel, 1, get_channel_config(channel), global_config)
+        task_manager = TaskManager(channel, get_channel_config(channel), global_config)
         assert task_manager.state.has_value(State.BOOT)
 
 
 @pytest.mark.usefixtures("global_config")
 def test_taskmanager_channel_name_in_config(global_config):
     for channel in _TEST_CHANNEL_NAMES2:
-        task_manager = TaskManager(channel, 1, get_channel_config(channel), global_config)
+        task_manager = TaskManager(channel, get_channel_config(channel), global_config)
         assert task_manager.name == "name_in_config"
 
 
@@ -95,7 +95,7 @@ def test_take_task_manager_offline(global_config):
 
 @pytest.mark.usefixtures("global_config")
 def test_failing_publisher(global_config):
-    task_manager = TaskManager("failing_publisher", 1, get_channel_config("failing_publisher"), global_config)
+    task_manager = TaskManager("failing_publisher", get_channel_config("failing_publisher"), global_config)
     task_manager.run()
     assert task_manager.state.has_value(State.OFFLINE)
 
@@ -126,6 +126,8 @@ def test_run_source_only_once(global_config):
         task_manager.take_offline()
 
 
-def test_multiple_logic_engines_not_supported():
+@pytest.mark.usefixtures("global_config")
+def test_multiple_logic_engines_not_supported(global_config):
     with pytest.raises(RuntimeError, match="Cannot support more than one logic engine per channel."):
-        Workflow(get_channel_config("multiple_logic_engines"), "multiple_logic_engines")
+        channel = "multiple_logic_engines"
+        TaskManager(channel, get_channel_config(channel), global_config)

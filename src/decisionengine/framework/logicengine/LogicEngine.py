@@ -80,7 +80,7 @@ class LogicEngine(Module):
         # Process rules
         self.logger.info("LE: calling execute")
         actions, newfacts = self.rule_engine.execute(evaluated_facts)
-        return {"actions": actions, "newfacts": self._create_facts_dataframe(newfacts)}
+        return (actions, self._create_facts_dataframe(newfacts))
 
     def _create_facts_dataframe(self, newfacts):
         """

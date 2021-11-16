@@ -31,22 +31,14 @@ def test_rule_that_fires(myengine):
     assert ef["f1"] is True
     assert ef["f2"] is True
 
-    result = myengine.evaluate(db)
-    assert isinstance(result, dict)
-    assert len(result) == 2
-    actions = result["actions"]
-    newfacts = result["newfacts"]
+    actions, newfacts = myengine.evaluate(db)
     assert isinstance(actions, dict)
     assert isinstance(newfacts, pd.DataFrame)
     assert actions["r1"] == ["a1", "a2"]
     assert len(actions) == 1
     assert newfacts.empty
 
-    result = myengine.evaluate(db)
-    assert isinstance(result, dict)
-    assert len(result) == 2
-    actions = result["actions"]
-    newfacts = result["newfacts"]
+    actions, newfacts = myengine.evaluate(db)
     assert isinstance(actions, dict)
     assert isinstance(newfacts, pd.DataFrame)
     assert newfacts.empty
@@ -61,22 +53,14 @@ def test_rule_that_does_not_fire(myengine):
     assert ef["f1"] is False
     assert ef["f2"] is True
 
-    result = myengine.evaluate(db)
-    assert isinstance(result, dict)
-    assert len(result) == 2
-    actions = result["actions"]
-    newfacts = result["newfacts"]
+    actions, newfacts = myengine.evaluate(db)
     assert isinstance(actions, dict)
     assert isinstance(newfacts, pd.DataFrame)
     assert len(actions) == 1
     assert actions["r1"] == []
     assert newfacts.empty
 
-    result = myengine.evaluate(db)
-    assert isinstance(result, dict)
-    assert len(result) == 2
-    actions = result["actions"]
-    newfacts = result["newfacts"]
+    actions, newfacts = myengine.evaluate(db)
     assert isinstance(actions, dict)
     assert isinstance(newfacts, pd.DataFrame)
     assert len(actions) == 1
