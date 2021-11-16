@@ -2,17 +2,17 @@
 Task manager
 """
 import importlib
+import multiprocessing
 import socket
-import threading
 import time
+import uuid
 
-import pandas as pd
 import structlog
 
 from kombu import Connection, Exchange, Queue
 from kombu.pools import connections, producers
 
-from decisionengine.framework.dataspace import datablock
+from decisionengine.framework.dataspace import datablock, dataspace
 from decisionengine.framework.logicengine.LogicEngine import LogicEngine, passthrough_configuration
 from decisionengine.framework.managers.ComponentManager import ComponentManager
 from decisionengine.framework.modules import Module
@@ -167,8 +167,6 @@ class Worker:
         self.full_key = f"{channel_name}.{self.module_key}"
         self.name = self.module_instance.__class__.__name__
         self.schedule = conf_dict.get("schedule", _DEFAULT_SCHEDULE)
-        self.data_updated = threading.Event()
-        self.stop_running = threading.Event()
 
         # NOTE: THIS MUST BE LOGGED TO de logger, because channel logger does not exist yet
         delogger.debug(
@@ -180,48 +178,12 @@ def _make_workers_for(configs, base_class, channel_name):
     return {key: Worker(key, e, base_class, channel_name) for key, e in configs.items()}
 
 
-class Workflow:
-    """
-    Decision Channel.
-    Instantiates workers according to channel configuration
-    """
-
-    def __init__(self, channel_dict, channel_name):
-        """
-        :type channel_dict: :obj:`dict`
-        :arg channel_dict: channel configuration
-        """
-
-        delogger.debug("Creating channel sources")
-        self.source_workers = _make_workers_for(channel_dict["sources"], Source, channel_name)
-
-        delogger.debug("Creating channel publishers")
-        self.publisher_workers = _make_workers_for(channel_dict["publishers"], Publisher, channel_name)
-
-        delogger.debug("Creating channel logic engines")
-        configured_le_s = channel_dict.get("logicengines")
-        if configured_le_s is None:
-            delogger.debug(
-                "No 'logicengines' configuration detected; will use default configuration, which unconditionally executes all configured publishers."
-            )
-            configured_le_s = passthrough_configuration(channel_dict["publishers"].keys())
-        if len(configured_le_s) > 1:
-            raise RuntimeError("Cannot support more than one logic engine per channel.")
-
-        self.le_s = _make_workers_for(configured_le_s, LogicEngine, channel_name)
-
-        delogger.debug("Creating channel transforms")
-        transform_workers = _make_workers_for(channel_dict["transforms"], Transform, channel_name)
-        self.transform_workers = ensure_no_circularities(self.source_workers, transform_workers, self.publisher_workers)
-        self.task_manager = channel_dict.get("task_manager", {})
-
-
 class TaskManager(ComponentManager):
     """
     Task manager
     """
 
-    def __init__(self, name, generation_id, channel_dict, global_config):
+    def __init__(self, name, channel_dict, global_config, de_source_workers=None):
         """
         :type name: :obj:`str`
         :arg name: Name of channel corresponding to this task manager
@@ -232,14 +194,44 @@ class TaskManager(ComponentManager):
         :type global_config: :obj:`dict`
         :arg global_config: global configuration
         """
-        self.name = channel_dict.get("channel_name", name)
+        super().__init__(channel_dict.get("channel_name", name))
 
-        super().__init__(self.name, generation_id, global_config)
+        self.id = str(uuid.uuid4()).upper()
+        self.dataspace = dataspace.DataSpace(global_config)
+        self.data_block_t0 = datablock.DataBlock(self.dataspace, name, self.id, 1)  # my current data block
         self.logger = structlog.getLogger(CHANNELLOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=self.name)
-        self.workflow = Workflow(channel_dict, self.name)
-        self.lock = threading.Lock()
-        self.broker_url = global_config.get("broker_url", "memory:///")
+
+        self.broker_url = global_config.get("broker_url", "redis://localhost:6379/0")
+        self.logger.debug(f"Using data-broker URL: {self.broker_url}")
+
+        self.logger.debug("Creating channel sources")
+        self.source_workers = _make_workers_for(channel_dict["sources"], Source, self.name)
+        if de_source_workers is not None:
+            # Decision engine owns the sources
+            de_source_workers[self.name] = self.source_workers
+
+        self.logger.debug("Creating channel publishers")
+        self.publisher_workers = _make_workers_for(channel_dict["publishers"], Publisher, self.name)
+
+        self.logger.debug("Creating channel logic engines")
+        configured_le_s = channel_dict.get("logicengines")
+        if configured_le_s is None:
+            self.logger.debug(
+                "No 'logicengines' configuration detected; will use default configuration, which unconditionally executes all configured publishers."
+            )
+            configured_le_s = passthrough_configuration(channel_dict["publishers"].keys())
+        if len(configured_le_s) > 1:
+            raise RuntimeError("Cannot support more than one logic engine per channel.")
+
+        self.logic_engine = None
+        if configured_le_s:
+            key, config = configured_le_s.popitem()
+            self.logic_engine = Worker(key, config, LogicEngine, self.name)
+
+        self.logger.debug("Creating channel transforms")
+        transform_workers = _make_workers_for(channel_dict["transforms"], Transform, self.name)
+        self.transform_workers = ensure_no_circularities(self.source_workers, transform_workers, self.publisher_workers)
 
         exchange_name = global_config.get("exchange_name", "hepcloud_topic_exchange")
         self.logger.debug(f"Creating topic exchange {exchange_name} for channel {self.name}")
@@ -248,7 +240,7 @@ class TaskManager(ComponentManager):
 
         expected_source_products = set()
         queues = {}
-        for worker in self.workflow.source_workers.values():
+        for worker in self.source_workers.values():
             # FIXME: Just keeping track of instance names will not
             #        work whenever we have multiple source instances
             #        of the same source type.
@@ -269,29 +261,8 @@ class TaskManager(ComponentManager):
 
         # The rest of this function will go away once the source-proxy
         # has been reimplemented.
-        for src_worker in self.workflow.source_workers.values():
+        for src_worker in self.source_workers.values():
             src_worker.module_instance.post_create(global_config)
-
-    def wait_for_all(self, events_done):
-        """
-        Wait for all sources or transforms to finish
-
-        :type events_done: :obj:`list`
-        :arg events_done: list of events to wait for
-        """
-        self.logger.info("Waiting for all tasks to run")
-
-        try:
-            while not all(e.is_set() for e in events_done):
-                time.sleep(1)
-                if self.state.should_stop():
-                    break
-
-            for e in events_done:
-                e.clear()
-        except Exception:  # pragma: no cover
-            self.logger.exception("Unexpected error!")
-            raise
 
     def run(self):
         """
@@ -301,17 +272,7 @@ class TaskManager(ComponentManager):
         self.logger.info(f"Starting task manager {self.id}")
         self.logger.debug(f"Expected source products {self.expected_source_products}")
         source_threads = self.start_sources()
-        self.logger.info("All sources finished")
-        if not self.state.has_value(State.BOOT):
-            for thread in source_threads:
-                thread.join()
-            self.logger.error(f"Error occured during initial run of sources. Task manager {self.name} exits")
-            return
-
         self.start_cycles()
-
-        for source in self.workflow.source_workers.values():
-            source.stop_running.set()
 
         for thread in source_threads:
             thread.join()
@@ -337,6 +298,7 @@ class TaskManager(ComponentManager):
                         self.logger.info(f"Waiting on more data (missing {missing_products})")
                         message.ack()
                         return
+                    self.logger.info("All sources have executed at least once")
                     data = self.source_product_cache
                     self.sources_have_run_once = True
 
@@ -344,10 +306,17 @@ class TaskManager(ComponentManager):
                     self.data_block_t0.taskmanager_id, create_time=time.time(), creator=module_spec
                 )
                 self.logger.info(f"Source {module_name} header done")
-                self.data_block_put(data, header, self.data_block_t0)
+
+                try:
+                    self.data_block_put(data, header, self.data_block_t0)
+                except Exception:  # pragma: no cover
+                    self.logger.exception("Exception inserting data into the data block.")
+                    self.logger.error(f"Could not insert data from the following message\n{body}")
+                    message.ack()
+                    return
+
                 self.logger.info(f"Source {module_name} data block put done")
 
-                self.logger.info(f"Message on bus: {body}")
                 try:
                     self.decision_cycle()
                     with self.state.lock:
@@ -383,71 +352,87 @@ class TaskManager(ComponentManager):
     def get_produces(self):
         # FIXME: What happens if a transform and source have the same name?
         produces = {}
-        for name, worker in self.workflow.source_workers.items():
+        for name, worker in self.source_workers.items():
             produces[name] = list(worker.module_instance._produces.keys())
-        for name, worker in self.workflow.transform_workers.items():
+        for name, worker in self.transform_workers.items():
             produces[name] = list(worker.module_instance._produces.keys())
         return produces
 
     def get_consumes(self):
         # FIXME: What happens if a transform and publisher have the same name?
         consumes = {}
-        for name, worker in self.workflow.transform_workers.items():
+        for name, worker in self.transform_workers.items():
             consumes[name] = list(worker.module_instance._consumes.keys())
-        for name, worker in self.workflow.publisher_workers.items():
+        for name, worker in self.publisher_workers.items():
             consumes[name] = list(worker.module_instance._consumes.keys())
         return consumes
 
     def set_to_shutdown(self):
         self.state.set(State.SHUTTINGDOWN)
         CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
-        delogger.debug("Shutting down. Will call shutdown on all publishers")
-        for worker in self.workflow.publisher_workers.values():
+        self.logger.debug("Shutting down. Will call shutdown on all publishers")
+        for worker in self.publisher_workers.values():
             worker.module_instance.shutdown()
         self.state.set(State.SHUTDOWN)
         CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
 
-    def do_backup(self):
+    def data_block_put(self, data, header, data_block):
         """
-        Duplicate current data block and return its copy
+        Put data into data block
 
-        :rtype: :obj:`~datablock.DataBlock`
-
+        :type data: :obj:`dict`
+        :arg data: key, value pairs
+        :type header: :obj:`~datablock.Header`
+        :arg header: data header
+        :type data_block: :obj:`~datablock.DataBlock`
+        :arg data_block: data block
         """
 
-        with self.lock:
-            data_block = self.data_block_t0.duplicate()
-            self.logger.debug(f"Duplicated block {data_block}")
-        return data_block
+        if not isinstance(data, dict):
+            self.logger.error(f"data_block put expecting {dict} type, got {type(data)}")
+            return
+        self.logger.debug(f"data_block_put {data}")
+        with data_block.lock:
+            # This is too long to find, so im leaving it here to make it obvious whats going on
+            #   you'll want to update it eventually.
+            # metadata = datablock.Metadata(data_block.component_manager_id,
+            metadata = datablock.Metadata(
+                data_block.taskmanager_id, state="END_CYCLE", generation_id=data_block.generation_id
+            )
+            for key, product in data.items():
+                data_block.put(key, product, header, metadata=metadata)
 
     def decision_cycle(self):
         """
         Decision cycle to be run periodically (by trigger)
         """
 
-        data_block_t1 = self.do_backup()
+        data_block_t1 = self.data_block_t0.duplicate()
+        self.logger.debug(f"Duplicated block {self.data_block_t0}")
+
         try:
             self.run_transforms(data_block_t1)
         except Exception:  # pragma: no cover
             self.logger.exception("Error in decision cycle(transforms) ")
             # We do not call 'take_offline' here because it has
-            # already been called in the run_transform code on
-            # operating on a separate thread.
+            # already been called during run_transform.
 
-        actions_facts = []
+        actions = None
         try:
-            actions_facts = self.run_logic_engine(data_block_t1)
+            actions = self.run_logic_engine(data_block_t1)
             self.logger.info("ran all logic engines")
         except Exception:  # pragma: no cover
             self.logger.exception("Error in decision cycle(logic engine) ")
             self.take_offline()
 
-        for a_f in actions_facts:
-            try:
-                self.run_publishers(a_f["actions"], data_block_t1)
-            except Exception:  # pragma: no cover
-                self.logger.exception("Error in decision cycle(publishers) ")
-                self.take_offline()
+        if actions is None:
+            return
+
+        try:
+            self.run_publishers(actions, data_block_t1)
+        except Exception:  # pragma: no cover
+            self.logger.exception("Error in decision cycle(publishers) ")
+            self.take_offline()
 
     def run_source(self, worker):
         """
@@ -475,19 +460,15 @@ class TaskManager(ComponentManager):
                         declare=[
                             self.exchange,
                             self.queues[worker.full_key],
-                        ],  # FIXME: maybe_declare=[self.exchange, self.queues[worker.full_key]] is better but fails for some reason.
+                        ],
                     )
-                    worker.data_updated.set()
                     self.logger.info(f"Source {worker.name} {worker.module} finished cycle")
                 except Exception:
                     self.logger.exception(f"Exception running source {worker.name} ")
                     self.take_offline()
                     break
                 if worker.schedule > 0:
-                    s = worker.stop_running.wait(worker.schedule)
-                    if s:
-                        self.logger.info(f"Received stop_running signal for {worker.name}")
-                        break
+                    time.sleep(worker.schedule)
                 else:
                     self.logger.info(f"Source {worker.name} runs only once")
                     break
@@ -497,22 +478,15 @@ class TaskManager(ComponentManager):
         """
         Start sources, each in a separate thread
         """
-        event_list = []
         source_threads = []
 
-        for key, source in self.workflow.source_workers.items():
+        for key, source in self.source_workers.items():
             self.logger.info(f"starting loop for {source.name}->{key}")
-            event_list.append(source.data_updated)
             SOURCE_ACQUIRE_GAUGE.labels(self.name, source.name)
-            thread = threading.Thread(target=self.run_source, name=source.name, args=(source,))
+            thread = multiprocessing.Process(target=self.run_source, name=source.name, args=(source,))
             source_threads.append(thread)
-            # Cannot catch exception from function called in separate thread
             thread.start()
 
-        # This is the boot phase
-        # Wait until all sources run at least once
-        self.logger.debug(f"Waiting for events ({event_list}) in {self.name}")
-        self.wait_for_all(event_list)
         return source_threads
 
     def run_transforms(self, data_block=None):
@@ -529,7 +503,7 @@ class TaskManager(ComponentManager):
         if not data_block:
             return
 
-        for key, worker in self.workflow.transform_workers.items():
+        for key, worker in self.transform_workers.items():
             self.logger.info(f"starting transform {key}")
             self.run_transform(worker, data_block)
         self.logger.info("all transforms finished")
@@ -571,42 +545,32 @@ class TaskManager(ComponentManager):
         if not data_block:
             raise RuntimeError("Cannot run logic engine on data block that is 'None'.")
 
-        le_list = []
+        if self.logic_engine is None:
+            self.logger.info("No logic engine to run")
+            return None
+
         try:
-            for le in self.workflow.le_s:
-                with LOGICENGINE_RUN_HISTOGRAM.labels(self.name, self.workflow.le_s[le].name).time():
-                    self.logger.info("run logic engine %s", self.workflow.le_s[le].name)
-                    self.logger.debug("run logic engine %s %s", self.workflow.le_s[le].name, data_block)
-                    rc = self.workflow.le_s[le].module_instance.evaluate(data_block)
-                    le_list.append(rc)
-                    self.logger.info("run logic engine %s done", self.workflow.le_s[le].name)
-                    LOGICENGINE_RUN_GAUGE.labels(self.name, self.workflow.le_s[le].name).set_to_current_time()
-                    self.logger.info(
-                        "logic engine %s generated newfacts: %s",
-                        self.workflow.le_s[le].name,
-                        rc["newfacts"].to_dict(orient="records"),
-                    )
-                    self.logger.info(
-                        "logic engine %s generated actions: %s", self.workflow.le_s[le].name, rc["actions"]
-                    )
+            actions = new_facts = None
+            with LOGICENGINE_RUN_HISTOGRAM.labels(self.name, self.logic_engine.name).time():
+                self.logger.info("Run logic engine %s", self.logic_engine.name)
+                self.logger.debug("Run logic engine %s %s", self.logic_engine.name, data_block)
+                actions, new_facts = self.logic_engine.module_instance.evaluate(data_block)
+                self.logger.info("Run logic engine %s done", self.logic_engine.name)
+                LOGICENGINE_RUN_GAUGE.labels(self.name, self.logic_engine.name).set_to_current_time()
+                self.logger.info(
+                    "Logic engine %s generated newfacts: %s",
+                    self.logic_engine.name,
+                    new_facts.to_dict(orient="records"),
+                )
+                self.logger.info("Logic engine %s generated actions: %s", self.logic_engine.name, actions)
 
-            # Add new facts to the datablock
-            # Add empty dataframe if nothing is available
-            if le_list:
-                all_facts = pd.concat([i["newfacts"] for i in le_list], ignore_index=True)
-            else:
-                self.logger.info("Logic engine(s) did not return any new facts")
-                all_facts = pd.DataFrame()
-
-            data = {"de_logicengine_facts": all_facts}
-            t = time.time()
-            header = datablock.Header(data_block.taskmanager_id, create_time=t, creator="logicengine")
+            data = {"de_logicengine_facts": new_facts}
+            header = datablock.Header(data_block.taskmanager_id, create_time=time.time(), creator="logicengine")
             self.data_block_put(data, header, data_block)
+            return actions
         except Exception:  # pragma: no cover
-            self.logger.exception("Unexpected error!")
+            self.logger.exception("Unexpected logic engine error!")
             raise
-        else:
-            return le_list
 
     def run_publishers(self, actions, data_block):
         """
@@ -621,7 +585,7 @@ class TaskManager(ComponentManager):
         try:
             for action_list in actions.values():
                 for action in action_list:
-                    worker = self.workflow.publisher_workers[action]
+                    worker = self.publisher_workers[action]
                     name = worker.name
                     self.logger.info(f"Run publisher {name}")
                     self.logger.debug(f"Run publisher {name} {data_block}")

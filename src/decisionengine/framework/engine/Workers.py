@@ -31,9 +31,7 @@ class Worker(multiprocessing.Process):
     def __init__(self, task_manager, logger_config):
         super().__init__(name=f"DEWorker-{task_manager.name}")
         self.task_manager = task_manager
-        self.task_manager_id = task_manager.id
         self.logger_config = logger_config
-        self.logger = None
 
     def wait_until(self, state, timeout=None):
         return self.task_manager.state.wait_until(state, timeout)
@@ -106,7 +104,6 @@ class Worker(multiprocessing.Process):
             }
         )
         logging.config.dictConfig(logconf)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=myname)
 
         channel_log_level = self.logger_config.get("global_channel_log_level", "WARNING")
         self.task_manager.set_loglevel_value(channel_log_level)

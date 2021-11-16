@@ -9,6 +9,5 @@ def test_duplicate_fact_names():
     le = LogicEngine({"facts": facts, "rules": rules, "channel_name": "test"})
     ef = le.evaluate_facts({})
     assert ef["should_publish"]
-    result = le.evaluate({})
-    newfacts = result["newfacts"]
+    actions, newfacts = le.evaluate({})
     assert len(newfacts) == 2

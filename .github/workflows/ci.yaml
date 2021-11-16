@@ -67,6 +67,9 @@ jobs:
       - name: Ensure version.py exists
         run: python3 setup.py bdist_wheel
 
+      - name: Start Redis Server
+        uses: supercharge/redis-github-action@1.1.0
+
       - name: Run Unit Tests on Python ${{ matrix.python-version }}
         timeout-minutes: 35
         env:
