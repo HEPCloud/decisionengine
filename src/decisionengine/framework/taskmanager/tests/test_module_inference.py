@@ -4,7 +4,7 @@
 import pytest
 
 from decisionengine.framework.modules.Source import Source
-from decisionengine.framework.taskmanager.TaskManager import _create_module_instance
+from decisionengine.framework.taskmanager.module_graph import _create_module_instance
 
 
 def test_no_module():

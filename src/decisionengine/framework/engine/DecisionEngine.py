@@ -12,6 +12,7 @@ if this environment variable is not defined the ``DE-Config.py`` file from the `
 
 import argparse
 import contextlib
+import copy
 import enum
 import json
 import logging
@@ -30,6 +31,8 @@ import redis
 import structlog
 import tabulate
 
+from kombu import Exchange
+
 import decisionengine.framework.dataspace.datablock as datablock
 import decisionengine.framework.dataspace.dataspace as dataspace
 import decisionengine.framework.modules.de_logger as de_logger
@@ -38,8 +41,10 @@ import decisionengine.framework.taskmanager.TaskManager as TaskManager
 
 from decisionengine.framework.config import ChannelConfigHandler, policies, ValidConfig
 from decisionengine.framework.dataspace.maintain import Reaper
-from decisionengine.framework.engine.Workers import Worker, Workers
+from decisionengine.framework.engine.ChannelWorkers import ChannelWorker, ChannelWorkers
+from decisionengine.framework.engine.SourceWorkers import SourceWorkers
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
+from decisionengine.framework.taskmanager.module_graph import source_products, validated_workflow
 from decisionengine.framework.util.metrics import display_metrics, Gauge, Histogram
 
 DEFAULT_WEBSERVER_PORT = 8000
@@ -101,8 +106,6 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             self, server_address, logRequests=False, requestHandler=RequestHandler
         )
         signal.signal(signal.SIGHUP, self.handle_sighup)
-        self.source_workers = {}
-        self.channel_workers = Workers()
         self.channel_config_loader = channel_config_loader
         self.global_config = global_config
         self.dataspace = dataspace.DataSpace(self.global_config)
@@ -115,8 +118,14 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         if not global_config.get("no_webserver"):
             self.start_webserver()
 
+        exchange_name = global_config.get("exchange_name", "hepcloud_topic_exchange")
+        self.logger.debug(f"Creating topic exchange {exchange_name}")
+        self.exchange = Exchange(exchange_name, "topic")
         self.broker_url = self.global_config.get("broker_url", "redis://localhost:6379/0")
         _verify_redis_server(self.broker_url)
+
+        self.source_workers = SourceWorkers(self.exchange, self.broker_url, self.logger)
+        self.channel_workers = ChannelWorkers()
 
     def get_logger(self):
         return self.logger
@@ -327,20 +336,47 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return "OK"
 
     def start_channel(self, channel_name, channel_config):
+        channel_config = copy.deepcopy(channel_config)
         with START_CHANNEL_HISTOGRAM.labels(channel_name).time():
+            # NB: Possibly override channel name
+            channel_name = channel_config.get("channel_name", channel_name)
+            source_configs = channel_config.pop("sources")
+            src_workers = self.source_workers.update(channel_name, source_configs)
+            module_workers = validated_workflow(channel_name, src_workers, channel_config, self.logger)
+
+            routing_keys = [worker.key for worker in src_workers.values()]
             self.logger.debug(f"Building TaskManger for {channel_name}")
             task_manager = TaskManager.TaskManager(
-                channel_name, channel_config, self.global_config, self.source_workers
+                channel_name,
+                module_workers,
+                dataspace.DataSpace(self.global_config),
+                source_products(src_workers),
+                self.exchange,
+                self.broker_url,
+                routing_keys,
             )
             self.logger.debug(f"Building Worker for {channel_name}")
-            worker = Worker(task_manager, self.global_config["logger"])
+            worker = ChannelWorker(task_manager, self.global_config["logger"])
             WORKERS_COUNT.inc()
             with self.channel_workers.access() as workers:
                 workers[channel_name] = worker
+
+            # The channel must be started first so it can listen for the messages from the sources.
             self.logger.debug(f"Trying to start {channel_name}")
             worker.start()
             self.logger.info(f"Channel {channel_name} started")
-            return worker
+
+            worker.wait_while(ProcessingState.State.BOOT)
+
+            # Start any sources that are not yet alive.
+            for key, src_worker in src_workers.items():
+                if src_worker.is_alive():
+                    continue
+
+                src_worker.start()
+                self.logger.debug(f"Started process {src_worker.pid} for source {key}")
+
+            worker.wait_while(ProcessingState.State.ACTIVE)
 
     def start_channels(self):
         self.channel_config_loader.load_all_channels()
@@ -352,14 +388,13 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         else:
             self.logger.debug(f"Found channels: {self.channel_config_loader.get_channels().items()}")
 
+        # FIXME: Should figure out a way to load the channels in parallel.  Unfortunately, there are data races that
+        #        occur when doing that (observed with Python 3.10).
         for name, config in self.channel_config_loader.get_channels().items():
             try:
                 self.start_channel(name, config)
             except Exception as e:
-                self.logger.exception(f"Channel {name} failed to start : {e}")
-
-        self.logger.debug("Waiting for channels to exit ProcessingState.State.BOOT")
-        self.block_while(ProcessingState.State.BOOT)
+                self.logger.exception(f"Channel {name} failed to start: {e}")
 
     def rpc_start_channel(self, channel_name):
         with self.channel_workers.access() as workers:
@@ -369,7 +404,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         success, result = self.channel_config_loader.load_channel(channel_name)
         if not success:
             return result
-        self.start_channel(channel_name, result).wait_while(ProcessingState.State.BOOT)
+        self.start_channel(channel_name, result)
         return "OK"
 
     def rpc_start_channels(self):
@@ -403,17 +438,19 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         with RM_CHANNEL_HISTOGRAM.labels(channel).time():
             rc = None
             with self.channel_workers.access() as workers:
-                if channel not in workers:
+                worker = workers.get(channel)
+                if worker is None:
                     return StopState.NotFound
+                sources_to_prune = worker.task_manager.routing_keys
                 self.logger.debug(f"Trying to stop {channel}")
-                rc = self.stop_worker(workers[channel], maybe_timeout)
+                rc = self.stop_worker(worker, maybe_timeout)
                 del workers[channel]
+                self.logger.debug(f"Channel {channel} removed ({rc})")
+                self.source_workers.prune(sources_to_prune)
             return rc
 
     def stop_worker(self, worker, timeout):
         if worker.is_alive():
-            self.logger.debug("Trying to shutdown worker")
-            worker.task_manager.set_to_shutdown()
             self.logger.debug("Trying to take worker offline")
             worker.task_manager.take_offline()
             worker.join(timeout)
@@ -429,6 +466,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             for worker in workers.values():
                 self.stop_worker(worker, timeout)
             workers.clear()
+        self.source_workers.remove_all(timeout)
 
     def rpc_stop_channels(self):
         self.stop_channels()
@@ -446,10 +484,10 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
     def rpc_get_channel_log_level(self, channel):
         with self.channel_workers.access() as workers:
-            if channel not in workers:
+            worker = workers.get(channel)
+            if worker is None:
                 return f"No channel found with the name {channel}."
 
-            worker = workers[channel]
             if not worker.is_alive():
                 return f"Channel {channel} is in ERROR state."
             return logging.getLevelName(worker.task_manager.get_loglevel())
@@ -457,10 +495,10 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def rpc_set_channel_log_level(self, channel, log_level):
         """Assumes log_level is a string corresponding to the supported logging-module levels."""
         with self.channel_workers.access() as workers:
-            if channel not in workers:
+            worker = workers.get(channel)
+            if worker is None:
                 return f"No channel found with the name {channel}."
 
-            worker = workers[channel]
             if not worker.is_alive():
                 return f"Channel {channel} is in ERROR state."
 

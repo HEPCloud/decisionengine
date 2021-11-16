@@ -59,7 +59,7 @@ def test_client_can_get_products_no_channels(deserver, caplog):
         )
     assert len(error_msgs) == 5
 
-    # Find missing product erro
+    # Find missing product error
     consumes_not_subset = next(filter(_consumes_not_subset, error_msgs))
     assert consumes_not_subset
     error_msgs.remove(consumes_not_subset)

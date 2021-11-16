@@ -4,31 +4,21 @@
 """
 Task manager
 """
-import importlib
+import logging
 import multiprocessing
-import socket
 import time
 import uuid
 
 import structlog
 
-from kombu import Connection, Exchange, Queue
-from kombu.pools import connections, producers
+from kombu import Connection, Queue
 
-from decisionengine.framework.dataspace import datablock, dataspace
-from decisionengine.framework.logicengine.LogicEngine import LogicEngine, passthrough_configuration
-from decisionengine.framework.managers.ComponentManager import ComponentManager
-from decisionengine.framework.modules import Module
-from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME, DELOGGER_CHANNEL_NAME, LOGGERNAME
-from decisionengine.framework.modules.Publisher import Publisher
-from decisionengine.framework.modules.Source import Source
-from decisionengine.framework.modules.Transform import Transform
-from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
-from decisionengine.framework.taskmanager.ProcessingState import State
+from decisionengine.framework.dataspace import datablock
+from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
+from decisionengine.framework.taskmanager.LatestMessages import LatestMessages
+from decisionengine.framework.taskmanager.ProcessingState import ProcessingState, State
+from decisionengine.framework.taskmanager.SourceProductCache import SourceProductCache
 from decisionengine.framework.util.metrics import Gauge, Histogram
-from decisionengine.framework.util.subclasses import all_subclasses
-
-_DEFAULT_SCHEDULE = 300  # 5 minutes
 
 # Metrics for monitoring TaskManager
 CHANNEL_STATE_GAUGE = Gauge(
@@ -36,15 +26,6 @@ CHANNEL_STATE_GAUGE = Gauge(
     "Channel state",
     [
         "channel_name",
-    ],
-)
-
-SOURCE_ACQUIRE_GAUGE = Gauge(
-    "de_source_last_acquire_timestamp_seconds",
-    "Last time a source successfully ran its acquire function",
-    [
-        "channel_name",
-        "source_name",
     ],
 )
 
@@ -75,15 +56,6 @@ PUBLISHER_RUN_GAUGE = Gauge(
     ],
 )
 
-SOURCE_RUN_HISTOGRAM = Histogram(
-    "de_source_run_seconds",
-    "Time spent running source",
-    [
-        "channel_name",
-        "source_name",
-    ],
-)
-
 LOGICENGINE_RUN_HISTOGRAM = Histogram(
     "de_logicengine_run_seconds",
     "Time spent running logicengine",
@@ -111,82 +83,13 @@ PUBLISHER_RUN_HISTOGRAM = Histogram(
     ],
 )
 
-delogger = structlog.getLogger(LOGGERNAME)
-delogger = delogger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
 
-
-def _find_only_one_subclass(module, base_class):
-    """
-    Search through module looking for only one subclass of the supplied base_class
-    """
-    subclasses = all_subclasses(module, base_class)
-    if not subclasses:
-        raise RuntimeError(
-            f"Could not find a decision-engine '{base_class.__name__}' in the module '{module.__name__}'"
-        )
-    if len(subclasses) > 1:
-        error_msg = (
-            f"Found more than one decision-engine '{base_class.__name__}' in the module '{module.__name__}':\n\n"
-        )
-        for cls in subclasses:
-            error_msg += " - " + cls + "\n"
-        error_msg += "\nSpecify which subclass you want via the configuration 'name: <one of the above>'."
-        raise RuntimeError(error_msg)
-    return subclasses[0]
-
-
-def _create_module_instance(config_dict, base_class, channel_name):
-    """
-    Create instance of dynamically loaded module
-    """
-    my_module = importlib.import_module(config_dict["module"])
-    class_name = config_dict.get("name")
-    if class_name is None:
-        if base_class == LogicEngine:
-            # Icky kludge until we remove explicit LogicEngine 'module' specification
-            class_name = "LogicEngine"
-        else:
-            class_name = _find_only_one_subclass(my_module, base_class)
-
-    delogger.debug(f"in TaskManager, importlib has imported module {class_name}")
-    class_type = getattr(my_module, class_name)
-    return class_type(dict(**config_dict["parameters"], channel_name=channel_name))
-
-
-class Worker:
-    """
-    Provides interface to loadable modules an events to sycronise
-    execution
-    """
-
-    def __init__(self, key, conf_dict, base_class, channel_name):
-        """
-        :type conf_dict: :obj:`dict`
-        :arg conf_dict: configuration dictionary describing the worker
-        """
-        self.module_instance = _create_module_instance(conf_dict, base_class, channel_name)
-        self.module = conf_dict["module"]
-        self.module_key = key
-        self.full_key = f"{channel_name}.{self.module_key}"
-        self.name = self.module_instance.__class__.__name__
-        self.schedule = conf_dict.get("schedule", _DEFAULT_SCHEDULE)
-
-        # NOTE: THIS MUST BE LOGGED TO de logger, because channel logger does not exist yet
-        delogger.debug(
-            f"Creating worker: module={self.module} name={self.name} parameters={conf_dict['parameters']} schedule={self.schedule}"
-        )
-
-
-def _make_workers_for(configs, base_class, channel_name):
-    return {key: Worker(key, e, base_class, channel_name) for key, e in configs.items()}
-
-
-class TaskManager(ComponentManager):
+class TaskManager:
     """
     Task manager
     """
 
-    def __init__(self, name, channel_dict, global_config, de_source_workers=None):
+    def __init__(self, name, workers, dataspace, expected_products, exchange, broker_url, routing_keys):
         """
         :type name: :obj:`str`
         :arg name: Name of channel corresponding to this task manager
@@ -197,160 +100,133 @@ class TaskManager(ComponentManager):
         :type global_config: :obj:`dict`
         :arg global_config: global configuration
         """
-        super().__init__(channel_dict.get("channel_name", name))
+        self.name = name
+        self.state = ProcessingState()
+        self.loglevel = multiprocessing.Value("i", logging.WARNING)
 
         self.id = str(uuid.uuid4()).upper()
-        self.dataspace = dataspace.DataSpace(global_config)
-        self.data_block_t0 = datablock.DataBlock(self.dataspace, name, self.id, 1)  # my current data block
+        self.data_block_t0 = datablock.DataBlock(dataspace, name, self.id, 1)  # my current data block
         self.logger = structlog.getLogger(CHANNELLOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=self.name)
 
-        self.broker_url = global_config.get("broker_url", "redis://localhost:6379/0")
-        self.logger.debug(f"Using data-broker URL: {self.broker_url}")
+        # The DE owns the sources
+        self.source_workers = workers["sources"]
+        self.transform_workers = workers["transforms"]
+        self.logic_engine = workers["logic_engine"]
+        self.publisher_workers = workers["publishers"]
 
-        self.logger.debug("Creating channel sources")
-        self.source_workers = _make_workers_for(channel_dict["sources"], Source, self.name)
-        if de_source_workers is not None:
-            # Decision engine owns the sources
-            de_source_workers[self.name] = self.source_workers
-
-        self.logger.debug("Creating channel publishers")
-        self.publisher_workers = _make_workers_for(channel_dict["publishers"], Publisher, self.name)
-
-        self.logger.debug("Creating channel logic engines")
-        configured_le_s = channel_dict.get("logicengines")
-        if configured_le_s is None:
-            self.logger.debug(
-                "No 'logicengines' configuration detected; will use default configuration, which unconditionally executes all configured publishers."
-            )
-            configured_le_s = passthrough_configuration(channel_dict["publishers"].keys())
-        if len(configured_le_s) > 1:
-            raise RuntimeError("Cannot support more than one logic engine per channel.")
-
-        self.logic_engine = None
-        if configured_le_s:
-            key, config = configured_le_s.popitem()
-            self.logic_engine = Worker(key, config, LogicEngine, self.name)
-
-        self.logger.debug("Creating channel transforms")
-        transform_workers = _make_workers_for(channel_dict["transforms"], Transform, self.name)
-        self.transform_workers = ensure_no_circularities(self.source_workers, transform_workers, self.publisher_workers)
-
-        exchange_name = global_config.get("exchange_name", "hepcloud_topic_exchange")
-        self.logger.debug(f"Creating topic exchange {exchange_name} for channel {self.name}")
-        self.exchange = Exchange(exchange_name, "topic")
+        self.exchange = exchange
+        self.broker_url = broker_url
         self.connection = Connection(self.broker_url)
 
-        expected_source_products = set()
-        queues = {}
-        for worker in self.source_workers.values():
-            # FIXME: Just keeping track of instance names will not
-            #        work whenever we have multiple source instances
-            #        of the same source type.
-            expected_source_products.update(worker.module_instance._produces.keys())
-            self.logger.debug(f"Creating queue {worker.full_key} with routing key {worker.full_key}")
-            queues[worker.full_key] = Queue(
-                worker.full_key,
-                exchange=self.exchange,
-                routing_key=worker.full_key,
-                auto_delete=True,
-            )
-        self.expected_source_products = expected_source_products
-        self.queues = queues
+        self.source_product_cache = SourceProductCache(expected_products, self.logger)
+        self.routing_keys = routing_keys
 
-        # Caching to determine if all sources have run at least once.
-        self.sources_have_run_once = False
-        self.source_product_cache = {}
+    def get_state_value(self):
+        return self.state.get_state_value()
 
-        # The rest of this function will go away once the source-proxy
-        # has been reimplemented.
-        for src_worker in self.source_workers.values():
-            src_worker.module_instance.post_create(global_config)
+    def get_state(self):
+        return self.state.get()
 
-    def run(self):
+    def get_state_name(self):
+        return self.get_state().name
+
+    def set_loglevel_value(self, log_level):
+        """Assumes log_level is a string corresponding to the supported logging-module levels."""
+        with self.loglevel.get_lock():
+            # Convert from string to int form using technique
+            # suggested by logging module
+            self.loglevel.value = getattr(logging, log_level)
+
+    def get_loglevel(self):
+        with self.loglevel.get_lock():
+            return self.loglevel.value
+
+    def take_offline(self):
+        """
+        Adjust status to stop the decision cycles and bring the task manager offline
+        """
+        self.state.set(State.SHUTTINGDOWN)
+
+    def run_cycle(self, messages):
+        for name, msg_body in messages.items():
+            module_spec = msg_body["source_module"]
+            module_name = msg_body["class_name"]
+            data = msg_body["data"]
+            assert data
+            if data is State.SHUTDOWN:
+                self.logger.info(
+                    f"Channel {self.name} has received shutdown flag from source {module_spec} (class {module_name})"
+                )
+                self.take_offline()
+                return
+
+            assert isinstance(data, dict)
+            self.logger.debug(f"Data received from {module_name}: {data}")
+
+            data_to_process = self.source_product_cache.update(data)
+            if data_to_process is None:
+                return
+
+            header = datablock.Header(self.data_block_t0.taskmanager_id, create_time=time.time(), creator=module_spec)
+            self.logger.info(f"Source {module_name} header done")
+
+            try:
+                self.data_block_put(data_to_process, header, self.data_block_t0)
+            except Exception:  # pragma: no cover
+                self.logger.exception("Exception inserting data into the data block.")
+                self.logger.error(f"Could not insert data from the following message\n{msg_body}")
+                return
+
+            self.logger.info(f"Source {module_name} data block put done")
+
+        try:
+            self.decision_cycle()
+            with self.state.lock:
+                if not self.state.should_stop():
+                    # If we are signaled to stop, don't override that state
+                    # otherwise the last decision_cycle completed without error
+                    self.state.set(State.STEADY)
+                    CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
+        except Exception:  # pragma: no cover
+            self.logger.exception("Exception in the task manager main loop")
+            self.logger.error("Error occured. Task manager %s exits with state %s", self.id, self.get_state_name())
+
+    def run_cycles(self):
         """
         Task manager main loop
         """
         self.logger.setLevel(self.loglevel.value)
         self.logger.info(f"Starting task manager {self.id}")
-        self.logger.debug(f"Expected source products {self.expected_source_products}")
-        source_processes = self.start_sources()
-        self.start_cycles()
 
-        for process in source_processes:
-            process.join()
-
-    def start_cycles(self):
-        """
-        Start decision cycles
-        """
-        _cl = Connection(self.broker_url)
-        with connections[_cl].acquire(block=True) as conn:
-
-            def run_cycle(body, message):
-                module_spec = body["source_module"]
-                module_name = body["class_name"]
-                data = body["data"]
-                assert data
-                self.logger.debug(f"Data received from {module_name}: {data}")
-
-                if not self.sources_have_run_once:
-                    self.source_product_cache.update(**data)
-                    missing_products = self.expected_source_products - set(self.source_product_cache.keys())
-                    if missing_products:
-                        self.logger.info(f"Waiting on more data (missing {missing_products})")
-                        message.ack()
-                        return
-                    self.logger.info("All sources have executed at least once")
-                    data = self.source_product_cache
-                    self.sources_have_run_once = True
-
-                header = datablock.Header(
-                    self.data_block_t0.taskmanager_id, create_time=time.time(), creator=module_spec
+        queues = []
+        for i, key in enumerate(self.routing_keys):
+            self.logger.debug(f"Creating queue {self.id}-{i} with routing key {key}")
+            queues.append(
+                Queue(
+                    f"{self.id}-{i}",  # Use task-manager ID as base name
+                    exchange=self.exchange,
+                    routing_key=key,
+                    auto_delete=True,
                 )
-                self.logger.info(f"Source {module_name} header done")
+            )
 
-                try:
-                    self.data_block_put(data, header, self.data_block_t0)
-                except Exception:  # pragma: no cover
-                    self.logger.exception("Exception inserting data into the data block.")
-                    self.logger.error(f"Could not insert data from the following message\n{body}")
-                    message.ack()
-                    return
+        with LatestMessages(queues, self.broker_url) as messages:
+            self.state.set(State.ACTIVE)
+            self.logger.debug(f"Channel {self.name} is listening for events")
+            while not self.state.should_stop():
+                msgs = messages.consume()
+                if msgs:
+                    self.run_cycle(msgs)
+            self.logger.info(f"Task manager {self.id} received stop signal and is shutting down")
 
-                self.logger.info(f"Source {module_name} data block put done")
-
-                try:
-                    self.decision_cycle()
-                    with self.state.lock:
-                        if not self.state.should_stop():
-                            # If we are signaled to stop, don't override that state
-                            # otherwise the last decision_cycle completed without error
-                            self.state.set(State.STEADY)
-                            CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
-                except Exception:  # pragma: no cover
-                    self.logger.exception("Exception in the task manager main loop")
-                    self.logger.error(
-                        "Error occured. Task manager %s exits with state %s", self.id, self.get_state_name()
-                    )
-                message.ack()
-
-            with conn.Consumer(self.queues.values(), accept=["pickle"], callbacks=[run_cycle]):
-                self.logger.debug(f"Channel {self.name} is listening for events")
-                while not self.state.should_stop():
-                    try:
-                        # If source has been brought offline while the drain_events method is
-                        # executing, it will stall.  We therefore impose an arbitrary 5-second
-                        # timeout so that the 'should_stop()' method called in the while condition
-                        # will yield false and thus terminate the loop.
-                        conn.drain_events(timeout=5)
-                    except TimeoutError:  # pragma: no cover
-                        # no events found in time
-                        pass
-                    except socket.timeout:  # pragma: no cover
-                        # no events found in time
-                        pass
-                self.logger.info(f"Task manager {self.id} received stop signal and is exiting")
+        self.state.set(State.SHUTTINGDOWN)
+        CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
+        self.logger.debug("Shutting down. Will call shutdown on all publishers")
+        for worker in self.publisher_workers.values():
+            worker.module_instance.shutdown()
+        self.state.set(State.OFFLINE)
+        CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
 
     def get_produces(self):
         # FIXME: What happens if a transform and source have the same name?
@@ -370,15 +246,6 @@ class TaskManager(ComponentManager):
             consumes[name] = list(worker.module_instance._consumes.keys())
         return consumes
 
-    def set_to_shutdown(self):
-        self.state.set(State.SHUTTINGDOWN)
-        CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
-        self.logger.debug("Shutting down. Will call shutdown on all publishers")
-        for worker in self.publisher_workers.values():
-            worker.module_instance.shutdown()
-        self.state.set(State.SHUTDOWN)
-        CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
-
     def data_block_put(self, data, header, data_block):
         """
         Put data into data block
@@ -396,9 +263,6 @@ class TaskManager(ComponentManager):
             return
         self.logger.debug(f"data_block_put {data}")
         with data_block.lock:
-            # This is too long to find, so im leaving it here to make it obvious whats going on
-            #   you'll want to update it eventually.
-            # metadata = datablock.Metadata(data_block.component_manager_id,
             metadata = datablock.Metadata(
                 data_block.taskmanager_id, state="END_CYCLE", generation_id=data_block.generation_id
             )
@@ -436,62 +300,6 @@ class TaskManager(ComponentManager):
         except Exception:  # pragma: no cover
             self.logger.exception("Error in decision cycle(publishers) ")
             self.take_offline()
-
-    def run_source(self, worker):
-        """
-        Get the data from source
-        and put it into the data block
-
-        :type worker: :obj:`~Worker`
-        :arg worker: Source worker
-        """
-        with producers[self.connection].acquire(block=True) as producer:
-            # If task manager is in offline state, do not keep executing sources.
-            while not self.state.should_stop():
-                try:
-                    self.logger.info(f"Source {worker.name} calling acquire")
-                    data = worker.module_instance.acquire()
-                    Module.verify_products(worker.module_instance, data)
-                    self.logger.info(f"Source {worker.name} acquire returned")
-                    SOURCE_ACQUIRE_GAUGE.labels(self.name, worker.name).set_to_current_time()
-                    self.logger.debug(f"Publishing data to queue {worker.full_key} with routing key {worker.full_key}")
-                    producer.publish(
-                        dict(source_module=worker.module, class_name=worker.name, data=data),
-                        routing_key=worker.full_key,
-                        exchange=self.exchange,
-                        serializer="pickle",
-                        declare=[
-                            self.exchange,
-                            self.queues[worker.full_key],
-                        ],
-                    )
-                    self.logger.info(f"Source {worker.name} {worker.module} finished cycle")
-                except Exception:
-                    self.logger.exception(f"Exception running source {worker.name} ")
-                    self.take_offline()
-                    break
-                if worker.schedule > 0:
-                    time.sleep(worker.schedule)
-                else:
-                    self.logger.info(f"Source {worker.name} runs only once")
-                    break
-        self.logger.info(f"Stopped {worker.name}")
-
-    def start_sources(self):
-        """
-        Start sources, each in a separate thread
-        """
-        source_processes = []
-
-        for key, source in self.source_workers.items():
-            self.logger.info(f"Starting loop for {source.name}->{key}")
-            SOURCE_ACQUIRE_GAUGE.labels(self.name, source.name)
-            process = multiprocessing.Process(target=self.run_source, name=source.name, args=(source,))
-            source_processes.append(process)
-            process.start()
-            self.logger.debug(f"Started process {process.pid} for {source.name}->{key}")
-
-        return source_processes
 
     def run_transforms(self, data_block=None):
         """
