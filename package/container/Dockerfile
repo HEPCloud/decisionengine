@@ -29,6 +29,9 @@ RUN yum -y install postgresql$(echo -n ${PG_VERSION} | tr -d '.')-server \
                    postgresql$(echo -n ${PG_VERSION} | tr -d '.') \
  && yum -y clean all
 
+# Install redis 5 server and tools
+RUN yum install -y rh-redis5
+
 # Install utils
 RUN yum -y install \
     python3 python3-pip python3-setuptools python3-wheel \
