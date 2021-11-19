@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installing and running HEPCloud’s Decision Engine &mdash; decisionengine 1.7.1.dev75+g6fa0bf4d documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Decisionengine CI with Jenkins pipeline" href="jenkins.html" />
+    <link rel="prev" title="Release 1.1.0" href="release_notes/release_notes_1.1.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> decisionengine
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes/release_notes_1.7.html">Latest</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installing and running HEPCloud’s Decision Engine</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install-postgresql">Install PostgreSQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-redis">Install Redis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-decision-engine-and-the-standard-modules">Install Decision Engine and the standard modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configure-decision-engine">Configure Decision Engine</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#selecting-your-datasource">Selecting your datasource</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#start-decision-engine">Start decision engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-channels-to-decision-engine">Add channels to decision engine</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">decisionengine</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Installing and running HEPCloud’s Decision Engine</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/install.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installing-and-running-hepcloud-s-decision-engine">
+<h1>Installing and running HEPCloud’s Decision Engine<a class="headerlink" href="#installing-and-running-hepcloud-s-decision-engine" title="Permalink to this headline"></a></h1>
+<p>Decision engine uses a PostgreSQL database back-end and Redis as message broker and cache.</p>
+<p>You need to install first PostgreSQL, Redis, and then the Decision engine framework (decisionengine) and install and add the standard channels (decisionengine_modules).</p>
+<p>The following instructions assume a system installation, performed as <code class="docutils literal notranslate"><span class="pre">root</span></code>.
+decisionengine will run as the decisionengine user.</p>
+<section id="install-postgresql">
+<h2>Install PostgreSQL<a class="headerlink" href="#install-postgresql" title="Permalink to this headline"></a></h2>
+<p>The default postgresql installed on RH7 is 9.2 which is outdated. Suggest to remove it and install 12 instead :</p>
+<ol class="arabic">
+<li><p>Remove old postgresql</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">erase</span> <span class="o">-</span><span class="n">y</span> <span class="n">postgresql</span><span class="o">*</span>
+</pre></div>
+</div>
+</li>
+<li><p>Install postgresql 12</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">download</span><span class="o">.</span><span class="n">postgresql</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">pub</span><span class="o">/</span><span class="n">repos</span><span class="o">/</span><span class="n">yum</span><span class="o">/</span><span class="n">reporpms</span><span class="o">/</span><span class="n">EL</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="n">x86_64</span><span class="o">/</span><span class="n">pgdg</span><span class="o">-</span><span class="n">redhat</span><span class="o">-</span><span class="n">repo</span><span class="o">-</span><span class="n">latest</span><span class="o">.</span><span class="n">noarch</span><span class="o">.</span><span class="n">rpm</span>
+<span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">postgresql12</span> <span class="n">postgresql12</span><span class="o">-</span><span class="n">server</span>
+<span class="c1"># optional, also: postgresql11-devel</span>
+</pre></div>
+</div>
+</li>
+<li><p>Enable postgresql</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">enable</span> <span class="n">postgresql</span><span class="o">-</span><span class="mi">12</span>
+</pre></div>
+</div>
+</li>
+<li><p>Init the database</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">pgsql</span><span class="o">-</span><span class="mi">12</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">postgresql</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="n">setup</span> <span class="n">initdb</span>
+</pre></div>
+</div>
+</li>
+<li><p>edit <code class="docutils literal notranslate"><span class="pre">/var/lib/pgsql/12/data/pg_hba.conf</span></code> like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@fermicloud371</span> <span class="o">~</span><span class="p">]</span><span class="c1"># diff  /var/lib/pgsql/12/data/pg_hba.conf~ /var/lib/pgsql/12/data/pg_hba.conf</span>
+<span class="mi">80</span><span class="n">c80</span>
+<span class="o">&lt;</span> <span class="n">local</span>   <span class="nb">all</span>             <span class="nb">all</span>                                     <span class="n">peer</span>
+<span class="o">---</span>
+<span class="o">&gt;</span> <span class="n">local</span>   <span class="nb">all</span>             <span class="nb">all</span>                                     <span class="n">trust</span>
+<span class="mi">82</span><span class="n">c82</span>
+<span class="o">&lt;</span> <span class="n">host</span>    <span class="nb">all</span>             <span class="nb">all</span>             <span class="mf">127.0.0.1</span><span class="o">/</span><span class="mi">32</span>            <span class="n">ident</span>
+<span class="o">---</span>
+<span class="o">&gt;</span> <span class="n">host</span>    <span class="nb">all</span>             <span class="nb">all</span>             <span class="mf">127.0.0.1</span><span class="o">/</span><span class="mi">32</span>            <span class="n">trust</span>
+<span class="mi">84</span><span class="n">c84</span>
+<span class="o">&lt;</span> <span class="n">host</span>    <span class="nb">all</span>             <span class="nb">all</span>             <span class="p">::</span><span class="mi">1</span><span class="o">/</span><span class="mi">128</span>                 <span class="n">ident</span>
+<span class="o">---</span>
+<span class="o">&gt;</span> <span class="n">host</span>    <span class="nb">all</span>             <span class="nb">all</span>             <span class="p">::</span><span class="mi">1</span><span class="o">/</span><span class="mi">128</span>                 <span class="n">trust</span>
+</pre></div>
+</div>
+<p>This is setting the authentication method to <cite>trust</cite></p>
+</li>
+<li><p>start the database</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">start</span> <span class="n">postgresql</span><span class="o">-</span><span class="mi">12</span>
+</pre></div>
+</div>
+</li>
+<li><p>create decisionengine</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">createdb</span> <span class="o">-</span><span class="n">U</span> <span class="n">postgres</span> <span class="n">decisionengine</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>The schema and the connection will be created and configured during the Decision engine framework installation.</p>
+<p>To use the database you have to add it to the environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">PG_VERSION</span><span class="o">=</span><span class="mi">12</span>
+<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">&quot;/usr/pgsql-$</span><span class="si">{PG_VERSION}</span><span class="s2">/bin:~/.local/bin:$PATH&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="install-redis">
+<h2>Install Redis<a class="headerlink" href="#install-redis" title="Permalink to this headline"></a></h2>
+<p>Install and start the message broker (Redis) as explained in
+the <a class="reference internal" href="redis.html"><span class="doc">redis document</span></a></p>
+</section>
+<section id="install-decision-engine-and-the-standard-modules">
+<h2>Install Decision Engine and the standard modules<a class="headerlink" href="#install-decision-engine-and-the-standard-modules" title="Permalink to this headline"></a></h2>
+<ol class="arabic">
+<li><p>Prerequisites setup. Make sure that the required yum repositories and some required packages (python3, gcc, …) are installed and up to date.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">ftp</span><span class="o">.</span><span class="n">scientificlinux</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">linux</span><span class="o">/</span><span class="n">scientific</span><span class="o">/</span><span class="mi">7</span><span class="n">x</span><span class="o">/</span><span class="n">repos</span><span class="o">/</span><span class="n">x86_64</span><span class="o">/</span><span class="n">yum</span><span class="o">-</span><span class="n">conf</span><span class="o">-</span><span class="n">softwarecollections</span><span class="o">-</span><span class="mf">2.0</span><span class="o">-</span><span class="mf">1.</span><span class="n">el7</span><span class="o">.</span><span class="n">noarch</span><span class="o">.</span><span class="n">rpm</span>
+<span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">dl</span><span class="o">.</span><span class="n">fedoraproject</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">pub</span><span class="o">/</span><span class="n">epel</span><span class="o">/</span><span class="n">epel</span><span class="o">-</span><span class="n">release</span><span class="o">-</span><span class="n">latest</span><span class="o">-</span><span class="mf">7.</span><span class="n">noarch</span><span class="o">.</span><span class="n">rpm</span>
+<span class="c1"># gcc, swig and make are needed for dependencies (jsonnet)</span>
+<span class="n">yum</span> <span class="o">-</span><span class="n">y</span> <span class="n">install</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">python3</span><span class="o">-</span><span class="n">setuptools</span> <span class="n">python3</span><span class="o">-</span><span class="n">wheel</span> \
+    <span class="n">gcc</span> <span class="n">gcc</span><span class="o">-</span><span class="n">c</span><span class="o">++</span> <span class="n">make</span> \
+    <span class="n">python3</span><span class="o">-</span><span class="n">devel</span> <span class="n">swig</span> <span class="n">openssl</span><span class="o">-</span><span class="n">devel</span> <span class="n">git</span> <span class="n">rpm</span><span class="o">-</span><span class="n">build</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="o">--</span><span class="n">prefix</span><span class="o">=/</span><span class="n">usr</span> <span class="n">pip</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="o">--</span><span class="n">prefix</span><span class="o">=/</span><span class="n">usr</span> <span class="n">setuptools</span> <span class="n">wheel</span> <span class="n">setuptools</span><span class="o">-</span><span class="n">scm</span><span class="p">[</span><span class="n">toml</span><span class="p">]</span>
+
+<span class="c1"># To install the modules you will also need GlideinWMS Frontend, which is in the OSG repository.</span>
+<span class="c1"># Assuming the use of OSG 3.5 that supports both GSI and tokens, here is a brief summary of the setup:</span>
+<span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">yum</span><span class="o">-</span><span class="n">priorities</span>
+<span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">repo</span><span class="o">.</span><span class="n">opensciencegrid</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">osg</span><span class="o">/</span><span class="mf">3.5</span><span class="o">/</span><span class="n">osg</span><span class="o">-</span><span class="mf">3.5</span><span class="o">-</span><span class="n">el7</span><span class="o">-</span><span class="n">release</span><span class="o">-</span><span class="n">latest</span><span class="o">.</span><span class="n">rpm</span>
+<span class="c1"># HTCondor 8.9.x or 9.x, required by GlideinWMS, is in the osg-upcoming repository. It should be enabled to find the dependency</span>
+<span class="c1"># GlideinWMS 3.9.x is in osg-contrib. The repository should be enabled to find the dependency</span>
+<span class="c1"># In both the following files set: enabled=1</span>
+<span class="n">vi</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">osg</span><span class="o">-</span><span class="n">upcoming</span><span class="o">.</span><span class="n">repo</span>
+<span class="n">vi</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">osg</span><span class="o">-</span><span class="n">contrib</span><span class="o">.</span><span class="n">repo</span>
+<span class="c1"># Change the Epel repository priority to make sure that comes after the OSG repositories, which are 98. Make sure that epel has:</span>
+<span class="n">priority</span><span class="o">=</span><span class="mi">99</span>
+<span class="n">vi</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">epel</span><span class="o">.</span><span class="n">repo</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<blockquote>
+<div><p>The complete version of the GlideinWMS installation instructions is available <cite>here&lt;https://opensciencegrid.org/docs/other/install-gwms-frontend/&gt;</cite></p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>Setup the decision engine yum repositories</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="o">-</span><span class="n">O</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">.</span><span class="n">repo</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">ssi</span><span class="o">-</span><span class="n">rpm</span><span class="o">.</span><span class="n">fnal</span><span class="o">.</span><span class="n">gov</span><span class="o">/</span><span class="n">hep</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">.</span><span class="n">repo</span>
+<span class="n">wget</span> <span class="o">-</span><span class="n">O</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">-</span><span class="n">dev</span><span class="o">.</span><span class="n">repo</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">ssi</span><span class="o">-</span><span class="n">rpm</span><span class="o">.</span><span class="n">fnal</span><span class="o">.</span><span class="n">gov</span><span class="o">/</span><span class="n">hep</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">-</span><span class="n">dev</span><span class="o">.</span><span class="n">repo</span>
+</pre></div>
+</div>
+</li>
+<li><p>Install the decision engine (add <code class="docutils literal notranslate"><span class="pre">--enablerepo=ssi-hepcloud-dev</span></code> for the latest development version)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yum</span> <span class="n">install</span> <span class="n">decisionengine</span>
+<span class="n">yum</span> <span class="n">install</span> <span class="n">decisionengine_modules</span>
+<span class="c1"># The modules RPM was renamed. For versions &lt;1.7 use instead</span>
+<span class="n">yum</span> <span class="n">install</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">standard</span><span class="o">-</span><span class="n">library</span>
+</pre></div>
+</div>
+</li>
+<li><p>Not all packages are available as RPM. It is necessary to install directly some Python dependencies.
+To avoid to pollute the system Python we will install them for the <code class="docutils literal notranslate"><span class="pre">decisionengine</span></code> user,
+the user the service is running as.
+Install the required Python packages (these are taken from setup.py)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">su</span> <span class="n">decisionengine</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span> <span class="n">setuptools</span> <span class="n">wheel</span> <span class="o">--</span><span class="n">user</span>
+<span class="n">python3</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">decisionengine</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">develop</span> <span class="o">--</span><span class="n">user</span>
+<span class="n">python3</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">decisionengine</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">develop</span> <span class="o">--</span><span class="n">user</span> <span class="o">--</span><span class="n">uninstall</span>
+<span class="n">python3</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">decisionengine_modules</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">develop</span> <span class="o">--</span><span class="n">user</span>
+<span class="n">python3</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">decisionengine_modules</span><span class="o">/</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">develop</span> <span class="o">--</span><span class="n">user</span> <span class="o">--</span><span class="n">uninstall</span>
+<span class="n">exit</span>
+</pre></div>
+</div>
+<p>The commands above should be sufficient. Anyway, here is an explicit list you can use in alternative:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">su</span> <span class="n">decisionengine</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
+<span class="c1"># from decisionengine setup.py</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">jsonnet</span> <span class="n">tabulate</span> <span class="n">toposort</span> <span class="n">structlog</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">wheel</span> <span class="n">DBUtils</span> <span class="n">sqlalchemy</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">pandas</span><span class="o">==</span><span class="mf">1.1.5</span> <span class="n">numpy</span><span class="o">==</span><span class="mf">1.19.5</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="s2">&quot;psycopg2-binary &gt;= 2.8.6; platform_python_implementation == &#39;CPython&#39;&quot;</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="s2">&quot;psycopg2cffi &gt;= 2.9.0; platform_python_implementation == &#39;PyPy&#39;&quot;</span>
+<span class="c1"># from decisionengine_modules setup.py</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">boto3</span> <span class="n">google_auth</span> <span class="n">google</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">python</span><span class="o">-</span><span class="n">client</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">gcs</span><span class="o">-</span><span class="n">oauth2</span><span class="o">-</span><span class="n">boto</span><span class="o">-</span><span class="n">plugin</span>
+<span class="c1"># Condor should be already there from the RPM, if not add: python3 -m pip install htcondor</span>
+<span class="c1"># bill-calculator-hep is only for versions &gt;= 1.7</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">bill</span><span class="o">-</span><span class="n">calculator</span><span class="o">-</span><span class="n">hep</span>
+
+<span class="c1"># The following are additional requirements for v1.6 and earlier</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">boto</span> <span class="n">packaging</span>
+<span class="c1"># This is not in pypi</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">test</span><span class="o">-</span><span class="n">files</span><span class="o">.</span><span class="n">pythonhosted</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">packages</span><span class="o">/</span><span class="n">f4</span><span class="o">/</span><span class="n">a5</span><span class="o">/</span><span class="mi">17</span><span class="n">a14b4ef85bc412a0ddb771771de3f562430328b0d83da6091a4131bb26</span><span class="o">/</span><span class="n">bill_calculator_hep_mapsacosta</span><span class="o">-</span><span class="mf">0.0.10</span><span class="o">-</span><span class="n">py3</span><span class="o">-</span><span class="n">none</span><span class="o">-</span><span class="nb">any</span><span class="o">.</span><span class="n">whl</span>
+
+<span class="n">exit</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Now you can type <code class="docutils literal notranslate"><span class="pre">decisionengine</span> <span class="pre">--help</span></code> to print the help message.
+To do more you need first to configure Decision Engine.</p>
+</section>
+<section id="configure-decision-engine">
+<h2>Configure Decision Engine<a class="headerlink" href="#configure-decision-engine" title="Permalink to this headline"></a></h2>
+<p>The default configuration file lives in <code class="docutils literal notranslate"><span class="pre">/etc/decisionengine/decision_engine.jsonnet</span></code>.</p>
+<p>A number of defaults are set for you.</p>
+<section id="selecting-your-datasource">
+<h3>Selecting your datasource<a class="headerlink" href="#selecting-your-datasource" title="Permalink to this headline"></a></h3>
+<p>You need a datasource to store in the database the channel’s data (datablocks).
+Each datasource has its own unique schema and cannot be used with a different datasource.</p>
+<p><strong>The SQLAlchemy Data Source</strong></p>
+<p>SQLAlchemy is the default Data Source after v1.7 and is setup with a configuration like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;datasource&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.sqlalchemy_ds&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SQLAlchemyDS&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;postgresql://</span><span class="si">{db_user}</span><span class="s2">:</span><span class="si">{db_password}</span><span class="s2">@</span><span class="si">{db_host}</span><span class="s2">:</span><span class="si">{db_port}</span><span class="s2">/</span><span class="si">{db_dbname}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+<p>Any extra keywords you can pass to the <code class="docutils literal notranslate"><span class="pre">sqlalchemy.engine.Engine</span></code> constructor may be set under <code class="docutils literal notranslate"><span class="pre">config</span></code>.</p>
+<p>SQLAlchemy will create any tablespace objects it requires automatically.</p>
+<p><strong>The PostgreSQL Data Source</strong></p>
+<p>The postgresql Data Source is the only one supported pre v1.7 and is setup with a config like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;datasource&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.postgresql&quot;</span><span class="p">,</span>
+ <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Postgresql&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;postgres&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;blocking&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+    <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">5432</span><span class="p">,</span>
+    <span class="s2">&quot;database&quot;</span><span class="p">:</span> <span class="s2">&quot;decisionengine&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;maxconnections&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="s2">&quot;maxcached&quot;</span><span class="p">:</span> <span class="mi">10</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+<p>If you use this datasource you must also load the database schema by hand.
+To load the database schema run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">psql</span> <span class="o">-</span><span class="n">U</span> <span class="n">postgres</span> <span class="n">decisionengine</span> <span class="o">-</span><span class="n">f</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">decisionengine</span><span class="o">/</span><span class="n">datasources</span><span class="o">/</span><span class="n">postgresql</span><span class="o">.</span><span class="n">sql</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="start-decision-engine">
+<h2>Start decision engine<a class="headerlink" href="#start-decision-engine" title="Permalink to this headline"></a></h2>
+<p>Start the service</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">start</span> <span class="n">decisionengine</span>
+</pre></div>
+</div>
+</section>
+<section id="add-channels-to-decision-engine">
+<h2>Add channels to decision engine<a class="headerlink" href="#add-channels-to-decision-engine" title="Permalink to this headline"></a></h2>
+<p>Decision engine decision cycles happen in channels.
+You can add channels by adding configuration files in <code class="docutils literal notranslate"><span class="pre">/etc/decisionengine/config.d/</span></code>
+and restarting the decision engine.</p>
+<p>Here is a simple test channel configuration.
+This test channel is using some NOP classes currently defined in the unit tests and not distributed.
+First, copy these classes from the Git repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">YOUR_decisionengine_REPO</span>
+<span class="c1"># OR download the files from GitHub</span>
+<span class="n">mkdir</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">derepo</span>
+<span class="n">cd</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">derepo</span>
+<span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">HEPCloud</span><span class="o">/</span><span class="n">decisionengine</span><span class="o">/</span><span class="n">archive</span><span class="o">/</span><span class="n">refs</span><span class="o">/</span><span class="n">heads</span><span class="o">/</span><span class="n">master</span><span class="o">.</span><span class="n">zip</span>
+<span class="n">unzip</span> <span class="n">master</span><span class="o">.</span><span class="n">zip</span>
+<span class="n">cd</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">master</span>
+<span class="c1"># Now copy the files</span>
+<span class="n">cp</span> <span class="o">-</span><span class="n">r</span> <span class="n">src</span><span class="o">/</span><span class="n">decisionengine</span><span class="o">/</span><span class="n">framework</span><span class="o">/</span><span class="n">tests</span> <span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.6</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">decisionengine</span><span class="o">/</span><span class="n">framework</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>Then, add the channel by placing this in <code class="docutils literal notranslate"><span class="pre">/etc/decisionengine/config.d/test_channel.jsonnet</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="n">sources</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">source1</span><span class="p">:</span> <span class="p">{</span>
+      <span class="n">module</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.tests.SourceNOP&quot;</span><span class="p">,</span>
+      <span class="n">parameters</span><span class="p">:</span> <span class="p">{},</span>
+      <span class="n">schedule</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="n">transforms</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">transform1</span><span class="p">:</span> <span class="p">{</span>
+      <span class="n">module</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.tests.TransformNOP&quot;</span><span class="p">,</span>
+      <span class="n">parameters</span><span class="p">:</span> <span class="p">{},</span>
+      <span class="n">schedule</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="n">logicengines</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">le1</span><span class="p">:</span> <span class="p">{</span>
+      <span class="n">module</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.logicengine.LogicEngine&quot;</span><span class="p">,</span>
+      <span class="n">parameters</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">facts</span><span class="p">:</span> <span class="p">{</span>
+          <span class="n">pass_all</span><span class="p">:</span> <span class="s2">&quot;True&quot;</span>
+        <span class="p">},</span>
+        <span class="n">rules</span><span class="p">:</span> <span class="p">{</span>
+          <span class="n">r1</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">expression</span><span class="p">:</span> <span class="s1">&#39;pass_all&#39;</span><span class="p">,</span>
+            <span class="n">actions</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;publisher1&#39;</span><span class="p">]</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="n">publishers</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">publisher1</span><span class="p">:</span> <span class="p">{</span>
+      <span class="n">module</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.tests.PublisherNOP&quot;</span><span class="p">,</span>
+      <span class="n">parameters</span><span class="p">:</span> <span class="p">{}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Finally, restart decision engine to start the new channel:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">restart</span> <span class="n">decisionengine</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">de-client</span> <span class="pre">--status</span></code> should show the active test channel</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="release_notes/release_notes_1.1.html" class="btn btn-neutral float-left" title="Release 1.1.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jenkins.html" class="btn btn-neutral float-right" title="Decisionengine CI with Jenkins pipeline" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Fermilab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
