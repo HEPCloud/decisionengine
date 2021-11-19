@@ -14,6 +14,19 @@ Release Notes
    release_notes
    Latest<release_notes/release_notes_1.7>
 
+
+Install Decision Engine
+=======================
+
+Here are instructions for operators and developers to install the
+Decision Engine using the distributed RPM packages.
+
+.. toctree::
+   :maxdepth: 1
+
+   install
+
+
 Developer Documentation
 =======================
 
