@@ -50,16 +50,32 @@ sudo localedef -v -c -i en_US -f UTF-8 C.UTF-8
 The code is expected to package as an RPM via `python3 setup.py bdist_rpm` or
 a python wheel.
 
-## Using the RPM
+NOTE:
 
-The RPM should create the services you need. But you may not have all the
-items you need in the `decisionengine` user's python area (ie not system packages).
-
-This should clean that up, provided you can write to the user home area.
+- Make sure you have the necessary software to build RPMs
 
 ```shell
-su decisionengine -c /bin/bash
+sudo yum install rpm-build
+```
+
+## Using the RPM
+
+The RPM should create the services you need. But some dependencies are not available as RPM.
+So you have to install them using `pip`. Not to pollute the system Python you should
+install it in the `decisionengine` (the user used to run decisionengine) user's Python area.
+
+Run this to install the python dependencies:
+
+```shell
+su decisionengine -s /bin/bash
 python3 -m pip install --upgrade pip setuptools wheel --user
 python3 /path/to/setup.py develop --user
 python3 /path/to/setup.py develop --user --uninstall
+exit
 ```
+
+NOTE:
+
+- The commands above should be run for the setup.py files of both decisionengine and decisionengine_modules.
+- The decisionengine (and decisionengine_modules) RPMs must be installed before running the commands above.
+  This will assure that the decisionengine user and its home directory exist.
