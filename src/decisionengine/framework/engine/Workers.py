@@ -95,6 +95,7 @@ class Worker(multiprocessing.Process):
                 }
             )
         else:
+            self.task_manager.state.set(ProcessingState.State.ERROR)
             raise ValueError(f"Incorrect 'logger_rotate_by':'{logger_rotate_by}:'")
 
         logconf["loggers"].update(
