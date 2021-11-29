@@ -33,21 +33,21 @@ from decisionengine.framework.config import ChannelConfigHandler, policies, Vali
 from decisionengine.framework.dataspace.maintain import Reaper
 from decisionengine.framework.engine.Workers import Worker, Workers
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
-from decisionengine.framework.util.metrics import display_metrics, Gauge, Summary
+from decisionengine.framework.util.metrics import display_metrics, Gauge, Histogram
 
 DEFAULT_WEBSERVER_PORT = 8000
 
 # DecisionEngine metrics
-STATUS_SUMMARY = Summary("de_client_status_duration_seconds", "Time to run de-client --status")
-PRINT_PRODUCT_SUMMARY = Summary("de_client_print_product_duration_seconds", "Time to run de-client --print-product")
-START_CHANNEL_SUMMARY = Summary(
+STATUS_HISTOGRAM = Histogram("de_client_status_duration_seconds", "Time to run de-client --status")
+PRINT_PRODUCT_HISTOGRAM = Histogram("de_client_print_product_duration_seconds", "Time to run de-client --print-product")
+START_CHANNEL_HISTOGRAM = Histogram(
     "de_client_start_channel_duration_seconds", "Time to run de-client --start-channel", ["channel_name"]
 )
-RM_CHANNEL_SUMMARY = Summary(
+RM_CHANNEL_HISTOGRAM = Histogram(
     "de_client_rm_channel_duration_seconds", "Time to run de-client --stop-channel", ["channel_name"]
 )
-QUERY_TOOL_SUMMARY = Summary("de_client_query_duration_seconds", "Time to run de-client --query", ["product"])
-METRICS_SUMMARY = Summary("de_client_metrics_duration_seconds", "Time to run de-client --status")
+QUERY_TOOL_HISTOGRAM = Histogram("de_client_query_duration_seconds", "Time to run de-client --query", ["product"])
+METRICS_HISTOGRAM = Histogram("de_client_metrics_duration_seconds", "Time to run de-client --status")
 WORKERS_COUNT = Gauge("de_workers_total", "Number of workers started by the Decision Engine")
 
 
@@ -169,7 +169,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def rpc_show_de_config(self):
         return self.global_config.dump()
 
-    @PRINT_PRODUCT_SUMMARY.time()
+    @PRINT_PRODUCT_HISTOGRAM.time()
     def rpc_print_product(self, product, columns=None, query=None, types=False, format=None):
         if not isinstance(product, str):
             raise ValueError(f"Requested product should be a string not {type(product)}")
@@ -271,7 +271,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                                 txt += f"\t\t\t{e}\n"
         return txt[:-1]
 
-    @STATUS_SUMMARY.time()
+    @STATUS_HISTOGRAM.time()
     def rpc_status(self):
         with self.workers.access() as workers:
             channel_keys = workers.keys()
@@ -302,7 +302,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return "OK"
 
     def start_channel(self, channel_name, channel_config):
-        with START_CHANNEL_SUMMARY.labels(channel_name).time():
+        with START_CHANNEL_HISTOGRAM.labels(channel_name).time():
             generation_id = 1
             task_manager = TaskManager.TaskManager(channel_name, generation_id, channel_config, self.global_config)
             worker = Worker(task_manager, self.global_config["logger"])
@@ -371,7 +371,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return f"Channel {channel} stopped cleanly."
 
     def rm_channel(self, channel, maybe_timeout):
-        with RM_CHANNEL_SUMMARY.labels(channel).time():
+        with RM_CHANNEL_HISTOGRAM.labels(channel).time():
             rc = None
             with self.workers.access() as workers:
                 if channel not in workers:
@@ -471,7 +471,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return f"\nreaper:\n\tstate: {state}\n\tretention_interval: {interval}\n"
 
     def rpc_query_tool(self, product, format=None, start_time=None):
-        with QUERY_TOOL_SUMMARY.labels(product).time():
+        with QUERY_TOOL_HISTOGRAM.labels(product).time():
             found = False
             result = pd.DataFrame()
             txt = f"Product {product}: "
@@ -538,7 +538,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def metrics(self):
         return self.rpc_metrics()
 
-    @METRICS_SUMMARY.time()
+    @METRICS_HISTOGRAM.time()
     def rpc_metrics(self):
         """
         Display collected metrics
