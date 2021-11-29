@@ -330,6 +330,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             except Exception as e:
                 self.logger.exception(f"Channel {name} failed to start : {e}")
 
+        self.logger.debug("Waiting for channels to exit ProcessingState.State.BOOT")
         self.block_while(ProcessingState.State.BOOT)
 
     def rpc_start_channel(self, channel_name):

@@ -501,7 +501,7 @@ class TaskManager(ComponentManager):
         source_threads = []
 
         for key, source in self.workflow.source_workers.items():
-            self.logger.info(f"starting loop for {key}")
+            self.logger.info(f"starting loop for {source.name}->{key}")
             event_list.append(source.data_updated)
             SOURCE_ACQUIRE_GAUGE.labels(self.name, source.name)
             thread = threading.Thread(target=self.run_source, name=source.name, args=(source,))
@@ -511,6 +511,7 @@ class TaskManager(ComponentManager):
 
         # This is the boot phase
         # Wait until all sources run at least once
+        self.logger.debug(f"Waiting for events ({event_list}) in {self.name}")
         self.wait_for_all(event_list)
         return source_threads
 
