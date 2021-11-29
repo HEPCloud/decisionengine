@@ -22,7 +22,7 @@ from decisionengine.framework.modules.Source import Source
 from decisionengine.framework.modules.Transform import Transform
 from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
 from decisionengine.framework.taskmanager.ProcessingState import State
-from decisionengine.framework.util.metrics import Gauge, Summary
+from decisionengine.framework.util.metrics import Gauge, Histogram
 from decisionengine.framework.util.subclasses import all_subclasses
 
 _DEFAULT_SCHEDULE = 300  # 5 minutes
@@ -72,7 +72,7 @@ PUBLISHER_RUN_GAUGE = Gauge(
     ],
 )
 
-SOURCE_RUN_SUMMARY = Summary(
+SOURCE_RUN_HISTOGRAM = Histogram(
     "de_source_run_seconds",
     "Time spent running source",
     [
@@ -81,7 +81,7 @@ SOURCE_RUN_SUMMARY = Summary(
     ],
 )
 
-LOGICENGINE_RUN_SUMMARY = Summary(
+LOGICENGINE_RUN_HISTOGRAM = Histogram(
     "de_logicengine_run_seconds",
     "Time spent running logicengine",
     [
@@ -90,7 +90,7 @@ LOGICENGINE_RUN_SUMMARY = Summary(
     ],
 )
 
-TRANSFORM_RUN_SUMMARY = Summary(
+TRANSFORM_RUN_HISTOGRAM = Histogram(
     "de_transform_run_seconds",
     "Time spent running transform",
     [
@@ -99,7 +99,7 @@ TRANSFORM_RUN_SUMMARY = Summary(
     ],
 )
 
-PUBLISHER_RUN_SUMMARY = Summary(
+PUBLISHER_RUN_HISTOGRAM = Histogram(
     "de_publisher_run_seconds",
     "Time spent running publisher",
     [
@@ -549,7 +549,7 @@ class TaskManager(ComponentManager):
         )
         self.logger.info("Run transform %s", worker.name)
         try:
-            with TRANSFORM_RUN_SUMMARY.labels(self.name, worker.name).time():
+            with TRANSFORM_RUN_HISTOGRAM.labels(self.name, worker.name).time():
                 data = worker.module_instance.transform(data_block)
                 self.logger.debug(f"transform returned {data}")
                 header = datablock.Header(data_block.taskmanager_id, create_time=time.time(), creator=worker.name)
@@ -573,7 +573,7 @@ class TaskManager(ComponentManager):
         le_list = []
         try:
             for le in self.workflow.le_s:
-                with LOGICENGINE_RUN_SUMMARY.labels(self.name, self.workflow.le_s[le].name).time():
+                with LOGICENGINE_RUN_HISTOGRAM.labels(self.name, self.workflow.le_s[le].name).time():
                     self.logger.info("run logic engine %s", self.workflow.le_s[le].name)
                     self.logger.debug("run logic engine %s %s", self.workflow.le_s[le].name, data_block)
                     rc = self.workflow.le_s[le].module_instance.evaluate(data_block)
@@ -625,7 +625,7 @@ class TaskManager(ComponentManager):
                     self.logger.info(f"Run publisher {name}")
                     self.logger.debug(f"Run publisher {name} {data_block}")
                     try:
-                        with PUBLISHER_RUN_SUMMARY.labels(self.name, name).time():
+                        with PUBLISHER_RUN_HISTOGRAM.labels(self.name, name).time():
                             worker.module_instance.publish(data_block)
                             PUBLISHER_RUN_GAUGE.labels(self.name, name).set_to_current_time()
                     except KeyError as e:
