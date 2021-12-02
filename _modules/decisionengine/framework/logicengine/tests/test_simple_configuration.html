@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.tests.test_simple_configuration &mdash; decisionengine 1.7.1.dev77+gb85dca45 documentation</title>
+  <title>decisionengine.framework.logicengine.tests.test_simple_configuration &mdash; decisionengine 1.7.1.dev78+g1d750001 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -98,22 +98,14 @@
     <span class="n">ef</span> <span class="o">=</span> <span class="n">myengine</span><span class="o">.</span><span class="n">evaluate_facts</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">ef</span><span class="p">[</span><span class="s2">&quot;f1&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">myengine</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-    <span class="n">actions</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">]</span>
-    <span class="n">newfacts</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;newfacts&quot;</span><span class="p">]</span>
+    <span class="n">actions</span><span class="p">,</span> <span class="n">newfacts</span> <span class="o">=</span> <span class="n">myengine</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">newfacts</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">actions</span><span class="p">[</span><span class="s2">&quot;r1&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;a1&quot;</span><span class="p">,</span> <span class="s2">&quot;a2&quot;</span><span class="p">]</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="n">newfacts</span><span class="o">.</span><span class="n">empty</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">myengine</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-    <span class="n">actions</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">]</span>
-    <span class="n">newfacts</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;newfacts&quot;</span><span class="p">]</span>
+    <span class="n">actions</span><span class="p">,</span> <span class="n">newfacts</span> <span class="o">=</span> <span class="n">myengine</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">newfacts</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">actions</span><span class="p">[</span><span class="s2">&quot;r1&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;a1&quot;</span><span class="p">,</span> <span class="s2">&quot;a2&quot;</span><span class="p">]</span>
@@ -129,22 +121,14 @@
     <span class="n">ef</span> <span class="o">=</span> <span class="n">myengine</span><span class="o">.</span><span class="n">evaluate_facts</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">ef</span><span class="p">[</span><span class="s2">&quot;f1&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">False</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">myengine</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-    <span class="n">actions</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">]</span>
-    <span class="n">newfacts</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;newfacts&quot;</span><span class="p">]</span>
+    <span class="n">actions</span><span class="p">,</span> <span class="n">newfacts</span> <span class="o">=</span> <span class="n">myengine</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">newfacts</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="n">actions</span><span class="p">[</span><span class="s2">&quot;r1&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[]</span>
     <span class="k">assert</span> <span class="n">newfacts</span><span class="o">.</span><span class="n">empty</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">myengine</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-    <span class="n">actions</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">]</span>
-    <span class="n">newfacts</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;newfacts&quot;</span><span class="p">]</span>
+    <span class="n">ations</span><span class="p">,</span> <span class="n">newfacts</span> <span class="o">=</span> <span class="n">myengine</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">newfacts</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>

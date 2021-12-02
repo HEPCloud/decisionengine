@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.1.dev77+gb85dca45 documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.1.dev78+g1d750001 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -79,17 +79,17 @@
 <span class="sd">Task manager</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">socket</span>
-<span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">structlog</span>
 
 <span class="kn">from</span> <span class="nn">kombu</span> <span class="kn">import</span> <span class="n">Connection</span><span class="p">,</span> <span class="n">Exchange</span><span class="p">,</span> <span class="n">Queue</span>
 <span class="kn">from</span> <span class="nn">kombu.pools</span> <span class="kn">import</span> <span class="n">connections</span><span class="p">,</span> <span class="n">producers</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace</span> <span class="kn">import</span> <span class="n">datablock</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace</span> <span class="kn">import</span> <span class="n">datablock</span><span class="p">,</span> <span class="n">dataspace</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.LogicEngine</span> <span class="kn">import</span> <span class="n">LogicEngine</span><span class="p">,</span> <span class="n">passthrough_configuration</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.managers.ComponentManager</span> <span class="kn">import</span> <span class="n">ComponentManager</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Module</span>
@@ -244,8 +244,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">full_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">module_key</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">=</span> <span class="n">conf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schedule&quot;</span><span class="p">,</span> <span class="n">_DEFAULT_SCHEDULE</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_updated</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stop_running</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
         <span class="c1"># NOTE: THIS MUST BE LOGGED TO de logger, because channel logger does not exist yet</span>
         <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
@@ -257,48 +255,12 @@
     <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">Worker</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">base_class</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">configs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
 
-<div class="viewcode-block" id="Workflow"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.Workflow">[docs]</a><span class="k">class</span> <span class="nc">Workflow</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Decision Channel.</span>
-<span class="sd">    Instantiates workers according to channel configuration</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_dict</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :type channel_dict: :obj:`dict`</span>
-<span class="sd">        :arg channel_dict: channel configuration</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel sources&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">],</span> <span class="n">Source</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
-
-        <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel publishers&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">publisher_workers</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;publishers&quot;</span><span class="p">],</span> <span class="n">Publisher</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
-
-        <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel logic engines&quot;</span><span class="p">)</span>
-        <span class="n">configured_le_s</span> <span class="o">=</span> <span class="n">channel_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logicengines&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">configured_le_s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="s2">&quot;No &#39;logicengines&#39; configuration detected; will use default configuration, which unconditionally executes all configured publishers.&quot;</span>
-            <span class="p">)</span>
-            <span class="n">configured_le_s</span> <span class="o">=</span> <span class="n">passthrough_configuration</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;publishers&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">configured_le_s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot support more than one logic engine per channel.&quot;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">le_s</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">configured_le_s</span><span class="p">,</span> <span class="n">LogicEngine</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
-
-        <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel transforms&quot;</span><span class="p">)</span>
-        <span class="n">transform_workers</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;transforms&quot;</span><span class="p">],</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">transform_workers</span> <span class="o">=</span> <span class="n">ensure_no_circularities</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="p">,</span> <span class="n">transform_workers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher_workers</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">task_manager</span> <span class="o">=</span> <span class="n">channel_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;task_manager&quot;</span><span class="p">,</span> <span class="p">{})</span></div>
-
-
 <div class="viewcode-block" id="TaskManager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager">[docs]</a><span class="k">class</span> <span class="nc">TaskManager</span><span class="p">(</span><span class="n">ComponentManager</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Task manager</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">channel_dict</span><span class="p">,</span> <span class="n">global_config</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">channel_dict</span><span class="p">,</span> <span class="n">global_config</span><span class="p">,</span> <span class="n">de_source_workers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :type name: :obj:`str`</span>
 <span class="sd">        :arg name: Name of channel corresponding to this task manager</span>
@@ -309,14 +271,44 @@
 <span class="sd">        :type global_config: :obj:`dict`</span>
 <span class="sd">        :arg global_config: global configuration</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">channel_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;channel_name&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;channel_name&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">global_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># my current data block</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">CHANNELLOGGERNAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span> <span class="o">=</span> <span class="n">Workflow</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;broker_url&quot;</span><span class="p">,</span> <span class="s2">&quot;memory:///&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;broker_url&quot;</span><span class="p">,</span> <span class="s2">&quot;redis://localhost:6379/0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using data-broker URL: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel sources&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">],</span> <span class="n">Source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">de_source_workers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Decision engine owns the sources</span>
+            <span class="n">de_source_workers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel publishers&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher_workers</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;publishers&quot;</span><span class="p">],</span> <span class="n">Publisher</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel logic engines&quot;</span><span class="p">)</span>
+        <span class="n">configured_le_s</span> <span class="o">=</span> <span class="n">channel_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logicengines&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">configured_le_s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;No &#39;logicengines&#39; configuration detected; will use default configuration, which unconditionally executes all configured publishers.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">configured_le_s</span> <span class="o">=</span> <span class="n">passthrough_configuration</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;publishers&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">configured_le_s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot support more than one logic engine per channel.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">configured_le_s</span><span class="p">:</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">configured_le_s</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span> <span class="o">=</span> <span class="n">Worker</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">LogicEngine</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel transforms&quot;</span><span class="p">)</span>
+        <span class="n">transform_workers</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_dict</span><span class="p">[</span><span class="s2">&quot;transforms&quot;</span><span class="p">],</span> <span class="n">Transform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform_workers</span> <span class="o">=</span> <span class="n">ensure_no_circularities</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="p">,</span> <span class="n">transform_workers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher_workers</span><span class="p">)</span>
 
         <span class="n">exchange_name</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exchange_name&quot;</span><span class="p">,</span> <span class="s2">&quot;hepcloud_topic_exchange&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating topic exchange </span><span class="si">{</span><span class="n">exchange_name</span><span class="si">}</span><span class="s2"> for channel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -325,7 +317,7 @@
 
         <span class="n">expected_source_products</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">queues</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="c1"># FIXME: Just keeping track of instance names will not</span>
             <span class="c1">#        work whenever we have multiple source instances</span>
             <span class="c1">#        of the same source type.</span>
@@ -346,29 +338,8 @@
 
         <span class="c1"># The rest of this function will go away once the source-proxy</span>
         <span class="c1"># has been reimplemented.</span>
-        <span class="k">for</span> <span class="n">src_worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">src_worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">src_worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">post_create</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
-
-<div class="viewcode-block" id="TaskManager.wait_for_all"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.wait_for_all">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">events_done</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Wait for all sources or transforms to finish</span>
-
-<span class="sd">        :type events_done: :obj:`list`</span>
-<span class="sd">        :arg events_done: list of events to wait for</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Waiting for all tasks to run&quot;</span><span class="p">)</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">while</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events_done</span><span class="p">):</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
-                    <span class="k">break</span>
-
-            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events_done</span><span class="p">:</span>
-                <span class="n">e</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
-            <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="TaskManager.run"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -378,17 +349,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting task manager </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected source products </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expected_source_products</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">source_threads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_sources</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;All sources finished&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">source_threads</span><span class="p">:</span>
-                <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error occured during initial run of sources. Task manager </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> exits&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">start_cycles</span><span class="p">()</span>
-
-        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">source</span><span class="o">.</span><span class="n">stop_running</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">source_threads</span><span class="p">:</span>
             <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span></div>
@@ -414,6 +375,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting on more data (missing </span><span class="si">{</span><span class="n">missing_products</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
                         <span class="n">message</span><span class="o">.</span><span class="n">ack</span><span class="p">()</span>
                         <span class="k">return</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;All sources have executed at least once&quot;</span><span class="p">)</span>
                     <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_product_cache</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">sources_have_run_once</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -421,10 +383,17 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">create_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">creator</span><span class="o">=</span><span class="n">module_spec</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source </span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2"> header done&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data_block_put</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span><span class="p">)</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data_block_put</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Exception inserting data into the data block.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not insert data from the following message</span><span class="se">\n</span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">message</span><span class="o">.</span><span class="n">ack</span><span class="p">()</span>
+                    <span class="k">return</span>
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source </span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2"> data block put done&quot;</span><span class="p">)</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Message on bus: </span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">decision_cycle</span><span class="p">()</span>
                     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
@@ -460,71 +429,87 @@
 <div class="viewcode-block" id="TaskManager.get_produces"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_produces">[docs]</a>    <span class="k">def</span> <span class="nf">get_produces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># FIXME: What happens if a transform and source have the same name?</span>
         <span class="n">produces</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">produces</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">_produces</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">transform_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">produces</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">_produces</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">produces</span></div>
 
 <div class="viewcode-block" id="TaskManager.get_consumes"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_consumes">[docs]</a>    <span class="k">def</span> <span class="nf">get_consumes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># FIXME: What happens if a transform and publisher have the same name?</span>
         <span class="n">consumes</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">transform_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">consumes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">_consumes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">publisher_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">consumes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">_consumes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">consumes</span></div>
 
 <div class="viewcode-block" id="TaskManager.set_to_shutdown"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.set_to_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">set_to_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTTINGDOWN</span><span class="p">)</span>
         <span class="n">CHANNEL_STATE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_state_value</span><span class="p">())</span>
-        <span class="n">delogger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Shutting down. Will call shutdown on all publishers&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">publisher_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Shutting down. Will call shutdown on all publishers&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTDOWN</span><span class="p">)</span>
         <span class="n">CHANNEL_STATE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_state_value</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="TaskManager.do_backup"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.do_backup">[docs]</a>    <span class="k">def</span> <span class="nf">do_backup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TaskManager.data_block_put"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.data_block_put">[docs]</a>    <span class="k">def</span> <span class="nf">data_block_put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">data_block</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Duplicate current data block and return its copy</span>
+<span class="sd">        Put data into data block</span>
 
-<span class="sd">        :rtype: :obj:`~datablock.DataBlock`</span>
-
+<span class="sd">        :type data: :obj:`dict`</span>
+<span class="sd">        :arg data: key, value pairs</span>
+<span class="sd">        :type header: :obj:`~datablock.Header`</span>
+<span class="sd">        :arg header: data header</span>
+<span class="sd">        :type data_block: :obj:`~datablock.DataBlock`</span>
+<span class="sd">        :arg data_block: data block</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-            <span class="n">data_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span><span class="o">.</span><span class="n">duplicate</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicated block </span><span class="si">{</span><span class="n">data_block</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">data_block</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data_block put expecting </span><span class="si">{</span><span class="nb">dict</span><span class="si">}</span><span class="s2"> type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data_block_put </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">data_block</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="c1"># This is too long to find, so im leaving it here to make it obvious whats going on</span>
+            <span class="c1">#   you&#39;ll want to update it eventually.</span>
+            <span class="c1"># metadata = datablock.Metadata(data_block.component_manager_id,</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
+                <span class="n">data_block</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;END_CYCLE&quot;</span><span class="p">,</span> <span class="n">generation_id</span><span class="o">=</span><span class="n">data_block</span><span class="o">.</span><span class="n">generation_id</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">product</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">data_block</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TaskManager.decision_cycle"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.decision_cycle">[docs]</a>    <span class="k">def</span> <span class="nf">decision_cycle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decision cycle to be run periodically (by trigger)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">data_block_t1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_backup</span><span class="p">()</span>
+        <span class="n">data_block_t1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span><span class="o">.</span><span class="n">duplicate</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicated block </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">run_transforms</span><span class="p">(</span><span class="n">data_block_t1</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in decision cycle(transforms) &quot;</span><span class="p">)</span>
             <span class="c1"># We do not call &#39;take_offline&#39; here because it has</span>
-            <span class="c1"># already been called in the run_transform code on</span>
-            <span class="c1"># operating on a separate thread.</span>
+            <span class="c1"># already been called during run_transform.</span>
 
-        <span class="n">actions_facts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">actions_facts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_logic_engine</span><span class="p">(</span><span class="n">data_block_t1</span><span class="p">)</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_logic_engine</span><span class="p">(</span><span class="n">data_block_t1</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;ran all logic engines&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in decision cycle(logic engine) &quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">take_offline</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="n">a_f</span> <span class="ow">in</span> <span class="n">actions_facts</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">run_publishers</span><span class="p">(</span><span class="n">a_f</span><span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">],</span> <span class="n">data_block_t1</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in decision cycle(publishers) &quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">take_offline</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="n">actions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_publishers</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">data_block_t1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error in decision cycle(publishers) &quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">take_offline</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TaskManager.run_source"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_source">[docs]</a>    <span class="k">def</span> <span class="nf">run_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worker</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -552,19 +537,15 @@
                         <span class="n">declare</span><span class="o">=</span><span class="p">[</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="p">,</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">queues</span><span class="p">[</span><span class="n">worker</span><span class="o">.</span><span class="n">full_key</span><span class="p">],</span>
-                        <span class="p">],</span>  <span class="c1"># FIXME: maybe_declare=[self.exchange, self.queues[worker.full_key]] is better but fails for some reason.</span>
+                        <span class="p">],</span>
                     <span class="p">)</span>
-                    <span class="n">worker</span><span class="o">.</span><span class="n">data_updated</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source </span><span class="si">{</span><span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">worker</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s2"> finished cycle&quot;</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception running source </span><span class="si">{</span><span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">take_offline</span><span class="p">()</span>
                     <span class="k">break</span>
                 <span class="k">if</span> <span class="n">worker</span><span class="o">.</span><span class="n">schedule</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">s</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">stop_running</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">schedule</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">s</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received stop_running signal for </span><span class="si">{</span><span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                        <span class="k">break</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">schedule</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source </span><span class="si">{</span><span class="n">worker</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> runs only once&quot;</span><span class="p">)</span>
                     <span class="k">break</span>
@@ -574,22 +555,15 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start sources, each in a separate thread</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">event_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">source_threads</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;starting loop for </span><span class="si">{</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">-&gt;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">event_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">data_updated</span><span class="p">)</span>
             <span class="n">SOURCE_ACQUIRE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_source</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">source</span><span class="p">,))</span>
+            <span class="n">thread</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_source</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">source</span><span class="p">,))</span>
             <span class="n">source_threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
-            <span class="c1"># Cannot catch exception from function called in separate thread</span>
             <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-        <span class="c1"># This is the boot phase</span>
-        <span class="c1"># Wait until all sources run at least once</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for events (</span><span class="si">{</span><span class="n">event_list</span><span class="si">}</span><span class="s2">) in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_all</span><span class="p">(</span><span class="n">event_list</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">source_threads</span></div>
 
 <div class="viewcode-block" id="TaskManager.run_transforms"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_transforms">[docs]</a>    <span class="k">def</span> <span class="nf">run_transforms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_block</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -606,7 +580,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">data_block</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">transform_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;starting transform </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">run_transform</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;all transforms finished&quot;</span><span class="p">)</span></div>
@@ -648,42 +622,32 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">data_block</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot run logic engine on data block that is &#39;None&#39;.&quot;</span><span class="p">)</span>
 
-        <span class="n">le_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No logic engine to run&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">le</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">:</span>
-                <span class="k">with</span> <span class="n">LOGICENGINE_RUN_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;run logic engine </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;run logic engine </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
-                    <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">data_block</span><span class="p">)</span>
-                    <span class="n">le_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;run logic engine </span><span class="si">%s</span><span class="s2"> done&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                    <span class="n">LOGICENGINE_RUN_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set_to_current_time</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="s2">&quot;logic engine </span><span class="si">%s</span><span class="s2"> generated newfacts: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="n">rc</span><span class="p">[</span><span class="s2">&quot;newfacts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">),</span>
-                    <span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="s2">&quot;logic engine </span><span class="si">%s</span><span class="s2"> generated actions: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">le_s</span><span class="p">[</span><span class="n">le</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rc</span><span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">]</span>
-                    <span class="p">)</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="n">new_facts</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">with</span> <span class="n">LOGICENGINE_RUN_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Run logic engine </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Run logic engine </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
+                <span class="n">actions</span><span class="p">,</span> <span class="n">new_facts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">data_block</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Run logic engine </span><span class="si">%s</span><span class="s2"> done&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">LOGICENGINE_RUN_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set_to_current_time</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Logic engine </span><span class="si">%s</span><span class="s2"> generated newfacts: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">new_facts</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;records&quot;</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Logic engine </span><span class="si">%s</span><span class="s2"> generated actions: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">actions</span><span class="p">)</span>
 
-            <span class="c1"># Add new facts to the datablock</span>
-            <span class="c1"># Add empty dataframe if nothing is available</span>
-            <span class="k">if</span> <span class="n">le_list</span><span class="p">:</span>
-                <span class="n">all_facts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;newfacts&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">le_list</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Logic engine(s) did not return any new facts&quot;</span><span class="p">)</span>
-                <span class="n">all_facts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-
-            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;de_logicengine_facts&quot;</span><span class="p">:</span> <span class="n">all_facts</span><span class="p">}</span>
-            <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-            <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">data_block</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">create_time</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">creator</span><span class="o">=</span><span class="s2">&quot;logicengine&quot;</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;de_logicengine_facts&quot;</span><span class="p">:</span> <span class="n">new_facts</span><span class="p">}</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">data_block</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">create_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">creator</span><span class="o">=</span><span class="s2">&quot;logicengine&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data_block_put</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">actions</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
-            <span class="k">raise</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">le_list</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected logic engine error!&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="TaskManager.run_publishers"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_publishers">[docs]</a>    <span class="k">def</span> <span class="nf">run_publishers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">data_block</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -698,7 +662,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">action_list</span> <span class="ow">in</span> <span class="n">actions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">action_list</span><span class="p">:</span>
-                    <span class="n">worker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workflow</span><span class="o">.</span><span class="n">publisher_workers</span><span class="p">[</span><span class="n">action</span><span class="p">]</span>
+                    <span class="n">worker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher_workers</span><span class="p">[</span><span class="n">action</span><span class="p">]</span>
                     <span class="n">name</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">name</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Run publisher </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Run publisher </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">data_block</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
