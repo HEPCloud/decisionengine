@@ -20,11 +20,14 @@ deserver = DEServer(
     conf_path=TEST_CONFIG_PATH, channel_conf_path=TEST_CHANNEL_CONFIG_PATH
 )  # pylint: disable=invalid-name
 
-_STOPPED_CHANNEL_OPTS = [
-    "Channel test_channel stopped cleanly.",
-    "Channel test_channel has been killed due to shutdown timeout (1 second).",
-    "Channel test_channel has been killed.",
-]
+
+def stopped_channel_opts(timeout=1):
+    maybe_s = "s" if timeout != 1 else ""
+    return [
+        "Channel test_channel stopped cleanly.",
+        f"Channel test_channel has been killed due to shutdown timeout ({timeout} second{maybe_s}).",
+        "Channel test_channel has been killed.",
+    ]
 
 
 @pytest.mark.usefixtures("deserver")
@@ -37,8 +40,8 @@ def test_client_can_get_de_server_status(deserver):
 @pytest.mark.timeout(35)
 @pytest.mark.usefixtures("deserver")
 def test_client_wait_timeout_works(deserver):
-    """Verify channel enters stable state and timeout works too"""
-    deserver.de_client_run_cli("--block-while", "STABLE", "--timeout", "3")
+    """Verify channel enters steady state and timeout works too"""
+    deserver.de_client_run_cli("--block-while", "STEADY", "--timeout", "3")
     output = deserver.de_client_run_cli("--status")
     assert "state = STEADY" in output
 
@@ -130,7 +133,7 @@ def test_client_can_kill_one_channel(deserver):
     assert "test_channel" in output
     assert "state = STEADY" in output
     output = deserver.de_client_run_cli("--kill-channel", "test_channel")
-    assert output in _STOPPED_CHANNEL_OPTS
+    assert output in stopped_channel_opts()
     output = deserver.de_client_run_cli("--status")
     assert "No channels are currently active." in output
 
@@ -143,7 +146,7 @@ def test_client_can_kill_one_channel_force(deserver):
     assert "test_channel" in output
     assert "state = STEADY" in output
     output = deserver.de_client_run_cli("--kill-channel", "test_channel", "--force")
-    assert output in _STOPPED_CHANNEL_OPTS
+    assert output in stopped_channel_opts()
     output = deserver.de_client_run_cli("--status")
     assert "No channels are currently active." in output
 
@@ -156,7 +159,7 @@ def test_client_can_kill_one_channel_timeout(deserver):
     assert "test_channel" in output
     assert "state = STEADY" in output
     output = deserver.de_client_run_cli("--kill-channel", "test_channel", "--timeout", "5")
-    assert output in _STOPPED_CHANNEL_OPTS
+    assert output in stopped_channel_opts(5)
     output = deserver.de_client_run_cli("--status")
     assert "No channels are currently active." in output
 
