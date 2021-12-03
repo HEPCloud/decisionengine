@@ -12,6 +12,7 @@ import enum
 import json
 import logging
 import os
+import re
 import signal
 import socketserver
 import sys
@@ -21,6 +22,7 @@ from threading import Event
 
 import cherrypy
 import pandas as pd
+import redis
 import structlog
 import tabulate
 
@@ -63,6 +65,27 @@ def _channel_preamble(name):
     return "\n" + rule + "\n" + header + "\n" + rule + "\n\n"
 
 
+def _verify_redis_url(broker_url):
+    m = re.search(r"(?P<backend>\w+)://.*", broker_url)
+    if m is None:
+        raise RuntimeError(
+            f"Unsupported broker URL format '{broker_url}'\nSee https://docs.celeryproject.org/projects/kombu/en/stable/userguide/connections.html#urls"
+        )
+
+    backend = m.group("backend")
+    if backend != "redis":
+        raise RuntimeError(f"Unsupported data-broker backend '{backend}'; only 'redis' is currently supported.")
+
+
+def _verify_redis_server(broker_url):
+    _verify_redis_url(broker_url)
+    r = redis.Redis.from_url(broker_url)
+    try:
+        r.ping()
+    except Exception:
+        raise RuntimeError(f"A server with broker URL {broker_url} is not responding.")
+
+
 class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
     rpc_paths = ("/RPC2",)
 
@@ -86,6 +109,9 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.register_function(self.rpc_metrics, name="metrics")
         if not global_config.get("no_webserver"):
             self.start_webserver()
+
+        self.broker_url = self.global_config.get("broker_url", "redis://localhost:6379/0")
+        _verify_redis_server(self.broker_url)
 
     def get_logger(self):
         return self.logger
