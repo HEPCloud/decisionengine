@@ -271,11 +271,11 @@ class TaskManager(ComponentManager):
         self.logger.setLevel(self.loglevel.value)
         self.logger.info(f"Starting task manager {self.id}")
         self.logger.debug(f"Expected source products {self.expected_source_products}")
-        source_threads = self.start_sources()
+        source_processes = self.start_sources()
         self.start_cycles()
 
-        for thread in source_threads:
-            thread.join()
+        for process in source_processes:
+            process.join()
 
     def start_cycles(self):
         """
@@ -478,16 +478,17 @@ class TaskManager(ComponentManager):
         """
         Start sources, each in a separate thread
         """
-        source_threads = []
+        source_processes = []
 
         for key, source in self.source_workers.items():
-            self.logger.info(f"starting loop for {source.name}->{key}")
+            self.logger.info(f"Starting loop for {source.name}->{key}")
             SOURCE_ACQUIRE_GAUGE.labels(self.name, source.name)
-            thread = multiprocessing.Process(target=self.run_source, name=source.name, args=(source,))
-            source_threads.append(thread)
-            thread.start()
+            process = multiprocessing.Process(target=self.run_source, name=source.name, args=(source,))
+            source_processes.append(process)
+            process.start()
+            self.logger.debug(f"Started process {process.pid} for {source.name}->{key}")
 
-        return source_threads
+        return source_processes
 
     def run_transforms(self, data_block=None):
         """
