@@ -16,3 +16,27 @@ For the most simple instance, on the DE Server, run::
 It should now be avaliable at redis://127.0.0.1:6379/
 
 Persistant storage is not currently required for our usage.
+
+.. note::  You may need to install ``podman`` from your system repositories; it should ship with a lot of `modern Linux distributions <https://podman.io/getting-started/installation>`_.  The ``podman`` package should be compatible with Docker, in most cases either one can be used without issue.  If ``podman`` is not avaliable for your platform, you can review the Docker Desktop terms and conditions to see if you qualify for free usage.
+
+Configuring the DE server
+#########################
+
+By default, the ``decisionengine`` server will use a local redis instance
+and the default database there.  However, it is preferable to set this
+specifically within the config so it is explicit.
+
+``decision_engine.jsonnet``::
+
+ {
+   broker_url: "redis://localhost:6379/0"
+ }
+
+This is equivalent to the default, but provides a clear pointer within
+the config file to the exact location of redis.
+
+Reviewing the Redis content
+###########################
+
+The `redis-cli <https://redis.io/topics/rediscli>`_ command is the official
+tool for looking at the content of a Redis data store.

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Decisionengine Redis broker &mdash; decisionengine 1.7.1.dev78+g1d750001 documentation</title>
+  <title>Decisionengine Redis broker &mdash; decisionengine 1.7.1.dev79+g3f844ca4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -88,6 +88,29 @@ instructions for setting passwords.</p>
 </div>
 <p>It should now be avaliable at redis://127.0.0.1:6379/</p>
 <p>Persistant storage is not currently required for our usage.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You may need to install <code class="docutils literal notranslate"><span class="pre">podman</span></code> from your system repositories; it should ship with a lot of <a class="reference external" href="https://podman.io/getting-started/installation">modern Linux distributions</a>.  The <code class="docutils literal notranslate"><span class="pre">podman</span></code> package should be compatible with Docker, in most cases either one can be used without issue.  If <code class="docutils literal notranslate"><span class="pre">podman</span></code> is not avaliable for your platform, you can review the Docker Desktop terms and conditions to see if you qualify for free usage.</p>
+</div>
+<section id="configuring-the-de-server">
+<h2>Configuring the DE server<a class="headerlink" href="#configuring-the-de-server" title="Permalink to this headline"></a></h2>
+<p>By default, the <code class="docutils literal notranslate"><span class="pre">decisionengine</span></code> server will use a local redis instance
+and the default database there.  However, it is preferable to set this
+specifically within the config so it is explicit.</p>
+<p><code class="docutils literal notranslate"><span class="pre">decision_engine.jsonnet</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="n">broker_url</span><span class="p">:</span> <span class="s2">&quot;redis://localhost:6379/0&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is equivalent to the default, but provides a clear pointer within
+the config file to the exact location of redis.</p>
+</section>
+<section id="reviewing-the-redis-content">
+<h2>Reviewing the Redis content<a class="headerlink" href="#reviewing-the-redis-content" title="Permalink to this headline"></a></h2>
+<p>The <a class="reference external" href="https://redis.io/topics/rediscli">redis-cli</a> command is the official
+tool for looking at the content of a Redis data store.</p>
+</section>
 </section>
 
 
