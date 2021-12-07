@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # HEPCloud Decision Engine
 
 The Decision Engine is a critical component of the HEP Cloud Facility. It provides the

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Decision Engine ComponentManager
 (Base class for ChannelManager and SourceManager)

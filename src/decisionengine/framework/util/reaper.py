@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """
 A stand-alone script purges data in database older than specified
 in configuration. Configuration file has to have this bit added:

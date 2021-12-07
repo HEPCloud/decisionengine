@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """Fixture based DE Server for the reaper tests"""
 # pylint: disable=redefined-outer-name
 

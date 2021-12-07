@@ -1,3 +1,5 @@
+.. SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+.. SPDX-License-Identifier: Apache-2.0
 
 Release 1.1.0
 -------------

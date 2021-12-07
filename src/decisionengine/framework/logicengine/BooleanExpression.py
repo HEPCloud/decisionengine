@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 # A BooleanExpression represents one expression known to the LogicEngine.
 
 # The intent is that user-supplied expressions can make use of objects

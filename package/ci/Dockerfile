@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 ARG BASEIMAGE=hepcloud/decision-engine-ci
 FROM ${BASEIMAGE}
 COPY python3-entrypoint.sh /entrypoint.sh

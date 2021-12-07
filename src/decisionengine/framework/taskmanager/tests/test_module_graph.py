@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 from unittest.mock import patch
 
 from decisionengine.framework.taskmanager.module_graph import ensure_no_circularities
