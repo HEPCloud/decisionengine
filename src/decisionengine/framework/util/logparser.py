@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 import argparse
 import fileinput
 import json

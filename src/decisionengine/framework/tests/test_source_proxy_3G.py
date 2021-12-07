@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """Fixture based tests of the SourceProxy module (tests three generations of source-proxies)."""
 # pylint: disable=redefined-outer-name
 

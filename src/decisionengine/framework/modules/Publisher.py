@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 from decisionengine.framework.modules import describe
 from decisionengine.framework.modules.describe import Parameter, supports_config
 from decisionengine.framework.modules.Module import consumes, Module

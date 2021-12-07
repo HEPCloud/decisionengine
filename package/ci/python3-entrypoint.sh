@@ -1,4 +1,8 @@
 #!/bin/bash -xe
+
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 CMD=${1:- -m pytest}
 LOGFILE=${2:- pytest.log}
 

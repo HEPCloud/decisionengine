@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """Fixture based DE Server tests of invalid channel configs"""
 # pylint: disable=redefined-outer-name
 

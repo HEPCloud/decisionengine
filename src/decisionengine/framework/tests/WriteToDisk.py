@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """Special publisher used to register publish calls with an external file.
 
 It is difficult to interact with individual publishers while testing a
