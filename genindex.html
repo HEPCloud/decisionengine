@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; decisionengine 1.7.1.dev80+g6c982c11 documentation</title>
+  <title>Index &mdash; decisionengine 1.7.1.dev81+ge488030e documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -199,10 +199,10 @@
 </li>
       <li><a href="code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._get_de_conf_manager">_get_de_conf_manager() (in module decisionengine.framework.engine.DecisionEngine)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._get_global_config">_get_global_config() (in module decisionengine.framework.engine.DecisionEngine)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config._global_config_file">_global_config_file() (in module decisionengine.framework.config.tests.test_config)</a>
 </li>
       <li><a href="code/decisionengine.framework.util.html#decisionengine.framework.util.singleton.ScopedSingleton._instances">_instances (decisionengine.framework.util.singleton.ScopedSingleton attribute)</a>
@@ -298,6 +298,10 @@
 </li>
       </ul></li>
       <li><a href="code/decisionengine.framework.engine.html#decisionengine.framework.engine.Workers.Workers._update_channel_states">_update_channel_states() (decisionengine.framework.engine.Workers.Workers method)</a>
+</li>
+      <li><a href="code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._verify_redis_server">_verify_redis_server() (in module decisionengine.framework.engine.DecisionEngine)</a>
+</li>
+      <li><a href="code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._verify_redis_url">_verify_redis_url() (in module decisionengine.framework.engine.DecisionEngine)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -775,6 +779,13 @@
 </li>
       </ul></li>
       <li>
+    decisionengine.framework.engine.tests.test_verify_redis_server
+
+      <ul>
+        <li><a href="code/decisionengine.framework.engine.tests.html#module-decisionengine.framework.engine.tests.test_verify_redis_server">module</a>
+</li>
+      </ul></li>
+      <li>
     decisionengine.framework.engine.Workers
 
       <ul>
@@ -949,6 +960,8 @@
         <li><a href="code/decisionengine.framework.modules.html#module-decisionengine.framework.modules.Module">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     decisionengine.framework.modules.print_description
 
@@ -956,8 +969,6 @@
         <li><a href="code/decisionengine.framework.modules.html#module-decisionengine.framework.modules.print_description">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     decisionengine.framework.modules.Publisher
 
@@ -1938,6 +1949,8 @@
 </li>
         <li><a href="code/decisionengine.framework.engine.tests.html#module-decisionengine.framework.engine.tests.test_startup">decisionengine.framework.engine.tests.test_startup</a>
 </li>
+        <li><a href="code/decisionengine.framework.engine.tests.html#module-decisionengine.framework.engine.tests.test_verify_redis_server">decisionengine.framework.engine.tests.test_verify_redis_server</a>
+</li>
         <li><a href="code/decisionengine.framework.engine.html#module-decisionengine.framework.engine.Workers">decisionengine.framework.engine.Workers</a>
 </li>
         <li><a href="code/decisionengine.framework.logicengine.html#module-decisionengine.framework.logicengine">decisionengine.framework.logicengine</a>
@@ -2803,12 +2816,12 @@
 </li>
       <li><a href="code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_client_only.test_exclusive_options">test_exclusive_options() (in module decisionengine.framework.engine.tests.test_client_only)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_facts.test_fact_using_numpy_array">test_fact_using_numpy_array() (in module decisionengine.framework.logicengine.tests.test_facts)</a>
 </li>
       <li><a href="code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_facts.test_fact_using_numpy_function">test_fact_using_numpy_function() (in module decisionengine.framework.logicengine.tests.test_facts)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_facts.test_fact_with_fail_on_error">test_fact_with_fail_on_error() (in module decisionengine.framework.logicengine.tests.test_facts)</a>
 </li>
       <li><a href="code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_fail_on_error.test_fact_with_misspecified_attribute">test_fact_with_misspecified_attribute() (in module decisionengine.framework.logicengine.tests.test_fail_on_error)</a>
@@ -3092,6 +3105,16 @@
       <li><a href="code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_config.test_valid_but_empty_config">test_valid_but_empty_config() (in module decisionengine.framework.config.tests.test_config)</a>
 </li>
       <li><a href="code/decisionengine.framework.config.tests.html#decisionengine.framework.config.tests.test_policies.test_valid_dir">test_valid_dir() (in module decisionengine.framework.config.tests.test_policies)</a>
+</li>
+      <li><a href="code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_verify_redis_server.test_verify_bad_broker">test_verify_bad_broker() (in module decisionengine.framework.engine.tests.test_verify_redis_server)</a>
+</li>
+      <li><a href="code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_verify_redis_server.test_verify_bad_redis_server">test_verify_bad_redis_server() (in module decisionengine.framework.engine.tests.test_verify_redis_server)</a>
+</li>
+      <li><a href="code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_verify_redis_server.test_verify_bad_url">test_verify_bad_url() (in module decisionengine.framework.engine.tests.test_verify_redis_server)</a>
+</li>
+      <li><a href="code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_verify_redis_server.test_verify_redis_server">test_verify_redis_server() (in module decisionengine.framework.engine.tests.test_verify_redis_server)</a>
+</li>
+      <li><a href="code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_verify_redis_server.test_verify_redis_url">test_verify_redis_url() (in module decisionengine.framework.engine.tests.test_verify_redis_server)</a>
 </li>
       <li><a href="code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_construction.test_wrong_configuration">test_wrong_configuration() (in module decisionengine.framework.logicengine.tests.test_construction)</a>
 </li>
