@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 # on dockerhub hepcloud/decision-engine-ci
 FROM sl:7
 LABEL description="hepcloud/decision-engine"

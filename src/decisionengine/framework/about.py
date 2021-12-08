@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """
     PEP-0396 provides instructions for providing module versions
     While we are at it, add a few other useful bits

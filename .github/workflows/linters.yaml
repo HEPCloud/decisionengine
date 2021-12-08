@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 name: Linters
 on:
@@ -104,6 +107,13 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
           pylint src/decisionengine/
+
+  license-check:
+    name: Run REUSE to check license compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: fsfe/reuse-action@v1
 
   pre-commit:
     name: Validate our pre-commit hooks pass

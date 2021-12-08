@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 # pylint: disable=redefined-outer-name,wrong-import-order,unused-import
 """
 This test plan covers a generic dataspace object via

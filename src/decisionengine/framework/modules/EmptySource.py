@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 """
 This dummy source takes the name of a source datablock
 from config file as parameter "data_product_name" and produces

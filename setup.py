@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 # Eventually this should move to pyproject.toml
 #  but setuptools must first gain support for parsing that
 
@@ -56,6 +59,7 @@ devel_req = [
     "pytest-xdist[psutil] >= 2.3.0",
     "pre-commit >= 2.13.0",
     "pylint >= 2.7.4",
+    "reuse",
     "importlib_resources >= 5.1.2; python_version <= '3.8'",
     "sphinx >= 3.5.3",
     "sphinx_rtd_theme >= 0.5.1",

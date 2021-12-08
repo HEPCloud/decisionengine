@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 # The functionality provided here supports the translation of one
 # string to another using the syntax 'old -> new', subject to the
 # following constraints:
