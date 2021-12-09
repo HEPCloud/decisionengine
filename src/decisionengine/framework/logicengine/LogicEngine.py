@@ -1,17 +1,13 @@
-import structlog
 import pandas
 from itertools import chain
 
 from decisionengine.framework.logicengine.RuleEngine import RuleEngine
 from decisionengine.framework.logicengine.BooleanExpression import BooleanExpression
 from decisionengine.framework.modules.Module import Module
-from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
 
 class LogicEngine(Module):
     def __init__(self, cfg):
         super().__init__(cfg)
-        self.logger = structlog.getLogger(CHANNELLOGGERNAME)
-        self.logger = self.logger.bind(class_module=__name__.split(".")[-1], channel=self.channel_name)
         self.facts = {name: BooleanExpression(expr) for name, expr in cfg["facts"].items()}
         self.rule_engine = RuleEngine(cfg["facts"].keys(), cfg["rules"])
 
