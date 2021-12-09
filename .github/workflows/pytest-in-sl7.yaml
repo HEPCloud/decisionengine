@@ -5,14 +5,14 @@
 name: Test in EL7 container
 
 on:
-  pull_request:
-    branches:
-      - master
   push:
     branches:
       - "**" # matches every branch
       - "!gh-pages" # excludes gh-pages branch
-
+  pull_request:
+    branches:
+      - master
+      - 1.7
 jobs:
   pytest:
     runs-on: ubuntu-latest
