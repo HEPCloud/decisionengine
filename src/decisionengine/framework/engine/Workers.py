@@ -81,14 +81,14 @@ class Worker(multiprocessing.Process):
             raise ValueError(f"Incorrect 'logger_rotate_by':'{logger_rotate_by}:'")
 
         # This was in HEAD <<<<<<<
-        #logconf["loggers"].update(
+        # logconf["loggers"].update(
         #    {
         #        CHANNELLOGGERNAME: {
         #            "handlers": [myname, "file_structlog_debug"],
         #        }
         #    }
-        #)
-        #logging.config.dictConfig(logconf)
+        # )
+        # logging.config.dictConfig(logconf)
         # =======
         handler.setLevel(logging.DEBUG)
         handler.setFormatter(logging.Formatter(logconf.userformat))
