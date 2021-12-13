@@ -50,6 +50,29 @@ NOTE:
 sudo localedef -v -c -i en_US -f UTF-8 C.UTF-8
 ```
 
+## Licensing compliance
+
+Decison engine is released under the Apache 2.0 license and license compliance is
+handled with the [REUSE](http://reuse.software/) tool.
+REUSE is installed as development dependency or you can install it manually
+(`pip install reuse`). All files should have a license notice:
+
+- to check compliance you can use `reuse lint`. This is the command run also by the pre-commit and CI checks
+- you can add on top of new files [SPDX license notices](https://spdx.org/licenses/) like
+  ```
+  # SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+  # SPDX-License-Identifier: Apache-2.0
+  ```
+- or let REUSE do that for you (`FILEPATH` is your new file):
+  ```
+  reuse addheader --year 2017 --copyright="Fermi Research Alliance, LLC" \
+    --license="Apache-2.0" --template=compact FILEPATH
+  ```
+- Files that are not supported and have no comments to add the SPDX notice
+  can be added to the `.reuse/dep5` file
+- New licenses can be added to the project using `reuse download LCENSEID`. Please
+  contact project management if this is needed.
+
 # Building the package
 
 The code is expected to package as an RPM via `python3 setup.py bdist_rpm` or
