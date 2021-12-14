@@ -29,7 +29,6 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 # pull in runtime requirements
 runtime_require = [
     "cherrypy >= 18.6.0",
-    "DBUtils >= 2.0",
     "kombu[redis] >= 5.1.0",
     "jsonnet >= 0.17.0",
     "prometheus-client >= 0.10.0",
