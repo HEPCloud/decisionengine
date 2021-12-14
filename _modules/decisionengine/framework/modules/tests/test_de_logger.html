@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.tests.test_de_logger &mdash; decisionengine 1.7.1.dev85+g77dd8d5a documentation</title>
+  <title>decisionengine.framework.modules.tests.test_de_logger &mdash; decisionengine 1.7.1.dev91+gb203e2c4 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -96,15 +96,12 @@
     <span class="c1"># make sure it is in a known &quot;unconfigured state&quot;</span>
     <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_log</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">my_log</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">my_log</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">de_logger</span><span class="o">.</span><span class="n">_reset_config</span><span class="p">()</span>
 
     <span class="k">yield</span> <span class="n">my_log</span>
 
     <span class="c1"># make sure we leave this without any handlers</span>
     <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">my_log</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">my_log</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">my_log</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-
-    <span class="n">de_logger</span><span class="o">.</span><span class="n">_reset_config</span><span class="p">()</span>
 
     <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>
 
@@ -113,7 +110,7 @@
 <span class="k">def</span> <span class="nf">test_by_nonsense_is_err</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;.*Incorrect &#39;file_rotate_by&#39;.*&quot;</span><span class="p">),</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-        <span class="n">de_logger</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span>
+        <span class="n">de_logger</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span>
             <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
             <span class="n">max_backup_count</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
             <span class="n">file_rotate_by</span><span class="o">=</span><span class="s2">&quot;nonsense&quot;</span><span class="p">,</span>
@@ -126,8 +123,13 @@
 <span class="k">def</span> <span class="nf">test_by_size</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-        <span class="n">de_logger</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span>
-            <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="n">max_backup_count</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">file_rotate_by</span><span class="o">=</span><span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">max_file_size</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span> <span class="n">log_file_name</span><span class="o">=</span><span class="n">log</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">de_logger</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span>
+            <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+            <span class="n">max_backup_count</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+            <span class="n">file_rotate_by</span><span class="o">=</span><span class="s2">&quot;size&quot;</span><span class="p">,</span>
+            <span class="n">max_file_size</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span>
+            <span class="n">log_file_name</span><span class="o">=</span><span class="n">log</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">start_q_logger</span><span class="o">=</span><span class="s2">&quot;False&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">assert</span> <span class="n">log_setup</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
@@ -140,8 +142,13 @@
 <span class="k">def</span> <span class="nf">test_by_time</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-        <span class="n">de_logger</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span>
-            <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="n">rotation_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">file_rotate_by</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">rotation_time_unit</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">log_file_name</span><span class="o">=</span><span class="n">log</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">de_logger</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span>
+            <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+            <span class="n">rotation_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">file_rotate_by</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+            <span class="n">rotation_time_unit</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span>
+            <span class="n">log_file_name</span><span class="o">=</span><span class="n">log</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">start_q_logger</span><span class="o">=</span><span class="s2">&quot;False&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">assert</span> <span class="n">log_setup</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>

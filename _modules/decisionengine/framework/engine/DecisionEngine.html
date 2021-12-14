@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.1.dev85+g77dd8d5a documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.1.dev91+gb203e2c4 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -109,6 +109,7 @@
 
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="k">as</span> <span class="nn">datablock</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
+<span class="kn">import</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="k">as</span> <span class="nn">de_logger</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="k">as</span> <span class="nn">ProcessingState</span>
 <span class="kn">import</span> <span class="nn">decisionengine.framework.taskmanager.TaskManager</span> <span class="k">as</span> <span class="nn">TaskManager</span>
 
@@ -397,6 +398,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reaper_stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">de_logger</span><span class="o">.</span><span class="n">stop_queue_logger</span><span class="p">()</span>
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.start_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channel">[docs]</a>    <span class="k">def</span> <span class="nf">start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
