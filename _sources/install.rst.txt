@@ -87,8 +87,8 @@ Install Decision Engine and the standard modules
     yum -y install python3 python3-pip python3-setuptools python3-wheel \
         gcc gcc-c++ make \
         python3-devel swig openssl-devel git rpm-build
-    python3 -m pip install --upgrade --prefix=/usr pip
-    python3 -m pip install --upgrade --prefix=/usr setuptools wheel setuptools-scm[toml]
+    python3 -m pip install --upgrade --user pip
+    python3 -m pip install --upgrade --user setuptools wheel setuptools-scm[toml]
 
     # To install the modules you will also need GlideinWMS Frontend, which is in the OSG repository.
     # Assuming the use of OSG 3.5 that supports both GSI and tokens, here is a brief summary of the setup:
@@ -134,22 +134,22 @@ Install Decision Engine and the standard modules
 
     su decisionengine -s /bin/bash
     # from decisionengine setup.py
-    python3 -m pip install jsonnet tabulate toposort structlog
-    python3 -m pip install wheel DBUtils sqlalchemy
-    python3 -m pip install pandas==1.1.5 numpy==1.19.5
-    python3 -m pip install "psycopg2-binary >= 2.8.6; platform_python_implementation == 'CPython'"
-    python3 -m pip install "psycopg2cffi >= 2.9.0; platform_python_implementation == 'PyPy'"
+    python3 -m pip install --user jsonnet tabulate toposort structlog
+    python3 -m pip install --user wheel DBUtils sqlalchemy
+    python3 -m pip install --user pandas==1.1.5 numpy==1.19.5
+    python3 -m pip install --user "psycopg2-binary >= 2.8.6; platform_python_implementation == 'CPython'"
+    python3 -m pip install --user "psycopg2cffi >= 2.9.0; platform_python_implementation == 'PyPy'"
     # from decisionengine_modules setup.py
-    python3 -m pip install boto3 google_auth google-api-python-client
-    python3 -m pip install gcs-oauth2-boto-plugin
+    python3 -m pip install --user boto3 google_auth google-api-python-client
+    python3 -m pip install --user gcs-oauth2-boto-plugin
     # Condor should be already there from the RPM, if not add: python3 -m pip install htcondor
     # bill-calculator-hep is only for versions >= 1.7
-    python3 -m pip install bill-calculator-hep
+    python3 -m pip install --user bill-calculator-hep
 
     # The following are additional requirements for v1.6 and earlier
-    python3 -m pip install boto packaging
+    python3 -m pip install --user boto packaging
     # This is not in pypi
-    python3 -m pip install https://test-files.pythonhosted.org/packages/f4/a5/17a14b4ef85bc412a0ddb771771de3f562430328b0d83da6091a4131bb26/bill_calculator_hep_mapsacosta-0.0.10-py3-none-any.whl
+    python3 -m pip install --user https://test-files.pythonhosted.org/packages/f4/a5/17a14b4ef85bc412a0ddb771771de3f562430328b0d83da6091a4131bb26/bill_calculator_hep_mapsacosta-0.0.10-py3-none-any.whl
 
     exit
 
