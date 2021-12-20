@@ -38,19 +38,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}-
             ${{ runner.os }}-pip-
+
       - name: Note Python version/implementation
         run: |
           which python3
           python3 -c 'import sys; print(sys.version)'
           python3 -c 'import platform; print(platform.python_implementation())'
           python3 -m pip cache dir
-      - name: Install dependencies
+
+      - name: Ensure pip/setuptools is up to date
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade wheel setuptools
+
+      - name: Install dependencies
+        run: |
           python3 -m pip install --upgrade pytest
           python3 -m pip install -e . --user
           python3 -m pip install -e .[develop] --user
+
       - name: Ensure version.py exists
         run: python3 setup.py bdist_wheel
 
