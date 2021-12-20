@@ -25,8 +25,7 @@ from decisionengine.framework.util.subclasses import all_subclasses
 from decisionengine.framework.modules.logging_configDict import LOGGERNAME, DELOGGER_CHANNEL_NAME
 from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
 
-_TRANSFORMS_TO = 300  # 5 minutes
-_DEFAULT_SCHEDULE = 300  # ""
+_DEFAULT_SCHEDULE = 300  # 5 minutes
 
 delogger = structlog.getLogger(LOGGERNAME)
 delogger = delogger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
