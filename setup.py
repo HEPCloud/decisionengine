@@ -43,7 +43,6 @@ runtime_require = [
     "psycopg2-binary >= 2.8.6; platform_python_implementation == 'CPython'",  # noqa: E501
 ]  # noqa: E501
 
-
 devel_req = [
     "setuptools >= 51.2",
     "setuptools_scm >= 6.3.1",
