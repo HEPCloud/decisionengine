@@ -24,21 +24,14 @@ deserver = DEServer(
 
 
 @pytest.mark.usefixtures("deserver")
-def test_client_can_get_de_server_show_channel_logger_level(deserver):
-    """Verify unknown channel has NOTSET"""
+def test_defaults(deserver):
+    # Verify unknown channel has NOTSET
     output = deserver.de_client_run_cli("--get-channel-loglevel=UNITTEST")
     assert output == "NOTSET"
 
-
-@pytest.mark.usefixtures("deserver")
-def test_global_channel_log_level_in_config(deserver):
-    """Verify global_channel_log_level setting exists"""
+    # Verify global_channel_log_level setting exists
     output = deserver.de_client_run_cli("--show-de-config")
     assert "global_channel_log_level" in output
 
-
-@pytest.mark.usefixtures("deserver")
-def test_client_de_config_is_json(deserver):
-    """Verify config can be fetched in json format"""
-    output = deserver.de_client_run_cli("--show-de-config")
+    # Verify config is JSON-formatted
     assert json.loads(output)

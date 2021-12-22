@@ -38,14 +38,11 @@ DEFAULT_OUTPUT = (
 
 
 @pytest.mark.usefixtures("deserver")
-def test_query_tool_default(deserver):
+def test_query_tool(deserver):
     # Test default output
     output = deserver.de_query_tool_run_cli("foo")
     assert output.startswith(DEFAULT_OUTPUT)
 
-
-@pytest.mark.usefixtures("deserver")
-def test_query_tool_csv(deserver):
     # Test csv output
     output = deserver.de_query_tool_run_cli("foo", "--format=csv")
     assert output.startswith(
@@ -59,9 +56,6 @@ def test_query_tool_csv(deserver):
         "5,value3,Test,test_channel,1,2\n"
     )
 
-
-@pytest.mark.usefixtures("deserver")
-def test_query_tool_json(deserver):
     # Test json output
     output = deserver.de_query_tool_run_cli("foo", "--format=json")
     assert output.startswith("Product foo:  Found in channel test_channel\n")
@@ -91,16 +85,11 @@ def test_query_tool_json(deserver):
     assert as_json["key1"]["3"] == "value1"
     assert as_json["key2"]["3"] == 0.1
 
-
-@pytest.mark.usefixtures("deserver")
-def test_query_tool_since(deserver):
+    # Query tool since
     recently = datetime.datetime.now() - datetime.timedelta(minutes=3)
     output = deserver.de_query_tool_run_cli("foo", f'--since="{recently.strftime("%Y-%m-%d %H:%M:%S")}"')
     assert output.startswith(DEFAULT_OUTPUT)
 
-
-@pytest.mark.usefixtures("deserver")
-def test_query_tool_invalid_product(deserver):
     # Test invalid product output
     output = deserver.de_query_tool_run_cli("not_foo")
     assert output == "Product not_foo: Not produced by any module\n"

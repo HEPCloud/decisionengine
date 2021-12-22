@@ -35,10 +35,7 @@ def test_client_can_get_de_server_reaper_status(deserver):
     # find reaper interval
     assert "retention_interval:" in output
 
-
-@pytest.mark.usefixtures("deserver")
-def test_client_can_get_de_server_reaper_stop(deserver):
-    """Verify reaper can stop"""
+    # Verify reaper can stop
     output = deserver.de_client_run_cli("--reaper-stop")
     assert output == "OK"
 
@@ -54,13 +51,7 @@ def test_client_can_get_de_server_reaper_stop(deserver):
     # find reaper state value
     assert "State.SHUTDOWN" in output
 
-
-@pytest.mark.usefixtures("deserver")
-def test_client_can_get_de_server_reaper_start_delay(deserver):
-    """Verify reaper can start with delay"""
-    # make sure the reaper is stopped first
-    deserver.de_client_run_cli("--reaper-stop")
-
+    # Verify reaper can start with delay
     output = deserver.de_client_run_cli("--reaper-start", "--reaper-start-delay-secs=90")
     assert output == "OK"
 
