@@ -5,6 +5,7 @@ local channels = [
   import "secondB.libsonnet",
   import "secondC.libsonnet",
 ];
+
 {
   sources: de_std.sources_from(channels) {
     last_source_A: {

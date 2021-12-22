@@ -1,15 +1,10 @@
+local de_std = import "de_std.libsonnet";
+local channels = [
+  import "first.libsonnet",
+];
+
 {
-  sources: {
-    from_first_channel: {
-      module: "decisionengine.framework.modules.SourceProxy",
-      parameters: {
-        source_channel: "first",
-        Dataproducts: ["a"],
-        max_attempts: 3,
-        retry_interval: 10,
-      },
-      schedule: 1,
-    },
+  sources: de_std.sources_from(channels) {
     second_source_B: {
       module: "decisionengine.framework.tests.DynamicSource",
       parameters: {
@@ -18,8 +13,7 @@
       schedule: 5,
     },
   },
-
-  transforms: {
+  transforms: de_std.transforms_from(channels) {
     second_transform_B: {
       module: "decisionengine.framework.tests.DynamicTransform",
       parameters: {
@@ -28,7 +22,6 @@
       },
     },
   },
-
   publishers: {
     second_publisher_B: {
       module: "decisionengine.framework.tests.DynamicPublisher",

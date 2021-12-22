@@ -24,13 +24,6 @@ class Source(Module):
     def acquire(self):
         print("Called Source.acquires")
 
-    # Expert-only - The post_create method will go away once the
-    # source proxy has been reimplemented.  It exists now so the
-    # SourceProxy base class can have access to the global
-    # configuration for creating a dataspace.
-    def post_create(self, global_config):
-        pass
-
 
 # ===============================================================
 # Override standard module program options
