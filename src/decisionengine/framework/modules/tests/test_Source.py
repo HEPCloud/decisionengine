@@ -17,4 +17,3 @@ def test_source_structure():
 
     assert test_source._produces == {}
     test_source.acquire()
-    test_source.post_create("asdf")
