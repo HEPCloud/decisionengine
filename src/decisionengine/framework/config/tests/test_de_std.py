@@ -29,8 +29,13 @@ def test_combine_one_level_skip_proxies():
     assert cfg["test"] == cfg["reference"]
 
 
+def test_allow_duplicate_keys_same_values():
+    cfg = config("allow_duplicate_keys_same_values.jsonnet")
+    assert cfg["test"] == cfg["reference"]
+
+
 def test_error_on_duplicate_keys():
-    with pytest.raises(RuntimeError, match=".*duplicate keys have been detected.*s1_a1.*s2_a1"):
+    with pytest.raises(RuntimeError, match=".*The following keys have conflicting values.*s1_a1"):
         config("error_on_duplicate_keys.jsonnet")
 
 

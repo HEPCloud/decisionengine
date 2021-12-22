@@ -48,8 +48,9 @@ local append(res, block, skip_if) =
   local current_keys = std.objectFields(res);
   local new_keys = std.objectFields(new_configurations);
   local duplicate_keys = std.setInter(current_keys, new_keys);
-  if std.length(duplicate_keys) != 0 then
-    error "The following duplicate keys have been detected: " + std.toString(duplicate_keys)
+  local conflicting_keys = [k for k in duplicate_keys if res[k] != block[k]];
+  if std.length(conflicting_keys) != 0 then
+    error "An error occurred while combining configurations.\n" + "The following keys have conflicting values: " + std.toString(conflicting_keys)
   else
     res + new_configurations;
 
