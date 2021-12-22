@@ -32,7 +32,7 @@ de_outfile_info = (
 
 structlog_file_index = [2]
 
-timestamper = structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S")
+timestamper = structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S", utc=False)
 
 pre_chain = [
     structlog.stdlib.add_logger_name,
