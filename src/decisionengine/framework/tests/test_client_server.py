@@ -26,7 +26,7 @@ deserver = DEServer(
 
 @pytest.mark.usefixtures("deserver")
 def test_client_status_msg_to_stdout(deserver):
-    """Make sure the actuall client console call goes to stdout"""
+    """Make sure the actual client console call goes to stdout"""
     import decisionengine.framework.engine.de_client as de_client
 
     myoutput = io.StringIO()
@@ -53,22 +53,11 @@ def test_client_print_product(deserver):
         "+----+--------+--------+"
     )
 
-
-@pytest.mark.usefixtures("deserver")
-def test_client_print_product_not_real(deserver):
+    # Test non-existent product
     output = deserver.de_client_run_cli("--print-product", "NO_SUCH_PRODUCT")
-
-    # Check individual elements
-    assert "Product NO_SUCH_PRODUCT:" in output
-    assert "Not produced by any module" in output
-
-    # Check for specific output
     assert output == "Product NO_SUCH_PRODUCT: Not produced by any module"
 
-
-@pytest.mark.usefixtures("deserver")
-def test_client_print_product_not_string(deserver):
-    """Make sure the public API is protected against bad values"""
+    # Test against bad values
     with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
         deserver.de_server.rpc_print_product(123)
     with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
@@ -78,9 +67,6 @@ def test_client_print_product_not_string(deserver):
     with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
         deserver.de_server.rpc_print_product({"a": "b"})
 
-
-@pytest.mark.usefixtures("deserver")
-def test_client_print_product_types(deserver):
     # Test --types
     output = deserver.de_client_run_cli("--print-product", "foo", "--types")
     assert (
@@ -94,9 +80,6 @@ def test_client_print_product_types(deserver):
         "+----+--------+-------------+--------+-------------+"
     )
 
-
-@pytest.mark.usefixtures("deserver")
-def test_client_print_product_columns(deserver):
     # Test specific columns only
     output = deserver.de_client_run_cli("--print-product", "foo", "--columns", "key1")
     assert (
@@ -122,9 +105,6 @@ def test_client_print_product_columns(deserver):
         "+----+--------+--------+"
     )
 
-
-@pytest.mark.usefixtures("deserver")
-def test_client_print_product_query(deserver):
     # Test specific columns only
     # Test query
     output = deserver.de_client_run_cli("--print-product", "foo", "--query", "key2 == 2")
@@ -137,9 +117,6 @@ def test_client_print_product_query(deserver):
         "+----+--------+--------+"
     )
 
-
-@pytest.mark.usefixtures("deserver")
-def test_client_print_product_columns_query(deserver):
     # Test query and column names
     output = deserver.de_client_run_cli("--print-product", "foo", "--query", "key2 == 2", "--columns", "key2")
     assert (
@@ -161,9 +138,6 @@ def test_client_print_product_columns_query(deserver):
         "+----+--------+--------+"
     )
 
-
-@pytest.mark.usefixtures("deserver")
-def test_client_print_product_vertical(deserver):
     # Test --format vertical
     output = deserver.de_client_run_cli("--print-product", "foo", "--format", "vertical")
     assert (
@@ -197,9 +171,6 @@ def test_client_print_product_vertical(deserver):
         "+-----------+"
     )
 
-
-@pytest.mark.usefixtures("deserver")
-def test_client_print_product_json(deserver):
     # Test --format json
     output = deserver.de_client_run_cli("--print-product", "foo", "--format", "json")
     assert (
