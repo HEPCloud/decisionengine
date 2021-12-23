@@ -99,6 +99,7 @@ setup(
     license=about.__license__,
     package_dir={"": "src"},
     packages=find_packages(where="src", exclude=("tests", "*.tests", "*.tests.*", "build.*", "doc.*")),
+    package_data={"decisionengine.framework.config": ["de_std.libsonnet"]},
     install_requires=runtime_require,
     extras_require={
         "develop": devel_req,
