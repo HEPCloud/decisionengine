@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_defaults &mdash; decisionengine 1.7.1.dev96+ga4510cb1 documentation</title>
+  <title>decisionengine.framework.tests.test_defaults &mdash; decisionengine 1.7.1.dev97+gbba51609 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -100,24 +100,17 @@
 <span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="test_client_can_get_de_server_show_channel_logger_level"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_defaults.test_client_can_get_de_server_show_channel_logger_level">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_client_can_get_de_server_show_channel_logger_level</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Verify unknown channel has NOTSET&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="test_defaults"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_defaults.test_defaults">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_defaults</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="c1"># Verify unknown channel has NOTSET</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-channel-loglevel=UNITTEST&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;NOTSET&quot;</span></div>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;NOTSET&quot;</span>
 
-
-<div class="viewcode-block" id="test_global_channel_log_level_in_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_defaults.test_global_channel_log_level_in_config">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_global_channel_log_level_in_config</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Verify global_channel_log_level setting exists&quot;&quot;&quot;</span>
+    <span class="c1"># Verify global_channel_log_level setting exists</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--show-de-config&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s2">&quot;global_channel_log_level&quot;</span> <span class="ow">in</span> <span class="n">output</span></div>
+    <span class="k">assert</span> <span class="s2">&quot;global_channel_log_level&quot;</span> <span class="ow">in</span> <span class="n">output</span>
 
-
-<div class="viewcode-block" id="test_client_de_config_is_json"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_defaults.test_client_de_config_is_json">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_client_de_config_is_json</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Verify config can be fetched in json format&quot;&quot;&quot;</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--show-de-config&quot;</span><span class="p">)</span>
+    <span class="c1"># Verify config is JSON-formatted</span>
     <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
 </pre></div>
 

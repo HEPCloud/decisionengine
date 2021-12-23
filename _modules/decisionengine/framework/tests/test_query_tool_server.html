@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_query_tool_server &mdash; decisionengine 1.7.1.dev96+ga4510cb1 documentation</title>
+  <title>decisionengine.framework.tests.test_query_tool_server &mdash; decisionengine 1.7.1.dev97+gbba51609 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -114,15 +114,12 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="test_query_tool_default"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_default">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_query_tool_default</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+<div class="viewcode-block" id="test_query_tool"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_query_tool</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Test default output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">DEFAULT_OUTPUT</span><span class="p">)</span></div>
+    <span class="k">assert</span> <span class="n">output</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">DEFAULT_OUTPUT</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="test_query_tool_csv"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_csv">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_query_tool_csv</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Test csv output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;--format=csv&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
@@ -134,11 +131,8 @@
         <span class="s2">&quot;3,value1,0.1,test_channel,1,2</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;4,value2,2,test_channel,1,2</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;5,value3,Test,test_channel,1,2</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="p">)</span></div>
+    <span class="p">)</span>
 
-
-<div class="viewcode-block" id="test_query_tool_json"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_json">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_query_tool_json</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Test json output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;--format=json&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Product foo:  Found in channel test_channel</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -166,18 +160,13 @@
     <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s2">&quot;key1&quot;</span><span class="p">][</span><span class="s2">&quot;2&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;value3&quot;</span>
     <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s2">&quot;key2&quot;</span><span class="p">][</span><span class="s2">&quot;2&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Test&quot;</span>
     <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s2">&quot;key1&quot;</span><span class="p">][</span><span class="s2">&quot;3&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;value1&quot;</span>
-    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s2">&quot;key2&quot;</span><span class="p">][</span><span class="s2">&quot;3&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.1</span></div>
+    <span class="k">assert</span> <span class="n">as_json</span><span class="p">[</span><span class="s2">&quot;key2&quot;</span><span class="p">][</span><span class="s2">&quot;3&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.1</span>
 
-
-<div class="viewcode-block" id="test_query_tool_since"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_since">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_query_tool_since</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="c1"># Query tool since</span>
     <span class="n">recently</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;--since=&quot;</span><span class="si">{</span><span class="n">recently</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">DEFAULT_OUTPUT</span><span class="p">)</span></div>
+    <span class="k">assert</span> <span class="n">output</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">DEFAULT_OUTPUT</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="test_query_tool_invalid_product"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_query_tool_server.test_query_tool_invalid_product">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_query_tool_invalid_product</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Test invalid product output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_query_tool_run_cli</span><span class="p">(</span><span class="s2">&quot;not_foo&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;Product not_foo: Not produced by any module</span><span class="se">\n</span><span class="s2">&quot;</span></div>
