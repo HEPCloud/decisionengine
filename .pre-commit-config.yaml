@@ -27,15 +27,15 @@ repos:
       - id: python-check-blanket-type-ignore
       - id: python-use-type-annotations
   - repo: "https://github.com/pycqa/isort"
-    rev: 5.9.3
+    rev: 5.10.1
     hooks:
       - id: isort
   - repo: "https://github.com/psf/black"
-    rev: 21.9b0
+    rev: 21.12b0
     hooks:
       - id: black
   - repo: "https://github.com/pre-commit/mirrors-prettier"
-    rev: v2.4.1
+    rev: v2.5.1
     hooks:
       - id: prettier
         exclude_types:
@@ -44,15 +44,17 @@ repos:
           - "prettier"
           - "prettier-plugin-toml@0.3.1"
   - repo: "https://github.com/asottile/pyupgrade"
-    rev: v2.29.0
+    rev: v2.29.1
     hooks:
       - id: pyupgrade
         args:
           - "--py36-plus"
   - repo: "https://github.com/fsfe/reuse-tool"
-    rev: latest
+    rev: v0.13.0
     hooks:
       - id: reuse
+        additional_dependencies:
+          - python-debian==0.1.40
 #  jsonnetfmt requires golang 1.11+ and git 2.0, uncomment when we are compatible
 #  - repo: https://github.com/google/go-jsonnet.git
 #    rev: 2f2f6d664f06d064c4b3525ea34a789c1ac95cda
