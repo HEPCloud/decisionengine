@@ -121,17 +121,3 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: fsfe/reuse-action@v1
-
-  pre-commit:
-    name: Validate our pre-commit hooks pass
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/pre-commit
-          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pre-commit-
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: pre-commit/action@v2.0.3
