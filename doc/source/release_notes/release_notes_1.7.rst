@@ -1,3 +1,43 @@
+Release 1.7.1
+-------------
+
+Patch level (bug fix) release.
+
+
+Issues fixed in this release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Bugs fixed
+
+- `DE 522 <https://github.com/HEPCloud/decisionengine/issues/522>`_: Decision engine log files get split between several different processes with several different versions open: (`fd1e99ce <https://github.com/HEPCloud/decisionengine/commit/fd1e99ce77a82dbe478c2c7d15f4b100300b2e5d>`_)
+
+Enhancements:
+
+- Added dummy sources (`de1536fa <https://github.com/HEPCloud/decisionengine/commit/de1536fae56f2cd1bf03d4c65ece67d1ea2d4c18>`_)
+
+
+
+Full list of commits since version 1.7.0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`606e1e9f <https://github.com/HEPCloud/decisionengine/commit/606e1e9fdd56b17e51fef92da679bfbb90485747>`_:   Merge pull request #585 from vitodb/fix/1.7/vito_port_PR527
+
+`538cf940 <https://github.com/HEPCloud/decisionengine/commit/538cf9400748c29c9ea865914be54ad20e7f3be6>`_:   Merge pull request #586 from HEPCloud/goodenou-patch-remove-gc
+
+`67febfd0 <https://github.com/HEPCloud/decisionengine/commit/67febfd040973cd00278723f127c144d8b6db7e9>`_:   remove unnecessary 'import gc'
+
+`9da797d3 <https://github.com/HEPCloud/decisionengine/commit/9da797d3bce862787cdba61955543b8175bf43c9>`_:   Improve parameter and variable names.
+
+`55a5b547 <https://github.com/HEPCloud/decisionengine/commit/55a5b5474409d42942dbc07e348fa5fed0f726fb>`_:   porting #PR515 into 1.7 (simplifications to logging in Modules) cherry-picked from commit d515741
+
+`fd1e99ce <https://github.com/HEPCloud/decisionengine/commit/fd1e99ce77a82dbe478c2c7d15f4b100300b2e5d>`_:   porting #PR563 into 1.7 (adding queue logging into de_logger)
+
+`c75deef4 <https://github.com/HEPCloud/decisionengine/commit/c75deef4456ea28f306957666b26353487cdc138>`_:   Also run tests on PRs for backports to 1.7
+
+`de1536fa <https://github.com/HEPCloud/decisionengine/commit/de1536fae56f2cd1bf03d4c65ece67d1ea2d4c18>`_:   add dummy source and test
+
+
 Release 1.7.0
 -------------
 
