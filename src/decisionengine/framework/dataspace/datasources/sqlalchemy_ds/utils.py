@@ -52,6 +52,7 @@ def add_engine_pidguard(engine):
         if "sqlite" in str(type(dbapi_connection)):
             cursor = dbapi_connection.cursor()
             cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.execute("PRAGMA busy_timeout=5000")  # permit retrys for 5 seconds only
             cursor.close()
         connection_record.info["pid"] = os.getpid()
 
