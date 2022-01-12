@@ -49,6 +49,7 @@ devel_req = [
     "toml >= 0.10.2",
     "packaging >= 20.4",
     "wheel >= 0.36.2",
+    "coverage == 6.1.2",  # https://github.com/nedbat/coveragepy/issues/1300
     "pytest >= 6.2.2",
     "pytest-cov >= 2.11.1",
     "pytest-flake8 >= 1.0.7",
