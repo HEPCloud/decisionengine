@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.utils &mdash; decisionengine 1.7.1.dev104+g51bed3d6 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.utils &mdash; decisionengine 1.7.1.dev105+ge6b03216 documentation</title>
       <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -130,6 +130,7 @@
         <span class="k">if</span> <span class="s2">&quot;sqlite&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dbapi_connection</span><span class="p">)):</span>
             <span class="n">cursor</span> <span class="o">=</span> <span class="n">dbapi_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;PRAGMA foreign_keys=ON&quot;</span><span class="p">)</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;PRAGMA busy_timeout=5000&quot;</span><span class="p">)</span>  <span class="c1"># permit retrys for 5 seconds only</span>
             <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">connection_record</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
 
