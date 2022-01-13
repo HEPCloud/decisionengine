@@ -130,12 +130,14 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return func(*params)
 
     def block_while(self, state, timeout=None):
+        self.logger.debug(f"Waiting for {state} or timeout={timeout} on channel_workers.")
         with self.channel_workers.unguarded_access() as workers:
             if not workers:
                 self.logger.info("No active channels to wait on.")
                 return "No active channels."
             for tm in workers.values():
                 if tm.is_alive():
+                    self.logger.debug(f"Waiting for {tm.task_manager.name} to exit {state} state.")
                     tm.wait_while(state, timeout)
         return f"No channels in {state} state."
 
@@ -326,9 +328,11 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
     def start_channel(self, channel_name, channel_config):
         with START_CHANNEL_HISTOGRAM.labels(channel_name).time():
+            self.logger.debug(f"Building TaskManger for {channel_name}")
             task_manager = TaskManager.TaskManager(
                 channel_name, channel_config, self.global_config, self.source_workers
             )
+            self.logger.debug(f"Building Worker for {channel_name}")
             worker = Worker(task_manager, self.global_config["logger"])
             WORKERS_COUNT.inc()
             with self.channel_workers.access() as workers:
@@ -654,10 +658,21 @@ def _create_de_server(global_config, channel_config_loader):
 def _start_de_server(server):
     """Start the DE server and listen forever"""
     try:
+        server.get_logger().info("running _start_de_server")
+
+        server.get_logger().debug("running _start_de_server: step reaper_start")
         server.reaper_start(delay=server.global_config["dataspace"].get("reaper_start_delay_seconds", 1818))
+
+        server.get_logger().debug("running _start_de_server: step start_channels")
         server.start_channels()
+
+        server.get_logger().debug("running _start_de_server: step startup_complete")
         server.startup_complete.set()
+
+        server.get_logger().debug("running _start_de_server: step serve_forever")
         server.serve_forever()
+
+        server.get_logger().debug("done with _start_de_server")
     except Exception as __e:  # pragma: no cover
         msg = f"""Server Address: {server.global_config.get('server_address')}
               Fatal Error: {__e}"""
