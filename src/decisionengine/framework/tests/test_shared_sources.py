@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
+import re
 
 import pytest
 
@@ -15,13 +16,37 @@ from decisionengine.framework.tests.fixtures import (  # noqa: F401
 )
 
 _channel_config_dir = os.path.join(TEST_CONFIG_PATH, "test-shared-sources-conflicting")  # noqa: F405
-deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir)  # pylint: disable=invalid-name
+deserver_conflicting = DEServer(
+    conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir
+)  # pylint: disable=invalid-name
 
 
-@pytest.mark.usefixtures("deserver")
-def test_single_source_proxy(deserver, caplog):
-    found_mismatched_config = False
-    for record in caplog.get_records(when="setup"):
-        if "Mismatched configurations for source with name source" in record.message:
-            found_mismatched_config = True
-    assert found_mismatched_config
+def record_that_matches(substring, records):
+    return any(substring in r.message for r in records)
+
+
+@pytest.mark.usefixtures("deserver_conflicting")
+def test_conflicting_source_configurations(deserver_conflicting, caplog):
+    assert record_that_matches(
+        "Mismatched configurations for source with name source", caplog.get_records(when="setup")
+    )
+
+
+_channel_config_dir = os.path.join(TEST_CONFIG_PATH, "test-shared-sources")  # noqa: F405
+deserver_shared = DEServer(
+    conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir
+)  # pylint: disable=invalid-name
+
+
+@pytest.mark.usefixtures("deserver_shared")
+def test_shared_source(deserver_shared, caplog):
+    assert record_that_matches("Using existing source source for channel D", caplog.get_records(when="setup"))
+    output = deserver_shared.de_client_run_cli("--status")
+    assert re.search("channel: C.*state = STEADY", output, re.DOTALL)
+    assert re.search("channel: D.*state = STEADY", output, re.DOTALL)
+
+    # Take channel C offline and test that the shared source continues to execute
+    deserver_shared.de_client_run_cli("--stop-channel", "C")
+    output = deserver_shared.de_client_run_cli("--status")
+    assert not re.search("channel: C", output, re.DOTALL)
+    assert re.search("channel: D.*state = STEADY", output, re.DOTALL)
