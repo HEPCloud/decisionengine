@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine package &mdash; decisionengine 1.7.1.dev107+gafcc7cff documentation</title>
+  <title>decisionengine.framework.engine package &mdash; decisionengine 1.7.1.dev112+g7d6484ad documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -105,7 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="decisionengine.framework.engine.tests.html">decisionengine.framework.engine.tests package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.engine.tests.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.engine.tests.html#module-decisionengine.framework.engine.tests.fixtures">decisionengine.framework.engine.tests.fixtures module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.engine.tests.html#module-decisionengine.framework.engine.tests.test_Workers">decisionengine.framework.engine.tests.test_Workers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.engine.tests.html#module-decisionengine.framework.engine.tests.test_ChannelWorkers">decisionengine.framework.engine.tests.test_ChannelWorkers module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.engine.tests.html#module-decisionengine.framework.engine.tests.test_client_only">decisionengine.framework.engine.tests.test_client_only module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.engine.tests.html#module-decisionengine.framework.engine.tests.test_query_tool_only">decisionengine.framework.engine.tests.test_query_tool_only module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="decisionengine.framework.engine.tests.html#module-decisionengine.framework.engine.tests.test_startup">decisionengine.framework.engine.tests.test_startup module</a></li>
@@ -118,6 +118,103 @@
 </section>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-decisionengine.framework.engine.ChannelWorkers">
+<span id="decisionengine-framework-engine-channelworkers-module"></span><h2>decisionengine.framework.engine.ChannelWorkers module<a class="headerlink" href="#module-decisionengine.framework.engine.ChannelWorkers" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.engine.ChannelWorkers.</span></span><span class="sig-name descname"><span class="pre">ChannelWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorker" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.context.Process</span></code></p>
+<p>Class that encapsulates a channel’s task manager as a separate process.</p>
+<p>This class’ run function is called whenever the process is
+started.  If the process is abruptly terminated–e.g. the run
+method is pre-empted by a signal or an os._exit(n) call–the
+ChannelWorker object will still exist even if the operating-system
+process no longer does.</p>
+<p>To determine the exit code of this process, use the
+ChannelWorker.exitcode value, provided by the multiprocessing.Process
+base class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorker.get_consumes">
+<span class="sig-name descname"><span class="pre">get_consumes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorker.get_consumes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorker.get_consumes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorker.get_produces">
+<span class="sig-name descname"><span class="pre">get_produces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorker.get_produces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorker.get_produces" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorker.get_state_name">
+<span class="sig-name descname"><span class="pre">get_state_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorker.get_state_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorker.get_state_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorker.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorker.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorker.run" title="Permalink to this definition"></a></dt>
+<dd><p>Method to be run in sub-process; can be overridden in sub-class</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorker.setup_logger">
+<span class="sig-name descname"><span class="pre">setup_logger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorker.setup_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorker.setup_logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorker.wait_while">
+<span class="sig-name descname"><span class="pre">wait_while</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorker.wait_while"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorker.wait_while" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorkers">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.engine.ChannelWorkers.</span></span><span class="sig-name descname"><span class="pre">ChannelWorkers</span></span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorkers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorkers" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class manages and provides access to the task-manager workers.</p>
+<p>The intention is that the decision engine never directly interacts with the
+workers but refers to them via a context manager:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>with workers.access() as ws:</dt><dd><p># Access to ws now protected
+ws[‘new_channel’] = ChannelWorker(…)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>In cases where the decision engine’s block_while method must be
+called (e.g. during tests), one should used the unguarded access:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>with workers.unguarded_access() as ws:</dt><dd><p># Access to ws is unprotected
+ws[‘new_channel’].wait_while(…)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Calling a blocking method while using the protected context
+manager (i.e. workers.access()) will likely result in a deadlock.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorkers.Access">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Access</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorkers.Access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorkers.Access" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorkers._update_channel_states">
+<span class="sig-name descname"><span class="pre">_update_channel_states</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorkers._update_channel_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorkers._update_channel_states" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorkers.access">
+<span class="sig-name descname"><span class="pre">access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorkers.access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorkers.access" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.engine.ChannelWorkers.ChannelWorkers.unguarded_access">
+<span class="sig-name descname"><span class="pre">unguarded_access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/ChannelWorkers.html#ChannelWorkers.unguarded_access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.ChannelWorkers.ChannelWorkers.unguarded_access" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-decisionengine.framework.engine.DecisionEngine">
 <span id="decisionengine-framework-engine-decisionengine-module"></span><h2>decisionengine.framework.engine.DecisionEngine module<a class="headerlink" href="#module-decisionengine.framework.engine.DecisionEngine" title="Permalink to this headline"></a></h2>
@@ -444,104 +541,59 @@ If args is a list, it will be used instead of sys.argv (for unit testing)</p>
 </dd></dl>
 
 </section>
-<section id="module-decisionengine.framework.engine.Workers">
-<span id="decisionengine-framework-engine-workers-module"></span><h2>decisionengine.framework.engine.Workers module<a class="headerlink" href="#module-decisionengine.framework.engine.Workers" title="Permalink to this headline"></a></h2>
+<section id="module-decisionengine.framework.engine.SourceWorkers">
+<span id="decisionengine-framework-engine-sourceworkers-module"></span><h2>decisionengine.framework.engine.SourceWorkers module<a class="headerlink" href="#module-decisionengine.framework.engine.SourceWorkers" title="Permalink to this headline"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Worker">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.engine.Workers.</span></span><span class="sig-name descname"><span class="pre">Worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Worker" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.engine.SourceWorkers.SourceWorker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.engine.SourceWorkers.</span></span><span class="sig-name descname"><span class="pre">SourceWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exchange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">broker_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/SourceWorkers.html#SourceWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.SourceWorkers.SourceWorker" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.context.Process</span></code></p>
-<p>Class that encapsulates a channel’s task manager as a separate process.</p>
-<p>This class’ run function is called whenever the process is
-started.  If the process is abruptly terminated–e.g. the run
-method is pre-empted by a signal or an os._exit(n) call–the
-Worker object will still exist even if the operating-system
-process no longer does.</p>
-<p>To determine the exit code of this process, use the
-Worker.exitcode value, provided by the multiprocessing.Process
-base class.</p>
+<p>Provides interface to loadable modules an events to sycronise
+execution</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Worker.get_consumes">
-<span class="sig-name descname"><span class="pre">get_consumes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Worker.get_consumes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Worker.get_consumes" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.engine.SourceWorkers.SourceWorker.decrement_use_count">
+<span class="sig-name descname"><span class="pre">decrement_use_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/SourceWorkers.html#SourceWorker.decrement_use_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.SourceWorkers.SourceWorker.decrement_use_count" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Worker.get_produces">
-<span class="sig-name descname"><span class="pre">get_produces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Worker.get_produces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Worker.get_produces" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.engine.SourceWorkers.SourceWorker.increment_use_count">
+<span class="sig-name descname"><span class="pre">increment_use_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/SourceWorkers.html#SourceWorker.increment_use_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.SourceWorkers.SourceWorker.increment_use_count" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Worker.get_state_name">
-<span class="sig-name descname"><span class="pre">get_state_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Worker.get_state_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Worker.get_state_name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Worker.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Worker.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Worker.run" title="Permalink to this definition"></a></dt>
-<dd><p>Method to be run in sub-process; can be overridden in sub-class</p>
+<dt class="sig sig-object py" id="decisionengine.framework.engine.SourceWorkers.SourceWorker.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/SourceWorkers.html#SourceWorker.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.SourceWorkers.SourceWorker.run" title="Permalink to this definition"></a></dt>
+<dd><p>Get the data from source</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Worker.setup_logger">
-<span class="sig-name descname"><span class="pre">setup_logger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Worker.setup_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Worker.setup_logger" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.engine.SourceWorkers.SourceWorker.should_stop">
+<span class="sig-name descname"><span class="pre">should_stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/SourceWorkers.html#SourceWorker.should_stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.SourceWorkers.SourceWorker.should_stop" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Worker.wait_until">
-<span class="sig-name descname"><span class="pre">wait_until</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Worker.wait_until"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Worker.wait_until" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Worker.wait_while">
-<span class="sig-name descname"><span class="pre">wait_while</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Worker.wait_while"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Worker.wait_while" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.engine.SourceWorkers.SourceWorker.take_offline">
+<span class="sig-name descname"><span class="pre">take_offline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/SourceWorkers.html#SourceWorker.take_offline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.SourceWorkers.SourceWorker.take_offline" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Workers">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.engine.Workers.</span></span><span class="sig-name descname"><span class="pre">Workers</span></span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Workers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Workers" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.engine.SourceWorkers.SourceWorkers">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.engine.SourceWorkers.</span></span><span class="sig-name descname"><span class="pre">SourceWorkers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exchange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">broker_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger=&lt;BoundLoggerLazyProxy(logger=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrapper_class=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processors=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_class=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_values={}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger_factory_args=('decisionengine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">))&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/SourceWorkers.html#SourceWorkers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.SourceWorkers.SourceWorkers" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class manages and provides access to the task-manager workers.</p>
-<p>The intention is that the decision engine never directly interacts with the
-workers but refers to them via a context manager:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>with workers.access() as ws:</dt><dd><p># Access to ws now protected
-ws[‘new_channel’] = Worker(…)</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>In cases where the decision engine’s block_while or block_until
-methods must be called (e.g. during tests), one should used the
-unguarded access:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>with workers.unguarded_access() as ws:</dt><dd><p># Access to ws is unprotected
-ws[‘new_channel’].wait_until(…)</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>Calling a blocking method while using the protected context
-manager (i.e. workers.access()) will likely result in a deadlock.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Workers.Access">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Access</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Workers.Access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Workers.Access" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-</dd></dl>
-
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Workers._update_channel_states">
-<span class="sig-name descname"><span class="pre">_update_channel_states</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Workers._update_channel_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Workers._update_channel_states" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.engine.SourceWorkers.SourceWorkers.prune">
+<span class="sig-name descname"><span class="pre">prune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/SourceWorkers.html#SourceWorkers.prune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.SourceWorkers.SourceWorkers.prune" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Workers.access">
-<span class="sig-name descname"><span class="pre">access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Workers.access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Workers.access" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.engine.SourceWorkers.SourceWorkers.remove_all">
+<span class="sig-name descname"><span class="pre">remove_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/SourceWorkers.html#SourceWorkers.remove_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.SourceWorkers.SourceWorkers.remove_all" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.engine.Workers.Workers.unguarded_access">
-<span class="sig-name descname"><span class="pre">unguarded_access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/Workers.html#Workers.unguarded_access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.Workers.Workers.unguarded_access" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.engine.SourceWorkers.SourceWorkers.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_configs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/engine/SourceWorkers.html#SourceWorkers.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.engine.SourceWorkers.SourceWorkers.update" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

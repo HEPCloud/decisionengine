@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 1.7.1.dev107+gafcc7cff documentation</title>
+  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 1.7.1.dev112+g7d6484ad documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -100,6 +100,52 @@
 <h1>decisionengine.framework.taskmanager package<a class="headerlink" href="#decisionengine-framework-taskmanager-package" title="Permalink to this headline"></a></h1>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-decisionengine.framework.taskmanager.LatestMessages">
+<span id="decisionengine-framework-taskmanager-latestmessages-module"></span><h2>decisionengine.framework.taskmanager.LatestMessages module<a class="headerlink" href="#module-decisionengine.framework.taskmanager.LatestMessages" title="Permalink to this headline"></a></h2>
+<p>The LatestMessages class listens for messages from a set of queues and
+retains only the last unconsumed message from each queue.</p>
+<p>The latest messages are consumed by calling the consume() instance
+method, which returns a dictionary whose key is the message routing
+key and whose value is the full message.  If no messages are
+available, consume() returns an empty dictionary.</p>
+<p>The LatestMessages class is intended to be used as a context manager (e.g.):</p>
+<blockquote>
+<div><dl>
+<dt>with LatestMessages(queues, broker_url) as messages:</dt><dd><dl>
+<dt>while some_predicate():</dt><dd><p>msgs = messages.consume()
+if not msgs:</p>
+<blockquote>
+<div><p>continue</p>
+</div></blockquote>
+<dl class="simple">
+<dt>for routing_key, msg in msgs.items():</dt><dd><p>…</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p>Upon exiting the the context, a LatestMessage object will no longer
+listen for any messages.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.LatestMessages.LatestMessages">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.LatestMessages.</span></span><span class="sig-name descname"><span class="pre">LatestMessages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queues</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">broker_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/LatestMessages.html#LatestMessages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.LatestMessages.LatestMessages" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.LatestMessages.LatestMessages._listen">
+<span class="sig-name descname"><span class="pre">_listen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/LatestMessages.html#LatestMessages._listen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.LatestMessages.LatestMessages._listen" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.LatestMessages.LatestMessages.consume">
+<span class="sig-name descname"><span class="pre">consume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/LatestMessages.html#LatestMessages.consume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.LatestMessages.LatestMessages.consume" title="Permalink to this definition"></a></dt>
+<dd><p>Return dictionary of latest messages, keyed by message routing key.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-decisionengine.framework.taskmanager.ProcessingState">
 <span id="decisionengine-framework-taskmanager-processingstate-module"></span><h2>decisionengine.framework.taskmanager.ProcessingState module<a class="headerlink" href="#module-decisionengine.framework.taskmanager.ProcessingState" title="Permalink to this headline"></a></h2>
@@ -233,13 +279,27 @@ sync between threads if need be.</p>
 </dd></dl>
 
 </section>
+<section id="module-decisionengine.framework.taskmanager.SourceProductCache">
+<span id="decisionengine-framework-taskmanager-sourceproductcache-module"></span><h2>decisionengine.framework.taskmanager.SourceProductCache module<a class="headerlink" href="#module-decisionengine.framework.taskmanager.SourceProductCache" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.SourceProductCache.SourceProductCache">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.SourceProductCache.</span></span><span class="sig-name descname"><span class="pre">SourceProductCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expected_products</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/SourceProductCache.html#SourceProductCache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.SourceProductCache.SourceProductCache" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.SourceProductCache.SourceProductCache.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/SourceProductCache.html#SourceProductCache.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.SourceProductCache.SourceProductCache.update" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-decisionengine.framework.taskmanager.TaskManager">
 <span id="decisionengine-framework-taskmanager-taskmanager-module"></span><h2>decisionengine.framework.taskmanager.TaskManager module<a class="headerlink" href="#module-decisionengine.framework.taskmanager.TaskManager" title="Permalink to this headline"></a></h2>
 <p>Task manager</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></span><span class="sig-name descname"><span class="pre">TaskManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">de_source_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="decisionengine.framework.managers.html#decisionengine.framework.managers.ComponentManager.ComponentManager" title="decisionengine.framework.managers.ComponentManager.ComponentManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">decisionengine.framework.managers.ComponentManager.ComponentManager</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></span><span class="sig-name descname"><span class="pre">TaskManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_products</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exchange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">broker_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">routing_keys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Task manager</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.data_block_put">
@@ -268,13 +328,38 @@ sync between threads if need be.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.get_loglevel">
+<span class="sig-name descname"><span class="pre">get_loglevel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.get_loglevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_loglevel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.get_produces">
 <span class="sig-name descname"><span class="pre">get_produces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.get_produces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_produces" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.run" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_state" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.get_state_name">
+<span class="sig-name descname"><span class="pre">get_state_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.get_state_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_state_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.get_state_value">
+<span class="sig-name descname"><span class="pre">get_state_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.get_state_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_state_value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.run_cycle">
+<span class="sig-name descname"><span class="pre">run_cycle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.run_cycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_cycle" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.run_cycles">
+<span class="sig-name descname"><span class="pre">run_cycles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.run_cycles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_cycles" title="Permalink to this definition"></a></dt>
 <dd><p>Task manager main loop</p>
 </dd></dl>
 
@@ -301,25 +386,13 @@ sync between threads if need be.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.run_source">
-<span class="sig-name descname"><span class="pre">run_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.run_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_source" title="Permalink to this definition"></a></dt>
-<dd><p>Get the data from source
-and put it into the data block</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>worker</strong> (<a class="reference internal" href="#decisionengine.framework.taskmanager.TaskManager.Worker" title="decisionengine.framework.taskmanager.TaskManager.Worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Worker</span></code></a>) – Source worker</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.run_transform">
 <span class="sig-name descname"><span class="pre">run_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.run_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.run_transform" title="Permalink to this definition"></a></dt>
 <dd><p>Run a transform</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>worker</strong> (<a class="reference internal" href="#decisionengine.framework.taskmanager.TaskManager.Worker" title="decisionengine.framework.taskmanager.TaskManager.Worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Worker</span></code></a>) – Transform worker</p></li>
+<li><p><strong>worker</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Worker</span></code>) – Transform worker</p></li>
 <li><p><strong>data_block</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">DataBlock</span></code>) – data block</p></li>
 </ul>
 </dd>
@@ -339,56 +412,51 @@ So far in main process.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.set_to_shutdown">
-<span class="sig-name descname"><span class="pre">set_to_shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.set_to_shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.set_to_shutdown" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.start_cycles">
-<span class="sig-name descname"><span class="pre">start_cycles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.start_cycles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.start_cycles" title="Permalink to this definition"></a></dt>
-<dd><p>Start decision cycles</p>
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.set_loglevel_value">
+<span class="sig-name descname"><span class="pre">set_loglevel_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.set_loglevel_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.set_loglevel_value" title="Permalink to this definition"></a></dt>
+<dd><p>Assumes log_level is a string corresponding to the supported logging-module levels.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.start_sources">
-<span class="sig-name descname"><span class="pre">start_sources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.start_sources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.start_sources" title="Permalink to this definition"></a></dt>
-<dd><p>Start sources, each in a separate thread</p>
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.TaskManager.take_offline">
+<span class="sig-name descname"><span class="pre">take_offline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#TaskManager.take_offline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.TaskManager.take_offline" title="Permalink to this definition"></a></dt>
+<dd><p>Adjust status to stop the decision cycles and bring the task manager offline</p>
 </dd></dl>
 
 </dd></dl>
 
+</section>
+<section id="module-decisionengine.framework.taskmanager.module_graph">
+<span id="decisionengine-framework-taskmanager-module-graph-module"></span><h2>decisionengine.framework.taskmanager.module_graph module<a class="headerlink" href="#module-decisionengine.framework.taskmanager.module_graph" title="Permalink to this headline"></a></h2>
+<p>Ensure no circularities in produces and consumes.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager.Worker">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></span><span class="sig-name descname"><span class="pre">Worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#Worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager.Worker" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.module_graph.Worker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.module_graph.</span></span><span class="sig-name descname"><span class="pre">Worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/module_graph.html#Worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.module_graph.Worker" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Provides interface to loadable modules an events to sycronise
 execution</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager._create_module_instance">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></span><span class="sig-name descname"><span class="pre">_create_module_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#_create_module_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager._create_module_instance" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.module_graph._consumed_products">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.module_graph.</span></span><span class="sig-name descname"><span class="pre">_consumed_products</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">worker_lists</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/module_graph.html#_consumed_products"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.module_graph._consumed_products" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.module_graph._create_module_instance">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.module_graph.</span></span><span class="sig-name descname"><span class="pre">_create_module_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/module_graph.html#_create_module_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.module_graph._create_module_instance" title="Permalink to this definition"></a></dt>
 <dd><p>Create instance of dynamically loaded module</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager._find_only_one_subclass">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></span><span class="sig-name descname"><span class="pre">_find_only_one_subclass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#_find_only_one_subclass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager._find_only_one_subclass" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.module_graph._find_only_one_subclass">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.module_graph.</span></span><span class="sig-name descname"><span class="pre">_find_only_one_subclass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/module_graph.html#_find_only_one_subclass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.module_graph._find_only_one_subclass" title="Permalink to this definition"></a></dt>
 <dd><p>Search through module looking for only one subclass of the supplied base_class</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.TaskManager._make_workers_for">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.TaskManager.</span></span><span class="sig-name descname"><span class="pre">_make_workers_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/TaskManager.html#_make_workers_for"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.TaskManager._make_workers_for" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</section>
-<section id="module-decisionengine.framework.taskmanager.module_graph">
-<span id="decisionengine-framework-taskmanager-module-graph-module"></span><h2>decisionengine.framework.taskmanager.module_graph module<a class="headerlink" href="#module-decisionengine.framework.taskmanager.module_graph" title="Permalink to this headline"></a></h2>
-<p>Ensure no circularities in produces and consumes.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.module_graph._consumed_products">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.module_graph.</span></span><span class="sig-name descname"><span class="pre">_consumed_products</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">worker_lists</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/module_graph.html#_consumed_products"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.module_graph._consumed_products" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.module_graph._make_workers_for">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.module_graph.</span></span><span class="sig-name descname"><span class="pre">_make_workers_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/module_graph.html#_make_workers_for"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.module_graph._make_workers_for" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -397,10 +465,25 @@ execution</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.module_graph.channel_workers">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.module_graph.</span></span><span class="sig-name descname"><span class="pre">channel_workers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/module_graph.html#channel_workers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.module_graph.channel_workers" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="decisionengine.framework.taskmanager.module_graph.ensure_no_circularities">
 <span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.module_graph.</span></span><span class="sig-name descname"><span class="pre">ensure_no_circularities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sources</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">publishers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/module_graph.html#ensure_no_circularities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.module_graph.ensure_no_circularities" title="Permalink to this definition"></a></dt>
 <dd><p>Ensures no circularities among data products.</p>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.module_graph.source_products">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.module_graph.</span></span><span class="sig-name descname"><span class="pre">source_products</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_workers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/module_graph.html#source_products"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.module_graph.source_products" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.module_graph.validated_workflow">
+<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.module_graph.</span></span><span class="sig-name descname"><span class="pre">validated_workflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sources</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger=&lt;BoundLoggerLazyProxy(logger=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrapper_class=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processors=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_class=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_values={}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger_factory_args=())&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/module_graph.html#validated_workflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.module_graph.validated_workflow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="module-decisionengine.framework.taskmanager">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.module_graph &mdash; decisionengine 1.7.1.dev107+gafcc7cff documentation</title>
+  <title>decisionengine.framework.taskmanager.module_graph &mdash; decisionengine 1.7.1.dev112+g7d6484ad documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -83,9 +83,23 @@
 <span class="sd">Ensure no circularities in produces and consumes.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">importlib</span>
+
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
+<span class="kn">import</span> <span class="nn">structlog</span>
 <span class="kn">import</span> <span class="nn">toposort</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.LogicEngine</span> <span class="kn">import</span> <span class="n">LogicEngine</span><span class="p">,</span> <span class="n">passthrough_configuration</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Publisher</span> <span class="kn">import</span> <span class="n">Publisher</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Transform</span> <span class="kn">import</span> <span class="n">Transform</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.util.subclasses</span> <span class="kn">import</span> <span class="n">all_subclasses</span>
+
+<span class="n">_DEFAULT_SCHEDULE</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes</span>
+
+<span class="n">_DELOGGER</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
+<span class="n">_DELOGGER</span> <span class="o">=</span> <span class="n">_DELOGGER</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="_produced_products"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.module_graph._produced_products">[docs]</a><span class="k">def</span> <span class="nf">_produced_products</span><span class="p">(</span><span class="o">*</span><span class="n">worker_lists</span><span class="p">):</span>
@@ -112,6 +126,16 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">consumes</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">missing_consumes</span></div>
+
+
+<div class="viewcode-block" id="source_products"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.module_graph.source_products">[docs]</a><span class="k">def</span> <span class="nf">source_products</span><span class="p">(</span><span class="n">source_workers</span><span class="p">):</span>
+    <span class="n">expected_source_products</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">source_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="c1"># FIXME: Just keeping track of instance names will not</span>
+        <span class="c1">#        work whenever we have multiple source instances</span>
+        <span class="c1">#        of the same source type.</span>
+        <span class="n">expected_source_products</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">_produces</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">expected_source_products</span></div>
 
 
 <div class="viewcode-block" id="ensure_no_circularities"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.module_graph.ensure_no_circularities">[docs]</a><span class="k">def</span> <span class="nf">ensure_no_circularities</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">transforms</span><span class="p">,</span> <span class="n">publishers</span><span class="p">):</span>
@@ -156,6 +180,106 @@
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">sorted_module_names</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
         <span class="n">sorted_module_names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="n">name</span><span class="p">,</span> <span class="n">transforms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">sorted_module_names</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="_find_only_one_subclass"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.module_graph._find_only_one_subclass">[docs]</a><span class="k">def</span> <span class="nf">_find_only_one_subclass</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">base_class</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Search through module looking for only one subclass of the supplied base_class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">subclasses</span> <span class="o">=</span> <span class="n">all_subclasses</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">base_class</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">subclasses</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not find a decision-engine &#39;</span><span class="si">{</span><span class="n">base_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; in the module &#39;</span><span class="si">{</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subclasses</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Found more than one decision-engine &#39;</span><span class="si">{</span><span class="n">base_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; in the module &#39;</span><span class="si">{</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">subclasses</span><span class="p">:</span>
+            <span class="n">error_msg</span> <span class="o">+=</span> <span class="s2">&quot; - &quot;</span> <span class="o">+</span> <span class="bp">cls</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">error_msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Specify which subclass you want via the configuration &#39;name: &lt;one of the above&gt;&#39;.&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">subclasses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="_create_module_instance"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.module_graph._create_module_instance">[docs]</a><span class="k">def</span> <span class="nf">_create_module_instance</span><span class="p">(</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">base_class</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create instance of dynamically loaded module</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">my_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">])</span>
+    <span class="n">class_name</span> <span class="o">=</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">class_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">base_class</span> <span class="o">==</span> <span class="n">LogicEngine</span><span class="p">:</span>
+            <span class="c1"># Icky kludge until we remove explicit LogicEngine &#39;module&#39; specification</span>
+            <span class="n">class_name</span> <span class="o">=</span> <span class="s2">&quot;LogicEngine&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">class_name</span> <span class="o">=</span> <span class="n">_find_only_one_subclass</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">base_class</span><span class="p">)</span>
+
+    <span class="n">_DELOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;in TaskManager, importlib has imported module </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">class_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">my_module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">class_type</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">config_dict</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span> <span class="n">channel_name</span><span class="o">=</span><span class="n">channel_name</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.module_graph.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provides interface to loadable modules an events to sycronise</span>
+<span class="sd">    execution</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">conf_dict</span><span class="p">,</span> <span class="n">base_class</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :type conf_dict: :obj:`dict`</span>
+<span class="sd">        :arg conf_dict: configuration dictionary describing the worker</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_instance</span> <span class="o">=</span> <span class="n">_create_module_instance</span><span class="p">(</span><span class="n">conf_dict</span><span class="p">,</span> <span class="n">base_class</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">conf_dict</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_key</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">=</span> <span class="n">conf_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schedule&quot;</span><span class="p">,</span> <span class="n">_DEFAULT_SCHEDULE</span><span class="p">)</span>
+
+        <span class="c1"># NOTE: THIS MUST BE LOGGED TO de logger, because channel logger does not exist yet</span>
+        <span class="n">_DELOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Creating worker: module=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">module_key</span><span class="si">}</span><span class="s2"> class_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> parameters=</span><span class="si">{</span><span class="n">conf_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> schedule=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="_make_workers_for"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.module_graph._make_workers_for">[docs]</a><span class="k">def</span> <span class="nf">_make_workers_for</span><span class="p">(</span><span class="n">configs</span><span class="p">,</span> <span class="n">base_class</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">Worker</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">base_class</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">configs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+
+
+<div class="viewcode-block" id="channel_workers"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.module_graph.channel_workers">[docs]</a><span class="k">def</span> <span class="nf">channel_workers</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel publishers&quot;</span><span class="p">)</span>
+    <span class="n">publisher_workers</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_config</span><span class="p">[</span><span class="s2">&quot;publishers&quot;</span><span class="p">],</span> <span class="n">Publisher</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel logic engines&quot;</span><span class="p">)</span>
+    <span class="n">configured_le_s</span> <span class="o">=</span> <span class="n">channel_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logicengines&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">configured_le_s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;No &#39;logicengines&#39; configuration detected; will use default configuration, which unconditionally executes all configured publishers.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">configured_le_s</span> <span class="o">=</span> <span class="n">passthrough_configuration</span><span class="p">(</span><span class="n">channel_config</span><span class="p">[</span><span class="s2">&quot;publishers&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">configured_le_s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot support more than one logic engine per channel.&quot;</span><span class="p">)</span>
+
+    <span class="n">logic_engine_worker</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">configured_le_s</span><span class="p">:</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">configured_le_s</span><span class="o">.</span><span class="n">popitem</span><span class="p">()</span>
+        <span class="n">logic_engine_worker</span> <span class="o">=</span> <span class="n">Worker</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">LogicEngine</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating channel transforms&quot;</span><span class="p">)</span>
+    <span class="n">transform_workers</span> <span class="o">=</span> <span class="n">_make_workers_for</span><span class="p">(</span><span class="n">channel_config</span><span class="p">[</span><span class="s2">&quot;transforms&quot;</span><span class="p">],</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">transform_workers</span><span class="p">,</span> <span class="n">logic_engine_worker</span><span class="p">,</span> <span class="n">publisher_workers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="validated_workflow"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.module_graph.validated_workflow">[docs]</a><span class="k">def</span> <span class="nf">validated_workflow</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()):</span>
+    <span class="n">transforms</span><span class="p">,</span> <span class="n">logic_engine</span><span class="p">,</span> <span class="n">publishers</span> <span class="o">=</span> <span class="n">channel_workers</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+    <span class="n">transforms</span> <span class="o">=</span> <span class="n">ensure_no_circularities</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">transforms</span><span class="p">,</span> <span class="n">publishers</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;sources&quot;</span><span class="p">:</span> <span class="n">sources</span><span class="p">,</span>
+        <span class="s2">&quot;transforms&quot;</span><span class="p">:</span> <span class="n">transforms</span><span class="p">,</span>
+        <span class="s2">&quot;logic_engine&quot;</span><span class="p">:</span> <span class="n">logic_engine</span><span class="p">,</span>
+        <span class="s2">&quot;publishers&quot;</span><span class="p">:</span> <span class="n">publishers</span><span class="p">,</span>
+    <span class="p">}</span></div>
 </pre></div>
 
            </div>
