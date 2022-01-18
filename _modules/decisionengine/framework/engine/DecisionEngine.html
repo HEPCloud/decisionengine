@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.1.dev106+gdbd49a66 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.1.dev107+gafcc7cff documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -208,12 +208,14 @@
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.block_while"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.block_while">[docs]</a>    <span class="k">def</span> <span class="nf">block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> or timeout=</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> on channel_workers.&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">unguarded_access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">workers</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No active channels to wait on.&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="s2">&quot;No active channels.&quot;</span>
             <span class="k">for</span> <span class="n">tm</span> <span class="ow">in</span> <span class="n">workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">tm</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for </span><span class="si">{</span><span class="n">tm</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> to exit </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> state.&quot;</span><span class="p">)</span>
                     <span class="n">tm</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;No channels in </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> state.&quot;</span></div>
 
@@ -404,9 +406,11 @@
 
 <div class="viewcode-block" id="DecisionEngine.start_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channel">[docs]</a>    <span class="k">def</span> <span class="nf">start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">START_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Building TaskManger for </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">task_manager</span> <span class="o">=</span> <span class="n">TaskManager</span><span class="o">.</span><span class="n">TaskManager</span><span class="p">(</span>
                 <span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span>
             <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Building Worker for </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">worker</span> <span class="o">=</span> <span class="n">Worker</span><span class="p">(</span><span class="n">task_manager</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">])</span>
             <span class="n">WORKERS_COUNT</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
@@ -732,10 +736,21 @@
 <div class="viewcode-block" id="_start_de_server"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._start_de_server">[docs]</a><span class="k">def</span> <span class="nf">_start_de_server</span><span class="p">(</span><span class="n">server</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Start the DE server and listen forever&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
+        <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;running _start_de_server&quot;</span><span class="p">)</span>
+
+        <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step reaper_start&quot;</span><span class="p">)</span>
         <span class="n">server</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="n">server</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reaper_start_delay_seconds&quot;</span><span class="p">,</span> <span class="mi">1818</span><span class="p">))</span>
+
+        <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step start_channels&quot;</span><span class="p">)</span>
         <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
+
+        <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step startup_complete&quot;</span><span class="p">)</span>
         <span class="n">server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+        <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step serve_forever&quot;</span><span class="p">)</span>
         <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+
+        <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;done with _start_de_server&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">__e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;Server Address: </span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
 <span class="s2">              Fatal Error: </span><span class="si">{</span><span class="n">__e</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
