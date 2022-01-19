@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Release 2.0.0 &mdash; decisionengine 1.7.1.dev113+gdfe4278f documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> decisionengine
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.7.html">Release 1.7.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.7.html#release-1-7-0">Release 1.7.0</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing and running HEPCloud’s Decision Engine</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">decisionengine</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Release 2.0.0</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/release_notes/release_notes_2.0.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="release-2-0-0">
+<h1>Release 2.0.0<a class="headerlink" href="#release-2-0-0" title="Permalink to this headline"></a></h1>
+<p>This release series follows 1.7. A lot started to happen in 1.7.0 and has happened since, so we felt it was proper
+to change the major version number.
+We are proud to introduce Decision Engine 2.0.0 to outside users: it provides a
+friendlier installation procedure and configuration samples to test it
+on all resources supported by the GlideinWMS Factory, like OSG, some HPC resources and
+commercial cloud providers.</p>
+<ul class="simple">
+<li><p>New architecture with redesigned source system using Kombu message passing with a Redis backend.</p></li>
+<li><p>Separation from the GlideinWMS Frontend. Decision Engine still shares some libraries with GlideinWMS but
+you don’t need any more to install and configure the Frontend.</p></li>
+<li><p>Structured logging. Improved python logging and adoption of structured logs format that will increase the semantinc content of the messages and ease the export of information for dashboards and Elastic Search.</p></li>
+<li><p>Monitoring via Prometheus.</p></li>
+<li><p>SQLAlchemy object-relational mapper to increase the testability of DB interactions and to allow different database backends.</p></li>
+<li><p>Packaging via setuptools for both decisionengine and decisionengine_modules: Dependencies are not yet fully listed in the RPMs.</p></li>
+<li><p>Added support of CentOS8 (RHEL7 is still out main platform)</p></li>
+<li><p>Configuration example using HTC resources via GlideinWMS Factory</p></li>
+<li><p>Decision Engine is distributed under the Apache 2.0 license</p></li>
+<li><p>We increased our CI tests including also code auto-formatting and license compliance.
+We introduced integration tests and we are proud of our over 95% unit test coverage.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>SQLAlchemy is required and is now the only datasource backend supported.
+Upgrading from a different datasource backend (1.6 or earlier were using direct PostgreSQL, 1.7 was supporting both)
+is a one-way change with a migration tool.
+We suggest dropping all objects if you wish to reuse the tablespace.
+You can preserve a copy of the old database to query historical information.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Added requirement on the Kombu library and a Redis server.
+We suggest to <a class="reference external" href="redis.rst">install Redis using a container</a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Added requirement on prometheus-client.
+Prometheus is be used as optional monitoring component.</p>
+</div>
+<section id="issues-fixed-in-this-release">
+<h2>Issues fixed in this release<a class="headerlink" href="#issues-fixed-in-this-release" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/528">528</a>: Update license and add copyright notices</p></li>
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/207">207</a>: Under certain circumstances the fetch of the “consumes” information fails but the channel does not go offline operations</p></li>
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/547">547</a>: Update DE client libs to pgsql-12</p></li>
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/459">459</a>: Setuptools issues in decisionengine rpm</p></li>
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/546">546</a>: Request CentOS8 Stream support for Decision Engine</p></li>
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/453">453</a>: Struct Logging Self test errors with pytest-xdist</p></li>
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/418">418</a>: Add auto-formatting of the code</p></li>
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/134">134</a>: Yum update on decisionengine rpm doesn’t restart the service</p></li>
+<li><p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/issues/480">480</a>: Request: Make postgresql migration script to migrate from old postgresql schema to new sqlalchemy schema</p></li>
+</ul>
+</section>
+<section id="full-list-of-commits-since-version-1-7-0">
+<h2>Full list of commits since version 1.7.0<a class="headerlink" href="#full-list-of-commits-since-version-1-7-0" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/7d6484ad86bfc1c01c89c8648c2b41d23f5c710d">7d6484ad</a>:   Test source shared between two channels.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/ae29d9d17395f4d3742b127e7dd185a8bb837cba">ae29d9d1</a>:   Test same source types, separate channels</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/6095d33fa86f8f736c43ddc32fe6e192e5defb74">6095d33f</a>:   Test LatestMessages utility.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/dfbf3e06395404cef45b8206ec9492ef8ec0d42e">dfbf3e06</a>:   Separate sources from channels.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/2c10391e561ebfea309a40115972fc0fba560fb1">2c10391e</a>:   Remove source proxy</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/afcc7cff27bacad5cb823d04df56456deac307a1">afcc7cff</a>:   Add some more logging to try and trace startup state</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/dbd49a668c935e473830aac7282ea3c6a2220586">dbd49a66</a>:   Explicitly pass .coveragerc to pytest.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e6b032162b9ce38a746c4ebc2311b063fc02abc4">e6b03216</a>:   Set max retry timeout for sqlite in unit tests.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/51bed3d6f0ae1784370a41b86f094dd548f28a08">51bed3d6</a>:   Updated documentation for 1.7.1 release</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/3829151f5b8f1a9ca3f61e15e6a0f2201bfc2769">3829151f</a>:   Allow duplicate keys if their values are the same.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1ea288e068c7d053ecf79436c73a101d7ab02076">1ea288e0</a>:   [pre-commit.ci] pre-commit autoupdate</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/6b6611e5305b7fffc42f6be48928fdd9d2af1b2e">6b6611e5</a>:   Use pre-commit.ci rather than local actions</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/dedbe4bd41b9103026b5caca83f090cae933ccfa">dedbe4bd</a>:   Use local time for structlog timestamp</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/461c506e546ae743cca953f70b11c2e3e1b6f5ea">461c506e</a>:   Make sure de_std.libsonnet is provided when packaged.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/f93b59639fb814219104c048a4da565d590f4fd5">f93b5963</a>:   Update pre-commit hook versions and accommodate python-debian issue.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/bba51609c78f9d905ca254074d798f76b95d9c23">bba51609</a>:   Reduce number of fixtures.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a4510cb1589e8cc8e38c94866ad002f78c84f200">a4510cb1</a>:   Segment the update for setuptools so it gets cached correctly</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/40098f359deec4470da1fdb479d7bbe0cdd6c8c2">40098f35</a>:   Merge pull request #584 from jcpunk/user-pip</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/4e1b79a1718e32fe4a8224f3a1d6fa9a53be6bb5">4e1b79a1</a>:   Merge pull request #583 from jcpunk/drop-dbutils</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/72c8db4a3ff5da0f81450012b08e22c50c044820">72c8db4a</a>:   Recommend using the site user pip dir instead.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/ff604495b9afeea8c5f17daf52cf7208856c7e18">ff604495</a>:   Drop unneeded module</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/b203e2c493cf501562accf1013c6257c348711b7">b203e2c4</a>:   remove extraneous ‘import gc’</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/ee2278e74b6d8d4203a1bef79f281bac37d5910c">ee2278e7</a>:   replace needed import</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/4b7dedf2fa8998c13682870445714df32a38044e">4b7dedf2</a>:   add licensing info</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e5a56816fa8ad7247443971b35ffd259080c8446">e5a56816</a>:   add licensing info</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a114abbab70862bc2b2c8b0c84ed1b1d9a64c05f">a114abba</a>:   add licensing info</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c2d511cd616b56998eb84509316af95445d9338b">c2d511cd</a>:   adding queue logging to de_logger</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/77dd8d5a78c301ffe158f3966354e38e7f1b9ab7">77dd8d5a</a>:   Also run checks on backports to 1.7</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/7c0295785a8f2ba11b8d3d1748b5469ef2adec02">7c029578</a>:   Updated developers instructions w/ license maintenance via REUSE information</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e66b985d2c26c73a8987d327f3a892d4c90d072b">e66b985d</a>:   Fix faulty tests.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/d1a86c57cf1ba36dc0825f31a6dade5496e2c10a">d1a86c57</a>:   Set Apache 2.0 license and added REUSE compliance</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e488030ed4445be219baa46c4a4336f5eb135cb0">e488030e</a>:   Ensure that redis is running.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/6c982c11a0d4bb1367e3b7283bdceaa59310630c">6c982c11</a>:   Report PID for source process.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/3f844ca4a678dae0d0a10cb2c534f91ab552ea57">3f844ca4</a>:   Further flesh out the documentation</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1d750001fac90b9ec3a5cd5781ae8e372f95f091">1d750001</a>:   Simplifications and rearrangements.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/b85dca452a03b5e5bb488c282c59a8110b788a96">b85dca45</a>:   Set state to error for exceptions caught before the thread start.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c4727acb4d30f94541a11277679dc75a328c776f">c4727acb</a>:   Changed summaries to histograms in DecisionEngine and TaskManager modules</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/6fa0bf4d1f5169e144f57d783b185d9bd8a63c4c">6fa0bf4d</a>:   Added install document and updated the index and development instructions accordingly</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e4de391e7a55bc077296ab726311eb411a6926c2">e4de391e</a>:   Do the build of the wheel as not-root per our requirements</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/24ba52729afb9bac7bd303d51a20a7d3405a48c7">24ba5272</a>:   Add a redis server to the CI testing containers</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c939a6ed9ff021b9fbc8fde0b3eaa0ce0baa00d5">c939a6ed</a>:   Address Pat’s comments.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1925a7b00165c92516577e57f7e85c8100ba2e00">1925a7b0</a>:   First implementation using Kombu/redis to communicate data from sources to cycles.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/82faa27127aee458e40bc7e491f411a9b9c10727">82faa271</a>:   Don’t try to package obsolete sql file</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/9cbffe94ac0a2c3b1b2cbffb53564588a1419a25">9cbffe94</a>:   Drop redundant tests.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/ab0de9a5012b368b5c3bc179372fef6b95c70592">ab0de9a5</a>:   Drop obsolete raw postgresql interface</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/164b36d3237ae5df4f3a87e76d9b8d155655dc88">164b36d3</a>:   Removed unnecessary comment</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/91f7a76f3e93f76cd8185af65e2b2dd0c6880afd">91f7a76f</a>:   Fixed rebase errors</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e475fbd5b95d375d978f51146722e7e14721875f">e475fbd5</a>:   Added import statement to fix MultiProcessCollector</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a409f12654d9301784b8cdc813c25a0cd7efaab7">a409f126</a>:   Add no-webserver setting to all DE Test Workers</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/39cca32efbda4887b11532b51bebe9d6d6a0e308">39cca32e</a>:   Moved multiprocess import to metrics to clean up imports.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/73762e90d4afeb5777183ee9266948d789cfcbbe">73762e90</a>:   Added –no-webserver to invocations of DEServer</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/303ee4be2544a4fcdffc7800a5b5e37ed60f59bd">303ee4be</a>:   Added __all__ global to control what is exported.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/5170224bd9bbb1576a2458341f1f3e0ae451d9ae">5170224b</a>:   Allow for metrics disabling from systemd unit file</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/2cacef4f4af23393e26e85630dd0af258031c92c">2cacef4f</a>:   Added check for proper metrics environment and associated unit tests</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a637a088437ec33beb27224464db50fb02b86b52">a637a088</a>:   Make webserver operation configurable</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/b3d6445ab93ad32cf3bc718d4e4bafd613013b0c">b3d6445a</a>:   Changed set_to_function calls to set() calls for metrics</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/5dccc7fabcf7a893cfeedeffd0cfc460c4c11c41">5dccc7fa</a>:   Changed metric names to match prometheus convention</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/7371c2e8c013fd42887dafa0f9aa418101740fef">7371c2e8</a>:   Added cherrypy requirement</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/2c511ceaea911106c0fcbfbd2ca7153caa8eb2d1">2c511cea</a>:   Added metrics to record time to run Modules and DecisionEngine rpc calls</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c24d33bc269d92a4d9d05b8e825394c6ccd065ef">c24d33bc</a>:   Renamed prometheus.py to metrics.py</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/2335134dcda74c10878c42ffacdbb3a454a811a1">2335134d</a>:   Moved TaskManager metrics to util/prometheus.py to avoid duplicates</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/3c1b790c671124dfb9179bc9c6fdad9385dbb598">3c1b790c</a>:   Added metrics endpoint to RPC server, changed prometheus to multiprocess mode, and added CherryPy webserver for prometheus metrics</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/d8972de076afe9add8ed52368c5aed463f96cefa">d8972de0</a>:   Added unit tests for metrics API</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/7b0f641b49167e79b760b10662d45999dd2d9f6c">7b0f641b</a>:   Add instructions for running the Redis container.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/8d0c491987e4da4fc36e91baf52ea30db055a067">8d0c4919</a>:   Block pytest-postgresql 4</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/d988f1a06ad317162646d71e81302b91121e318a">d988f1a0</a>:   Lower timeout for actions.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/4f920dcce3a2a6bcd39df36f25ffc198ca90f772">4f920dcc</a>:   Simplifications in preparation for Kombu.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/eb9f429240dc647d97ac9da46d586a03227adb20">eb9f4292</a>:   Make TaskManager not executable</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/00c8f6e68022218799ad0f544727c88a963c448d">00c8f6e6</a>:   Remove unused files.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/dd990d2ccc8396e2bd3659a3537e56cbb9bc4137">dd990d2c</a>:   Adding de-logparser, a tool to help parsing Decision Engine semi-structured logs</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1da0d61eaed9d0a6d92c1c61a37233d7ab340f84">1da0d61e</a>:   Added a comment to help developers with incomplete installation</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1cbc7334b15ca7f875d20f9e62320211a7eb804a">1cbc7334</a>:   Drop testing/support for PyPy</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/3ba3e8e6c7f013acefc3930145e8d561bc5b12e8">3ba3e8e6</a>:   Ignoring E203, whitespace after ‘:’, since black is adding the whitespace</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/814669d5e1dd7f767c596fea1de75333e0e23c0b">814669d5</a>:   Disable PyPy test that fails for PG_DE_DB_WITH_SCHEMA fixture value.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/8d68c287247002320f19041914293e620f4bc39e">8d68c287</a>:   Fix debug message</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/33db64256081fa0198752f317257fe4214d09bd2">33db6425</a>:   Test composite workflows using source proxies and configuration combination.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/30951a5b5890c7e7dba6165841a2ff66e27c3386">30951a5b</a>:   EL7 doesn’t ship with a new enough golang for jsonnetfmt</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e72eb3fdd169ebc92c468cd954510aa36ca1411d">e72eb3fd</a>:   Forbid inheritance from SourceProxy.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e95071fdef61aa3216f7308453bd3222f0b5cf78">e95071fd</a>:   Automatically format jsonnet files with jsonnetfmt</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/355ccd45036155f71162d0ed522ea3ae14d1b425">355ccd45</a>:   Correct tests for python 3.10</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/641191610b5819c353e931e07bcd498231adf30f">64119161</a>:   Start testing python 3.10</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c1cb8258726042bb0217a0d89fde764baa0f965a">c1cb8258</a>:   add dummy source and test</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/31b0f30b4e528518f70bf3012caa4122e7c99bfb">31b0f30b</a>:   Check for duplicate keys after source proxies have been removed.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/140a4c4748b61fb46d88cdab5b2cca31907f1700">140a4c47</a>:   Fix configuration-combination function signature.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/d4a052991211a7daf85b44dfd57ac0122b27fa66">d4a05299</a>:   Remove now unnecessary blocking.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1e78a8894defdaf9120deb3d56890a164026bcd7">1e78a889</a>:   Don’t run setup.py as root</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a71d5b0ab1de5524e67059c187798215c10bbcdb">a71d5b0a</a>:   Add error for running server as root</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/cd345701539b9444eb09d6fece5b7445696b05f5">cd345701</a>:   Incrase coverage in LogicEngine</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/6c1329241181980d4fea546c10d5463987a02b3e">6c132924</a>:   Fix out of sync devel requirements</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/8bfab003ab332a5a969839fd4e2be6a4dd29df75">8bfab003</a>:   Start running tests with xdist</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/aebe7d49700ae5688278eaf70613197ca6deb4a1">aebe7d49</a>:   Remove unnecessary conversion to Pandas dataframe.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/28919b169d600d3f073aa2e23bfb7db106b27756">28919b16</a>:   Allow channels to boot in parallel.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c4fc599723ab1e88d06206c158c346b80f86920e">c4fc5997</a>:   Improve parameter and variable names.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e021419b856657bc0354198b08e07964eea88195">e021419b</a>:   Encourage use of automatic nag hook</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/cc4e469a601ff5df8675927cbb4255ae8c4227ee">cc4e469a</a>:   Update hooks to latest via <cite>pre-commit autoupgrade</cite></p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/cef30b6909a5f790c9575e8f6a8b4a9ed5c168c8">cef30b69</a>:   Further simplify some cases</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/590bea3f0de1d262406762ac3d033544cabbdad6">590bea3f</a>:   Add channel-combination facilities.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a4a7938cbf72d179310ccfd999f455c642435a73">a4a7938c</a>:   Various simplifications recommended by flake8-simple</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/d51574165cab6c6cfd144824660d410054950565">d5157416</a>:   Possible simplification to logging.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/81e3d1ee35a701c42a342e952aa2af3901903281">81e3d1ee</a>:   Fix pylint error on <cite>create_runner</cite> and <cite>ProcessingState</cite></p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/2a328c2599e187eaeb7efdb4d39a56c5fbe515e9">2a328c25</a>:   Added missing init file to make managers a package</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/d7f44015399b8e290a4c56529b37e3140777d18d">d7f44015</a>:   Rework tests for #454</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/9521d3cea71ac89a04c2dfa3a0e9b9006a31a673">9521d3ce</a>:   Add debug statement when default logic-engine configuration is used.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c6dc778c29bc609903c93669e9ba18d0eb655e21">c6dc778c</a>:   Unconditionally execute publishers with default configured logic engine.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a48dd7d89a341cc1351c86607d8508c877714e8c">a48dd7d8</a>:   Remove now-unnecessary Python-to-Jsonnet conversion.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a6a81ce789fdc68cd2ce44e9efaba3f5ef3c663a">a6a81ce7</a>:   Run autoformatters</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/49dac1ec884ec9754feb5e170ecd6fa6b98619fb">49dac1ec</a>:   Setup pre-commit hooks for autoformatters</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/3800cc2a2883f4927b69c541a40cee43142d4ba0">3800cc2a</a>:   Run the code style/standards checks early.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1d42eb0d31a308227488126e1f80fae03c07709a">1d42eb0d</a>:   TaskManager now inherits from ComponentManager. Also added SourceManager, ChannelManager, and SourceSubscriptionManager files for future integration.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/85a16f3b4495c86b96d72ce91e1fff63310eba1c">85a16f3b</a>:   Python optimised byte code removes assert under some conditions</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/bed2f5d92a4eccdcf3380a0674be98bc67eeb154">bed2f5d9</a>:   Support latest setuptools_scm  release</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Fermilab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
