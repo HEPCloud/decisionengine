@@ -170,6 +170,9 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def _dataframe_to_csv(self, df):
         return f"{df.to_csv()}\n"
 
+    def rpc_ping(self):
+        return "pong"
+
     def rpc_block_while(self, state_str, timeout=None):
         allowed_state = None
         try:

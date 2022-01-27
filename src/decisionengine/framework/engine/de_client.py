@@ -17,6 +17,7 @@ def create_parser():
     )
 
     server = parser.add_argument_group("Decision Engine server options")
+    server.add_argument("--ping", action="store_true", help="perform a minimal connection")
     server.add_argument("--stop", action="store_true", help="stop server")
     server.add_argument("--status", action="store_true", help="print server status")
     server.add_argument("--show-de-config", action="store_true", help="print server configuration")
@@ -86,6 +87,8 @@ def execute_command_from_args(argsparsed, de_socket):
     """argsparsed should be from create_parser in this file"""
 
     # Server-specific options
+    if argsparsed.ping:
+        return de_socket.ping()
     if argsparsed.status:
         return de_socket.status()
     if argsparsed.show_de_config:
