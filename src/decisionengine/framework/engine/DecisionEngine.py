@@ -599,13 +599,22 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         Start CherryPy webserver using configured port.  If port is not configured
         use default webserver port.
         """
+        _socket_host = "0.0.0.0"
         if self.global_config.get("webserver") and isinstance(self.global_config.get("webserver"), dict):
             _port = self.global_config["webserver"].get("port", DEFAULT_WEBSERVER_PORT)
         else:
             _port = DEFAULT_WEBSERVER_PORT
-        cherrypy.config.update({"server.socket_port": _port, "server.socket_host": "0.0.0.0"})
+
+        with contextlib.suppress(Exception):
+            self.logger.debug(f"Trying to start metrics server on {_socket_host}:{_port}")
+
+        cherrypy.config.update({"server.socket_port": _port, "server.socket_host": _socket_host})
         cherrypy.tree.mount(self)
+        # we know for sure the cherrypy logger is working, so use that too
+        cherrypy.log(f"Trying to start metrics server on {_socket_host}:{_port}")
         cherrypy.engine.start()
+        with contextlib.suppress(Exception):
+            self.logger.debug("Started CherryPy server")
 
     @cherrypy.expose
     def metrics(self):
