@@ -1,63 +1,12 @@
 # SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 # SPDX-License-Identifier: Apache-2.0
 
+"""Fixture based tests for the metrics interfaces"""
+# pylint: disable=redefined-outer-name
+
 import pytest
 
-
-@pytest.fixture(autouse=True)
-def env_setup(tmp_path, monkeypatch):
-    """Make sure we have a directory set for PROMETHEUS_MULTIPROC_DIR so that
-    metric instantiation gives us multiprocess metrics"""
-    # Get a fixed dir
-    d = tmp_path
-    monkeypatch.setenv("PROMETHEUS_MULTIPROC_DIR", str(d))
-    yield
-    monkeypatch.delenv("PROMETHEUS_MULTIPROC_DIR")
-
-
-# Put these metrics declarations in fixtures because we need the env_setup
-# fixture to be set before importing any of the metrics
-@pytest.fixture()
-def Gauge():
-    from decisionengine.framework.util.metrics import Gauge
-
-    pytest.gauge_default_multiproc_mode = Gauge._DEFAULT_MULTIPROC_MODE
-
-    def _gauge(*args, **kwargs):
-        return Gauge(*args, **kwargs)
-
-    yield _gauge
-
-
-@pytest.fixture()
-def Counter():
-    from decisionengine.framework.util.metrics import Counter
-
-    def _counter(*args, **kwargs):
-        return Counter(*args, **kwargs)
-
-    yield _counter
-
-
-@pytest.fixture()
-def OtherMetric():
-    from decisionengine.framework.util.metrics import Histogram, Summary
-
-    def _decider(metric_type):
-        if metric_type == "histogram":
-
-            def _histogram(*args, **kwargs):
-                return Histogram(*args, **kwargs)
-
-            return _histogram
-        elif metric_type == "summary":
-
-            def _summary(*args, **kwargs):
-                return Summary(*args, **kwargs)
-
-            return _summary
-
-    yield _decider
+from decisionengine.framework.util.tests.fixtures import Counter, Gauge, OtherMetric, prometheus_env_setup  # noqa: F401
 
 
 @pytest.mark.parametrize(
@@ -79,7 +28,7 @@ def OtherMetric():
     ],
 )
 @pytest.mark.usefixtures("Gauge")
-def test_gauge_set_multiproc_mode(Gauge, test_params):
+def test_gauge_set_multiproc_mode(Gauge, test_params):  # noqa: F811
     """
     Test setting the gauge multiproc mode
 
@@ -94,7 +43,7 @@ def test_gauge_set_multiproc_mode(Gauge, test_params):
 
 
 @pytest.mark.usefixtures("Gauge")
-def test_gauge_multiproc_override_invalid(Gauge):
+def test_gauge_multiproc_override_invalid(Gauge):  # noqa: F811
     """Test overriding the default gauge multiproc mode with something
     invalid"""
     new_multiprocess_mode = "foo"
@@ -107,7 +56,7 @@ def test_gauge_multiproc_override_invalid(Gauge):
 
 
 @pytest.mark.usefixtures("Gauge")
-def test_gauge_set_value(Gauge):
+def test_gauge_set_value(Gauge):  # noqa: F811
     """Test setting a gauge value"""
     g = Gauge("test_gauge_set_value", "test_gauge_set_value")
     g.set(42)
@@ -115,7 +64,7 @@ def test_gauge_set_value(Gauge):
 
 
 @pytest.mark.usefixtures("Gauge")
-def test_gauge_set_invalid_value(Gauge):
+def test_gauge_set_invalid_value(Gauge):  # noqa: F811
     """Try to set a gauge to an invalid value"""
     g = Gauge(
         "test_gauge_set_invalid_value",
@@ -126,7 +75,7 @@ def test_gauge_set_invalid_value(Gauge):
 
 
 @pytest.mark.usefixtures("Counter")
-def test_counter_inc_value(Counter):
+def test_counter_inc_value(Counter):  # noqa: F811
     """Increment the counter"""
     c = Counter("test_counter_inc_value", "test_counter_inc_value")
     c.inc()
@@ -135,7 +84,7 @@ def test_counter_inc_value(Counter):
 
 @pytest.mark.parametrize("other_metric_arg", ["histogram", "summary"])
 @pytest.mark.usefixtures("OtherMetric")
-def test_other_metric_observe_value(OtherMetric, other_metric_arg):
+def test_other_metric_observe_value(OtherMetric, other_metric_arg):  # noqa: F811
     """Observe a histogram or summary value and make sure it is stored properly"""
     _m = OtherMetric(other_metric_arg)
     test_metric_string = f"test_{other_metric_arg}_observe_value"
