@@ -124,7 +124,7 @@ def DEServer(
     """A DE Server using a private database"""
 
     @pytest.fixture(params=DATABASES_TO_TEST)
-    def de_server_factory(tmp_path, request, capsys):
+    def de_server_factory(tmp_path, request, capsys, monkeypatch):
         """
         This parameterized fixture will mock up various datasources.
 
@@ -160,6 +160,7 @@ def DEServer(
                 conf_path = os.path.join(tmppath, "conf.d")
             if channel_conf_path is None:
                 channel_conf_path = os.path.join(tmppath, "channel.conf.d")
+            prometheus_multiproc_dir = str(os.path.join(tmppath, "PROMETHEUS_MULTIPROC_DIR"))
 
             if make_conf_dirs_if_missing and not os.path.exists(conf_path):
                 logger.debug(f"DE Fixture making {conf_path}")
@@ -167,7 +168,11 @@ def DEServer(
             if make_conf_dirs_if_missing and not os.path.exists(channel_conf_path):
                 logger.debug(f"DE Fixture making {channel_conf_path}")
                 os.makedirs(channel_conf_path)
+            if not os.path.exists(prometheus_multiproc_dir):
+                logger.debug(f"DE Fixture making {prometheus_multiproc_dir}")
+                os.makedirs(prometheus_multiproc_dir)
 
+            monkeypatch.setenv("PROMETHEUS_MULTIPROC_DIR", prometheus_multiproc_dir)
             server_proc = DETestWorker(
                 conf_path,
                 channel_conf_path,
@@ -194,6 +199,8 @@ def DEServer(
             yield server_proc
 
         logger.debug("DE Fixture: beginning cleanup")
+
+        monkeypatch.delenv("PROMETHEUS_MULTIPROC_DIR")
 
         # does not error out even if the server is stopped
         # so this should be safe to call under all conditions
