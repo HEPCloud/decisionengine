@@ -80,10 +80,12 @@ class SQLAlchemyDS(ds.DataSource):
         Returns:
             None
         """
-        self.logger.info("datasource SQLAlchemyDS is creating the database tables")
+        self.logger.info("datasource SQLAlchemyDS is creating the database tables (if needed)")
 
         # this is not smart enough to manage schema migrations
         db_schema.Base.metadata.create_all(bind=self.engine)
+
+        self.logger.debug("datasource SQLAlchemyDS done creating the database tables")
 
     def store_taskmanager(self, name, taskmanager_id, datestamp=None):
         """
