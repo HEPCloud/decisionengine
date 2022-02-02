@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.99.post2.dev3+g732ff99b documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.99.post2.dev4+g55965f9e documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -202,7 +202,7 @@
     <span class="sd">&quot;&quot;&quot;A DE Server using a private database&quot;&quot;&quot;</span>
 
     <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">DATABASES_TO_TEST</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">de_server_factory</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">capsys</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">de_server_factory</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">capsys</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This parameterized fixture will mock up various datasources.</span>
 
@@ -238,6 +238,7 @@
                 <span class="n">conf_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span> <span class="s2">&quot;conf.d&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">channel_conf_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">channel_conf_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span> <span class="s2">&quot;channel.conf.d&quot;</span><span class="p">)</span>
+            <span class="n">prometheus_multiproc_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span> <span class="s2">&quot;PROMETHEUS_MULTIPROC_DIR&quot;</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="n">make_conf_dirs_if_missing</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">conf_path</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture making </span><span class="si">{</span><span class="n">conf_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -245,7 +246,11 @@
             <span class="k">if</span> <span class="n">make_conf_dirs_if_missing</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">channel_conf_path</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture making </span><span class="si">{</span><span class="n">channel_conf_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">channel_conf_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">prometheus_multiproc_dir</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture making </span><span class="si">{</span><span class="n">prometheus_multiproc_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">prometheus_multiproc_dir</span><span class="p">)</span>
 
+            <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setenv</span><span class="p">(</span><span class="s2">&quot;PROMETHEUS_MULTIPROC_DIR&quot;</span><span class="p">,</span> <span class="n">prometheus_multiproc_dir</span><span class="p">)</span>
             <span class="n">server_proc</span> <span class="o">=</span> <span class="n">DETestWorker</span><span class="p">(</span>
                 <span class="n">conf_path</span><span class="p">,</span>
                 <span class="n">channel_conf_path</span><span class="p">,</span>
@@ -272,6 +277,8 @@
             <span class="k">yield</span> <span class="n">server_proc</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DE Fixture: beginning cleanup&quot;</span><span class="p">)</span>
+
+        <span class="n">monkeypatch</span><span class="o">.</span><span class="n">delenv</span><span class="p">(</span><span class="s2">&quot;PROMETHEUS_MULTIPROC_DIR&quot;</span><span class="p">)</span>
 
         <span class="c1"># does not error out even if the server is stopped</span>
         <span class="c1"># so this should be safe to call under all conditions</span>
