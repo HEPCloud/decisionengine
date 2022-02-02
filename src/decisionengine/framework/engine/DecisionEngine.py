@@ -115,10 +115,10 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
         self.logger.info(f"DecisionEngine started on {server_address}")
         self.register_function(self.rpc_metrics, name="metrics")
-        if not global_config.get("no_webserver"):
+        if not self.global_config.get("no_webserver"):
             self.start_webserver()
 
-        exchange_name = global_config.get("exchange_name", "hepcloud_topic_exchange")
+        exchange_name = self.global_config.get("exchange_name", "hepcloud_topic_exchange")
         self.logger.debug(f"Creating topic exchange {exchange_name}")
         self.exchange = Exchange(exchange_name, "topic")
         self.broker_url = self.global_config.get("broker_url", "redis://localhost:6379/0")
@@ -335,6 +335,10 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.stop_channels()
         self.reaper_stop()
         self.dataspace.close()
+
+        if not self.global_config.get("no_webserver"):
+            cherrypy.engine.exit()
+
         de_logger.stop_queue_logger()
         return "OK"
 
@@ -611,7 +615,10 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         with contextlib.suppress(Exception):
             self.logger.debug(f"Trying to start metrics server on {_socket_host}:{_port}")
 
-        cherrypy.config.update({"server.socket_port": _port, "server.socket_host": _socket_host})
+        cherrypy.config.update(
+            {"server.socket_port": _port, "server.socket_host": _socket_host, "server.shutdown_timeout": 1}
+        )
+        cherrypy.engine.signals.subscribe()
         cherrypy.tree.mount(self)
         # we know for sure the cherrypy logger is working, so use that too
         cherrypy.log(f"Trying to start metrics server on {_socket_host}:{_port}")
