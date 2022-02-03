@@ -46,6 +46,7 @@ def wait_for_n_writes(stdout, n):
 class WriteToDisk(Publisher.Publisher):
     def __init__(self, config):
         super().__init__(config)
+        # TODO: need method to clean up file eventually
         self.file = tempfile.NamedTemporaryFile("w")
         print(f"WriteToDisk:{self.file.name}:")
         self.counter = 0

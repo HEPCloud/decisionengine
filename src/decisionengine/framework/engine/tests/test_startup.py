@@ -12,6 +12,7 @@ from decisionengine.framework.engine.DecisionEngine import _check_metrics_env, _
 # server configuration.  We therefore produce a small, temporary file
 # with the valid Jsonnet configuration '{}'.
 
+# TODO: need method to clean up file eventually
 global_config_file = tempfile.NamedTemporaryFile()
 global_config_file.write(b"{}")
 global_config_file.flush()
