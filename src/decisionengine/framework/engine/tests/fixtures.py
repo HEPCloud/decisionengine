@@ -69,7 +69,7 @@ class DETestWorker(threading.Thread):
         self.global_config["shutdown_timeout"] = 1
         self.global_config["server_address"] = self.server_address
         self.global_config["dataspace"]["datasource"] = datasource
-        self.global_config["no_webserver"] = True
+        self.global_config["no_webserver"] = False
         self.global_config["webserver"] = {}
         self.global_config["webserver"]["port"] = get_random_port()
 
