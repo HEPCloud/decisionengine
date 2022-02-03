@@ -13,6 +13,7 @@ logger = logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NA
 
 def get_random_port():
     try:
+        logger.debug("looking for random port in get_random_port")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind(("127.0.0.1", 0))
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
