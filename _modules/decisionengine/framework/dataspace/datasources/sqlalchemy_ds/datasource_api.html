@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api &mdash; decisionengine 1.7.99.post2.dev4+g55965f9e documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api &mdash; decisionengine 1.7.99.post2.dev5+g9c717cc5 documentation</title>
       <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -158,10 +158,12 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource SQLAlchemyDS is creating the database tables&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource SQLAlchemyDS is creating the database tables (if needed)&quot;</span><span class="p">)</span>
 
         <span class="c1"># this is not smart enough to manage schema migrations</span>
-        <span class="n">db_schema</span><span class="o">.</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span></div>
+        <span class="n">db_schema</span><span class="o">.</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;datasource SQLAlchemyDS done creating the database tables&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SQLAlchemyDS.store_taskmanager"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS.store_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">store_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">datestamp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
