@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.99.post2.dev6+ge60efe78 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.99.post2.dev7+gca5ddf6f documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -193,10 +193,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DecisionEngine started on </span><span class="si">{</span><span class="n">server_address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rpc_metrics</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;metrics&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;no_webserver&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;no_webserver&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start_webserver</span><span class="p">()</span>
 
-        <span class="n">exchange_name</span> <span class="o">=</span> <span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exchange_name&quot;</span><span class="p">,</span> <span class="s2">&quot;hepcloud_topic_exchange&quot;</span><span class="p">)</span>
+        <span class="n">exchange_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exchange_name&quot;</span><span class="p">,</span> <span class="s2">&quot;hepcloud_topic_exchange&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating topic exchange </span><span class="si">{</span><span class="n">exchange_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exchange</span> <span class="o">=</span> <span class="n">Exchange</span><span class="p">(</span><span class="n">exchange_name</span><span class="p">,</span> <span class="s2">&quot;topic&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;broker_url&quot;</span><span class="p">,</span> <span class="s2">&quot;redis://localhost:6379/0&quot;</span><span class="p">)</span>
@@ -413,6 +413,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reaper_stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;no_webserver&quot;</span><span class="p">):</span>
+            <span class="n">cherrypy</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
         <span class="n">de_logger</span><span class="o">.</span><span class="n">stop_queue_logger</span><span class="p">()</span>
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span></div>
 
@@ -689,7 +693,10 @@
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to start metrics server on </span><span class="si">{</span><span class="n">_socket_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">cherrypy</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;server.socket_port&quot;</span><span class="p">:</span> <span class="n">_port</span><span class="p">,</span> <span class="s2">&quot;server.socket_host&quot;</span><span class="p">:</span> <span class="n">_socket_host</span><span class="p">})</span>
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;server.socket_port&quot;</span><span class="p">:</span> <span class="n">_port</span><span class="p">,</span> <span class="s2">&quot;server.socket_host&quot;</span><span class="p">:</span> <span class="n">_socket_host</span><span class="p">,</span> <span class="s2">&quot;server.shutdown_timeout&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">subscribe</span><span class="p">()</span>
         <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="c1"># we know for sure the cherrypy logger is working, so use that too</span>
         <span class="n">cherrypy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to start metrics server on </span><span class="si">{</span><span class="n">_socket_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
