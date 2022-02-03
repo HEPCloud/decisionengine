@@ -113,10 +113,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.startup_complete = Event()
         self.logger = structlog.getLogger(LOGGERNAME)
         self.logger = self.logger.bind(module=__name__.split(".")[-1], channel=DELOGGER_CHANNEL_NAME)
-        self.logger.info(f"DecisionEngine started on {server_address}")
-        self.register_function(self.rpc_metrics, name="metrics")
-        if not self.global_config.get("no_webserver"):
-            self.start_webserver()
+        self.logger.debug(f"DecisionEngine starting on {server_address}")
 
         exchange_name = self.global_config.get("exchange_name", "hepcloud_topic_exchange")
         self.logger.debug(f"Creating topic exchange {exchange_name}")
@@ -126,6 +123,10 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
         self.source_workers = SourceWorkers(self.exchange, self.broker_url, self.logger)
         self.channel_workers = ChannelWorkers()
+
+        self.register_function(self.rpc_metrics, name="metrics")
+
+        self.logger.info(f"DecisionEngine __init__ complete {server_address} with {self.broker_url}")
 
     def get_logger(self):
         return self.logger
@@ -725,6 +726,11 @@ def _start_de_server(server):
 
         server.get_logger().debug("running _start_de_server: step reaper_start")
         server.reaper_start(delay=server.global_config["dataspace"].get("reaper_start_delay_seconds", 1818))
+
+        if not server.global_config.get("no_webserver"):
+            # cherrypy for metrics
+            server.get_logger().debug("running _start_de_server: step start_webserver (metrics)")
+            server.start_webserver()
 
         server.get_logger().debug("running _start_de_server: step start_channels")
         server.start_channels()
