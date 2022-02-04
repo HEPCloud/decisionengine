@@ -727,13 +727,13 @@ def _start_de_server(server):
         server.get_logger().debug("running _start_de_server: step reaper_start")
         server.reaper_start(delay=server.global_config["dataspace"].get("reaper_start_delay_seconds", 1818))
 
+        server.get_logger().debug("running _start_de_server: step start_channels")
+        server.start_channels()
+
         if not server.global_config.get("no_webserver"):
             # cherrypy for metrics
             server.get_logger().debug("running _start_de_server: step start_webserver (metrics)")
             server.start_webserver()
-
-        server.get_logger().debug("running _start_de_server: step start_channels")
-        server.start_channels()
 
         server.get_logger().debug("running _start_de_server: step startup_complete")
         server.startup_complete.set()
