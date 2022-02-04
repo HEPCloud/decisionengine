@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.tests package &mdash; decisionengine 1.7.99.post2.dev8+g0b495fbf documentation</title>
+  <title>decisionengine.framework.dataspace.tests package &mdash; decisionengine 1.7.99.post2.dev11+gb348d6f7 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -102,82 +102,8 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
 </section>
-<section id="module-decisionengine.framework.dataspace.tests.fixtures">
-<span id="decisionengine-framework-dataspace-tests-fixtures-module"></span><h2>decisionengine.framework.dataspace.tests.fixtures module<a class="headerlink" href="#module-decisionengine.framework.dataspace.tests.fixtures" title="Permalink to this headline"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.fixtures.PG_DE_DB_WITHOUT_SCHEMA">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.fixtures.</span></span><span class="sig-name descname"><span class="pre">PG_DE_DB_WITHOUT_SCHEMA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_pytest.fixtures.FixtureRequest</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">psycopg2.extensions.connection</span></span></span><a class="headerlink" href="#decisionengine.framework.dataspace.tests.fixtures.PG_DE_DB_WITHOUT_SCHEMA" title="Permalink to this definition"></a></dt>
-<dd><p>Fixture factory for PostgreSQL.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>request</strong> – fixture request object</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>postgresql client</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.fixtures.PG_PROG">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.fixtures.</span></span><span class="sig-name descname"><span class="pre">PG_PROG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_pytest.fixtures.FixtureRequest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmpdir_factory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_pytest.tmpdir.TempdirFactory</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">pytest_postgresql.executor.PostgreSQLExecutor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#decisionengine.framework.dataspace.tests.fixtures.PG_PROG" title="Permalink to this definition"></a></dt>
-<dd><p>Process fixture for PostgreSQL.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>request</strong> – fixture request object</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>tcp executor</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.fixtures.SQLALCHEMY_PG_WITH_SCHEMA">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.fixtures.</span></span><span class="sig-name descname"><span class="pre">SQLALCHEMY_PG_WITH_SCHEMA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PG_DE_DB_WITHOUT_SCHEMA</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/fixtures.html#SQLALCHEMY_PG_WITH_SCHEMA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.fixtures.SQLALCHEMY_PG_WITH_SCHEMA" title="Permalink to this definition"></a></dt>
-<dd><p>Get a blank database from pytest_postgresql.
-Then setup the SQLAlchemy style URL with that DB.
-The SQLAlchemyDS will create the schema as needed.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.fixtures.SQLALCHEMY_TEMPFILE_SQLITE">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.fixtures.</span></span><span class="sig-name descname"><span class="pre">SQLALCHEMY_TEMPFILE_SQLITE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmp_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/fixtures.html#SQLALCHEMY_TEMPFILE_SQLITE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.fixtures.SQLALCHEMY_TEMPFILE_SQLITE" title="Permalink to this definition"></a></dt>
-<dd><p>Setup an SQLite database with the pytest tmp_path fixture.
-Then setup the SQLAlchemy style URL with that DB.
-The SQLAlchemyDS will create the schema as needed.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.fixtures.datasource">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.fixtures.</span></span><span class="sig-name descname"><span class="pre">datasource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/fixtures.html#datasource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.fixtures.datasource" title="Permalink to this definition"></a></dt>
-<dd><p>This parameterized fixture will setup up various datasources.</p>
-<p>Add datasource objects to DATASOURCES_TO_TEST once they’ve got
-our basic schema loaded.  And adjust our <cite>if</cite> statements here
-until we are SQLAlchemy only.</p>
-<p>Pytest should take it from there and automatically run it
-through all the tests using this fixture.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.fixtures.dataspace">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.fixtures.</span></span><span class="sig-name descname"><span class="pre">dataspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/fixtures.html#dataspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.fixtures.dataspace" title="Permalink to this definition"></a></dt>
-<dd><p>This parameterized fixture will setup up various datasources.
-Add datasource objects to DATASOURCES_TO_TEST once they’ve got
-our basic schema loaded.  And adjust our <cite>if</cite> statements here
-until we are SQLAlchemy only.</p>
-<p>Pytest should take it from there and automatically run it
-through all the tests using this fixture.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.fixtures.load_sample_data_into_datasource">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.fixtures.</span></span><span class="sig-name descname"><span class="pre">load_sample_data_into_datasource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_only_db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/tests/fixtures.html#load_sample_data_into_datasource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.fixtures.load_sample_data_into_datasource" title="Permalink to this definition"></a></dt>
-<dd><p>load our sample test data into a dataspace
-This is a function not a fixture so you can
-run it on any datasource providing the right API.</p>
-</dd></dl>
-
+<section id="decisionengine-framework-dataspace-tests-fixtures-module">
+<h2>decisionengine.framework.dataspace.tests.fixtures module<a class="headerlink" href="#decisionengine-framework-dataspace-tests-fixtures-module" title="Permalink to this headline"></a></h2>
 </section>
 <section id="module-decisionengine.framework.dataspace.tests.test_Reaper">
 <span id="decisionengine-framework-dataspace-tests-test-reaper-module"></span><h2>decisionengine.framework.dataspace.tests.test_Reaper module<a class="headerlink" href="#module-decisionengine.framework.dataspace.tests.test_Reaper" title="Permalink to this headline"></a></h2>
@@ -277,101 +203,8 @@ run it on any datasource providing the right API.</p>
 <dd></dd></dl>
 
 </section>
-<section id="module-decisionengine.framework.dataspace.tests.test_datablock">
-<span id="decisionengine-framework-dataspace-tests-test-datablock-module"></span><h2>decisionengine.framework.dataspace.tests.test_datablock module<a class="headerlink" href="#module-decisionengine.framework.dataspace.tests.test_datablock" title="Permalink to this headline"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_constructor">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_constructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_constructor" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_duplicate">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_duplicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_duplicate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_duplicate" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_dataproducts">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_get_dataproducts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_get_dataproducts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_dataproducts" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_header">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_get_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_get_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_header" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_metadata">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_get_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_get_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_metadata" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_taskmanager">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_get_taskmanager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_get_taskmanager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_taskmanager" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_is_expired">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_is_expired</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_is_expired"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_is_expired" title="Permalink to this definition"></a></dt>
-<dd><p>This test just validates the method/function exists.
-The stub within our default code should be replaced
-by a class inheriting from it.
-That class should have more rational return types.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_is_expired_with_key">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_is_expired_with_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_is_expired_with_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_is_expired_with_key" title="Permalink to this definition"></a></dt>
-<dd><p>This test just validates the method/function exists.
-The stub within our default code should be replaced
-by a class inheriting from it.
-That class should have more rational return types.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_key_management">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_key_management</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_key_management"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_key_management" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_key_management_change_name">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_key_management_change_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_key_management_change_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_key_management_change_name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_mark_expired">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_mark_expired</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_mark_expired"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_mark_expired" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_no_key_by_name">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_no_key_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_no_key_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_no_key_by_name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_to_str">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_DataBlock_to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_DataBlock_to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_to_str" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_Header_constructor">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_Header_constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_Header_constructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_Header_constructor" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_Header_is_valid">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_Header_is_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_Header_is_valid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_Header_is_valid" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_Metadata_constructor">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_Metadata_constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_Metadata_constructor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_Metadata_constructor" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_datablock.test_Metadata_set_state">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_datablock.</span></span><span class="sig-name descname"><span class="pre">test_Metadata_set_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_datablock.html#test_Metadata_set_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_datablock.test_Metadata_set_state" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
+<section id="decisionengine-framework-dataspace-tests-test-datablock-module">
+<h2>decisionengine.framework.dataspace.tests.test_datablock module<a class="headerlink" href="#decisionengine-framework-dataspace-tests-test-datablock-module" title="Permalink to this headline"></a></h2>
 </section>
 <section id="module-decisionengine.framework.dataspace.tests.test_datablock_zlib">
 <span id="decisionengine-framework-dataspace-tests-test-datablock-zlib-module"></span><h2>decisionengine.framework.dataspace.tests.test_datablock_zlib module<a class="headerlink" href="#module-decisionengine.framework.dataspace.tests.test_datablock_zlib" title="Permalink to this headline"></a></h2>
@@ -399,139 +232,8 @@ That class should have more rational return types.</p>
 <dd></dd></dl>
 
 </section>
-<section id="module-decisionengine.framework.dataspace.tests.test_dataspace">
-<span id="decisionengine-framework-dataspace-tests-test-dataspace-module"></span><h2>decisionengine.framework.dataspace.tests.test_dataspace module<a class="headerlink" href="#module-decisionengine.framework.dataspace.tests.test_dataspace" title="Permalink to this headline"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_dataspace_config_finds_bad">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_dataspace_config_finds_bad</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_dataspace_config_finds_bad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_dataspace_config_finds_bad" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_duplicate_datablock">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_duplicate_datablock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_duplicate_datablock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_duplicate_datablock" title="Permalink to this definition"></a></dt>
-<dd><p>Can we duplicate taskmanager1 and all its entries</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_datablock">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_datablock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_datablock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_datablock" title="Permalink to this definition"></a></dt>
-<dd><p>Can we get the datablock content</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_dataproduct">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_dataproduct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_dataproduct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_dataproduct" title="Permalink to this definition"></a></dt>
-<dd><p>Can we get the dataproduct by uuid with key</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_dataproduct_not_exist">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_dataproduct_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_dataproduct_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_dataproduct_not_exist" title="Permalink to this definition"></a></dt>
-<dd><p>Does it error out if we ask for bogus information?</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_dataproducts">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_dataproducts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_dataproducts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_dataproducts" title="Permalink to this definition"></a></dt>
-<dd><p>Can we get the dataproducts by uuid and uuid with key</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_dataproducts_not_exist">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_dataproducts_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_dataproducts_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_dataproducts_not_exist" title="Permalink to this definition"></a></dt>
-<dd><p>Does it error out if we ask for bogus information?</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_header">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_header" title="Permalink to this definition"></a></dt>
-<dd><p>Can we fetch a header?</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_header_not_exist">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_header_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_header_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_header_not_exist" title="Permalink to this definition"></a></dt>
-<dd><p>Does it error out if we ask for a bogus header?</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_last_generation_id">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_last_generation_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_last_generation_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_last_generation_id" title="Permalink to this definition"></a></dt>
-<dd><p>Can we get the last generation id by name or name and uuid</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_last_generation_id_not_exist">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_last_generation_id_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_last_generation_id_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_last_generation_id_not_exist" title="Permalink to this definition"></a></dt>
-<dd><p>Does it error out if we ask for a bogus taskmanager?</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_metadata">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>Can we fetch a metadata element?</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_metadata_not_exist">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_metadata_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_metadata_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_metadata_not_exist" title="Permalink to this definition"></a></dt>
-<dd><p>Does it error out if we ask for a bogus metadata element?</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_taskmanager_exists">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_taskmanager_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_taskmanager_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_taskmanager_exists" title="Permalink to this definition"></a></dt>
-<dd><p>Can I get a taskmanager by name or name and uuid</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_taskmanager_not_exists">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_taskmanager_not_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_taskmanager_not_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_taskmanager_not_exists" title="Permalink to this definition"></a></dt>
-<dd><p>This should error out</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_taskmanagers">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_taskmanagers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_taskmanagers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_taskmanagers" title="Permalink to this definition"></a></dt>
-<dd><p>Can I get multimple task managers</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_get_taskmanagers_not_exist">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_get_taskmanagers_not_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_get_taskmanagers_not_exist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_get_taskmanagers_not_exist" title="Permalink to this definition"></a></dt>
-<dd><p>Do I error out when asking for garbage</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_has_config">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_has_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_has_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_has_config" title="Permalink to this definition"></a></dt>
-<dd><p>verify our config entry exists</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_insert">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_insert" title="Permalink to this definition"></a></dt>
-<dd><p>Can we insert new elements</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_store_taskmanager">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_store_taskmanager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_store_taskmanager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_store_taskmanager" title="Permalink to this definition"></a></dt>
-<dd><p>Can we make new entries</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_update">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_update" title="Permalink to this definition"></a></dt>
-<dd><p>Do updates work as expected</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="decisionengine.framework.dataspace.tests.test_dataspace.test_update_bad">
-<span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.tests.test_dataspace.</span></span><span class="sig-name descname"><span class="pre">test_update_bad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataspace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/tests/test_dataspace.html#test_update_bad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.tests.test_dataspace.test_update_bad" title="Permalink to this definition"></a></dt>
-<dd><p>Do updates fail to work on bogus taskmanager as expected</p>
-</dd></dl>
-
+<section id="decisionengine-framework-dataspace-tests-test-dataspace-module">
+<h2>decisionengine.framework.dataspace.tests.test_dataspace module<a class="headerlink" href="#decisionengine-framework-dataspace-tests-test-dataspace-module" title="Permalink to this headline"></a></h2>
 </section>
 <section id="module-decisionengine.framework.dataspace.tests">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-decisionengine.framework.dataspace.tests" title="Permalink to this headline"></a></h2>

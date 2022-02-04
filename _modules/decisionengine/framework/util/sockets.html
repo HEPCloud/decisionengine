@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.util.sockets &mdash; decisionengine 1.7.99.post2.dev8+g0b495fbf documentation</title>
+  <title>decisionengine.framework.util.sockets &mdash; decisionengine 1.7.99.post2.dev11+gb348d6f7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -91,6 +91,7 @@
 
 <div class="viewcode-block" id="get_random_port"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.sockets.get_random_port">[docs]</a><span class="k">def</span> <span class="nf">get_random_port</span><span class="p">():</span>
     <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;looking for random port in get_random_port&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
             <span class="n">s</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>

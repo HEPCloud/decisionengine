@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.99.post2.dev8+g0b495fbf documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.99.post2.dev11+gb348d6f7 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -191,10 +191,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">startup_complete</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DecisionEngine started on </span><span class="si">{</span><span class="n">server_address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rpc_metrics</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;metrics&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;no_webserver&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">start_webserver</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DecisionEngine starting on </span><span class="si">{</span><span class="n">server_address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">exchange_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exchange_name&quot;</span><span class="p">,</span> <span class="s2">&quot;hepcloud_topic_exchange&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating topic exchange </span><span class="si">{</span><span class="n">exchange_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -204,6 +201,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span> <span class="o">=</span> <span class="n">SourceWorkers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span> <span class="o">=</span> <span class="n">ChannelWorkers</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rpc_metrics</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;metrics&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DecisionEngine __init__ complete </span><span class="si">{</span><span class="n">server_address</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DecisionEngine.get_logger"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.get_logger">[docs]</a>    <span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span></div>
@@ -803,6 +804,11 @@
 
         <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step reaper_start&quot;</span><span class="p">)</span>
         <span class="n">server</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="n">server</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reaper_start_delay_seconds&quot;</span><span class="p">,</span> <span class="mi">1818</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">server</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;no_webserver&quot;</span><span class="p">):</span>
+            <span class="c1"># cherrypy for metrics</span>
+            <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step start_webserver (metrics)&quot;</span><span class="p">)</span>
+            <span class="n">server</span><span class="o">.</span><span class="n">start_webserver</span><span class="p">()</span>
 
         <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step start_channels&quot;</span><span class="p">)</span>
         <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
