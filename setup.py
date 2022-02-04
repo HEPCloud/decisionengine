@@ -50,7 +50,7 @@ devel_req = [
     "packaging >= 20.4",
     "wheel >= 0.36.2",
     "coverage == 6.1.2",  # https://github.com/nedbat/coveragepy/issues/1300
-    "pytest >= 6.2.2",
+    "pytest >= 6.2.2, < 7.0",  # pytest 7 incompatible with pytest-postgres < 4
     "pytest-cov >= 2.11.1",
     "pytest-flake8 >= 1.0.7",
     "pytest-postgresql >= 3.0.0, < 4.0.0",
