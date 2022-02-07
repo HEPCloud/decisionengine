@@ -30,7 +30,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 runtime_require = [
     "cherrypy >= 18.6.0",
     "kombu[redis] >= 5.1.0",
-    "jsonnet >= 0.17.0",
+    "jsonnet == 0.17.0",
     "prometheus-client >= 0.10.0",
     "tabulate >= 0.8.7",
     "toposort >= 1.6",
