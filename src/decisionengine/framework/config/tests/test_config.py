@@ -3,6 +3,7 @@
 
 import os
 import re
+import shutil
 
 import pytest
 
@@ -37,6 +38,9 @@ def load():
         return handler
 
     yield _call
+
+    # clean up the log directory if it gets created
+    shutil.rmtree("/tmp/de_config_tests", ignore_errors=True)
 
 
 # --------------------------------------------------------------------
