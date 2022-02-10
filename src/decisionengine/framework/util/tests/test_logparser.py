@@ -63,6 +63,11 @@ def test_logparser_with_directory():
     assert logparser.console_scripts_main(["-e", fixtures_dir, "-v", "-f", "1", "log_sample.txt"]) is None
 
 
+def test_logparser_with_directory_not_verbose():
+    fixtures_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures")
+    assert logparser.console_scripts_main(["-e", fixtures_dir, "-f", "1", "log_sample.txt"]) is None
+
+
 def test_logparser_parse_constraints():
     assert logparser.parse_constraints(["3 INFO", "2 publisher", "logger channel"]) == {
         "fields": [(3, "INFO"), (2, "publisher")],
@@ -107,7 +112,7 @@ def test_logparser_field():
     this_dir = os.path.dirname(os.path.abspath(__file__))
     logtoparse = os.path.join(this_dir, "fixtures", "log_sample.txt")
     assert (
-        logparser.main(["-d", "-v", "-f", "1,2", logtoparse])
+        logparser.main(["-d", "-f", "1,2", logtoparse])
         == """channel,fe_group_classads
 channel,fe_group_classads
 channel,fe_group_classads
