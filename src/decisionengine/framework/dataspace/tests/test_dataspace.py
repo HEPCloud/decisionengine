@@ -58,6 +58,19 @@ def test_get_taskmanager_exists(dataspace):  # noqa: F811
 
 
 @pytest.mark.usefixtures("dataspace")
+def test_delete(dataspace):  # noqa: F811
+    # this doesn't do much at this level, but we can make sure it exists
+    dataspace.delete("11111111-1111-1111-1111-111111111111")
+    dataspace.delete("22222222-2222-2222-2222-222222222222", all_generations=True)
+
+
+@pytest.mark.usefixtures("dataspace")
+def test_mark_expired(dataspace):  # noqa: F811
+    # this doesn't do much at this level, but we can make sure it exists
+    dataspace.mark_expired("11111111-1111-1111-1111-111111111111", 1, "my_test_key", 0)
+
+
+@pytest.mark.usefixtures("dataspace")
 def test_get_taskmanager_not_exists(dataspace):  # noqa: F811
     """This should error out"""
     with pytest.raises((KeyError, NoResultFound)):
