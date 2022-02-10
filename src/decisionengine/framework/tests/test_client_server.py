@@ -39,6 +39,15 @@ def test_client_status_msg_to_stdout(deserver):
 
 
 @pytest.mark.usefixtures("deserver")
+def test_client_set_loglevel(deserver):
+    # these shouldn't error out even if the channels are dead
+    # they should report the channel is dead, if it did die.
+    assert "DEBUG" in deserver.de_client_run_cli("--print-engine-loglevel")
+    deserver.de_client_run_cli("--set-channel-loglevel", "test_channel", "DEBUG")
+    assert "ERROR" in deserver.de_client_run_cli("--set-channel-loglevel", "test_channel", "ERROR")
+
+
+@pytest.mark.usefixtures("deserver")
 def test_client_print_product(deserver):
     # Test default options
     output = deserver.de_client_run_cli("--print-product", "foo", "--verbose")
