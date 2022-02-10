@@ -610,7 +610,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         _socket_host = "0.0.0.0"
         if self.global_config.get("webserver") and isinstance(self.global_config.get("webserver"), dict):
             _port = self.global_config["webserver"].get("port", DEFAULT_WEBSERVER_PORT)
-        else:
+        else:  # pragma: no cover
+            # unit tests use a random port
             _port = DEFAULT_WEBSERVER_PORT
 
         with contextlib.suppress(Exception):
@@ -638,7 +639,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         """
         try:
             return display_metrics()
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             self.logger.error(e)
 
 

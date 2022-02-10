@@ -122,14 +122,14 @@ class DataSpace:
     def insert(self, taskmanager_id, generation_id, key, value, header, metadata):
         try:
             self.datasource.insert(taskmanager_id, generation_id, key, value, header, metadata)
-        except Exception:
+        except Exception:  # pragma: no cover
             logger.exception("Error in dataspace insert!")
             raise
 
     def update(self, taskmanager_id, generation_id, key, value, header, metadata):
         try:
             self.datasource.update(taskmanager_id, generation_id, key, value, header, metadata)
-        except Exception:
+        except Exception:  # pragma: no cover
             logger.exception("Error in dataspace update!")
             raise
 

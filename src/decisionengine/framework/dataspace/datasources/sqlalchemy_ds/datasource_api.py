@@ -59,7 +59,8 @@ class SQLAlchemyDS(ds.DataSource):
 
         if "echo" in config_dict and config_dict["echo"]:
             self.logger.debug(f"Initializing a SQLAlchemyDS datasource: {config_dict}")
-        else:
+        else:  # pragma: no cover
+            # unit testing in "echo" mode for ease of debugging
             self.logger.debug("Initializing a SQLAlchemyDS datasource")
 
         self.config_dict = config_dict
