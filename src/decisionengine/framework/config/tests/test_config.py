@@ -41,6 +41,7 @@ def load():
 
     # clean up the log directory if it gets created
     shutil.rmtree("/tmp/de_config_tests", ignore_errors=True)
+    shutil.rmtree("/tmp/de_config_unittests", ignore_errors=True)
 
 
 # --------------------------------------------------------------------
