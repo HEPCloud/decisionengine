@@ -6,6 +6,7 @@
 
 import pytest
 
+from decisionengine.framework.util.metrics import display_metrics
 from decisionengine.framework.util.tests.fixtures import Counter, Gauge, OtherMetric, prometheus_env_setup  # noqa: F401
 
 
@@ -91,3 +92,8 @@ def test_other_metric_observe_value(OtherMetric, other_metric_arg):  # noqa: F81
     m = _m(test_metric_string, test_metric_string)
     m.observe(42)
     assert m._sum.get() == 42
+
+
+def test_noop_display_metrics():
+    """Just ensure the function runs without error"""
+    display_metrics()
