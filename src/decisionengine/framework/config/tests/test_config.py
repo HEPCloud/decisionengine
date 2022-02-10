@@ -3,7 +3,6 @@
 
 import os
 import re
-import shutil
 
 import pytest
 
@@ -39,8 +38,9 @@ def load():
 
     yield _call
 
-    # clean up the log directory if it gets created
-    shutil.rmtree("/tmp/de_config_tests", ignore_errors=True)
+    # Cleanup code on this is tricky as the unit tests either share
+    # a static directory to store their logfiles across multiple
+    # fixtures or use random tempfile names.
 
 
 # --------------------------------------------------------------------

@@ -8,6 +8,7 @@ import logging
 import logging.config
 import logging.handlers
 import os
+import tempfile
 
 import structlog
 
@@ -50,9 +51,14 @@ def configure_logging(
     :arg  max_backup_count: start rotaion after this number is reached
     :rtype: None
     """
+    if log_file_name in (None, ""):
+        # we explicitly asked for no name, but a filename
+        # is actually required for this to work.
+        log_file_name = tempfile.NamedTemporaryFile().name
+
     dirname = os.path.dirname(log_file_name)
-    if dirname and not os.path.exists(dirname):
-        os.makedirs(dirname)
+    if dirname:
+        os.makedirs(dirname, exist_ok=True)
 
     delogger.setLevel(getattr(logging, log_level.upper()))
     if delogger.handlers:
