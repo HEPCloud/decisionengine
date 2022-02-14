@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.tests.test_dataspace &mdash; decisionengine 1.7.99.post2.dev16+g6522ed37 documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_dataspace &mdash; decisionengine 1.7.99.post2.dev17+gabde7d0f documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -133,6 +133,19 @@
     <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">result2</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="s2">&quot;11111111-1111-1111-1111-111111111111&quot;</span>
 
     <span class="k">assert</span> <span class="n">result1</span> <span class="o">==</span> <span class="n">result2</span></div>
+
+
+<div class="viewcode-block" id="test_delete"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_dataspace.test_delete">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_delete</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
+    <span class="c1"># this doesn&#39;t do much at this level, but we can make sure it exists</span>
+    <span class="n">dataspace</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;11111111-1111-1111-1111-111111111111&quot;</span><span class="p">)</span>
+    <span class="n">dataspace</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;22222222-2222-2222-2222-222222222222&quot;</span><span class="p">,</span> <span class="n">all_generations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="test_mark_expired"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_dataspace.test_mark_expired">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_mark_expired</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
+    <span class="c1"># this doesn&#39;t do much at this level, but we can make sure it exists</span>
+    <span class="n">dataspace</span><span class="o">.</span><span class="n">mark_expired</span><span class="p">(</span><span class="s2">&quot;11111111-1111-1111-1111-111111111111&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;my_test_key&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_get_taskmanager_not_exists"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_dataspace.test_get_taskmanager_not_exists">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">)</span>
