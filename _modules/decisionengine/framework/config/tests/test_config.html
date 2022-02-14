@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.config.tests.test_config &mdash; decisionengine 1.7.99.post2.dev18+g56516df7 documentation</title>
+  <title>decisionengine.framework.config.tests.test_config &mdash; decisionengine 1.7.99.post2.dev19+g7547720c documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -81,7 +81,6 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
 
 <span class="kn">import</span> <span class="nn">pytest</span>
 
@@ -115,10 +114,11 @@
         <span class="n">handler</span><span class="o">.</span><span class="n">load_all_channels</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">handler</span>
 
-    <span class="k">yield</span> <span class="n">_call</span>
+    <span class="k">yield</span> <span class="n">_call</span></div>
 
-    <span class="c1"># clean up the log directory if it gets created</span>
-    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s2">&quot;/tmp/de_config_tests&quot;</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+    <span class="c1"># Cleanup code on this is tricky as the unit tests either share</span>
+    <span class="c1"># a static directory to store their logfiles across multiple</span>
+    <span class="c1"># fixtures or use random tempfile names.</span>
 
 
 <span class="c1"># --------------------------------------------------------------------</span>
