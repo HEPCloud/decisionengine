@@ -16,7 +16,6 @@ from decisionengine.framework.dataspace.tests.fixtures import (  # noqa: F401
 )
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_constructor(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
 
@@ -33,7 +32,6 @@ def test_DataBlock_constructor(dataspace):  # noqa: F811
     assert dblock.generation_id == 1
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_to_str(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
 
@@ -54,7 +52,6 @@ def test_DataBlock_to_str(dataspace):  # noqa: F811
     assert result == expected
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_key_management(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])
@@ -84,7 +81,6 @@ def test_DataBlock_key_management(dataspace):  # noqa: F811
     assert dblock["new_example_test_key"] == newDict
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_key_management_change_name(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])
@@ -100,7 +96,6 @@ def test_DataBlock_key_management_change_name(dataspace):  # noqa: F811
     assert dblock["example_test_key"] == newDict
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_no_key_by_name(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])
@@ -112,7 +107,6 @@ def test_DataBlock_no_key_by_name(dataspace):  # noqa: F811
         dblock["no_such_key_exists"]
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_get_header(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])
@@ -123,7 +117,6 @@ def test_DataBlock_get_header(dataspace):  # noqa: F811
     assert header == dblock.get_header("example_test_key")
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_get_metadata(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])
@@ -138,7 +131,6 @@ def test_DataBlock_get_metadata(dataspace):  # noqa: F811
     assert metadata == dblock.get_metadata("example_test_key")
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_get_taskmanager(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])
@@ -149,7 +141,6 @@ def test_DataBlock_get_taskmanager(dataspace):  # noqa: F811
     assert dblock.get_taskmanager(my_tm["name"])["taskmanager_id"] == my_tm["taskmanager_id"]
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_is_expired(dataspace):  # noqa: F811
     """This test just validates the method/function exists.
     The stub within our default code should be replaced
@@ -165,7 +156,6 @@ def test_DataBlock_is_expired(dataspace):  # noqa: F811
     assert dblock.is_expired() is None
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_is_expired_with_key(dataspace):  # noqa: F811
     """This test just validates the method/function exists.
     The stub within our default code should be replaced
@@ -181,7 +171,6 @@ def test_DataBlock_is_expired_with_key(dataspace):  # noqa: F811
     assert dblock.is_expired(key="example_test_key") is None
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_mark_expired(dataspace):  # noqa: F811
     # mark_expired is just a stub in this case
     # failure in a real implementation should raise an exception
@@ -194,7 +183,6 @@ def test_DataBlock_mark_expired(dataspace):  # noqa: F811
     assert dblock.mark_expired(1) is None
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_get_dataproducts(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])
@@ -208,7 +196,6 @@ def test_DataBlock_get_dataproducts(dataspace):  # noqa: F811
     assert products[0]["value"] == "example_test_value"
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_DataBlock_duplicate(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])
@@ -227,7 +214,6 @@ def test_DataBlock_duplicate(dataspace):  # noqa: F811
         assert dblock[key] == dblock_2[key]
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_Metadata_constructor(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     metadata = datablock.Metadata(my_tm["taskmanager_id"])
@@ -262,7 +248,6 @@ def test_Metadata_constructor(dataspace):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_Metadata_set_state(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     metadata = datablock.Metadata(my_tm["taskmanager_id"])
@@ -276,7 +261,6 @@ def test_Metadata_set_state(dataspace):  # noqa: F811
         metadata.set_state("INVALID_STATE")
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_Header_constructor(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])
@@ -304,7 +288,6 @@ def test_Header_constructor(dataspace):  # noqa: F811
     assert header.data["schema_id"] == schema
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_Header_is_valid(dataspace):  # noqa: F811
     my_tm = dataspace.get_taskmanagers()[0]  # fetch one of our loaded examples
     header = datablock.Header(my_tm["taskmanager_id"])

@@ -19,7 +19,6 @@ from decisionengine.framework.dataspace.tests.fixtures import (  # noqa: F401
 )
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_has_config(dataspace):  # noqa: F811
     """verify our config entry exists"""
     assert isinstance(dataspace.config, dict)
@@ -39,7 +38,6 @@ def test_dataspace_config_finds_bad():
     assert e.match("Invalid dataspace configuration")
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_taskmanager_exists(dataspace):  # noqa: F811
     """Can I get a taskmanager by name or name and uuid"""
     # should return the 'newest' instance
@@ -57,20 +55,17 @@ def test_get_taskmanager_exists(dataspace):  # noqa: F811
     assert result1 == result2
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_delete(dataspace):  # noqa: F811
     # this doesn't do much at this level, but we can make sure it exists
     dataspace.delete("11111111-1111-1111-1111-111111111111")
     dataspace.delete("22222222-2222-2222-2222-222222222222", all_generations=True)
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_mark_expired(dataspace):  # noqa: F811
     # this doesn't do much at this level, but we can make sure it exists
     dataspace.mark_expired("11111111-1111-1111-1111-111111111111", 1, "my_test_key", 0)
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_taskmanager_not_exists(dataspace):  # noqa: F811
     """This should error out"""
     with pytest.raises((KeyError, NoResultFound)):
@@ -82,7 +77,6 @@ def test_get_taskmanager_not_exists(dataspace):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_taskmanagers(dataspace):  # noqa: F811
     """Can I get multimple task managers"""
     yesterday = str(datetime.datetime.now() - datetime.timedelta(days=1))
@@ -129,7 +123,6 @@ def test_get_taskmanagers(dataspace):  # noqa: F811
     assert str(result7[0]["taskmanager_id"]) == "22222222-2222-2222-2222-222222222222"
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_taskmanagers_not_exist(dataspace):  # noqa: F811
     """Do I error out when asking for garbage"""
     last_year = str(datetime.datetime.now() - datetime.timedelta(days=365))
@@ -145,7 +138,6 @@ def test_get_taskmanagers_not_exist(dataspace):  # noqa: F811
     assert result == []
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_store_taskmanager(dataspace):  # noqa: F811
     """Can we make new entries"""
     primary_key = dataspace.store_taskmanager(
@@ -155,7 +147,6 @@ def test_store_taskmanager(dataspace):  # noqa: F811
     assert primary_key > 1
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_last_generation_id(dataspace):  # noqa: F811
     """Can we get the last generation id by name or name and uuid"""
     result1 = dataspace.get_last_generation_id(taskmanager_name="taskmanager1")
@@ -173,7 +164,6 @@ def test_get_last_generation_id(dataspace):  # noqa: F811
     assert result2 == 2
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_last_generation_id_not_exist(dataspace):  # noqa: F811
     """Does it error out if we ask for a bogus taskmanager?"""
     with pytest.raises((KeyError, NoResultFound)):
@@ -185,7 +175,6 @@ def test_get_last_generation_id_not_exist(dataspace):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_header(dataspace):  # noqa: F811
     """Can we fetch a header?"""
     result = dataspace.get_header(
@@ -201,7 +190,6 @@ def test_get_header(dataspace):  # noqa: F811
     assert result[7] == "module"
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_header_not_exist(dataspace):  # noqa: F811
     """Does it error out if we ask for a bogus header?"""
     with pytest.raises((KeyError, NoResultFound)):
@@ -226,7 +214,6 @@ def test_get_header_not_exist(dataspace):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_metadata(dataspace):  # noqa: F811
     """Can we fetch a metadata element?"""
     result = dataspace.get_metadata(
@@ -241,7 +228,6 @@ def test_get_metadata(dataspace):  # noqa: F811
     assert result[3] == "my_test_key"
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_metadata_not_exist(dataspace):  # noqa: F811
     """Does it error out if we ask for a bogus metadata element?"""
     with pytest.raises((KeyError, NoResultFound)):
@@ -266,7 +252,6 @@ def test_get_metadata_not_exist(dataspace):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_dataproducts(dataspace):  # noqa: F811
     """Can we get the dataproducts by uuid and uuid with key"""
     result1 = dataspace.get_dataproducts(taskmanager_id=1)
@@ -297,7 +282,6 @@ def test_get_dataproducts(dataspace):  # noqa: F811
     ]
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_dataproducts_not_exist(dataspace):  # noqa: F811
     """Does it error out if we ask for bogus information?"""
     result = dataspace.get_dataproducts(taskmanager_id=100)
@@ -307,7 +291,6 @@ def test_get_dataproducts_not_exist(dataspace):  # noqa: F811
     assert result == []
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_dataproduct(dataspace):  # noqa: F811
     """Can we get the dataproduct by uuid with key"""
     result2 = dataspace.get_dataproduct(
@@ -319,7 +302,6 @@ def test_get_dataproduct(dataspace):  # noqa: F811
     assert result2 == b"other_test_value"
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_datablock(dataspace):  # noqa: F811
     """Can we get the datablock content"""
     result2 = dataspace.get_datablock(
@@ -330,7 +312,6 @@ def test_get_datablock(dataspace):  # noqa: F811
     assert result2 == {"other_test_key": b"other_test_value"}
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_get_dataproduct_not_exist(dataspace):  # noqa: F811
     """Does it error out if we ask for bogus information?"""
     with pytest.raises((KeyError, NoResultFound)):
@@ -341,7 +322,6 @@ def test_get_dataproduct_not_exist(dataspace):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_insert(dataspace):  # noqa: F811
     """Can we insert new elements"""
     primary_key = dataspace.store_taskmanager("taskmanager3", "33333333-3333-3333-3333-333333333333")
@@ -374,7 +354,6 @@ def test_insert(dataspace):  # noqa: F811
     assert result1 == result2
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_update(dataspace):  # noqa: F811
     """Do updates work as expected"""
     metadata_row = dataspace.get_metadata(
@@ -418,7 +397,6 @@ def test_update(dataspace):  # noqa: F811
     assert result1 == b"I changed IT"
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_update_bad(dataspace):  # noqa: F811
     """Do updates fail to work on bogus taskmanager as expected"""
     metadata_row = dataspace.get_metadata(
@@ -455,7 +433,6 @@ def test_update_bad(dataspace):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("dataspace")
 def test_duplicate_datablock(dataspace):  # noqa: F811
     """Can we duplicate taskmanager1 and all its entries"""
     result1 = dataspace.get_last_generation_id(

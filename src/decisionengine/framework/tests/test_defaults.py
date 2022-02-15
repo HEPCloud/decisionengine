@@ -6,8 +6,6 @@
 
 import json
 
-import pytest
-
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITHOUT_SCHEMA,
@@ -23,7 +21,6 @@ deserver = DEServer(
 )  # pylint: disable=invalid-name
 
 
-@pytest.mark.usefixtures("deserver")
 def test_defaults(deserver):
     # Verify unknown channel has NOTSET
     output = deserver.de_client_run_cli("--get-channel-loglevel=UNITTEST")

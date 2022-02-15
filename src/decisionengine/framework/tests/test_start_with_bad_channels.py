@@ -10,8 +10,6 @@ import re
 
 from logging import ERROR
 
-import pytest
-
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITHOUT_SCHEMA,
@@ -46,7 +44,6 @@ def _expected_circularity(test_str):
     )
 
 
-@pytest.mark.usefixtures("deserver")
 def test_client_can_get_products_no_channels(deserver, caplog):
     """Verify client can get channel products even when none are run"""
     output = deserver.de_client_run_cli("--print-products")

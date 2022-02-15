@@ -23,25 +23,21 @@ from decisionengine.framework.dataspace.datasources.tests.fixtures import (  # n
 )
 
 
-@pytest.mark.usefixtures("datasource")
 def test_create_tables(datasource):  # noqa: F811
     """create_tables() should be safe to call multiple times"""
     datasource.create_tables()
 
 
-@pytest.mark.usefixtures("datasource")
 def test_reset_connections(datasource):  # noqa: F811
     """reset_connections() should be safe to call any time"""
     datasource.reset_connections()
 
 
-@pytest.mark.usefixtures("datasource")
 def test_has_config(datasource):  # noqa: F811
     """This should have a `config` dict we can pass to jsonnet"""
     assert isinstance(datasource.config, dict)
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_taskmanager_exists(datasource):  # noqa: F811
     """Can I get a taskmanager by name or name and uuid"""
     # should return the 'newest' instance
@@ -59,7 +55,6 @@ def test_get_taskmanager_exists(datasource):  # noqa: F811
     assert result1 == result2
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_taskmanager_not_exists(datasource):  # noqa: F811
     """This should error out"""
     with pytest.raises((KeyError, NoResultFound)):
@@ -71,7 +66,6 @@ def test_get_taskmanager_not_exists(datasource):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_taskmanagers(datasource):  # noqa: F811
     """Can I get multimple task managers"""
     yesterday = str(datetime.datetime.now() - datetime.timedelta(days=1))
@@ -118,7 +112,6 @@ def test_get_taskmanagers(datasource):  # noqa: F811
     assert str(result7[0]["taskmanager_id"]) == "22222222-2222-2222-2222-222222222222"
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_taskmanagers_not_exist(datasource):  # noqa: F811
     """Do I error out when asking for garbage"""
     last_year = str(datetime.datetime.now() - datetime.timedelta(days=365))
@@ -134,7 +127,6 @@ def test_get_taskmanagers_not_exist(datasource):  # noqa: F811
     assert result == []
 
 
-@pytest.mark.usefixtures("datasource")
 def test_store_taskmanager(datasource):  # noqa: F811
     """Can we make new entries"""
     primary_key = datasource.store_taskmanager(
@@ -144,7 +136,6 @@ def test_store_taskmanager(datasource):  # noqa: F811
     assert primary_key > 1
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_last_generation_id(datasource):  # noqa: F811
     """Can we get the last generation id by name or name and uuid"""
     result1 = datasource.get_last_generation_id(taskmanager_name="taskmanager1")
@@ -162,7 +153,6 @@ def test_get_last_generation_id(datasource):  # noqa: F811
     assert result2 == 2
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_last_generation_id_not_exist(datasource):  # noqa: F811
     """Does it error out if we ask for a bogus taskmanager?"""
     with pytest.raises((KeyError, NoResultFound)):
@@ -174,7 +164,6 @@ def test_get_last_generation_id_not_exist(datasource):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_header(datasource):  # noqa: F811
     """Can we fetch a header?"""
     result = datasource.get_header(
@@ -190,7 +179,6 @@ def test_get_header(datasource):  # noqa: F811
     assert result[7] == "module"
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_header_not_exist(datasource):  # noqa: F811
     """Does it error out if we ask for a bogus header?"""
     with pytest.raises((KeyError, NoResultFound)):
@@ -215,7 +203,6 @@ def test_get_header_not_exist(datasource):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_metadata(datasource):  # noqa: F811
     """Can we fetch a metadata element?"""
     result = datasource.get_metadata(
@@ -230,7 +217,6 @@ def test_get_metadata(datasource):  # noqa: F811
     assert result[3] == "my_test_key"
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_metadata_not_exist(datasource):  # noqa: F811
     """Does it error out if we ask for a bogus metadata element?"""
     with pytest.raises((KeyError, NoResultFound)):
@@ -255,7 +241,6 @@ def test_get_metadata_not_exist(datasource):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_dataproducts(datasource):  # noqa: F811
     """Can we get the dataproducts by uuid and uuid with key"""
     result1 = datasource.get_dataproducts(taskmanager_id=1)
@@ -286,7 +271,6 @@ def test_get_dataproducts(datasource):  # noqa: F811
     ]
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_dataproducts_not_exist(datasource):  # noqa: F811
     """Does it error out if we ask for bogus information?"""
     result = datasource.get_dataproducts(taskmanager_id=100)
@@ -296,7 +280,6 @@ def test_get_dataproducts_not_exist(datasource):  # noqa: F811
     assert result == []
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_dataproduct(datasource):  # noqa: F811
     """Can we get the dataproduct by uuid with key"""
     result2 = datasource.get_dataproduct(
@@ -308,7 +291,6 @@ def test_get_dataproduct(datasource):  # noqa: F811
     assert result2 == b"other_test_value"
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_dataproduct_not_exist(datasource):  # noqa: F811
     """Does it error out if we ask for bogus information?"""
     with pytest.raises((KeyError, NoResultFound)):
@@ -319,7 +301,6 @@ def test_get_dataproduct_not_exist(datasource):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("datasource")
 def test_insert(datasource):  # noqa: F811
     """Can we insert new elements"""
     primary_key = datasource.store_taskmanager("taskmanager3", "33333333-3333-3333-3333-333333333333")
@@ -352,7 +333,6 @@ def test_insert(datasource):  # noqa: F811
     assert result1 == result2
 
 
-@pytest.mark.usefixtures("datasource")
 def test_update(datasource):  # noqa: F811
     """Do updates work as expected"""
     metadata_row = datasource.get_metadata(
@@ -396,7 +376,6 @@ def test_update(datasource):  # noqa: F811
     assert result1 == b"I changed IT"
 
 
-@pytest.mark.usefixtures("datasource")
 def test_update_bad(datasource):  # noqa: F811
     """Do updates fail to work on bogus taskmanager as expected"""
     metadata_row = datasource.get_metadata(
@@ -433,7 +412,6 @@ def test_update_bad(datasource):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("datasource")
 def test_delete_data_older_than_arg(datasource):  # noqa: F811
     """Can we delete old entries"""
     with pytest.raises((ValueError, NoResultFound), match="Argument has to be positive, non zero integer"):
@@ -451,7 +429,6 @@ def test_delete_data_older_than_arg(datasource):  # noqa: F811
         datasource.get_taskmanager(taskmanager_name="taskmanager1")
 
 
-@pytest.mark.usefixtures("datasource")
 def test_get_datablock(datasource):  # noqa: F811
     tm = datasource.get_taskmanager(taskmanager_name="taskmanager1")
     gen_id = datasource.get_last_generation_id(taskmanager_name="taskmanager1")
@@ -460,7 +437,6 @@ def test_get_datablock(datasource):  # noqa: F811
     assert result1 == {"my_test_key": b"my_test_value", "a_test_key": b"a_test_value"}
 
 
-@pytest.mark.usefixtures("datasource")
 def test_duplicate_datablock(datasource):  # noqa: F811
     """Can we duplicate taskmanager1 and all its entries"""
     result1 = datasource.get_last_generation_id(

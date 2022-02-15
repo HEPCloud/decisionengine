@@ -26,7 +26,6 @@ deserver = DEServer(
 
 
 @pytest.mark.timeout(35)
-@pytest.mark.usefixtures("deserver")
 def test_client_can_start_one_channel_added_after_startup(deserver):
     """Verify client can start a single channel"""
     output = deserver.de_client_run_cli("--ping")

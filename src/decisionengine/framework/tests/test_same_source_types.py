@@ -6,8 +6,6 @@
 import os
 import re
 
-import pytest
-
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITHOUT_SCHEMA,
@@ -21,7 +19,6 @@ _channel_config_dir = os.path.join(TEST_CONFIG_PATH, "test-same-source-types-sep
 deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir)  # pylint: disable=invalid-name
 
 
-@pytest.mark.usefixtures("deserver")
 def test_same_source_types_separate_channels(deserver):
     # Channels A and B both have sources of type IntSource, which
     # creates a product with the name "int_value".  This test verifies

@@ -3,8 +3,6 @@
 
 import os
 
-import pytest
-
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITHOUT_SCHEMA,
@@ -18,7 +16,6 @@ _channel_config_dir = os.path.join(TEST_CONFIG_PATH, "test-error-on-acquire")  #
 deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir)  # pylint: disable=invalid-name
 
 
-@pytest.mark.usefixtures("deserver")
 def test_source_only_channel(deserver):
     output = deserver.de_client_run_cli("--stop-channel", "error_on_acquire")
     assert output == "Channel error_on_acquire stopped cleanly."

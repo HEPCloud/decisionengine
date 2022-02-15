@@ -7,8 +7,6 @@
 import datetime
 import json
 
-import pytest
-
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITHOUT_SCHEMA,
@@ -37,7 +35,6 @@ DEFAULT_OUTPUT = (
 )
 
 
-@pytest.mark.usefixtures("deserver")
 def test_query_tool(deserver):
     # Test default output
     output = deserver.de_query_tool_run_cli("foo")

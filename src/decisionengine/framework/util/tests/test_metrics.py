@@ -28,7 +28,6 @@ from decisionengine.framework.util.tests.fixtures import Counter, Gauge, OtherMe
         },
     ],
 )
-@pytest.mark.usefixtures("Gauge")
 def test_gauge_set_multiproc_mode(Gauge, test_params):  # noqa: F811
     """
     Test setting the gauge multiproc mode
@@ -43,7 +42,6 @@ def test_gauge_set_multiproc_mode(Gauge, test_params):  # noqa: F811
     assert g._multiprocess_mode == test_params.get("wanted_multiprocess_mode", pytest.gauge_default_multiproc_mode)
 
 
-@pytest.mark.usefixtures("Gauge")
 def test_gauge_multiproc_override_invalid(Gauge):  # noqa: F811
     """Test overriding the default gauge multiproc mode with something
     invalid"""
@@ -56,7 +54,6 @@ def test_gauge_multiproc_override_invalid(Gauge):  # noqa: F811
         )
 
 
-@pytest.mark.usefixtures("Gauge")
 def test_gauge_set_value(Gauge):  # noqa: F811
     """Test setting a gauge value"""
     g = Gauge("test_gauge_set_value", "test_gauge_set_value")
@@ -64,7 +61,6 @@ def test_gauge_set_value(Gauge):  # noqa: F811
     assert g._value.get() == 42
 
 
-@pytest.mark.usefixtures("Gauge")
 def test_gauge_set_invalid_value(Gauge):  # noqa: F811
     """Try to set a gauge to an invalid value"""
     g = Gauge(
@@ -75,7 +71,6 @@ def test_gauge_set_invalid_value(Gauge):  # noqa: F811
         g.set("badstring")
 
 
-@pytest.mark.usefixtures("Counter")
 def test_counter_inc_value(Counter):  # noqa: F811
     """Increment the counter"""
     c = Counter("test_counter_inc_value", "test_counter_inc_value")
@@ -84,7 +79,6 @@ def test_counter_inc_value(Counter):  # noqa: F811
 
 
 @pytest.mark.parametrize("other_metric_arg", ["histogram", "summary"])
-@pytest.mark.usefixtures("OtherMetric")
 def test_other_metric_observe_value(OtherMetric, other_metric_arg):  # noqa: F811
     """Observe a histogram or summary value and make sure it is stored properly"""
     _m = OtherMetric(other_metric_arg)

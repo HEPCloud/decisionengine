@@ -101,26 +101,22 @@ class RunChannel:
 
 
 @pytest.fixture()
-@pytest.mark.usefixtures("dataspace")
 def global_config(dataspace):  # noqa: F811
     conf = ValidConfig(policies.global_config_file(_CONFIG_PATH))
     conf["dataspace"] = dataspace.config["dataspace"]
     yield conf
 
 
-@pytest.mark.usefixtures("global_config")
 def test_taskmanager_init(global_config):
     task_manager = task_manager_for(global_config, "test_channel")
     assert task_manager.state.has_value(State.BOOT)
 
 
-@pytest.mark.usefixtures("global_config")
 def test_taskmanager_channel_name_in_config(global_config):
     task_manager = task_manager_for(global_config, "test_channel2")
     assert task_manager.name == "name_in_config"
 
 
-@pytest.mark.usefixtures("global_config")
 def test_shutdown_method_called(global_config, caplog):
     with RunChannel(global_config, "test_channel") as task_manager:
         task_manager.take_offline()
@@ -138,7 +134,6 @@ def test_shutdown_method_called(global_config, caplog):
     assert shutdown_called
 
 
-@pytest.mark.usefixtures("global_config")
 def test_take_task_manager_offline(global_config):
     with RunChannel(global_config, "test_channel") as task_manager:
         task_manager.take_offline()
@@ -146,7 +141,6 @@ def test_take_task_manager_offline(global_config):
     assert task_manager.get_state_value() == State.OFFLINE.value
 
 
-@pytest.mark.usefixtures("global_config")
 def test_failing_publisher(global_config):
     with RunChannel(global_config, "failing_publisher") as task_manager:
         task_manager.state.wait_while(State.ACTIVE)  # While launching sources
@@ -154,7 +148,6 @@ def test_failing_publisher(global_config):
     assert task_manager.state.has_value(State.OFFLINE)
 
 
-@pytest.mark.usefixtures("global_config", "dataspace")
 def test_bad_datablock(global_config, dataspace, caplog):  # noqa: F811
     with RunChannel(global_config, "test_channel") as task_manager:
         task_manager.state.wait_while(State.ACTIVE)
@@ -164,7 +157,6 @@ def test_bad_datablock(global_config, dataspace, caplog):  # noqa: F811
         assert "data_block put expecting" in caplog.text
 
 
-@pytest.mark.usefixtures("global_config")
 def test_no_data_to_transform(global_config):
     with RunChannel(global_config, "test_channel") as task_manager:
         task_manager.run_transforms()
@@ -173,13 +165,11 @@ def test_no_data_to_transform(global_config):
         task_manager.take_offline()
 
 
-@pytest.mark.usefixtures("global_config")
 def test_run_source_only_once(global_config):
     with RunChannel(global_config, "run_source_once") as task_manager:
         task_manager.take_offline()
 
 
-@pytest.mark.usefixtures("global_config")
 def test_multiple_logic_engines_not_supported(global_config):
     with pytest.raises(RuntimeError, match="Cannot support more than one logic engine per channel."):
         task_manager_for(global_config, "multiple_logic_engines")

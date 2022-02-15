@@ -40,7 +40,6 @@ def setup_queue_logging(queue_logger_setup, log_setup, handler_setup):
     del queue_logger_setup
 
 
-@pytest.mark.usefixtures("queue_logger_setup", "log_setup", "handler_setup")
 def test_setup_queue_logging(queue_logger_setup, log_setup, handler_setup):
     # queue_logger_setup.setup_queue_logging(log_setup, handler_setup)
 
@@ -50,7 +49,6 @@ def test_setup_queue_logging(queue_logger_setup, log_setup, handler_setup):
     assert isinstance(queue_logger_setup.structlog_listener, logging.handlers.QueueListener)
 
 
-@pytest.mark.usefixtures("queue_logger_setup", "log_setup", "handler_setup")
 def test_start_queue_logger(queue_logger_setup, log_setup, handler_setup):
     # queue_logger_setup.setup_queue_logging(log_setup, handler_setup)
     queue_logger_setup.start()
@@ -58,7 +56,6 @@ def test_start_queue_logger(queue_logger_setup, log_setup, handler_setup):
     assert queue_logger_setup.structlog_listener._thread is not None
 
 
-@pytest.mark.usefixtures("queue_logger_setup", "log_setup", "handler_setup")
 def test_stop_queue_logger(queue_logger_setup, log_setup, handler_setup):
     # queue_logger_setup.setup_queue_logging(log_setup, handler_setup)
     queue_logger_setup.start()

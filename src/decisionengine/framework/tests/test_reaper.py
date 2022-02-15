@@ -4,8 +4,6 @@
 """Fixture based DE Server for the reaper tests"""
 # pylint: disable=redefined-outer-name
 
-import pytest
-
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITHOUT_SCHEMA,
@@ -21,7 +19,6 @@ deserver = DEServer(
 )  # pylint: disable=invalid-name
 
 
-@pytest.mark.usefixtures("deserver")
 def test_client_can_get_de_server_reaper_status(deserver):
     """Verify reaper status"""
     output = deserver.de_client_run_cli("--reaper-status")
