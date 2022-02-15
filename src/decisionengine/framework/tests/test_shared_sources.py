@@ -4,8 +4,6 @@
 import os
 import re
 
-import pytest
-
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITHOUT_SCHEMA,
@@ -25,7 +23,6 @@ def record_that_matches(substring, records):
     return any(substring in r.message for r in records)
 
 
-@pytest.mark.usefixtures("deserver_conflicting")
 def test_conflicting_source_configurations(deserver_conflicting, caplog):
     assert record_that_matches(
         "Mismatched configurations for source with name source", caplog.get_records(when="setup")
@@ -38,7 +35,6 @@ deserver_shared = DEServer(
 )  # pylint: disable=invalid-name
 
 
-@pytest.mark.usefixtures("deserver_shared")
 def test_shared_source(deserver_shared, caplog):
     assert record_that_matches("Using existing source source for channel D", caplog.get_records(when="setup"))
     output = deserver_shared.de_client_run_cli("--status")

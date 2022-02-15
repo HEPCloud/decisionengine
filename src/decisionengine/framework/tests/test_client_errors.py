@@ -4,8 +4,6 @@
 """Fixture based DE Server tests of the sample config"""
 # pylint: disable=redefined-outer-name
 
-import pytest
-
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITHOUT_SCHEMA,
@@ -21,7 +19,6 @@ deserver = DEServer(
 )  # pylint: disable=invalid-name
 
 
-@pytest.mark.usefixtures("deserver")
 def test_client_cannot_wait_on_bad_state(deserver):
     """Verify wait is for a valid state"""
     output = deserver.de_client_run_cli("--block-while=INVALID_STATE")

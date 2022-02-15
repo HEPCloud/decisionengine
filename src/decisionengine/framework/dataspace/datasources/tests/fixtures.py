@@ -51,7 +51,6 @@ else:
 
 
 @pytest.fixture()
-@pytest.mark.usefixtures("PG_DE_DB_WITHOUT_SCHEMA")
 def SQLALCHEMY_PG_WITH_SCHEMA(PG_DE_DB_WITHOUT_SCHEMA):
     """
     Get a blank database from pytest_postgresql.

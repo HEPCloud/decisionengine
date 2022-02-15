@@ -4,8 +4,6 @@
 """Fixture based DE Server tests of the defaults"""
 # pylint: disable=redefined-outer-name
 
-import pytest
-
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITHOUT_SCHEMA,
@@ -30,7 +28,6 @@ def stopped_channel_opts(timeout=1):
     ]
 
 
-@pytest.mark.usefixtures("deserver")
 def test_client_can_get_de_server_status(deserver):
     # Verify channel enters stable state
     output = deserver.de_client_run_cli("--status")
@@ -69,7 +66,6 @@ def test_client_can_get_de_server_status(deserver):
     assert "OK" in output
 
 
-@pytest.mark.usefixtures("deserver")
 def test_client_can_restart_all_channels(deserver):
     """Verify client can get channel products even when none are run"""
     output = deserver.de_client_run_cli("--stop-channels")
@@ -80,7 +76,6 @@ def test_client_can_restart_all_channels(deserver):
     assert "No channels are currently active." not in output
 
 
-@pytest.mark.usefixtures("deserver")
 def test_client_can_restart_one_channel(deserver):
     """Verify client can restart a single channel"""
     output = deserver.de_client_run_cli("--stop-channel", "test_channel")
@@ -91,7 +86,6 @@ def test_client_can_restart_one_channel(deserver):
     assert "No channels are currently active." not in output
 
 
-@pytest.mark.usefixtures("deserver")
 def test_client_can_kill_one_channel(deserver):
     # Verify client can kill a single channel
     output = deserver.de_client_run_cli("--kill-channel", "test_channel")
@@ -116,7 +110,6 @@ def test_client_can_kill_one_channel(deserver):
     assert "No channels are currently active." in output
 
 
-@pytest.mark.usefixtures("deserver")
 def test_client_non_real_channel(deserver):
     # Verify correct handling of config for missing channel
     output = deserver.de_client_run_cli("--show-channel-config", "ISNT_REAL")
@@ -138,7 +131,6 @@ def test_client_non_real_channel(deserver):
     assert output == "No channel found with the name ISNT_REAL."
 
 
-@pytest.mark.usefixtures("deserver")
 def test_client_logger_level(deserver):
     # Verify can fetch log level
     output = deserver.de_client_run_cli("--print-engine-loglevel")

@@ -52,22 +52,18 @@ def reaper(request):
     gc.collect()
 
 
-@pytest.mark.usefixtures("reaper")
 def test_reap_default_state(reaper):
     assert reaper.state.get() == State.BOOT
 
 
-@pytest.mark.usefixtures("reaper")
 def test_reaper_can_reap(reaper):
     reaper.reap()
 
 
-@pytest.mark.usefixtures("reaper")
 def test_just_stop_no_error(reaper):
     reaper.stop()
 
 
-@pytest.mark.usefixtures("reaper")
 def test_start_stop(reaper):
     reaper.start()
     assert reaper.state.get() in (State.IDLE, State.ACTIVE, State.STEADY)
@@ -76,7 +72,6 @@ def test_start_stop(reaper):
     assert reaper.state.get() in (State.SHUTTINGDOWN, State.SHUTDOWN)
 
 
-@pytest.mark.usefixtures("reaper")
 def test_start_stop_stop(reaper):
     reaper.start()
     assert reaper.state.get() in (State.IDLE, State.ACTIVE, State.STEADY)
@@ -89,7 +84,6 @@ def test_start_stop_stop(reaper):
     assert reaper.state.get() in (State.SHUTTINGDOWN, State.SHUTDOWN)
 
 
-@pytest.mark.usefixtures("reaper")
 def test_state_can_be_active(reaper):
     def sleepnow(arg1=None, arg2=None):
         time.sleep(3)
@@ -101,7 +95,6 @@ def test_state_can_be_active(reaper):
 
 
 @pytest.mark.timeout(20)
-@pytest.mark.usefixtures("reaper")
 def test_state_sets_timer_and_uses_it(reaper):
     def sleepnow(arg1=None, arg2=None):
         time.sleep(3)
@@ -118,14 +111,12 @@ def test_state_sets_timer_and_uses_it(reaper):
         reaper.state.wait_while(State.ACTIVE)  # let the reaper finish its scan
 
 
-@pytest.mark.usefixtures("reaper")
 def test_start_delay(reaper):
     reaper.start(delay=90)
     assert reaper.state.get() == State.IDLE
 
 
 @pytest.mark.timeout(20)
-@pytest.mark.usefixtures("reaper")
 def test_loop_of_start_stop_in_clumps(reaper):
     for _ in range(3):
         logger.debug(f"run {_} of rapid start/stop")
@@ -135,19 +126,16 @@ def test_loop_of_start_stop_in_clumps(reaper):
         assert reaper.state.get() in (State.SHUTTINGDOWN, State.SHUTDOWN)
 
 
-@pytest.mark.usefixtures("reaper")
 def test_fail_small_retain(reaper):
     with pytest.raises(ValueError):
         reaper.retention_interval = 1
 
 
-@pytest.mark.usefixtures("reaper")
 def test_fail_small_run_interval(reaper):
     with pytest.raises(ValueError):
         reaper.seconds_between_runs = 1
 
 
-@pytest.mark.usefixtures("reaper")
 def test_fail_start_two_reapers(reaper):
     reaper.start()
     assert reaper.state.get() in (State.IDLE, State.ACTIVE, State.STEADY)
@@ -156,28 +144,24 @@ def test_fail_start_two_reapers(reaper):
         reaper.start()
 
 
-@pytest.mark.usefixtures("reaper", "config")
 def test_fail_missing_config(reaper, config):
     del config["dataspace"]
     with pytest.raises(dataspace.DataSpaceConfigurationError):
         Reaper(config)
 
 
-@pytest.mark.usefixtures("reaper", "config")
 def test_fail_bad_config(reaper, config):
     config["dataspace"] = "somestring"
     with pytest.raises(dataspace.DataSpaceConfigurationError):
         Reaper(config)
 
 
-@pytest.mark.usefixtures("reaper", "config")
 def test_fail_missing_config_key(reaper, config):
     del config["dataspace"]["retention_interval_in_days"]
     with pytest.raises(dataspace.DataSpaceConfigurationError):
         Reaper(config)
 
 
-@pytest.mark.usefixtures("reaper", "config")
 def test_fail_wrong_config_key(reaper, config):
     config["dataspace"]["retention_interval_in_days"] = "abc"
     with pytest.raises(ValueError):
@@ -185,7 +169,6 @@ def test_fail_wrong_config_key(reaper, config):
 
 
 @pytest.mark.timeout(20)
-@pytest.mark.usefixtures("reaper")
 def test_source_fail_can_be_fixed(reaper):
     with mock.patch.object(NullDataSource, "delete_data_older_than") as function:
         function.side_effect = KeyError

@@ -6,8 +6,6 @@
 import os
 import re
 
-import pytest
-
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITHOUT_SCHEMA,
@@ -22,7 +20,6 @@ _channel_config_dir = os.path.join(TEST_CONFIG_PATH, "test-combined-channels")  
 deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_config_dir)  # pylint: disable=invalid-name
 
 
-@pytest.mark.usefixtures("deserver")
 def test_combined_channels(deserver):
     # Mimics the 'test_single_source_proxy' workflow but using a
     # combined-configuration approach.
@@ -42,7 +39,6 @@ deserver_combined = DEServer(
 )  # pylint: disable=invalid-name
 
 
-@pytest.mark.usefixtures("deserver_combined")
 def test_combined_channels_3g(deserver_combined):
     # Mimics the 'test_many_source_proxies' workflow but using a
     # combined-configuration approach.

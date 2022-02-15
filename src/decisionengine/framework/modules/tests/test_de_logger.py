@@ -29,7 +29,6 @@ def log_setup():
     gc.collect()
 
 
-@pytest.mark.usefixtures("log_setup")
 def test_by_nonsense_is_err(log_setup):
     with pytest.raises(ValueError, match=r".*Incorrect 'file_rotate_by'.*"), tempfile.NamedTemporaryFile() as log:
         log.flush()
@@ -42,7 +41,6 @@ def test_by_nonsense_is_err(log_setup):
         )
 
 
-@pytest.mark.usefixtures("log_setup")
 def test_by_size(log_setup):
     with tempfile.NamedTemporaryFile() as log:
         log.flush()
@@ -61,7 +59,6 @@ def test_by_size(log_setup):
         assert log_setup.info("infomsg") is None
 
 
-@pytest.mark.usefixtures("log_setup")
 def test_by_time(log_setup):
     with tempfile.NamedTemporaryFile() as log:
         log.flush()

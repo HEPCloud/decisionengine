@@ -33,21 +33,18 @@ _TASK_MANAGER = TaskManager()
 
 
 @pytest.fixture()
-@pytest.mark.usefixtures("dataspace")
 def global_config(dataspace):  # noqa: F811
     conf = ValidConfig(policies.global_config_file(_CONFIG_PATH))
     conf["dataspace"] = dataspace.config["dataspace"]
     yield conf
 
 
-@pytest.mark.usefixtures("global_config")
 def test_worker_name(global_config):
     worker = ChannelWorker(_TASK_MANAGER, global_config["logger"])
 
     assert worker.name == f"DEChannelWorker-{_TASK_MANAGER.name}"
 
 
-@pytest.mark.usefixtures("global_config")
 def test_worker_logger_sized_rotation(global_config):
     worker = ChannelWorker(_TASK_MANAGER, global_config["logger"])
     worker.setup_logger()
@@ -55,7 +52,6 @@ def test_worker_logger_sized_rotation(global_config):
     assert "RotatingFileHandler" in str(worker.logger.handlers)
 
 
-@pytest.mark.usefixtures("global_config")
 def test_worker_logger_timed_rotation(global_config):
     global_config["logger"]["file_rotate_by"] = "time"
     worker = ChannelWorker(_TASK_MANAGER, global_config["logger"])
