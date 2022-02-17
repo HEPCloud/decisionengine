@@ -2,12 +2,16 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # on dockerhub hepcloud/decision-engine-ci
+#    The CI container should probably come from modules...
 FROM sl:7
-LABEL description="hepcloud/decision-engine"
+LABEL description="hepcloud/decision-engine-framework"
 
 # You can select another version at container build time by setting
 # this value to the expected version - ie 9.6
-ARG PG_VERSION=11
+ARG PG_VERSION=12
+
+# Set where to collect metrics "on disk"
+ENV PROMETHEUS_MULTIPROC_DIR=/tmp
 
 # If you want to run decisionengine in this container
 # you'll need to bind mount onto these points
@@ -44,11 +48,13 @@ RUN yum -y install \
  && yum -y clean all
 
 # Ensure pip/setuptools are up to date
+#  rpm-build requires libraries in /usr
 RUN python3 -m pip install --upgrade --prefix=/usr pip ; \
     python3 -m pip install --upgrade --prefix=/usr setuptools wheel setuptools-scm[toml]
 
-# Install decisionengine requirements (only)
+# Install decisionengine requirements (runtime and testing)
 #  do as one layer to simplify merges
+#  rpm-build requires libraries in /usr
 RUN su - adm -s /bin/bash -c "git clone https://github.com/HEPCloud/decisionengine.git /tmp/decisionengine.git"; \
     cd /tmp/decisionengine.git ; \
     su adm -s /bin/bash -c "cd /tmp/decisionengine.git ; python3 setup.py bdist_wheel" ; \
