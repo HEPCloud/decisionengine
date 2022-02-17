@@ -52,6 +52,9 @@ def test_client_can_get_de_server_status(deserver):
     assert "source1" in output
     assert "transform1" in output
 
+    # make sure this doesn't crash the tests
+    deserver.de_client_run_cli("--metrics")
+
     # Verify timeout works
     deserver.de_client_run_cli("--block-while", "STEADY", "--timeout", "3")
     output = deserver.de_client_run_cli("--status")

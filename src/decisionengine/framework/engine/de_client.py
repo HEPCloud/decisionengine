@@ -171,7 +171,7 @@ def main(args_to_parse=None):
         if args.verbose:
             msg += f"\n{e}"
         return msg
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         msg = f"An error occurred while trying to access a DE server at '{url}'."
         if args.verbose:
             msg += f"\n{e}"
