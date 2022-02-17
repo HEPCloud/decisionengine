@@ -5,6 +5,8 @@
 import gc
 import logging
 import os
+import random
+import re
 import tempfile
 import threading
 
@@ -65,7 +67,26 @@ class DETestWorker(threading.Thread):
             conf_path, channel_conf_path, parse_program_options([])
         )
 
+        # Because multiple DETestWorkers can be in use concurrently,
+        # we assign different database numbers (from 0 through 15 by
+        # redis default) where possible to avoid kombu messaging
+        # collisions whenever routing keys are the same.
+
+        # If pytest-xdist is being used, and 16 or fewer xdist workers
+        # are being used, we can use the number in the worker ID as
+        # the database ID.  Otherwise, we assign a random number
+        # between 0 and 15 (inclusive).
+        db_number = 0
+        xdist_worker_count = os.environ.get("PYTEST_XDIST_WORKER_COUNT")
+        if xdist_worker_count and int(xdist_worker_count) <= 16:
+            worker_id = os.environ["PYTEST_XDIST_WORKER"]
+            db_number = re.sub(r"^gw(\d{1,2})", r"\1", worker_id)  # Remove the gw prefix
+            assert int(db_number) < 16
+        else:
+            db_number = random.randrange(0, 16)
+
         # Override global configuration for testing
+        self.global_config["broker_url"] = f"redis://localhost:6379/{db_number}"
         self.global_config["shutdown_timeout"] = 1
         self.global_config["server_address"] = self.server_address
         self.global_config["dataspace"]["datasource"] = datasource
