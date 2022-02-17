@@ -752,6 +752,10 @@ def _start_de_server(server):
             server.get_logger().error(msg)
 
         raise __e
+    finally:
+        r = redis.Redis.from_url(server.broker_url)
+        with contextlib.suppress(Exception):
+            r.flushdb()
 
 
 def main(args=None):
