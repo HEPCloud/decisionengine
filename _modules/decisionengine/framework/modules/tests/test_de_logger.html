@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.tests.test_de_logger &mdash; decisionengine 1.7.99.post2.dev22+g30d68610 documentation</title>
+  <title>decisionengine.framework.modules.tests.test_de_logger &mdash; decisionengine 1.7.99.post2.dev23+ge36c2150 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -107,8 +107,7 @@
     <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="test_by_nonsense_is_err"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_nonsense_is_err">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;log_setup&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_by_nonsense_is_err</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
+<div class="viewcode-block" id="test_by_nonsense_is_err"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_nonsense_is_err">[docs]</a><span class="k">def</span> <span class="nf">test_by_nonsense_is_err</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;.*Incorrect &#39;file_rotate_by&#39;.*&quot;</span><span class="p">),</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="n">de_logger</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span>
@@ -120,8 +119,7 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="test_by_size"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_size">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;log_setup&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_by_size</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
+<div class="viewcode-block" id="test_by_size"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_size">[docs]</a><span class="k">def</span> <span class="nf">test_by_size</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="n">de_logger</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span>
@@ -139,8 +137,7 @@
         <span class="k">assert</span> <span class="n">log_setup</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;infomsg&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="test_by_time"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_time">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;log_setup&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_by_time</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
+<div class="viewcode-block" id="test_by_time"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_time">[docs]</a><span class="k">def</span> <span class="nf">test_by_time</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="n">de_logger</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span>

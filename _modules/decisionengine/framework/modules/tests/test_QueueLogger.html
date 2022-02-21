@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.tests.test_QueueLogger &mdash; decisionengine 1.7.99.post2.dev22+g30d68610 documentation</title>
+  <title>decisionengine.framework.modules.tests.test_QueueLogger &mdash; decisionengine 1.7.99.post2.dev23+ge36c2150 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -118,8 +118,7 @@
     <span class="k">del</span> <span class="n">queue_logger_setup</span></div>
 
 
-<div class="viewcode-block" id="test_setup_queue_logging"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_QueueLogger.test_setup_queue_logging">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;queue_logger_setup&quot;</span><span class="p">,</span> <span class="s2">&quot;log_setup&quot;</span><span class="p">,</span> <span class="s2">&quot;handler_setup&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_setup_queue_logging</span><span class="p">(</span><span class="n">queue_logger_setup</span><span class="p">,</span> <span class="n">log_setup</span><span class="p">,</span> <span class="n">handler_setup</span><span class="p">):</span>
+<div class="viewcode-block" id="test_setup_queue_logging"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_QueueLogger.test_setup_queue_logging">[docs]</a><span class="k">def</span> <span class="nf">test_setup_queue_logging</span><span class="p">(</span><span class="n">queue_logger_setup</span><span class="p">,</span> <span class="n">log_setup</span><span class="p">,</span> <span class="n">handler_setup</span><span class="p">):</span>
     <span class="c1"># queue_logger_setup.setup_queue_logging(log_setup, handler_setup)</span>
 
     <span class="k">assert</span> <span class="n">queue_logger_setup</span><span class="o">.</span><span class="n">structlog_q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -128,16 +127,14 @@
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">queue_logger_setup</span><span class="o">.</span><span class="n">structlog_listener</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">QueueListener</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="test_start_queue_logger"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_QueueLogger.test_start_queue_logger">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;queue_logger_setup&quot;</span><span class="p">,</span> <span class="s2">&quot;log_setup&quot;</span><span class="p">,</span> <span class="s2">&quot;handler_setup&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_start_queue_logger</span><span class="p">(</span><span class="n">queue_logger_setup</span><span class="p">,</span> <span class="n">log_setup</span><span class="p">,</span> <span class="n">handler_setup</span><span class="p">):</span>
+<div class="viewcode-block" id="test_start_queue_logger"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_QueueLogger.test_start_queue_logger">[docs]</a><span class="k">def</span> <span class="nf">test_start_queue_logger</span><span class="p">(</span><span class="n">queue_logger_setup</span><span class="p">,</span> <span class="n">log_setup</span><span class="p">,</span> <span class="n">handler_setup</span><span class="p">):</span>
     <span class="c1"># queue_logger_setup.setup_queue_logging(log_setup, handler_setup)</span>
     <span class="n">queue_logger_setup</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
     <span class="k">assert</span> <span class="n">queue_logger_setup</span><span class="o">.</span><span class="n">structlog_listener</span><span class="o">.</span><span class="n">_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="test_stop_queue_logger"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_QueueLogger.test_stop_queue_logger">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;queue_logger_setup&quot;</span><span class="p">,</span> <span class="s2">&quot;log_setup&quot;</span><span class="p">,</span> <span class="s2">&quot;handler_setup&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_stop_queue_logger</span><span class="p">(</span><span class="n">queue_logger_setup</span><span class="p">,</span> <span class="n">log_setup</span><span class="p">,</span> <span class="n">handler_setup</span><span class="p">):</span>
+<div class="viewcode-block" id="test_stop_queue_logger"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_QueueLogger.test_stop_queue_logger">[docs]</a><span class="k">def</span> <span class="nf">test_stop_queue_logger</span><span class="p">(</span><span class="n">queue_logger_setup</span><span class="p">,</span> <span class="n">log_setup</span><span class="p">,</span> <span class="n">handler_setup</span><span class="p">):</span>
     <span class="c1"># queue_logger_setup.setup_queue_logging(log_setup, handler_setup)</span>
     <span class="n">queue_logger_setup</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
     <span class="n">queue_logger_setup</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>

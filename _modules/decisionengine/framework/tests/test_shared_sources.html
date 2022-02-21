@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_shared_sources &mdash; decisionengine 1.7.99.post2.dev22+g30d68610 documentation</title>
+  <title>decisionengine.framework.tests.test_shared_sources &mdash; decisionengine 1.7.99.post2.dev23+ge36c2150 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -82,8 +82,6 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
-<span class="kn">import</span> <span class="nn">pytest</span>
-
 <span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
     <span class="n">DEServer</span><span class="p">,</span>
     <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="p">,</span>
@@ -103,8 +101,7 @@
     <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">substring</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">message</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">records</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="test_conflicting_source_configurations"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_shared_sources.test_conflicting_source_configurations">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver_conflicting&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_conflicting_source_configurations</span><span class="p">(</span><span class="n">deserver_conflicting</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
+<div class="viewcode-block" id="test_conflicting_source_configurations"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_shared_sources.test_conflicting_source_configurations">[docs]</a><span class="k">def</span> <span class="nf">test_conflicting_source_configurations</span><span class="p">(</span><span class="n">deserver_conflicting</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">record_that_matches</span><span class="p">(</span>
         <span class="s2">&quot;Mismatched configurations for source with name source&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">when</span><span class="o">=</span><span class="s2">&quot;setup&quot;</span><span class="p">)</span>
     <span class="p">)</span></div>
@@ -116,8 +113,7 @@
 <span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="test_shared_source"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_shared_sources.test_shared_source">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver_shared&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_shared_source</span><span class="p">(</span><span class="n">deserver_shared</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
+<div class="viewcode-block" id="test_shared_source"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_shared_sources.test_shared_source">[docs]</a><span class="k">def</span> <span class="nf">test_shared_source</span><span class="p">(</span><span class="n">deserver_shared</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">record_that_matches</span><span class="p">(</span><span class="s2">&quot;Using existing source source for channel D&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">when</span><span class="o">=</span><span class="s2">&quot;setup&quot;</span><span class="p">))</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_shared</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;channel: C.*state = STEADY&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>

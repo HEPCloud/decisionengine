@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_same_source_types &mdash; decisionengine 1.7.99.post2.dev22+g30d68610 documentation</title>
+  <title>decisionengine.framework.tests.test_same_source_types &mdash; decisionengine 1.7.99.post2.dev23+ge36c2150 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -84,8 +84,6 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
-<span class="kn">import</span> <span class="nn">pytest</span>
-
 <span class="kn">from</span> <span class="nn">decisionengine.framework.tests.fixtures</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
     <span class="n">DEServer</span><span class="p">,</span>
     <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="p">,</span>
@@ -99,8 +97,7 @@
 <span class="n">deserver</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span><span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">_channel_config_dir</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="test_same_source_types_separate_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_same_source_types.test_same_source_types_separate_channels">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;deserver&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_same_source_types_separate_channels</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+<div class="viewcode-block" id="test_same_source_types_separate_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_same_source_types.test_same_source_types_separate_channels">[docs]</a><span class="k">def</span> <span class="nf">test_same_source_types_separate_channels</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Channels A and B both have sources of type IntSource, which</span>
     <span class="c1"># creates a product with the name &quot;int_value&quot;.  This test verifies</span>
     <span class="c1"># that the publisher in channel A (B) reads the product produced by</span>

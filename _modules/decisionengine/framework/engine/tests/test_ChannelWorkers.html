@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.tests.test_ChannelWorkers &mdash; decisionengine 1.7.99.post2.dev22+g30d68610 documentation</title>
+  <title>decisionengine.framework.engine.tests.test_ChannelWorkers &mdash; decisionengine 1.7.99.post2.dev23+ge36c2150 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -111,30 +111,26 @@
 
 
 <div class="viewcode-block" id="global_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_ChannelWorkers.global_config">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
-<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;dataspace&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">global_config</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">conf</span> <span class="o">=</span> <span class="n">ValidConfig</span><span class="p">(</span><span class="n">policies</span><span class="o">.</span><span class="n">global_config_file</span><span class="p">(</span><span class="n">_CONFIG_PATH</span><span class="p">))</span>
     <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span>
     <span class="k">yield</span> <span class="n">conf</span></div>
 
 
-<div class="viewcode-block" id="test_worker_name"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_ChannelWorkers.test_worker_name">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;global_config&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_worker_name</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
+<div class="viewcode-block" id="test_worker_name"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_ChannelWorkers.test_worker_name">[docs]</a><span class="k">def</span> <span class="nf">test_worker_name</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
     <span class="n">worker</span> <span class="o">=</span> <span class="n">ChannelWorker</span><span class="p">(</span><span class="n">_TASK_MANAGER</span><span class="p">,</span> <span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">])</span>
 
     <span class="k">assert</span> <span class="n">worker</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;DEChannelWorker-</span><span class="si">{</span><span class="n">_TASK_MANAGER</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
-<div class="viewcode-block" id="test_worker_logger_sized_rotation"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_ChannelWorkers.test_worker_logger_sized_rotation">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;global_config&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_worker_logger_sized_rotation</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
+<div class="viewcode-block" id="test_worker_logger_sized_rotation"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_ChannelWorkers.test_worker_logger_sized_rotation">[docs]</a><span class="k">def</span> <span class="nf">test_worker_logger_sized_rotation</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
     <span class="n">worker</span> <span class="o">=</span> <span class="n">ChannelWorker</span><span class="p">(</span><span class="n">_TASK_MANAGER</span><span class="p">,</span> <span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">])</span>
     <span class="n">worker</span><span class="o">.</span><span class="n">setup_logger</span><span class="p">()</span>
 
     <span class="k">assert</span> <span class="s2">&quot;RotatingFileHandler&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="test_worker_logger_timed_rotation"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_ChannelWorkers.test_worker_logger_timed_rotation">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">usefixtures</span><span class="p">(</span><span class="s2">&quot;global_config&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_worker_logger_timed_rotation</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
+<div class="viewcode-block" id="test_worker_logger_timed_rotation"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_ChannelWorkers.test_worker_logger_timed_rotation">[docs]</a><span class="k">def</span> <span class="nf">test_worker_logger_timed_rotation</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
     <span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">][</span><span class="s2">&quot;file_rotate_by&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
     <span class="n">worker</span> <span class="o">=</span> <span class="n">ChannelWorker</span><span class="p">(</span><span class="n">_TASK_MANAGER</span><span class="p">,</span> <span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">])</span>
     <span class="n">worker</span><span class="o">.</span><span class="n">setup_logger</span><span class="p">()</span>
