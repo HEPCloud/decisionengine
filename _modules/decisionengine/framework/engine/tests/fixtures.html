@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.99.post2.dev24+g4d3abab7 documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 1.7.99.post2.dev25+g97aed846 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -83,6 +83,8 @@
 <span class="kn">import</span> <span class="nn">gc</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 
@@ -143,7 +145,26 @@
             <span class="n">conf_path</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="p">,</span> <span class="n">parse_program_options</span><span class="p">([])</span>
         <span class="p">)</span>
 
+        <span class="c1"># Because multiple DETestWorkers can be in use concurrently,</span>
+        <span class="c1"># we assign different database numbers (from 0 through 15 by</span>
+        <span class="c1"># redis default) where possible to avoid kombu messaging</span>
+        <span class="c1"># collisions whenever routing keys are the same.</span>
+
+        <span class="c1"># If pytest-xdist is being used, and 16 or fewer xdist workers</span>
+        <span class="c1"># are being used, we can use the number in the worker ID as</span>
+        <span class="c1"># the database ID.  Otherwise, we assign a random number</span>
+        <span class="c1"># between 0 and 15 (inclusive).</span>
+        <span class="n">db_number</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">xdist_worker_count</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PYTEST_XDIST_WORKER_COUNT&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xdist_worker_count</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">xdist_worker_count</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">16</span><span class="p">:</span>
+            <span class="n">worker_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PYTEST_XDIST_WORKER&quot;</span><span class="p">]</span>
+            <span class="n">db_number</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^gw(\d{1,2})&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">worker_id</span><span class="p">)</span>  <span class="c1"># Remove the gw prefix</span>
+            <span class="k">assert</span> <span class="nb">int</span><span class="p">(</span><span class="n">db_number</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">16</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">db_number</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+
         <span class="c1"># Override global configuration for testing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;broker_url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;redis://localhost:6379/</span><span class="si">{</span><span class="n">db_number</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;shutdown_timeout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;server_address&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datasource</span>
