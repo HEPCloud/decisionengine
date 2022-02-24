@@ -12,6 +12,12 @@ on:
     branches:
       - master
       - 1.7
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "branch ref"
+        required: true
+        default: "master"
 
 jobs:
   pytest:
@@ -151,6 +157,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: pytest
     steps:
+      - name: Set custom variables
+        run: |
+          echo "timestamp=$(date +%Y%m%d-%H%M%S)" >> ${GITHUB_ENV}
+          export my_branch_tmp=${{github.event.inputs.ref}}
+          echo "mybranch=${my_branch_tmp:-${GITHUB_REF##*/}}" >> ${GITHUB_ENV}
+          cat ${GITHUB_ENV}
+
       - name: checkout code tree
         uses: actions/checkout@v2
         with:
@@ -165,6 +178,6 @@ jobs:
       - name: Archive rpm
         uses: actions/upload-artifact@v2
         with:
-          name: rpms
+          name: rpms-DE-${{env.mybranch}}-${{env.timestamp}}
           path: dist/*.rpm
           if-no-files-found: error
