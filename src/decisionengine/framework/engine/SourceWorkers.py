@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import multiprocessing
+import pickle
 import threading
 import time
 import uuid
@@ -101,7 +102,10 @@ class SourceWorker(multiprocessing.Process):
                     Module.verify_products(self.module_instance, data)
                     self.logger.info(f"Source {self.name} acquire returned")
                     SOURCE_ACQUIRE_GAUGE.labels(self.name).set_to_current_time()
-                    self.logger.debug(f"Publishing data to queue {self.key} with routing key {self.key}")
+                    self.logger.debug(
+                        f"Publishing data to queue {self.key} with routing key {self.key}"
+                        + f" ({len(pickle.dumps(data))} pickled bytes)"
+                    )
                     producer.publish(
                         dict(source_module=self.module, class_name=self.name, data=data),
                         routing_key=self.key,
