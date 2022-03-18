@@ -11,8 +11,8 @@ from kombu.pools import producers
 
 from decisionengine.framework.taskmanager.LatestMessages import LatestMessages
 
-_BROKER_URL = "redis://localhost:6379/0"
-_EXCHANGE = Exchange("example_topic_exchange", "topic")
+_BROKER_URL = "redis://localhost:6379/15"  # Use 15 to avoid collisions with other tests
+_EXCHANGE = Exchange("test_topic_exchange", "topic")
 
 
 def message(source, msg_count):
@@ -20,9 +20,7 @@ def message(source, msg_count):
 
 
 def simple_listen(sources, barrier):
-    queues_for_receiving = [
-        Queue(f"{name}-receive", exchange=_EXCHANGE, routing_key=name, auto_delete=True) for name in sources
-    ]
+    queues_for_receiving = [Queue(name, exchange=_EXCHANGE, routing_key=name, auto_delete=True) for name in sources]
     with LatestMessages(queues_for_receiving, _BROKER_URL) as messages:
         # Do not consume messages until all senders have finished sending their messages
         barrier.wait()

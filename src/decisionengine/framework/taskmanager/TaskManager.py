@@ -89,7 +89,7 @@ class TaskManager:
     Task manager
     """
 
-    def __init__(self, name, workers, dataspace, expected_products, exchange, broker_url, routing_keys):
+    def __init__(self, name, workers, dataspace, expected_products, exchange, broker_url, queue_info):
         """
         :type name: :obj:`str`
         :arg name: Name of channel corresponding to this task manager
@@ -120,7 +120,8 @@ class TaskManager:
         self.connection = Connection(self.broker_url)
 
         self.source_product_cache = SourceProductCache(expected_products, self.logger)
-        self.routing_keys = routing_keys
+        self.queue_info = queue_info
+        self.routing_keys = [info[1] for info in self.queue_info]
 
     def get_state_value(self):
         return self.state.get_state_value()
@@ -200,11 +201,11 @@ class TaskManager:
         self.logger.info(f"Starting task manager {self.id}")
 
         queues = []
-        for i, key in enumerate(self.routing_keys):
-            self.logger.debug(f"Creating queue {self.id}-{i} with routing key {key}")
+        for queue_name, key in self.queue_info:
+            self.logger.debug(f"Creating queue {queue_name} with routing key {key}")
             queues.append(
                 Queue(
-                    f"{self.id}-{i}",  # Use task-manager ID as base name
+                    queue_name,
                     exchange=self.exchange,
                     routing_key=key,
                     auto_delete=True,
