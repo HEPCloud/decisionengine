@@ -56,7 +56,7 @@ class SourceWorker(multiprocessing.Process):
         self.connection = Connection(broker_url)
 
         # We use a random name to avoid queue collisions when running tests
-        queue_id = str(uuid.uuid4()).upper()
+        queue_id = self.key + "-" + str(uuid.uuid4()).upper()
         self.logger.debug(f"Creating queue {queue_id} with routing key {self.key}")
         self.queue = Queue(
             queue_id,

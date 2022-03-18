@@ -30,8 +30,8 @@ _CWD = os.path.dirname(os.path.abspath(__file__))
 _CONFIG_PATH = os.path.join(_CWD, "../../tests/etc/decisionengine")
 _CHANNEL_CONFIG_DIR = os.path.join(_CWD, "channels")
 
-_BROKER_URL = "redis://localhost:6379/0"
-_EXCHANGE = kombu.Exchange("test_exchange", "topic")
+_BROKER_URL = "redis://localhost:6379/14"  # Use 14 to avoid collisions with other tests
+_EXCHANGE = kombu.Exchange("test_topic_exchange", "topic")
 
 
 def random_suffix():
@@ -57,7 +57,7 @@ def task_manager_for(global_config, channel_name, ch_config=None, src_workers=No
     channel_name = ch_config.get("channel_name", channel_name + "-" + random_suffix())
     if src_workers is None:
         _, src_workers = source_workers(channel_name, ch_config["sources"])
-    keys = [worker.key for worker in src_workers.values()]
+    queue_info = [(worker.queue.name, worker.key) for worker in src_workers.values()]
     module_workers = validated_workflow(channel_name, src_workers, ch_config)
     return TaskManager(
         channel_name,
@@ -66,7 +66,7 @@ def task_manager_for(global_config, channel_name, ch_config=None, src_workers=No
         source_products(module_workers["sources"]),
         exchange=_EXCHANGE,
         broker_url=_BROKER_URL,
-        routing_keys=keys,
+        queue_info=queue_info,
     )
 
 
