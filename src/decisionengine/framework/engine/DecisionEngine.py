@@ -46,6 +46,7 @@ from decisionengine.framework.engine.SourceWorkers import SourceWorkers
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 from decisionengine.framework.taskmanager.module_graph import source_products, validated_workflow
 from decisionengine.framework.util.metrics import display_metrics, Gauge, Histogram
+from decisionengine.framework.util.redis_stats import redis_stats
 
 DEFAULT_WEBSERVER_PORT = 8000
 
@@ -330,6 +331,10 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                         txt += f"\t\t\tconsumes : {consumes.get(mod_name, [])}\n"
                         txt += f"\t\t\tproduces : {produces.get(mod_name, [])}\n"
         return txt + self.reaper_status()
+
+    def rpc_queue_status(self):
+        status = redis_stats(self.broker_url, self.exchange.name)
+        return f"\n{tabulate.tabulate(status, headers=['Source name', 'Queue name', 'Unconsumed messages'])}"
 
     def rpc_stop(self):
         self.shutdown()

@@ -20,6 +20,9 @@ def create_parser():
     server.add_argument("--ping", action="store_true", help="perform a minimal connection")
     server.add_argument("--stop", action="store_true", help="stop server")
     server.add_argument("--status", action="store_true", help="print server status")
+    server.add_argument(
+        "--queue-status", action="store_true", help="print status of Redis queues used to transport data products"
+    )
     server.add_argument("--show-de-config", action="store_true", help="print server configuration")
     server.add_argument("--print-engine-loglevel", action="store_true", help="print engine log level")
     server.add_argument("--block-while", metavar="<state>")
@@ -91,6 +94,8 @@ def execute_command_from_args(argsparsed, de_socket):
         return de_socket.ping()
     if argsparsed.status:
         return de_socket.status()
+    if argsparsed.queue_status:
+        return de_socket.queue_status()
     if argsparsed.show_de_config:
         return de_socket.show_de_config()
     if argsparsed.stop:
