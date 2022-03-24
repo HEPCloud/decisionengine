@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.99.post2.dev25+g97aed846 documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 1.7.99.post2.dev30+g9d7f6875 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -167,7 +167,7 @@
 <span class="sd">    Task manager</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">workers</span><span class="p">,</span> <span class="n">dataspace</span><span class="p">,</span> <span class="n">expected_products</span><span class="p">,</span> <span class="n">exchange</span><span class="p">,</span> <span class="n">broker_url</span><span class="p">,</span> <span class="n">routing_keys</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">workers</span><span class="p">,</span> <span class="n">dataspace</span><span class="p">,</span> <span class="n">expected_products</span><span class="p">,</span> <span class="n">exchange</span><span class="p">,</span> <span class="n">broker_url</span><span class="p">,</span> <span class="n">queue_info</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :type name: :obj:`str`</span>
 <span class="sd">        :arg name: Name of channel corresponding to this task manager</span>
@@ -198,7 +198,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">source_product_cache</span> <span class="o">=</span> <span class="n">SourceProductCache</span><span class="p">(</span><span class="n">expected_products</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">routing_keys</span> <span class="o">=</span> <span class="n">routing_keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue_info</span> <span class="o">=</span> <span class="n">queue_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">routing_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue_info</span><span class="p">]</span>
 
 <div class="viewcode-block" id="TaskManager.get_state_value"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.TaskManager.TaskManager.get_state_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get_state_value</span><span class="p">()</span></div>
@@ -278,11 +279,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting task manager </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">queues</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">routing_keys</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating queue </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> with routing key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">queue_name</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue_info</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating queue </span><span class="si">{</span><span class="n">queue_name</span><span class="si">}</span><span class="s2"> with routing key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">queues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">Queue</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># Use task-manager ID as base name</span>
+                    <span class="n">queue_name</span><span class="p">,</span>
                     <span class="n">exchange</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="p">,</span>
                     <span class="n">routing_key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
                     <span class="n">auto_delete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
