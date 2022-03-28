@@ -57,6 +57,70 @@ Issues fixed in this release
 Full list of commits since version 1.7.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+`137b574a <https://github.com/HEPCloud/decisionengine/commit/137b574ad5209bb649ce84fba06dde7196c358dc>`_:   Add a minimal container image more suited to production usage
+
+`9d7f6875 <https://github.com/HEPCloud/decisionengine/commit/9d7f68758d4477bb3ab85bfbcd008fda37485426>`_:   Provide de-client --queue-status program option.
+
+`a7dcc30d <https://github.com/HEPCloud/decisionengine/commit/a7dcc30d7d0d247f7d4dc32dbb518767bfd8b0fd>`_:   Ensure that channels and sources shared the same queues.
+
+`49a316e0 <https://github.com/HEPCloud/decisionengine/commit/49a316e05c90b6cc5fd3532ae23df0f98417c335>`_:   Restore pyupgrade to v2.30, which works on Python 3.6
+
+`2ce5ccb6 <https://github.com/HEPCloud/decisionengine/commit/2ce5ccb6ffe34ac6837b5da9a2bdefd8335ad2e6>`_:   [pre-commit.ci] pre-commit autoupdate
+
+`7bd41851 <https://github.com/HEPCloud/decisionengine/commit/7bd41851d521fe7742ee7b23395caff88e4359fa>`_:   Print number of pickled bytes of source-produced data.
+
+`97aed846 <https://github.com/HEPCloud/decisionengine/commit/97aed84622d8ea19dd35ad60f20bfcdc7efd10bd>`_:   Protect tests from Redis DB/routing-key collisions.
+
+`4d3abab7 <https://github.com/HEPCloud/decisionengine/commit/4d3abab7e9ddc2295474b501b36c36b9fe92b835>`_:   Flush the Redis DB once the DE server stops.
+
+`e36c2150 <https://github.com/HEPCloud/decisionengine/commit/e36c2150e2d05fbde9a8276df32653391901d5da>`_:   Remove unnecessary @pytest.mark.usefixtures(...) decorations.
+
+`30d68610 <https://github.com/HEPCloud/decisionengine/commit/30d686107dcd1ceef4cd7f9aeebd931cfc26a1cb>`_:   More unit testing
+
+`7850995d <https://github.com/HEPCloud/decisionengine/commit/7850995dbb6249413ed5042d813f0a3450afdd0e>`_:   We should have one path where we test without -v.
+
+`a81a52cc <https://github.com/HEPCloud/decisionengine/commit/a81a52cc05a039b6c056d6f2d0d822d1f3229025>`_:   A simple test to ensure the metrics can run
+
+`7547720c <https://github.com/HEPCloud/decisionengine/commit/7547720c58577b836d85cc11041628b0378f0f9e>`_:   Logger tests are a bit unstable at high parallelization.
+
+`56516df7 <https://github.com/HEPCloud/decisionengine/commit/56516df7d8f8c0886e64d4d1f504e4eeda2f0fea>`_:   Add missing test to ensure we can change the channel level twice
+
+`abde7d0f <https://github.com/HEPCloud/decisionengine/commit/abde7d0fe64eabe8c04958d923ebb6e12b0fc5c8>`_:   Add missing tests for inherited functions
+
+`6522ed37 <https://github.com/HEPCloud/decisionengine/commit/6522ed37b08aa5edd54fbb10c1bcc02d851e229e>`_:   Note lines we are not testing
+
+`de7829a4 <https://github.com/HEPCloud/decisionengine/commit/de7829a4e482513772b741976b89087d9933782f>`_:   Remove the unit test log directory if it got created
+
+`28fbd599 <https://github.com/HEPCloud/decisionengine/commit/28fbd599fe4b8087d7df69b5f0019f97fd323aa9>`_:   pin jsonnet 0.17.0
+
+`9c5c827e <https://github.com/HEPCloud/decisionengine/commit/9c5c827e422324e28a00f67f99da12b34859e246>`_:   Metrics seems to want the channels setup to complete
+
+`b8829997 <https://github.com/HEPCloud/decisionengine/commit/b8829997844f77f906bdab19181a1af263b709a9>`_:   Pin pytest version
+
+`b348d6f7 <https://github.com/HEPCloud/decisionengine/commit/b348d6f7e1ecb0b35c77267fead871cca86bbb5e>`_:   Fix deadlock starting cherrypy metrics server
+
+`7697e6c1 <https://github.com/HEPCloud/decisionengine/commit/7697e6c119de4ce1507032a8aa4a5f340d80b340>`_:   Log invocation of random port
+
+`9e7e4813 <https://github.com/HEPCloud/decisionengine/commit/9e7e4813cc450b9d21883b6e13ba11706912cdf3>`_:   Clarify note on xdist, run more workers
+
+`0b495fbf <https://github.com/HEPCloud/decisionengine/commit/0b495fbf588eb7360ccb3fc3509b4b8232c5ac5f>`_:   Leave note to remember to cleanup temp files
+
+`ca5ddf6f <https://github.com/HEPCloud/decisionengine/commit/ca5ddf6f6da5b234edae0f5a8a4f6e205c0520e8>`_:   Ensure we are calling the cherrypy shutdown methods
+
+`e60efe78 <https://github.com/HEPCloud/decisionengine/commit/e60efe78527d41e212a2df3771d60f97ec9176cc>`_:   Move metrics fixtures to the fixtures file
+
+`9c717cc5 <https://github.com/HEPCloud/decisionengine/commit/9c717cc50055ceb9ef5cabc595b61117ecd49006>`_:   Log finished with DB init
+
+`55965f9e <https://github.com/HEPCloud/decisionengine/commit/55965f9e9d154b2ce327f8cc574b35ce55705343>`_:   Prep the server fixture to permit the metrics webserver
+
+`732ff99b <https://github.com/HEPCloud/decisionengine/commit/732ff99b3d24d83af6a0e290d72ed8dbccd44b85>`_:   Add a 'ping' method
+
+`6117cc95 <https://github.com/HEPCloud/decisionengine/commit/6117cc9515d47c20fb3b67e7ac7b17c4fbe7e209>`_:   [pre-commit.ci] pre-commit autoupdate
+
+`b5af73ca <https://github.com/HEPCloud/decisionengine/commit/b5af73ca69dedac73e696e0142bda081ab92446e>`_:   More logging about cherrypy state
+
+`dfe4278f <https://github.com/HEPCloud/decisionengine/commit/dfe4278f6c9fca7e934f34b251e719fd5d232a9b>`_:   Added unlinked release notes for DE 2.0.0
+
 `7d6484ad <https://github.com/HEPCloud/decisionengine/commit/7d6484ad86bfc1c01c89c8648c2b41d23f5c710d>`_:   Test source shared between two channels.
 
 `ae29d9d1 <https://github.com/HEPCloud/decisionengine/commit/ae29d9d17395f4d3742b127e7dd185a8bb837cba>`_:   Test same source types, separate channels
