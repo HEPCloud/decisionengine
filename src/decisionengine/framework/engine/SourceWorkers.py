@@ -17,6 +17,7 @@ from decisionengine.framework.modules.logging_configDict import LOGGERNAME
 from decisionengine.framework.modules.Source import Source
 from decisionengine.framework.taskmanager.module_graph import _create_module_instance
 from decisionengine.framework.taskmanager.ProcessingState import State
+from decisionengine.framework.util.countdown import Countdown
 from decisionengine.framework.util.metrics import Gauge
 
 _DEFAULT_SCHEDULE = 300  # 5 minutes
@@ -188,8 +189,14 @@ class SourceWorkers:
 
     def remove_all(self, timeout):
         with self._lock:
+            countdown = Countdown(wait_up_to=timeout)
             for worker in self._workers.values():
-                worker.take_offline()
-                if worker.is_alive():
-                    worker.join(timeout)
+                with countdown:
+                    worker.take_offline()
+                    if not worker.is_alive():
+                        continue
+
+                    rc = worker.join(countdown.time_left)
+                    if rc is None:
+                        worker.terminate()
             self._workers.clear()

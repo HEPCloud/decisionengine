@@ -45,6 +45,7 @@ from decisionengine.framework.engine.ChannelWorkers import ChannelWorker, Channe
 from decisionengine.framework.engine.SourceWorkers import SourceWorkers
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 from decisionengine.framework.taskmanager.module_graph import source_products, validated_workflow
+from decisionengine.framework.util.countdown import Countdown
 from decisionengine.framework.util.metrics import display_metrics, Gauge, Histogram
 from decisionengine.framework.util.redis_stats import redis_stats
 
@@ -482,10 +483,12 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def stop_channels(self):
         timeout = self.global_config.get("shutdown_timeout", 10)
         with self.channel_workers.access() as workers:
+            countdown = Countdown(wait_up_to=timeout)
             for worker in workers.values():
-                self.stop_worker(worker, timeout)
+                with countdown:
+                    self.stop_worker(worker, countdown.time_left)
             workers.clear()
-        self.source_workers.remove_all(timeout)
+        self.source_workers.remove_all(countdown.time_left)
 
     def rpc_stop_channels(self):
         self.stop_channels()
