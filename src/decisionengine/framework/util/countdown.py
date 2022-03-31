@@ -5,7 +5,8 @@ import time
 
 
 class Countdown:
-    """Countdown is a context manager that keeps track of elapsed time.
+    """
+    Countdown is a context manager that keeps track of elapsed time.
 
     It is designed to be used for cases where a sequence of operations
     should not take longer than a specified period of time.  This is done
@@ -29,6 +30,13 @@ class Countdown:
     """
 
     def __init__(self, wait_up_to):
+        """
+        :type wait_up_to: float or None
+        :param wait_up_to: Countdown start time in seconds.  If None
+                           is specified, no countdown occurs and the ~time_left
+                           variable remains `None` (useful when needing to
+                           call a blocking join on a process/thread).
+        """
         self.time_left = wait_up_to
         self._elapsed_time = None
 
