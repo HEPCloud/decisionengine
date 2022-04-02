@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.SourceWorkers &mdash; decisionengine 1.7.99.post3 documentation</title>
+  <title>decisionengine.framework.engine.SourceWorkers &mdash; decisionengine 1.7.99.post4.dev2+gaeb6b974 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -95,6 +95,7 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Source</span> <span class="kn">import</span> <span class="n">Source</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.module_graph</span> <span class="kn">import</span> <span class="n">_create_module_instance</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">State</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.util.countdown</span> <span class="kn">import</span> <span class="n">Countdown</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.metrics</span> <span class="kn">import</span> <span class="n">Gauge</span>
 
 <span class="n">_DEFAULT_SCHEDULE</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes</span>
@@ -266,10 +267,16 @@
 
 <div class="viewcode-block" id="SourceWorkers.remove_all"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.remove_all">[docs]</a>    <span class="k">def</span> <span class="nf">remove_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="n">countdown</span> <span class="o">=</span> <span class="n">Countdown</span><span class="p">(</span><span class="n">wait_up_to</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="n">worker</span><span class="o">.</span><span class="n">take_offline</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                    <span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">countdown</span><span class="p">:</span>
+                    <span class="n">worker</span><span class="o">.</span><span class="n">take_offline</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">rc</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">countdown</span><span class="o">.</span><span class="n">time_left</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">rc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
 </pre></div>
 

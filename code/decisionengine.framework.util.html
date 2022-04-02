@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.util package &mdash; decisionengine 1.7.99.post3 documentation</title>
+  <title>decisionengine.framework.util package &mdash; decisionengine 1.7.99.post4.dev2+gaeb6b974 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -100,6 +100,41 @@
 <h1>decisionengine.framework.util package<a class="headerlink" href="#decisionengine-framework-util-package" title="Permalink to this headline"></a></h1>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-decisionengine.framework.util.countdown">
+<span id="decisionengine-framework-util-countdown-module"></span><h2>decisionengine.framework.util.countdown module<a class="headerlink" href="#module-decisionengine.framework.util.countdown" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.util.countdown.Countdown">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.util.countdown.</span></span><span class="sig-name descname"><span class="pre">Countdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wait_up_to</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/util/countdown.html#Countdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.util.countdown.Countdown" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Countdown is a context manager that keeps track of elapsed time.</p>
+<p>It is designed to be used for cases where a sequence of operations
+should not take longer than a specified period of time.  This is done
+by occasionally querying the ‘time_left’ attribute (e.g.):</p>
+<blockquote>
+<div><p>countdown = Countdown(wait_up_to=10)
+for p in processes:</p>
+<blockquote>
+<div><dl>
+<dt>with countdown:</dt><dd><p>rc = p.join(countdown.time_left)
+if rc is None:</p>
+<blockquote>
+<div><p>p.terminate()</p>
+</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+<p>In the above example, the time it takes to shutdown all processes
+should not exceed 10 seconds.  Upon entering the countdown
+context, a timer starts.  Once that context is exited, the timer
+stops and the elapsed time is subtracted from the initial
+‘wait_up_to’ value.  If it takes 10 seconds for the first process
+to join, then the ‘time_left’ value will be 0 when joining all
+subsequent processes.  In this way, the entire sequence of
+operations is constrained to occur in roughly 10 seconds.</p>
+</dd></dl>
+
 </section>
 <section id="module-decisionengine.framework.util.fs">
 <span id="decisionengine-framework-util-fs-module"></span><h2>decisionengine.framework.util.fs module<a class="headerlink" href="#module-decisionengine.framework.util.fs" title="Permalink to this headline"></a></h2>

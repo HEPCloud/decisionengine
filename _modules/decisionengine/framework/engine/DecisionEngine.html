@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.99.post3 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 1.7.99.post4.dev2+gaeb6b974 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -123,6 +123,7 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.engine.SourceWorkers</span> <span class="kn">import</span> <span class="n">SourceWorkers</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.module_graph</span> <span class="kn">import</span> <span class="n">source_products</span><span class="p">,</span> <span class="n">validated_workflow</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.util.countdown</span> <span class="kn">import</span> <span class="n">Countdown</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.metrics</span> <span class="kn">import</span> <span class="n">display_metrics</span><span class="p">,</span> <span class="n">Gauge</span><span class="p">,</span> <span class="n">Histogram</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.redis_stats</span> <span class="kn">import</span> <span class="n">redis_stats</span>
 
@@ -560,10 +561,12 @@
 <div class="viewcode-block" id="DecisionEngine.stop_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.stop_channels">[docs]</a>    <span class="k">def</span> <span class="nf">stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shutdown_timeout&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
+            <span class="n">countdown</span> <span class="o">=</span> <span class="n">Countdown</span><span class="p">(</span><span class="n">wait_up_to</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">stop_worker</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">countdown</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">stop_worker</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="n">countdown</span><span class="o">.</span><span class="n">time_left</span><span class="p">)</span>
             <span class="n">workers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">remove_all</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">remove_all</span><span class="p">(</span><span class="n">countdown</span><span class="o">.</span><span class="n">time_left</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_stop_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop_channels">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
