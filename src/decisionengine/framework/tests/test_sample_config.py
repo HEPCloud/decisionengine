@@ -73,7 +73,7 @@ def test_client_can_restart_all_channels(deserver):
     output = deserver.de_client_run_cli("--print-products")
     assert "No channels are currently active." in output
     output = deserver.de_client_run_cli("--start-channels")
-    assert "No channels are currently active." not in output
+    assert "No sources or channels are currently active." not in output
 
 
 def test_client_can_restart_one_channel(deserver):
@@ -81,9 +81,9 @@ def test_client_can_restart_one_channel(deserver):
     output = deserver.de_client_run_cli("--stop-channel", "test_channel")
     assert "Channel test_channel stopped cleanly." in output
     output = deserver.de_client_run_cli("--status")
-    assert "No channels are currently active." in output
+    assert "No sources or channels are currently active." in output
     output = deserver.de_client_run_cli("--start-channel", "test_channel")
-    assert "No channels are currently active." not in output
+    assert "No sources or channels are currently active." not in output
 
 
 def test_client_can_kill_one_channel(deserver):
@@ -91,7 +91,7 @@ def test_client_can_kill_one_channel(deserver):
     output = deserver.de_client_run_cli("--kill-channel", "test_channel")
     assert output in stopped_channel_opts()
     output = deserver.de_client_run_cli("--status")
-    assert "No channels are currently active." in output
+    assert "No sources or channels are currently active." in output
 
     # Verify client can kill a single channel with force
     output = deserver.de_client_run_cli("--start-channel", "test_channel")
@@ -99,7 +99,7 @@ def test_client_can_kill_one_channel(deserver):
     output = deserver.de_client_run_cli("--kill-channel", "test_channel", "--force")
     assert output in stopped_channel_opts()
     output = deserver.de_client_run_cli("--status")
-    assert "No channels are currently active." in output
+    assert "No sources or channels are currently active." in output
 
     # Verify client can kill a single channel with timeout
     output = deserver.de_client_run_cli("--start-channel", "test_channel")
@@ -107,7 +107,7 @@ def test_client_can_kill_one_channel(deserver):
     output = deserver.de_client_run_cli("--kill-channel", "test_channel", "--timeout", "5")
     assert output in stopped_channel_opts(5)
     output = deserver.de_client_run_cli("--status")
-    assert "No channels are currently active." in output
+    assert "No sources or channels are currently active." in output
 
 
 def test_client_non_real_channel(deserver):

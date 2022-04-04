@@ -108,11 +108,11 @@ class ChannelWorkers:
           ws['new_channel'] = ChannelWorker(...)
 
     In cases where the decision engine's block_while method must be
-    called (e.g. during tests), one should used the unguarded access:
+    called (e.g. during tests), one should use unguarded access:
 
-      with workers.unguarded_access() as ws:
-          # Access to ws is unprotected
-          ws['new_channel'].wait_while(...)
+      ws = workers.unguarded_access()
+      # Access to ws is unprotected
+      ws['new_channel'].wait_while(...)
 
     Calling a blocking method while using the protected context
     manager (i.e. workers.access()) will likely result in a deadlock.
@@ -137,13 +137,11 @@ class ChannelWorkers:
             self._lock = lock
 
         def __enter__(self):
-            if self._lock:
-                self._lock.acquire()
+            self._lock.acquire()
             return self._workers
 
         def __exit__(self, error, type, bt):
-            if self._lock:
-                self._lock.release()
+            self._lock.release()
 
     def access(self):
         self._update_channel_states()
@@ -151,4 +149,4 @@ class ChannelWorkers:
 
     def unguarded_access(self):
         self._update_channel_states()
-        return self.Access(self._workers, None)
+        return self._workers

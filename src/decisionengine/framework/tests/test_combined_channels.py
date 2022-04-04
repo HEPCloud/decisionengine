@@ -21,8 +21,6 @@ deserver = DEServer(conf_path=TEST_CONFIG_PATH, channel_conf_path=_channel_confi
 
 
 def test_combined_channels(deserver):
-    # Mimics the 'test_single_source_proxy' workflow but using a
-    # combined-configuration approach.
     output = deserver.de_client_run_cli("--status")
     assert re.search("test_combined_channels.*state = STEADY", output)
 
@@ -43,8 +41,6 @@ deserver_combined = DEServer(
 
 
 def test_combined_channels_3g(deserver_combined):
-    # Mimics the 'test_many_source_proxies' workflow but using a
-    # combined-configuration approach.
     output = deserver_combined.de_client_run_cli("--status")
     assert re.search("last.*state = STEADY", output)
 
@@ -61,6 +57,14 @@ second_source_A  second_source_A.*  None
 second_source_B  second_source_B.*  None
 second_source_C  second_source_C.*  None"""
     assert re.search(ref_pattern, output)
+
+    output = deserver_combined.de_client_run_cli("--product-dependencies", "-v")
+    ref_pattern = (
+        r"sources\s+first_source:\s+produces:.*_a.*"
+        + r"transforms:\s+first_transform\s+consumes:.*_a.*produces.*a.*"
+        + r"publishers:\s+last_publisher\s+consumes:.*tA"
+    )
+    assert re.search(ref_pattern, output, re.DOTALL)
 
     deserver_combined.de_client_run_cli("--stop-channel", "last")
     output = deserver_combined.de_client_run_cli("--status")

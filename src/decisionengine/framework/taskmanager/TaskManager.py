@@ -227,6 +227,7 @@ class TaskManager:
         for worker in self.publisher_workers.values():
             worker.module_instance.shutdown()
         self.state.set(State.OFFLINE)
+        self.logger.info(f"Channel {self.name} is offline.")
         CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
 
     def get_produces(self):

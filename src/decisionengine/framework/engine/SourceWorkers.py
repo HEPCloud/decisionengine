@@ -147,6 +147,9 @@ class SourceWorkers:
         self._workers = {}
         self._lock = threading.Lock()
 
+    def unguarded_access(self):
+        return self._workers
+
     def update(self, channel_name, source_configs):
         workers = {}
 
