@@ -147,10 +147,12 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             if not workers:
                 self.logger.info("No active channels to wait on.")
                 return "No active channels."
+            countdown = Countdown(wait_up_to=timeout)
             for tm in workers.values():
                 if tm.is_alive():
                     self.logger.debug(f"Waiting for {tm.task_manager.name} to exit {state} state.")
-                    tm.wait_while(state, timeout)
+                    with countdown:
+                        tm.wait_while(state, countdown.time_left)
         return f"No channels in {state} state."
 
     def _dataframe_to_table(self, df):
