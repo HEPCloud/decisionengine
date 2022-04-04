@@ -31,7 +31,7 @@ def test_client_can_start_one_channel_added_after_startup(deserver):
     output = deserver.de_client_run_cli("--ping")
     assert "pong" in output
     output = deserver.de_client_run_cli("--status")
-    assert "No channels are currently active." in output
+    assert "No sources or channels are currently active." in output
     output = deserver.de_client_run_cli("--show-channel-config", "test_channel")
     assert "There is no active channel named test_channel." in output
 
@@ -43,6 +43,6 @@ def test_client_can_start_one_channel_added_after_startup(deserver):
     output = deserver.de_client_run_cli("--start-channel", "test_channel")
     assert "OK" in output
     output = deserver.de_client_run_cli("--status")
-    assert "No channels are currently active." not in output
+    assert "No sources or channels are currently active." not in output
     assert "test_channel" in output
     assert "state = STEADY" in output

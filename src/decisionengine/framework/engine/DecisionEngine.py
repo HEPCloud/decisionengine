@@ -143,16 +143,16 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
     def block_while(self, state, timeout=None):
         self.logger.debug(f"Waiting for {state} or timeout={timeout} on channel_workers.")
-        with self.channel_workers.unguarded_access() as workers:
-            if not workers:
-                self.logger.info("No active channels to wait on.")
-                return "No active channels."
-            countdown = Countdown(wait_up_to=timeout)
-            for tm in workers.values():
-                if tm.is_alive():
-                    self.logger.debug(f"Waiting for {tm.task_manager.name} to exit {state} state.")
-                    with countdown:
-                        tm.wait_while(state, countdown.time_left)
+        workers = self.channel_workers.unguarded_access()
+        if not workers:
+            self.logger.info("No active channels to wait on.")
+            return "No active channels."
+        countdown = Countdown(wait_up_to=timeout)
+        for tm in workers.values():
+            if tm.is_alive():
+                self.logger.debug(f"Waiting for {tm.task_manager.name} to exit {state} state.")
+                with countdown:
+                    tm.wait_while(state, countdown.time_left)
         return f"No channels in {state} state."
 
     def _dataframe_to_table(self, df):
@@ -297,13 +297,13 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 data_block.generation_id -= 1
                 channel_config = self.channel_config_loader.get_channels()[ch]
                 produces = worker.get_produces()
-                for i in ("sources", "transforms", "logicengines", "publishers"):
+                # FIXME: See comment below re. printing product dependencies of the logic engine.
+                for i in ("sources", "transforms"):
                     txt += f"\t{i}:\n"
                     modules = channel_config.get(i, {})
                     for mod_name in modules.keys():
                         txt += f"\t\t{mod_name}\n"
-                        products = produces.get(mod_name, [])
-                        for product in products:
+                        for product in produces[mod_name]:
                             try:
                                 df = data_block[product]
                                 df = pd.read_json(df.to_json())
@@ -314,30 +314,74 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
     @STATUS_HISTOGRAM.time()
     def rpc_status(self):
-        with self.channel_workers.access() as workers:
-            channel_keys = workers.keys()
-            if not channel_keys:
-                return "No channels are currently active.\n" + self.reaper_status()
+        workers = self.source_workers.unguarded_access()
+        source_keys = workers.keys()
+        if not source_keys:
+            return "No sources or channels are currently active.\n" + self.reaper_status()
 
-            txt = ""
-            width = max(len(x) for x in channel_keys) + 1
-            for ch, worker in workers.items():
-                txt += f"channel: {ch:<{width}}, id = {worker.task_manager.id:<{width}}, state = {worker.get_state_name():<10} \n"
-                produces = worker.get_produces()
-                consumes = worker.get_consumes()
-                channel_config = self.channel_config_loader.get_channels()[ch]
-                for i in ("sources", "transforms", "logicengines", "publishers"):
-                    txt += f"\t{i}:\n"
-                    modules = channel_config.get(i, {})
-                    for mod_name in modules.keys():
-                        txt += f"\t\t{mod_name}\n"
-                        txt += f"\t\t\tconsumes : {consumes.get(mod_name, [])}\n"
-                        txt += f"\t\t\tproduces : {produces.get(mod_name, [])}\n"
+        txt = ""
+        width = max(len(x) for x in source_keys)
+        queue_width = max(len(x.queue.name) for x in workers.values())
+        for source, worker in workers.items():
+            state = worker.state.get().name
+            queue = worker.queue.name
+            txt += f"source: {source:<{width}}, queue id = {queue:<{queue_width}}, state = {state}\n"
+
+        txt += "\n"
+
+        workers = self.channel_workers.unguarded_access()
+        channel_keys = workers.keys()
+        if not channel_keys:
+            txt += "No channels are currently active.\n" + self.reaper_status()
+            return txt
+
+        width = max(len(x) for x in channel_keys)
+        for ch, worker in workers.items():
+            txt += f"channel: {ch:<{width}}, id = {worker.task_manager.id:<{width}}, state = {worker.get_state_name():<10}\n"
         return txt + self.reaper_status()
 
     def rpc_queue_status(self):
         status = redis_stats(self.broker_url, self.exchange.name)
         return f"\n{tabulate.tabulate(status, headers=['Source name', 'Queue name', 'Unconsumed messages'])}"
+
+    def rpc_product_dependencies(self):
+        workers = self.source_workers.unguarded_access()
+        if not workers:
+            return "No sources or channels are currently active.\n" + self.reaper_status()
+
+        txt = "\nsources\n"
+        for source, worker in sorted(workers.items()):
+            txt += f"\t{source}:\n"
+            produces = worker.module_instance._produces.keys()
+            txt += f"\t\tproduces: {list(produces)}\n"
+        txt += "\n"
+
+        workers = self.channel_workers.unguarded_access()
+        if not workers:
+            txt += "No channels are currently active.\n" + self.reaper_status()
+            return txt
+
+        for ch, worker in sorted(workers.items()):
+            txt += f"channel: {ch}\n"
+            produces = worker.get_produces()
+            consumes = worker.get_consumes()
+            channel_config = self.channel_config_loader.get_channels()[ch]
+
+            # FIXME: Not sure what we should do about printing the logic engine facts/rules.  Some options:
+            #        1. Omit entirely (default as 'produces' and 'consumes' are both empty)
+            #        2. Display which data products are used in the logic-engine expressions
+            txt += "\ttransforms:\n"
+            for mod_name in sorted(channel_config.get("transforms", {}).keys()):
+                txt += f"\t\t{mod_name}\n"
+                txt += f"\t\t\tconsumes: {consumes[mod_name]}\n"
+                txt += f"\t\t\tproduces: {produces[mod_name]}\n"
+
+            txt += "\tpublishers:\n"
+            for mod_name in sorted(channel_config.get("publishers", {}).keys()):
+                txt += f"\t\t{mod_name}\n"
+                txt += f"\t\t\tconsumes: {consumes[mod_name]}\n"
+
+        return txt
 
     def rpc_stop(self):
         self.shutdown()
@@ -557,9 +601,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return f"reaper:\n\tstate: {state}\n\tretention_interval: {interval}"
 
     def reaper_status(self):
-        interval = self.reaper.retention_interval
         state = self.reaper.state.get()
-        return f"\nreaper:\n\tstate: {state}\n\tretention_interval: {interval}\n"
+        return f"\nreaper: state = {state.name}\n"
 
     def rpc_query_tool(self, product, format=None, start_time=None):
         with QUERY_TOOL_HISTOGRAM.labels(product).time():

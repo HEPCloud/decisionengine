@@ -25,6 +25,11 @@ def create_parser():
     )
     server.add_argument("--show-de-config", action="store_true", help="print server configuration")
     server.add_argument("--print-engine-loglevel", action="store_true", help="print engine log level")
+    server.add_argument(
+        "--product-dependencies",
+        action="store_true",
+        help="print which products are consumed or produced for each module",
+    )
     server.add_argument("--block-while", metavar="<state>")
     server.add_argument("--metrics", action="store_true", help="print metrics")
     server.add_argument("--list-rpc-methods", action="store_true", help="print all rpc methods")
@@ -102,6 +107,8 @@ def execute_command_from_args(argsparsed, de_socket):
         return de_socket.stop()
     if argsparsed.print_engine_loglevel:
         return de_socket.get_log_level()
+    if argsparsed.product_dependencies:
+        return de_socket.product_dependencies()
     if argsparsed.block_while:
         return de_socket.block_while(argsparsed.block_while, argsparsed.timeout)
     if argsparsed.metrics:
