@@ -8,7 +8,12 @@
     source1: {
       module: "decisionengine.framework.tests.ErrorOnAcquire",
       parameters: {},
-      schedule: 10000,
+      schedule: 20,
+    },
+    source2: {
+      module: "decisionengine.framework.tests.SourceNOP",
+      parameters: {},
+      schedule: 10,
     },
   },
   transforms: {},

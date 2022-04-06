@@ -141,6 +141,17 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             raise Exception(f'method "{method}" is not supported')
         return func(*params)
 
+    def service_actions(self):
+        # Overrides the base class service_actions, taking sources
+        # offline whenever the client task managers have gone offline.
+        with self.channel_workers.access() as workers:
+            for channel_name, worker in workers.items():
+                tm = worker.task_manager
+                if tm.state.probably_running():
+                    continue
+
+                self.source_workers.detach_channel(tm.name, tm.routing_keys)
+
     def block_while(self, state, timeout=None):
         self.logger.debug(f"Waiting for {state} or timeout={timeout} on channel_workers.")
         workers = self.channel_workers.unguarded_access()
@@ -512,7 +523,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 rc = self.stop_worker(worker, maybe_timeout)
                 del workers[channel]
                 self.logger.debug(f"Channel {channel} removed ({rc})")
-                self.source_workers.prune(sources_to_prune)
+                self.source_workers.prune(channel, sources_to_prune)
             return rc
 
     def stop_worker(self, worker, timeout):
@@ -793,7 +804,9 @@ def _start_de_server(server):
         server.startup_complete.set()
 
         server.get_logger().debug("running _start_de_server: step serve_forever")
-        server.serve_forever()
+        server.serve_forever(
+            poll_interval=1
+        )  # Once per second is sufficient, given the amount of work done in the service actions.
 
         server.get_logger().debug("done with _start_de_server")
     except Exception as __e:  # pragma: no cover

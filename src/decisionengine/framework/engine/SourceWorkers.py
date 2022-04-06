@@ -16,7 +16,7 @@ from decisionengine.framework.modules import Module
 from decisionengine.framework.modules.logging_configDict import LOGGERNAME
 from decisionengine.framework.modules.Source import Source
 from decisionengine.framework.taskmanager.module_graph import _create_module_instance
-from decisionengine.framework.taskmanager.ProcessingState import State
+from decisionengine.framework.taskmanager.ProcessingState import ProcessingState, State
 from decisionengine.framework.util.countdown import Countdown
 from decisionengine.framework.util.metrics import Gauge
 
@@ -65,28 +65,17 @@ class SourceWorker(multiprocessing.Process):
             routing_key=self.key,
             auto_delete=True,
         )
-        self.use_count = multiprocessing.Value("i", 1)
+        self.state = ProcessingState()
         self.schedule = config.get("schedule", _DEFAULT_SCHEDULE)
 
         self.logger.debug(
             f"Creating worker: module={self.module} name={self.key} class_name={self.class_name} parameters={config['parameters']} schedule={self.schedule}"
         )
 
-    def should_stop(self):
-        with self.use_count.get_lock():
-            return self.use_count.value == 0
-
-    def increment_use_count(self):
-        with self.use_count.get_lock():
-            self.use_count.value += 1
-
-    def decrement_use_count(self):
-        with self.use_count.get_lock():
-            self.use_count.value -= 1
-
     def take_offline(self):
-        with self.use_count.get_lock():
-            self.use_count.value = 0
+        if self.state.has_value(State.ERROR):
+            return
+        self.state.set(State.OFFLINE)
 
     def run(self):
         """
@@ -96,7 +85,7 @@ class SourceWorker(multiprocessing.Process):
         SOURCE_ACQUIRE_GAUGE.labels(self.key)
         with producers[self.connection].acquire(block=True) as producer:
             # If task manager is in offline state, do not keep executing sources.
-            while not self.should_stop():
+            while not self.state.should_stop():
                 try:
                     self.logger.info(f"Source {self.key} calling acquire")
                     data = self.module_instance.acquire()
@@ -118,9 +107,12 @@ class SourceWorker(multiprocessing.Process):
                         ],
                     )
                     self.logger.info(f"Source {self.key} finished cycle")
+                    if not self.state.should_stop() and not self.state.has_value(State.STEADY):
+                        self.state.set(State.STEADY)
                 except Exception:
                     self.logger.exception(f"Exception running source {self.key} ")
                     self.logger.debug(f"Sending shutdown flag to queue {self.queue.name}")
+                    self.state.set(State.ERROR)
                     producer.publish(
                         dict(source_name=self.key, source_module=self.module, data=State.SHUTDOWN),
                         routing_key=self.key,
@@ -137,7 +129,8 @@ class SourceWorker(multiprocessing.Process):
                 else:
                     self.logger.info(f"Source {self.key} runs only once")
                     break
-        self.logger.info(f"Stopped {self.key}")
+
+        self.logger.info(f"Stopped source {self.key} in {self.state.get().name} state")
 
 
 class SourceWorkers:
@@ -146,6 +139,7 @@ class SourceWorkers:
         self._broker_url = broker_url
         self._logger = logger
         self._workers = {}
+        self._use_count = {}
         self._lock = threading.Lock()
 
     def unguarded_access(self):
@@ -169,7 +163,7 @@ class SourceWorkers:
                     )
                     raise RuntimeError(err_msg)
                 self._logger.info(f"Using existing source {src_name} for channel {channel_name}")
-                src_worker.increment_use_count()
+                self._use_count[src_name].add(channel_name)
                 workers[src_name] = src_worker
 
             # The remaining configuration correspond to new sources
@@ -178,29 +172,48 @@ class SourceWorkers:
                 worker = SourceWorker(key, config, channel_name, self._exchange, self._broker_url)
                 self._workers[key] = worker
                 workers[key] = worker
+                self._use_count[key] = {channel_name}
 
         return workers
 
-    def prune(self, source_names):
+    def detach_channel(self, channel_name, source_names):
         with self._lock:
             for source_name in source_names:
-                src_worker = self._workers[source_name]
-                src_worker.decrement_use_count()
-                if src_worker.should_stop():
+                src_worker = self._workers.get(source_name)
+                if src_worker is None:
+                    continue
+
+                self._use_count[source_name].discard(channel_name)
+                if len(self._use_count[source_name]) == 0:
+                    self._logger.debug(f"Taking channel {channel_name} offline")
+                    src_worker.take_offline()
+
+    def prune(self, channel_name, source_names):
+        self.detach_channel(channel_name, source_names)
+        with self._lock:
+            for source_name in source_names:
+                src_worker = self._workers.get(source_name)
+                if src_worker is None:
+                    continue
+
+                if src_worker.state.should_stop():
+                    self._logger.debug(f"Removing source {source_name}")
                     src_worker.join()
                     del self._workers[source_name]
+                    del self._use_count[source_name]
                     self._logger.debug(f"Removed source {source_name}")
 
     def remove_all(self, timeout):
         with self._lock:
             countdown = Countdown(wait_up_to=timeout)
             for worker in self._workers.values():
+                if not worker.is_alive():
+                    continue
+
                 with countdown:
                     worker.take_offline()
-                    if not worker.is_alive():
-                        continue
-
                     rc = worker.join(countdown.time_left)
                     if rc is None:
                         worker.terminate()
             self._workers.clear()
+            self._use_count.clear()
