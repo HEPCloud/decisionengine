@@ -151,26 +151,26 @@ class TaskManager:
 
     def run_cycle(self, messages):
         for name, msg_body in messages.items():
+            source_name = msg_body["source_name"]
             module_spec = msg_body["source_module"]
-            module_name = msg_body["class_name"]
             data = msg_body["data"]
             assert data
             if data is State.SHUTDOWN:
                 self.logger.info(
-                    f"Channel {self.name} has received shutdown flag from source {module_spec} (class {module_name})"
+                    f"Channel {self.name} has received shutdown flag from source {source_name} (module {module_spec})"
                 )
                 self.take_offline()
                 return
 
             assert isinstance(data, dict)
-            self.logger.debug(f"Data received from {module_name}: {data}")
+            self.logger.debug(f"Data received from {source_name}: {data}")
 
             data_to_process = self.source_product_cache.update(data)
             if data_to_process is None:
                 return
 
             header = datablock.Header(self.data_block_t0.taskmanager_id, create_time=time.time(), creator=module_spec)
-            self.logger.info(f"Source {module_name} header done")
+            self.logger.info(f"Source {source_name} header done")
 
             try:
                 self.data_block_put(data_to_process, header, self.data_block_t0)
@@ -179,12 +179,12 @@ class TaskManager:
                 self.logger.error(f"Could not insert data from the following message\n{msg_body}")
                 return
 
-            self.logger.info(f"Source {module_name} data block put done")
+            self.logger.info(f"Source {source_name} data block put done")
 
         try:
             self.decision_cycle()
             with self.state.lock:
-                if not self.state.should_stop():
+                if not self.state.should_stop() and not self.state.has_value(State.STEADY):
                     # If we are signaled to stop, don't override that state
                     # otherwise the last decision_cycle completed without error
                     self.state.set(State.STEADY)

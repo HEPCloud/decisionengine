@@ -127,7 +127,7 @@ class Reaper:
 
                 # in stop state, end wait and get out of the loop ASAP
                 if self.state.should_stop():
-                    self.logger.debug(f"Reaper recieved a stop event: {self.state.get()}.")
+                    self.logger.debug(f"Reaper received a stop event: {self.state.get()}.")
                 else:
                     self.reap()
                     # after waiting the initial delay time

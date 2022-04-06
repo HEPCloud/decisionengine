@@ -47,11 +47,11 @@ class SourceWorker(multiprocessing.Process):
         self.config = config
         self.module = self.config["module"]
         self.key = key
-        self.name = self.module_instance.__class__.__name__
-        SOURCE_ACQUIRE_GAUGE.labels(self.name)
+        self.class_name = self.module_instance.__class__.__name__
+        SOURCE_ACQUIRE_GAUGE.labels(self.key)
 
         self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1], source=self.name)
+        self.logger = self.logger.bind(module=__name__.split(".")[-1], source=self.key)
 
         self.exchange = exchange
         self.connection = Connection(broker_url)
@@ -69,7 +69,7 @@ class SourceWorker(multiprocessing.Process):
         self.schedule = config.get("schedule", _DEFAULT_SCHEDULE)
 
         self.logger.debug(
-            f"Creating worker: module={self.module} name={self.key} class_name={self.name} parameters={config['parameters']} schedule={self.schedule}"
+            f"Creating worker: module={self.module} name={self.key} class_name={self.class_name} parameters={config['parameters']} schedule={self.schedule}"
         )
 
     def should_stop(self):
@@ -98,17 +98,17 @@ class SourceWorker(multiprocessing.Process):
             # If task manager is in offline state, do not keep executing sources.
             while not self.should_stop():
                 try:
-                    self.logger.info(f"Source {self.name} calling acquire")
+                    self.logger.info(f"Source {self.key} calling acquire")
                     data = self.module_instance.acquire()
                     Module.verify_products(self.module_instance, data)
-                    self.logger.info(f"Source {self.name} acquire returned")
-                    SOURCE_ACQUIRE_GAUGE.labels(self.name).set_to_current_time()
+                    self.logger.info(f"Source {self.key} acquire returned")
+                    SOURCE_ACQUIRE_GAUGE.labels(self.key).set_to_current_time()
                     self.logger.debug(
-                        f"Publishing data to queue {self.key} with routing key {self.key}"
+                        f"Publishing data to queue {self.queue.name} with routing key {self.key}"
                         + f" ({len(pickle.dumps(data))} pickled bytes)"
                     )
                     producer.publish(
-                        dict(source_module=self.module, class_name=self.name, data=data),
+                        dict(source_name=self.key, source_module=self.module, data=data),
                         routing_key=self.key,
                         exchange=self.exchange,
                         serializer="pickle",
@@ -117,11 +117,12 @@ class SourceWorker(multiprocessing.Process):
                             self.queue,
                         ],
                     )
-                    self.logger.info(f"Source {self.name} {self.module} finished cycle")
+                    self.logger.info(f"Source {self.key} finished cycle")
                 except Exception:
-                    self.logger.exception(f"Exception running source {self.name} ")
+                    self.logger.exception(f"Exception running source {self.key} ")
+                    self.logger.debug(f"Sending shutdown flag to queue {self.queue.name}")
                     producer.publish(
-                        dict(source_module=self.module, class_name=self.name, data=State.SHUTDOWN),
+                        dict(source_name=self.key, source_module=self.module, data=State.SHUTDOWN),
                         routing_key=self.key,
                         exchange=self.exchange,
                         serializer="pickle",
@@ -134,9 +135,9 @@ class SourceWorker(multiprocessing.Process):
                 if self.schedule > 0:
                     time.sleep(self.schedule)
                 else:
-                    self.logger.info(f"Source {self.name} runs only once")
+                    self.logger.info(f"Source {self.key} runs only once")
                     break
-        self.logger.info(f"Stopped {self.name}")
+        self.logger.info(f"Stopped {self.key}")
 
 
 class SourceWorkers:
