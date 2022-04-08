@@ -342,9 +342,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
         workers = self.channel_workers.unguarded_access()
         channel_keys = workers.keys()
-        if not channel_keys:
-            txt += "No channels are currently active.\n" + self.reaper_status()
-            return txt
+        assert channel_keys  # Not currently possible to have no channels if there are no sources
 
         width = max(len(x) for x in channel_keys)
         for ch, worker in workers.items():
@@ -358,7 +356,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def rpc_product_dependencies(self):
         workers = self.source_workers.unguarded_access()
         if not workers:
-            return "No sources or channels are currently active.\n" + self.reaper_status()
+            return "No sources or channels are currently active."
 
         txt = "\nsources\n"
         for source, worker in sorted(workers.items()):
@@ -368,9 +366,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         txt += "\n"
 
         workers = self.channel_workers.unguarded_access()
-        if not workers:
-            txt += "No channels are currently active.\n" + self.reaper_status()
-            return txt
+        assert workers  # Not currently possible to have no channels if there are no sources
 
         for ch, worker in sorted(workers.items()):
             txt += f"channel: {ch}\n"

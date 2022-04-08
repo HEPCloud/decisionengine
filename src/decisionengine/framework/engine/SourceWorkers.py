@@ -179,23 +179,16 @@ class SourceWorkers:
     def detach_channel(self, channel_name, source_names):
         with self._lock:
             for source_name in source_names:
-                src_worker = self._workers.get(source_name)
-                if src_worker is None:
-                    continue
-
                 self._use_count[source_name].discard(channel_name)
                 if len(self._use_count[source_name]) == 0:
                     self._logger.debug(f"Taking channel {channel_name} offline")
-                    src_worker.take_offline()
+                    self._workers[source_name].take_offline()
 
     def prune(self, channel_name, source_names):
         self.detach_channel(channel_name, source_names)
         with self._lock:
             for source_name in source_names:
-                src_worker = self._workers.get(source_name)
-                if src_worker is None:
-                    continue
-
+                src_worker = self._workers[source_name]
                 if src_worker.state.should_stop():
                     self._logger.debug(f"Removing source {source_name}")
                     src_worker.join()
