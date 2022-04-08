@@ -34,6 +34,10 @@ def test_client_can_start_one_channel_added_after_startup(deserver):
     assert "No sources or channels are currently active." in output
     output = deserver.de_client_run_cli("--show-channel-config", "test_channel")
     assert "There is no active channel named test_channel." in output
+    output = deserver.de_client_run_cli("--block-while", "BOOT")
+    assert "No active channels." in output
+    output = deserver.de_client_run_cli("--product-dependencies")
+    assert "No sources or channels are currently active." in output
 
     channel_config = os.path.join(TEST_CHANNEL_CONFIG_PATH, "test_channel.jsonnet")  # noqa: F405
     new_config_path = shutil.copy(channel_config, deserver.channel_conf_path)
