@@ -122,15 +122,6 @@ class ChannelWorkers:
         self._workers = {}
         self._lock = threading.Lock()
 
-    def _update_channel_states(self):
-        with self._lock:
-            for process in self._workers.values():
-                if process.is_alive():
-                    continue
-                if process.task_manager.state.inactive():
-                    continue
-                process.task_manager.state.set(ProcessingState.State.ERROR)
-
     class Access:
         def __init__(self, workers, lock):
             self._workers = workers
@@ -144,9 +135,7 @@ class ChannelWorkers:
             self._lock.release()
 
     def access(self):
-        self._update_channel_states()
         return self.Access(self._workers, self._lock)
 
     def unguarded_access(self):
-        self._update_channel_states()
         return self._workers
