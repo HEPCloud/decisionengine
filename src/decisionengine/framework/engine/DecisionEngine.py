@@ -437,17 +437,9 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
             # Start any sources that are not yet alive.
             for key, src_worker in src_workers.items():
-                if src_worker.is_alive():
-                    continue
-                if src_worker.exitcode == 0:  # pragma: no cover
-                    # This can happen if the source's acquire method runs only once (e.g. when testing)
-                    # and the first process completes before the next channel can use it.
-                    raise RuntimeError(
-                        f"The {key} source has already completed and cannot be used by channel {channel_name}."
-                    )
-
-                src_worker.start()
-                self.logger.debug(f"Started process {src_worker.pid} for source {key}")
+                if self.source_workers.unique(key):
+                    src_worker.start()
+                    self.logger.debug(f"Started process {src_worker.pid} for source {key}")
 
             worker.wait_while(ProcessingState.State.ACTIVE)
 

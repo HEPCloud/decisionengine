@@ -176,6 +176,10 @@ class SourceWorkers:
 
         return workers
 
+    def unique(self, source_name):
+        with self._lock:
+            return len(self._use_count[source_name]) == 1
+
     def detach_channel(self, channel_name, source_names):
         with self._lock:
             for source_name in source_names:
