@@ -3,7 +3,6 @@
 
 import multiprocessing
 import pickle
-import threading
 import time
 import uuid
 
@@ -140,7 +139,7 @@ class SourceWorkers:
         self._logger = logger
         self._workers = {}
         self._use_count = {}
-        self._lock = threading.Lock()
+        self._lock = multiprocessing.Lock()
 
     def unguarded_access(self):
         return self._workers
