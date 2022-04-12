@@ -177,6 +177,7 @@ class TaskManager:
             except Exception:  # pragma: no cover
                 self.logger.exception("Exception inserting data into the data block.")
                 self.logger.error(f"Could not insert data from the following message\n{msg_body}")
+                self.state.set(State.ERROR)
                 return
 
             self.logger.info(f"Source {source_name} data block put done")
