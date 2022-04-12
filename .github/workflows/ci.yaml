@@ -84,6 +84,13 @@ jobs:
         run: |
           pytest --cov-report term --cov-report xml --cov=decisionengine --no-cov-on-fail
 
+      - name: Archive unit test logs
+        if: failure() && !cancelled()
+        uses: actions/upload-artifact@v2
+        with:
+          name: log_unit_test_Python_${{ matrix.python-version }}
+          path: /tmp/*.log
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:
