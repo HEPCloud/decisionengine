@@ -54,14 +54,16 @@ class SourceWorker(multiprocessing.Process):
 
         self.exchange = exchange
         self.connection = Connection(broker_url)
+        self.connection_channel = self.connection.channel()
 
         # We use a random name to avoid queue collisions when running tests
-        queue_id = self.key + "-" + str(uuid.uuid4()).upper()
+        queue_id = self.key + "." + str(uuid.uuid4()).upper()
         self.logger.debug(f"Creating queue {queue_id} with routing key {self.key}")
         self.queue = Queue(
             queue_id,
             exchange=self.exchange,
             routing_key=self.key,
+            channel=self.connection_channel,
             auto_delete=True,
         )
         self.state = ProcessingState()
@@ -105,6 +107,7 @@ class SourceWorker(multiprocessing.Process):
                             self.queue,
                         ],
                     )
+                    self.queue.purge()  # Once the message has been delivered to the broker, remove from queue.
                     self.logger.info(f"Source {self.key} finished cycle")
                     if not self.state.should_stop() and not self.state.has_value(State.STEADY):
                         self.state.set(State.STEADY)

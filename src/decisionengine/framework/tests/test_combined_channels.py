@@ -49,13 +49,19 @@ def test_combined_channels_3g(deserver_combined):
     output = deserver_combined.de_client_run_cli("--queue-status")
     ref_pattern = r"""
 Source name      Queue name\s+      Unconsumed messages
----------------  ----------------------------------------------------  ---------------------
-first_source     first_source.*     None
-last_source_A    last_source_A.*    None
-last_source_B    last_source_B.*    None
-second_source_A  second_source_A.*  None
-second_source_B  second_source_B.*  None
-second_source_C  second_source_C.*  None"""
+---------------  ------------------------------------------------.*  ---------------------
+first_source     first_source.*          None
+first_source     first_source\.last.*    None
+last_source_A    last_source_A.*         None
+last_source_A    last_source_A\.last.*   None
+last_source_B    last_source_B.*         None
+last_source_B    last_source_B\.last.*   None
+second_source_A  second_source_A.*       None
+second_source_A  second_source_A\.last.* None
+second_source_B  second_source_B.*       None
+second_source_B  second_source_B\.last.* None
+second_source_C  second_source_C.*       None
+second_source_C  second_source_C\.last.* None"""
     assert re.search(ref_pattern, output)
 
     output = deserver_combined.de_client_run_cli("--product-dependencies", "-v")

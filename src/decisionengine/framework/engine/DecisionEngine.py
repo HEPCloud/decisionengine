@@ -411,7 +411,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             src_workers = self.source_workers.update(channel_name, source_configs)
             module_workers = validated_workflow(channel_name, src_workers, channel_config, self.logger)
 
-            queue_info = [(worker.queue.name, worker.key) for worker in src_workers.values()]
+            routing_keys = [worker.key for worker in src_workers.values()]
             self.logger.debug(f"Building TaskManger for {channel_name}")
             task_manager = TaskManager.TaskManager(
                 channel_name,
@@ -420,7 +420,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 source_products(src_workers),
                 self.exchange,
                 self.broker_url,
-                queue_info,
+                routing_keys,
             )
             self.logger.debug(f"Building Worker for {channel_name}")
             worker = ChannelWorker(task_manager, self.global_config["logger"])

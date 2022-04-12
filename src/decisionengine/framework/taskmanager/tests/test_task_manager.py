@@ -57,7 +57,7 @@ def task_manager_for(global_config, channel_name, ch_config=None, src_workers=No
     channel_name = ch_config.get("channel_name", channel_name + "-" + random_suffix())
     if src_workers is None:
         _, src_workers = source_workers(channel_name, ch_config["sources"])
-    queue_info = [(worker.queue.name, worker.key) for worker in src_workers.values()]
+    keys = [worker.key for worker in src_workers.values()]
     module_workers = validated_workflow(channel_name, src_workers, ch_config)
     return TaskManager(
         channel_name,
@@ -66,7 +66,7 @@ def task_manager_for(global_config, channel_name, ch_config=None, src_workers=No
         source_products(module_workers["sources"]),
         exchange=_EXCHANGE,
         broker_url=_BROKER_URL,
-        queue_info=queue_info,
+        routing_keys=keys,
     )
 
 
