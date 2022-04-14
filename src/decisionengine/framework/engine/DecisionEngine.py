@@ -150,21 +150,38 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 if tm.state.probably_running():
                     continue
 
-                self.source_workers.detach_channel(tm.name, tm.routing_keys)
+                self.source_workers.detach(tm.name, tm.routing_keys)
 
     def block_while(self, state, timeout=None):
         self.logger.debug(f"Waiting for {state} or timeout={timeout} on channel_workers.")
-        workers = self.channel_workers.unguarded_access()
+        workers = self.channel_workers.get_unguarded()
         if not workers:
             self.logger.info("No active channels to wait on.")
             return "No active channels."
         countdown = Countdown(wait_up_to=timeout)
-        for tm in workers.values():
-            if tm.is_alive():
-                self.logger.debug(f"Waiting for {tm.task_manager.name} to exit {state} state.")
-                with countdown:
-                    tm.wait_while(state, countdown.time_left)
-        return f"No channels in {state} state."
+
+        channels_still_in_state = []
+        for worker in workers.values():
+            if not worker.is_alive():
+                continue
+
+            tm = worker.task_manager
+            self.logger.debug(f"Waiting for {tm.name} to exit {state} state.")
+            with countdown:
+                worker.wait_while(state, countdown.time_left)
+            if tm.state.has_value(state):
+                channels_still_in_state.append(tm.name)
+
+        if not channels_still_in_state:
+            return f"No channels in {state.name} state."
+
+        # If timeout is None, we will never get here as the above will block
+        # indefinitely until all channels have left the specified state.
+        assert timeout is not None
+        txt = f"The following channels are still in {state.name} state due to exceeding the specified timeout of {timeout} seconds:\n\n"
+        for name in channels_still_in_state:
+            txt += f" - {name}\n"
+        return txt
 
     def _dataframe_to_table(self, df):
         return f"{tabulate.tabulate(df, headers='keys', tablefmt='psql')}\n"
@@ -325,7 +342,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
     @STATUS_HISTOGRAM.time()
     def rpc_status(self):
-        workers = self.source_workers.unguarded_access()
+        workers = self.source_workers.get_unguarded()
         source_keys = workers.keys()
         if not source_keys:
             return "No sources or channels are currently active.\n" + self.reaper_status()
@@ -340,9 +357,9 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
         txt += "\n"
 
-        workers = self.channel_workers.unguarded_access()
+        workers = self.channel_workers.get_unguarded()
         channel_keys = workers.keys()
-        assert channel_keys  # Not currently possible to have no channels if there are no sources
+        assert channel_keys  # Not currently possible to have no channels if there are sources
 
         width = max(len(x) for x in channel_keys)
         for ch, worker in workers.items():
@@ -354,7 +371,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return f"\n{tabulate.tabulate(status, headers=['Source name', 'Queue name', 'Unconsumed messages'])}"
 
     def rpc_product_dependencies(self):
-        workers = self.source_workers.unguarded_access()
+        workers = self.source_workers.get_unguarded()
         if not workers:
             return "No sources or channels are currently active."
 
@@ -365,7 +382,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             txt += f"\t\tproduces: {list(produces)}\n"
         txt += "\n"
 
-        workers = self.channel_workers.unguarded_access()
+        workers = self.channel_workers.get_unguarded()
         assert workers  # Not currently possible to have no channels if there are no sources
 
         for ch, worker in sorted(workers.items()):

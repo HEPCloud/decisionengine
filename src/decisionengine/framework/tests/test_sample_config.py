@@ -4,6 +4,8 @@
 """Fixture based DE Server tests of the defaults"""
 # pylint: disable=redefined-outer-name
 
+import re
+
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
     DEServer,
     PG_DE_DB_WITHOUT_SCHEMA,
@@ -53,7 +55,8 @@ def test_client_can_get_de_server_status(deserver):
     deserver.de_client_run_cli("--metrics")
 
     # Verify timeout works
-    deserver.de_client_run_cli("--block-while", "STEADY", "--timeout", "3")
+    output = deserver.de_client_run_cli("--block-while", "STEADY", "--timeout", "3")
+    re.search("The following channels are still in STEADY state.*test_channel.", output, re.DOTALL)
     output = deserver.de_client_run_cli("--status")
     assert "state = STEADY" in output
 

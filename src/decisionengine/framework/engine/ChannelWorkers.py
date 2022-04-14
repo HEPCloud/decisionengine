@@ -109,7 +109,7 @@ class ChannelWorkers:
     In cases where the decision engine's block_while method must be
     called (e.g. during tests), one should use unguarded access:
 
-      ws = workers.unguarded_access()
+      ws = workers.get_unguarded()
       # Access to ws is unprotected
       ws['new_channel'].wait_while(...)
 
@@ -136,5 +136,5 @@ class ChannelWorkers:
     def access(self):
         return self.Access(self._workers, self._lock)
 
-    def unguarded_access(self):
+    def get_unguarded(self):
         return self._workers
