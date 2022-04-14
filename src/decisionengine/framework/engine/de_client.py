@@ -110,7 +110,10 @@ def execute_command_from_args(argsparsed, de_socket):
     if argsparsed.product_dependencies:
         return de_socket.product_dependencies()
     if argsparsed.block_while:
-        return de_socket.block_while(argsparsed.block_while, argsparsed.timeout)
+        timeout = argsparsed.timeout
+        if timeout is not None:
+            timeout = int(timeout)
+        return de_socket.block_while(argsparsed.block_while, timeout)
     if argsparsed.metrics:
         return de_socket.metrics()
 

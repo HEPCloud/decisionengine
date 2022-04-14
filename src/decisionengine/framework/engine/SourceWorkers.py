@@ -144,7 +144,7 @@ class SourceWorkers:
         self._use_count = {}
         self._lock = multiprocessing.Lock()
 
-    def unguarded_access(self):
+    def get_unguarded(self):
         return self._workers
 
     def update(self, channel_name, source_configs):
@@ -182,7 +182,7 @@ class SourceWorkers:
         with self._lock:
             return len(self._use_count[source_name]) == 1
 
-    def detach_channel(self, channel_name, source_names):
+    def detach(self, channel_name, source_names):
         with self._lock:
             for source_name in source_names:
                 self._use_count[source_name].discard(channel_name)
@@ -191,7 +191,7 @@ class SourceWorkers:
                     self._workers[source_name].take_offline()
 
     def prune(self, channel_name, source_names):
-        self.detach_channel(channel_name, source_names)
+        self.detach(channel_name, source_names)
         with self._lock:
             for source_name in source_names:
                 src_worker = self._workers[source_name]
