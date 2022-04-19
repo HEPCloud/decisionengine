@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Release 2.0.0 &mdash; decisionengine 1.7.99.post4.dev17+g19994fb5 documentation</title>
+  <title>Release 2.0.0 &mdash; decisionengine 1.7.99.post4 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -37,7 +37,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release_notes_1.7.html">Release 1.7.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.7.html">Release 1.7.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes_1.7.html#release-1-7-1">Release 1.7.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes_1.7.html#release-1-7-0">Release 1.7.0</a></li>
 </ul>
 <ul>
@@ -86,6 +87,7 @@ on all resources supported by the GlideinWMS Factory, like OSG, some HPC resourc
 commercial cloud providers.</p>
 <ul class="simple">
 <li><p>New architecture with redesigned source system using Kombu message passing with a Redis backend.</p></li>
+<li><p>Token support via DE modules: support for SciToken, WlcgToken (for CE authentication) and HTCondor Idtokens (for Glideins and Factory communication)</p></li>
 <li><p>Separation from the GlideinWMS Frontend. Decision Engine still shares some libraries with GlideinWMS but
 you don’t need any more to install and configure the Frontend.</p></li>
 <li><p>Structured logging. Improved python logging and adoption of structured logs format that will increase the semantinc content of the messages and ease the export of information for dashboards and Elastic Search.</p></li>
@@ -132,6 +134,24 @@ Prometheus is be used as optional monitoring component.</p>
 </section>
 <section id="full-list-of-commits-since-version-1-7-0">
 <h2>Full list of commits since version 1.7.0<a class="headerlink" href="#full-list-of-commits-since-version-1-7-0" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/19994fb5544d04d572093b346d7fd9ab1cb0bbdf">19994fb5</a>:   Convert timeout program options to floats.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e2055f92b66c7d9dd5a21bf777d6bf3b2691cf83">e2055f92</a>:   Address Marco’s review comments.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/abdf35ad566682e42672d565451f35fb9fb636c3">abdf35ad</a>:   Restore multiple queues but purge source queue after each publish.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/52936cb5cfb18db33ad166bb651b318636e73912">52936cb5</a>:   Improve error-handling.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/aad20744655a26d7045b20be9ce41fcfd5ff9720">aad20744</a>:   Change to multiprocessing.Lock for protecting channel/source workers.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/24bbee4175631600533975bc1c8f2e95e54d350a">24bbee41</a>:   Adjust launching of source workers in attempt to avoid deadlock.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/6d13a3929f995ac5a6512716ef5dc9b431a1ec2a">6d13a392</a>:   Remove unnecessary (and perhaps harmful) external updating of channel states.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/5456f32f2e63a75574710b230975cc8a98687350">5456f32f</a>:   Improve test coverage.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/1afabb7097d50d1556d8a12abda6d2abb1a55955">1afabb70</a>:   Use service_actions to disable sources whenever client channels fail.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/7f67a1729bbabdfe60da20a110893f071a3bc113">7f67a172</a>:   Various naming and logging adjustments</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e6e491847909dc3af6f9709756f607a584d2cfd2">e6e49184</a>:   Adjust de-client –status and add –product-dependencies program option.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a7c1f351312f05a85842c94f8f7cf2914ae6c470">a7c1f351</a>:   Apply block-while timeout to all channels, not each channel.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/3d739ec7372764f9d7af813cafe46ef4c0a8c3ee">3d739ec7</a>:   Update ci workflow to include workflow_dispatch mechanism and to customize artifact file name</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/c5a05650590c79a373c608e3fbe9c701ba1e3364">c5a05650</a>:   Archive unit test logs in case of unit test failure and make them available as artifacts</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/e94c2abb215edcebf76f7f978dd879ad263e5609">e94c2abb</a>:   Update Python 3.6-compatible pre-commit hooks.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/aeb6b9742d1d0ac3d68329255216e9a9677135ee">aeb6b974</a>:   Update Countdown docstrings.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/525eb3a8ac6e01b304b3b47438444bac0b5c4e19">525eb3a8</a>:   Add Countdown class to address global timeout problem.</p>
+<p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/4c458e0c225ec2ce1e82d56e752724983331b7d1">4c458e0c</a>:   Updated release notes for 2.0.0 RC3 (1.7.99.post3)</p>
 <p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/137b574ad5209bb649ce84fba06dde7196c358dc">137b574a</a>:   Add a minimal container image more suited to production usage</p>
 <p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/9d7f68758d4477bb3ab85bfbcd008fda37485426">9d7f6875</a>:   Provide de-client –queue-status program option.</p>
 <p><a class="reference external" href="https://github.com/HEPCloud/decisionengine/commit/a7dcc30d7d0d247f7d4dc32dbb518767bfd8b0fd">a7dcc30d</a>:   Ensure that channels and sources shared the same queues.</p>

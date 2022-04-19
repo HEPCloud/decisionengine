@@ -13,6 +13,7 @@ on all resources supported by the GlideinWMS Factory, like OSG, some HPC resourc
 commercial cloud providers.
 
 - New architecture with redesigned source system using Kombu message passing with a Redis backend.
+- Token support via DE modules: support for SciToken, WlcgToken (for CE authentication) and HTCondor Idtokens (for Glideins and Factory communication)
 - Separation from the GlideinWMS Frontend. Decision Engine still shares some libraries with GlideinWMS but
   you don't need any more to install and configure the Frontend.
 - Structured logging. Improved python logging and adoption of structured logs format that will increase the semantinc content of the messages and ease the export of information for dashboards and Elastic Search.
@@ -56,6 +57,42 @@ Issues fixed in this release
 
 Full list of commits since version 1.7.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`19994fb5 <https://github.com/HEPCloud/decisionengine/commit/19994fb5544d04d572093b346d7fd9ab1cb0bbdf>`_:   Convert timeout program options to floats.
+
+`e2055f92 <https://github.com/HEPCloud/decisionengine/commit/e2055f92b66c7d9dd5a21bf777d6bf3b2691cf83>`_:   Address Marco's review comments.
+
+`abdf35ad <https://github.com/HEPCloud/decisionengine/commit/abdf35ad566682e42672d565451f35fb9fb636c3>`_:   Restore multiple queues but purge source queue after each publish.
+
+`52936cb5 <https://github.com/HEPCloud/decisionengine/commit/52936cb5cfb18db33ad166bb651b318636e73912>`_:   Improve error-handling.
+
+`aad20744 <https://github.com/HEPCloud/decisionengine/commit/aad20744655a26d7045b20be9ce41fcfd5ff9720>`_:   Change to multiprocessing.Lock for protecting channel/source workers.
+
+`24bbee41 <https://github.com/HEPCloud/decisionengine/commit/24bbee4175631600533975bc1c8f2e95e54d350a>`_:   Adjust launching of source workers in attempt to avoid deadlock.
+
+`6d13a392 <https://github.com/HEPCloud/decisionengine/commit/6d13a3929f995ac5a6512716ef5dc9b431a1ec2a>`_:   Remove unnecessary (and perhaps harmful) external updating of channel states.
+
+`5456f32f <https://github.com/HEPCloud/decisionengine/commit/5456f32f2e63a75574710b230975cc8a98687350>`_:   Improve test coverage.
+
+`1afabb70 <https://github.com/HEPCloud/decisionengine/commit/1afabb7097d50d1556d8a12abda6d2abb1a55955>`_:   Use service_actions to disable sources whenever client channels fail.
+
+`7f67a172 <https://github.com/HEPCloud/decisionengine/commit/7f67a1729bbabdfe60da20a110893f071a3bc113>`_:   Various naming and logging adjustments
+
+`e6e49184 <https://github.com/HEPCloud/decisionengine/commit/e6e491847909dc3af6f9709756f607a584d2cfd2>`_:   Adjust de-client --status and add --product-dependencies program option.
+
+`a7c1f351 <https://github.com/HEPCloud/decisionengine/commit/a7c1f351312f05a85842c94f8f7cf2914ae6c470>`_:   Apply block-while timeout to all channels, not each channel.
+
+`3d739ec7 <https://github.com/HEPCloud/decisionengine/commit/3d739ec7372764f9d7af813cafe46ef4c0a8c3ee>`_:   Update ci workflow to include workflow_dispatch mechanism and to customize artifact file name
+
+`c5a05650 <https://github.com/HEPCloud/decisionengine/commit/c5a05650590c79a373c608e3fbe9c701ba1e3364>`_:   Archive unit test logs in case of unit test failure and make them available as artifacts
+
+`e94c2abb <https://github.com/HEPCloud/decisionengine/commit/e94c2abb215edcebf76f7f978dd879ad263e5609>`_:   Update Python 3.6-compatible pre-commit hooks.
+
+`aeb6b974 <https://github.com/HEPCloud/decisionengine/commit/aeb6b9742d1d0ac3d68329255216e9a9677135ee>`_:   Update Countdown docstrings.
+
+`525eb3a8 <https://github.com/HEPCloud/decisionengine/commit/525eb3a8ac6e01b304b3b47438444bac0b5c4e19>`_:   Add Countdown class to address global timeout problem.
+
+`4c458e0c <https://github.com/HEPCloud/decisionengine/commit/4c458e0c225ec2ce1e82d56e752724983331b7d1>`_:   Updated release notes for 2.0.0 RC3 (1.7.99.post3)
 
 `137b574a <https://github.com/HEPCloud/decisionengine/commit/137b574ad5209bb649ce84fba06dde7196c358dc>`_:   Add a minimal container image more suited to production usage
 
