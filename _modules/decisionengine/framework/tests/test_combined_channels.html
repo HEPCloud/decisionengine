@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_combined_channels &mdash; decisionengine 1.7.99.post4.dev5+g3d739ec7 documentation</title>
+  <title>decisionengine.framework.tests.test_combined_channels &mdash; decisionengine 1.7.99.post4.dev17+g19994fb5 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -99,8 +99,6 @@
 
 
 <div class="viewcode-block" id="test_combined_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_combined_channels.test_combined_channels">[docs]</a><span class="k">def</span> <span class="nf">test_combined_channels</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
-    <span class="c1"># Mimics the &#39;test_single_source_proxy&#39; workflow but using a</span>
-    <span class="c1"># combined-configuration approach.</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;test_combined_channels.*state = STEADY&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
@@ -121,8 +119,6 @@
 
 
 <div class="viewcode-block" id="test_combined_channels_3g"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_combined_channels.test_combined_channels_3g">[docs]</a><span class="k">def</span> <span class="nf">test_combined_channels_3g</span><span class="p">(</span><span class="n">deserver_combined</span><span class="p">):</span>
-    <span class="c1"># Mimics the &#39;test_many_source_proxies&#39; workflow but using a</span>
-    <span class="c1"># combined-configuration approach.</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_combined</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;last.*state = STEADY&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
 
@@ -131,14 +127,28 @@
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_combined</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--queue-status&quot;</span><span class="p">)</span>
     <span class="n">ref_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Source name      Queue name\s+      Unconsumed messages</span>
-<span class="s2">---------------  ----------------------------------------------------  ---------------------</span>
-<span class="s2">first_source     first_source.*     None</span>
-<span class="s2">last_source_A    last_source_A.*    None</span>
-<span class="s2">last_source_B    last_source_B.*    None</span>
-<span class="s2">second_source_A  second_source_A.*  None</span>
-<span class="s2">second_source_B  second_source_B.*  None</span>
-<span class="s2">second_source_C  second_source_C.*  None&quot;&quot;&quot;</span>
+<span class="s2">---------------  ------------------------------------------------.*  ---------------------</span>
+<span class="s2">first_source     first_source.*          None</span>
+<span class="s2">first_source     first_source\.last.*    None</span>
+<span class="s2">last_source_A    last_source_A.*         None</span>
+<span class="s2">last_source_A    last_source_A\.last.*   None</span>
+<span class="s2">last_source_B    last_source_B.*         None</span>
+<span class="s2">last_source_B    last_source_B\.last.*   None</span>
+<span class="s2">second_source_A  second_source_A.*       None</span>
+<span class="s2">second_source_A  second_source_A\.last.* None</span>
+<span class="s2">second_source_B  second_source_B.*       None</span>
+<span class="s2">second_source_B  second_source_B\.last.* None</span>
+<span class="s2">second_source_C  second_source_C.*       None</span>
+<span class="s2">second_source_C  second_source_C\.last.* None&quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">ref_pattern</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_combined</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--product-dependencies&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">)</span>
+    <span class="n">ref_pattern</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;sources\s+first_source:\s+produces:.*_a.*&quot;</span>
+        <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;transforms:\s+first_transform\s+consumes:.*_a.*produces.*a.*&quot;</span>
+        <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;publishers:\s+last_publisher\s+consumes:.*tA&quot;</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">ref_pattern</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
     <span class="n">deserver_combined</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--stop-channel&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_combined</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>

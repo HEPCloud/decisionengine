@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_empty_config &mdash; decisionengine 1.7.99.post4.dev5+g3d739ec7 documentation</title>
+  <title>decisionengine.framework.tests.test_empty_config &mdash; decisionengine 1.7.99.post4.dev17+g19994fb5 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -109,9 +109,13 @@
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--ping&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s2">&quot;pong&quot;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s2">&quot;No channels are currently active.&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">&quot;No sources or channels are currently active.&quot;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--show-channel-config&quot;</span><span class="p">,</span> <span class="s2">&quot;test_channel&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s2">&quot;There is no active channel named test_channel.&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--block-while&quot;</span><span class="p">,</span> <span class="s2">&quot;BOOT&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s2">&quot;No active channels.&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--product-dependencies&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s2">&quot;No sources or channels are currently active.&quot;</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="n">channel_config</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_CHANNEL_CONFIG_PATH</span><span class="p">,</span> <span class="s2">&quot;test_channel.jsonnet&quot;</span><span class="p">)</span>  <span class="c1"># noqa: F405</span>
     <span class="n">new_config_path</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">channel_config</span><span class="p">,</span> <span class="n">deserver</span><span class="o">.</span><span class="n">channel_conf_path</span><span class="p">)</span>
@@ -121,7 +125,7 @@
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--start-channel&quot;</span><span class="p">,</span> <span class="s2">&quot;test_channel&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="s2">&quot;OK&quot;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s2">&quot;No channels are currently active.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">&quot;No sources or channels are currently active.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s2">&quot;test_channel&quot;</span> <span class="ow">in</span> <span class="n">output</span>
     <span class="k">assert</span> <span class="s2">&quot;state = STEADY&quot;</span> <span class="ow">in</span> <span class="n">output</span></div>
 </pre></div>
