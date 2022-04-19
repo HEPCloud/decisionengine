@@ -112,7 +112,7 @@ def execute_command_from_args(argsparsed, de_socket):
     if argsparsed.block_while:
         timeout = argsparsed.timeout
         if timeout is not None:
-            timeout = int(timeout)
+            timeout = float(timeout)
         return de_socket.block_while(argsparsed.block_while, timeout)
     if argsparsed.metrics:
         return de_socket.metrics()
@@ -129,7 +129,7 @@ def execute_command_from_args(argsparsed, de_socket):
         if argsparsed.force:
             timeout = 0
         elif argsparsed.timeout:
-            timeout = int(argsparsed.timeout)
+            timeout = float(argsparsed.timeout)
         return de_socket.kill_channel(argsparsed.kill_channel, timeout)
     if argsparsed.start_channel:
         return de_socket.start_channel(argsparsed.start_channel)
