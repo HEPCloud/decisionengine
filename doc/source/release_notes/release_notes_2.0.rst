@@ -58,6 +58,10 @@ Issues fixed in this release
 Full list of commits since version 1.7.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+`685a3a8e <https://github.com/HEPCloud/decisionengine/commit/685a3a8eaf0f86e7c6df305f256d58b068963320>`_:   Added changelog file for developers curated list of changes
+
+`044f4463 <https://github.com/HEPCloud/decisionengine/commit/044f44631b7155b006f411061d6ff9fe6c9ff38b>`_:   Updated 1.7 and 2.0 release notes, ready for 2.0.0 RC4
+
 `19994fb5 <https://github.com/HEPCloud/decisionengine/commit/19994fb5544d04d572093b346d7fd9ab1cb0bbdf>`_:   Convert timeout program options to floats.
 
 `e2055f92 <https://github.com/HEPCloud/decisionengine/commit/e2055f92b66c7d9dd5a21bf777d6bf3b2691cf83>`_:   Address Marco's review comments.

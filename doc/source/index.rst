@@ -15,7 +15,7 @@ Release Notes
    :maxdepth: 1
 
    release_notes
-   Latest<release_notes/release_notes_1.7>
+   Latest<release_notes/release_notes_2.0>
 
 
 Install Decision Engine
