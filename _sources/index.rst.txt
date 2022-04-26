@@ -8,7 +8,7 @@ The Decision Engine is a critical component of the HEP Cloud Facility. It provid
 functionality of resource scheduling for disparate resource providers, including those
 which may have a cost or restricted allocation of cycles.
 This package, decisionengine, provides the framework and base classes, the
-`decisionengine_modules<https:/decisionengine_modules/>`_ package contains provider
+`decisionengine_modules </decisionengine_modules/>`_ package contains provider
 specific implementations of the base classes.
 
 Release Notes
