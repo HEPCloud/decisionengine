@@ -38,5 +38,10 @@ set -o pipefail
 export PYTHONPATH=${PWD}/src:${PYTHONPATH}
 echo "PYTHONPATH: ${PYTHONPATH}"
 
+# PROMETHEUS_MULTIPROC_DIR is set in the framework Dockerfile
+# but this is causing test_check_metrics_env_var_unset to fail
+# so we unset this variable
+unset PROMETHEUS_MULTIPROC_DIR
+
 # run the python "module/command"
 python3 ${CMD} 2>&1 | tee ${LOGFILE}
