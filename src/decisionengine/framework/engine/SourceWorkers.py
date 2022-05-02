@@ -186,8 +186,11 @@ class SourceWorkers:
         with self._lock:
             for source_name in source_names:
                 self._use_count[source_name].discard(channel_name)
-                if len(self._use_count[source_name]) == 0:
-                    self._logger.debug(f"Taking channel {channel_name} offline")
+                if len(self._use_count[source_name]) != 0:
+                    continue
+
+                if self._workers[source_name].state.probably_running():
+                    self._logger.debug(f"Taking source {source_name} offline")
                     self._workers[source_name].take_offline()
 
     def prune(self, channel_name, source_names):
