@@ -82,6 +82,7 @@ class SourceWorker(multiprocessing.Process):
         """
         Get the data from source
         """
+        self.state.set(State.ACTIVE)
         self.logger.info(f"Starting source loop for {self.key}")
         SOURCE_ACQUIRE_GAUGE.labels(self.key)
         with producers[self.connection].acquire(block=True) as producer:
@@ -177,10 +178,6 @@ class SourceWorkers:
                 self._use_count[key] = {channel_name}
 
         return workers
-
-    def unique(self, source_name):
-        with self._lock:
-            return len(self._use_count[source_name]) == 1
 
     def detach(self, channel_name, source_names):
         with self._lock:
