@@ -143,6 +143,7 @@ def DEServer(
     host=DE_HOST,
     port=None,
     make_conf_dirs_if_missing=False,
+    block_until_startup_complete=True,
 ):
     """A DE Server using a private database"""
 
@@ -207,14 +208,17 @@ def DEServer(
             logger.debug("Starting DE Fixture")
             server_proc.start()
 
-            # Ensure the channels have started
-            logger.debug(f"DE Fixture: Wait on startup state: is_set={server_proc.de_server.startup_complete.is_set()}")
-            server_proc.de_server.startup_complete.wait()
-            server_proc.stdout_at_setup = capsys.readouterr().out
+            if block_until_startup_complete:
+                # Ensure the channels have started
+                logger.debug(
+                    f"DE Fixture: Wait on startup state: is_set={server_proc.de_server.startup_complete.is_set()}"
+                )
+                server_proc.de_server.startup_complete.wait()
+                server_proc.stdout_at_setup = capsys.readouterr().out
 
-            logger.debug(
-                f"DE Fixture: Done waiting for startup state: is_set={server_proc.de_server.startup_complete.is_set()}"
-            )
+                logger.debug(
+                    f"DE Fixture: Done waiting for startup state: is_set={server_proc.de_server.startup_complete.is_set()}"
+                )
 
             if not server_proc.is_alive():
                 raise RuntimeError("Could not start PrivateDEServer fixture")

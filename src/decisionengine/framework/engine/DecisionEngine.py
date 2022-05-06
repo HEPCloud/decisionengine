@@ -23,7 +23,7 @@ import socketserver
 import sys
 import xmlrpc.server
 
-from threading import Event
+from threading import Event, Thread
 
 import cherrypy
 import pandas as pd
@@ -419,7 +419,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         de_logger.stop_queue_logger()
         return "OK"
 
-    def start_channel(self, channel_name, channel_config):
+    def create_channel(self, channel_name, channel_config):
         channel_config = copy.deepcopy(channel_config)
         with START_CHANNEL_HISTOGRAM.labels(channel_name).time():
             # NB: Possibly override channel name
@@ -445,6 +445,11 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             with self.channel_workers.access() as workers:
                 workers[channel_name] = worker
 
+            return src_workers
+
+    def start_channel(self, channel_name, src_workers):
+        with self.channel_workers.access() as workers:
+            worker = workers[channel_name]
             # The channel must be started first so it can listen for the messages from the sources.
             self.logger.debug(f"Trying to start {channel_name}")
             worker.start()
@@ -452,9 +457,9 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
             worker.wait_while(ProcessingState.State.BOOT)
 
-            # Start any sources that are not yet alive.
+            # Start any sources that are in BOOT state.
             for key, src_worker in src_workers.items():
-                if self.source_workers.unique(key):
+                if src_worker.state.has_value(ProcessingState.State.BOOT):
                     src_worker.start()
                     self.logger.debug(f"Started process {src_worker.pid} for source {key}")
 
@@ -471,10 +476,21 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             self.logger.debug(f"Found channels: {self.channel_config_loader.get_channels().items()}")
 
         # FIXME: Should figure out a way to load the channels in parallel.  Unfortunately, there are data races that
-        #        occur when doing that (observed with Python 3.10).
+        #        occur when doing that (observed with Python 3.10).  In the meantime, we separate the starting of
+        #        channels into "creation" and "launching".  As "launching" takes much longer (requires a full cycle
+        #        of each channel), we can at least create all channels up front, and then any de-client --status
+        #        calls will not block.
+
+        src_workers_per_channel = {}
         for name, config in self.channel_config_loader.get_channels().items():
             try:
-                self.start_channel(name, config)
+                src_workers_per_channel[name] = self.create_channel(name, config)
+            except Exception as e:
+                self.logger.exception(f"Channel {name} could not be created: {e}")
+
+        for name, src_workers in src_workers_per_channel.items():
+            try:
+                self.start_channel(name, src_workers)
             except Exception as e:
                 self.logger.exception(f"Channel {name} failed to start: {e}")
 
@@ -486,7 +502,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         success, result = self.channel_config_loader.load_channel(channel_name)
         if not success:
             return result
-        self.start_channel(channel_name, result)
+        src_workers = self.create_channel(channel_name, result)
+        self.start_channel(channel_name, src_workers)
         return "OK"
 
     def rpc_start_channels(self):
@@ -788,24 +805,29 @@ def _create_de_server(global_config, channel_config_loader):
     return DecisionEngine(global_config, channel_config_loader, server_address)
 
 
+def _initial_start_channels(server):
+    server.get_logger().debug("running _start_de_server: step start_channels")
+    server.start_channels()
+
+    server.get_logger().debug("running _start_de_server: step startup_complete")
+    server.startup_complete.set()
+
+
 def _start_de_server(server):
     """Start the DE server and listen forever"""
+    start_channels_thread = Thread(target=_initial_start_channels, args=(server,))
     try:
         server.get_logger().info("running _start_de_server")
 
         server.get_logger().debug("running _start_de_server: step reaper_start")
         server.reaper_start(delay=server.global_config["dataspace"].get("reaper_start_delay_seconds", 1818))
 
-        server.get_logger().debug("running _start_de_server: step start_channels")
-        server.start_channels()
-
         if not server.global_config.get("no_webserver"):
             # cherrypy for metrics
             server.get_logger().debug("running _start_de_server: step start_webserver (metrics)")
             server.start_webserver()
 
-        server.get_logger().debug("running _start_de_server: step startup_complete")
-        server.startup_complete.set()
+        start_channels_thread.start()
 
         server.get_logger().debug("running _start_de_server: step serve_forever")
         server.serve_forever(
@@ -813,6 +835,7 @@ def _start_de_server(server):
         )  # Once per second is sufficient, given the amount of work done in the service actions.
 
         server.get_logger().debug("done with _start_de_server")
+
     except Exception as __e:  # pragma: no cover
         msg = f"""Server Address: {server.global_config.get('server_address')}
               Fatal Error: {__e}"""
@@ -823,6 +846,7 @@ def _start_de_server(server):
 
         raise __e
     finally:
+        start_channels_thread.join(None)
         r = redis.Redis.from_url(server.broker_url)
         with contextlib.suppress(Exception):
             r.flushdb()
