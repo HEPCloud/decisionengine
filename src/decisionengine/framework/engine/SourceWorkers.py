@@ -1,11 +1,13 @@
 # SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 # SPDX-License-Identifier: Apache-2.0
 
+import contextlib
 import multiprocessing
 import pickle
 import time
 import uuid
 
+import psutil
 import structlog
 
 from kombu import Connection, Queue
@@ -211,8 +213,12 @@ class SourceWorkers:
 
                 with countdown:
                     worker.take_offline()
-                    rc = worker.join(countdown.time_left)
-                    if rc is None:
-                        worker.terminate()
+                    worker.join(countdown.time_left)
+                    if worker.exitcode is None:
+                        # When we upgrade to Python 3.7, the following should be replaced with
+                        # worker.kill()
+                        with contextlib.suppress(psutil.NoSuchProcess):
+                            psutil.Process(worker.pid).kill()
+
             self._workers.clear()
             self._use_count.clear()

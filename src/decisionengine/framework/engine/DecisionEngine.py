@@ -27,6 +27,7 @@ from threading import Event, Thread
 
 import cherrypy
 import pandas as pd
+import psutil
 import redis
 import structlog
 import tabulate
@@ -554,7 +555,10 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             worker.task_manager.take_offline()
             worker.join(timeout)
         if worker.exitcode is None:
-            worker.terminate()
+            # When we upgrade to Python 3.7, the following should be replaced with
+            # worker.kill()
+            with contextlib.suppress(psutil.NoSuchProcess):
+                psutil.Process(worker.pid).kill()
             return StopState.Terminated
         else:
             return StopState.Clean
