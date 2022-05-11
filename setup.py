@@ -32,6 +32,7 @@ runtime_require = [
     "kombu[redis] >= 5.1.0",
     "jsonnet == 0.17.0",
     "prometheus-client >= 0.10.0",
+    "psutil >= 5.8.0",
     "tabulate >= 0.8.7",
     "toposort >= 1.6",
     "sqlalchemy >= 1.4.20",
