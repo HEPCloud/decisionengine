@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.SourceWorkers &mdash; decisionengine 2.0.1.dev4+gf4dc7da7 documentation</title>
+  <title>decisionengine.framework.engine.SourceWorkers &mdash; decisionengine 2.0.1.dev8+gc9c7cb3e documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -78,11 +78,13 @@
 <span></span><span class="c1"># SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC</span>
 <span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
 
+<span class="kn">import</span> <span class="nn">contextlib</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 
+<span class="kn">import</span> <span class="nn">psutil</span>
 <span class="kn">import</span> <span class="nn">structlog</span>
 
 <span class="kn">from</span> <span class="nn">kombu</span> <span class="kn">import</span> <span class="n">Connection</span><span class="p">,</span> <span class="n">Queue</span>
@@ -159,6 +161,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the data from source</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting source loop for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">SOURCE_ACQUIRE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">producers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">]</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">producer</span><span class="p">:</span>
@@ -255,10 +258,6 @@
 
         <span class="k">return</span> <span class="n">workers</span></div>
 
-<div class="viewcode-block" id="SourceWorkers.unique"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.unique">[docs]</a>    <span class="k">def</span> <span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_name</span><span class="p">):</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_use_count</span><span class="p">[</span><span class="n">source_name</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span></div>
-
 <div class="viewcode-block" id="SourceWorkers.detach"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.detach">[docs]</a>    <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">source_names</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">source_name</span> <span class="ow">in</span> <span class="n">source_names</span><span class="p">:</span>
@@ -291,9 +290,13 @@
 
                 <span class="k">with</span> <span class="n">countdown</span><span class="p">:</span>
                     <span class="n">worker</span><span class="o">.</span><span class="n">take_offline</span><span class="p">()</span>
-                    <span class="n">rc</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">countdown</span><span class="o">.</span><span class="n">time_left</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">rc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                    <span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">countdown</span><span class="o">.</span><span class="n">time_left</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">worker</span><span class="o">.</span><span class="n">exitcode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="c1"># When we upgrade to Python 3.7, the following should be replaced with</span>
+                        <span class="c1"># worker.kill()</span>
+                        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">psutil</span><span class="o">.</span><span class="n">NoSuchProcess</span><span class="p">):</span>
+                            <span class="n">psutil</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_use_count</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
 </pre></div>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.1.dev4+gf4dc7da7 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.1.dev8+gc9c7cb3e documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -100,10 +100,11 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">xmlrpc.server</span>
 
-<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Event</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Event</span><span class="p">,</span> <span class="n">Thread</span>
 
 <span class="kn">import</span> <span class="nn">cherrypy</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">psutil</span>
 <span class="kn">import</span> <span class="nn">redis</span>
 <span class="kn">import</span> <span class="nn">structlog</span>
 <span class="kn">import</span> <span class="nn">tabulate</span>
@@ -496,7 +497,7 @@
         <span class="n">de_logger</span><span class="o">.</span><span class="n">stop_queue_logger</span><span class="p">()</span>
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span></div>
 
-<div class="viewcode-block" id="DecisionEngine.start_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channel">[docs]</a>    <span class="k">def</span> <span class="nf">start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
+<div class="viewcode-block" id="DecisionEngine.create_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.create_channel">[docs]</a>    <span class="k">def</span> <span class="nf">create_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
         <span class="n">channel_config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">channel_config</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">START_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="c1"># NB: Possibly override channel name</span>
@@ -522,6 +523,11 @@
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
                 <span class="n">workers</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">worker</span>
 
+            <span class="k">return</span> <span class="n">src_workers</span></div>
+
+<div class="viewcode-block" id="DecisionEngine.start_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channel">[docs]</a>    <span class="k">def</span> <span class="nf">start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">src_workers</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
+            <span class="n">worker</span> <span class="o">=</span> <span class="n">workers</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span>
             <span class="c1"># The channel must be started first so it can listen for the messages from the sources.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to start </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -529,9 +535,9 @@
 
             <span class="n">worker</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
 
-            <span class="c1"># Start any sources that are not yet alive.</span>
+            <span class="c1"># Start any sources that are in BOOT state.</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">src_worker</span> <span class="ow">in</span> <span class="n">src_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">src_worker</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">):</span>
                     <span class="n">src_worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Started process </span><span class="si">{</span><span class="n">src_worker</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2"> for source </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -548,10 +554,21 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found channels: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># FIXME: Should figure out a way to load the channels in parallel.  Unfortunately, there are data races that</span>
-        <span class="c1">#        occur when doing that (observed with Python 3.10).</span>
+        <span class="c1">#        occur when doing that (observed with Python 3.10).  In the meantime, we separate the starting of</span>
+        <span class="c1">#        channels into &quot;creation&quot; and &quot;launching&quot;.  As &quot;launching&quot; takes much longer (requires a full cycle</span>
+        <span class="c1">#        of each channel), we can at least create all channels up front, and then any de-client --status</span>
+        <span class="c1">#        calls will not block.</span>
+
+        <span class="n">src_workers_per_channel</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">start_channel</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+                <span class="n">src_workers_per_channel</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> could not be created: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">src_workers</span> <span class="ow">in</span> <span class="n">src_workers_per_channel</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">start_channel</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">src_workers</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> failed to start: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -563,7 +580,8 @@
         <span class="n">success</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">load_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">result</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="n">src_workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">src_workers</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_start_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channels">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -614,7 +632,10 @@
             <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">take_offline</span><span class="p">()</span>
             <span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">worker</span><span class="o">.</span><span class="n">exitcode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="c1"># When we upgrade to Python 3.7, the following should be replaced with</span>
+            <span class="c1"># worker.kill()</span>
+            <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">psutil</span><span class="o">.</span><span class="n">NoSuchProcess</span><span class="p">):</span>
+                <span class="n">psutil</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">StopState</span><span class="o">.</span><span class="n">Terminated</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">StopState</span><span class="o">.</span><span class="n">Clean</span></div>
@@ -754,14 +775,14 @@
 <span class="sd">        use default webserver port.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_socket_host</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;webserver&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;webserver&quot;</span><span class="p">),</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">_port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;webserver&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;port&quot;</span><span class="p">,</span> <span class="n">DEFAULT_WEBSERVER_PORT</span><span class="p">)</span>
+        <span class="n">webserver_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;webserver&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">webserver_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">_port</span> <span class="o">=</span> <span class="n">webserver_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;port&quot;</span><span class="p">,</span> <span class="n">DEFAULT_WEBSERVER_PORT</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="c1"># unit tests use a random port</span>
             <span class="n">_port</span> <span class="o">=</span> <span class="n">DEFAULT_WEBSERVER_PORT</span>
 
-        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to start metrics server on </span><span class="si">{</span><span class="n">_socket_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to start metrics server on </span><span class="si">{</span><span class="n">_socket_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">cherrypy</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span><span class="s2">&quot;server.socket_port&quot;</span><span class="p">:</span> <span class="n">_port</span><span class="p">,</span> <span class="s2">&quot;server.socket_host&quot;</span><span class="p">:</span> <span class="n">_socket_host</span><span class="p">,</span> <span class="s2">&quot;server.shutdown_timeout&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
@@ -771,8 +792,7 @@
         <span class="c1"># we know for sure the cherrypy logger is working, so use that too</span>
         <span class="n">cherrypy</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to start metrics server on </span><span class="si">{</span><span class="n">_socket_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">cherrypy</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Started CherryPy server&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Started CherryPy server&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.metrics"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.metrics">[docs]</a>    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
     <span class="k">def</span> <span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -866,24 +886,29 @@
     <span class="k">return</span> <span class="n">DecisionEngine</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">,</span> <span class="n">server_address</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="_initial_start_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._initial_start_channels">[docs]</a><span class="k">def</span> <span class="nf">_initial_start_channels</span><span class="p">(</span><span class="n">server</span><span class="p">):</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step start_channels&quot;</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
+
+    <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step startup_complete&quot;</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+
 <div class="viewcode-block" id="_start_de_server"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._start_de_server">[docs]</a><span class="k">def</span> <span class="nf">_start_de_server</span><span class="p">(</span><span class="n">server</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Start the DE server and listen forever&quot;&quot;&quot;</span>
+    <span class="n">start_channels_thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_initial_start_channels</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">server</span><span class="p">,))</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;running _start_de_server&quot;</span><span class="p">)</span>
 
         <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step reaper_start&quot;</span><span class="p">)</span>
         <span class="n">server</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="n">server</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reaper_start_delay_seconds&quot;</span><span class="p">,</span> <span class="mi">1818</span><span class="p">))</span>
 
-        <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step start_channels&quot;</span><span class="p">)</span>
-        <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="n">server</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;no_webserver&quot;</span><span class="p">):</span>
             <span class="c1"># cherrypy for metrics</span>
             <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step start_webserver (metrics)&quot;</span><span class="p">)</span>
             <span class="n">server</span><span class="o">.</span><span class="n">start_webserver</span><span class="p">()</span>
 
-        <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step startup_complete&quot;</span><span class="p">)</span>
-        <span class="n">server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="n">start_channels_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
         <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step serve_forever&quot;</span><span class="p">)</span>
         <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">(</span>
@@ -891,6 +916,7 @@
         <span class="p">)</span>  <span class="c1"># Once per second is sufficient, given the amount of work done in the service actions.</span>
 
         <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;done with _start_de_server&quot;</span><span class="p">)</span>
+
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">__e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;Server Address: </span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;server_address&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
 <span class="s2">              Fatal Error: </span><span class="si">{</span><span class="n">__e</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
@@ -901,6 +927,7 @@
 
         <span class="k">raise</span> <span class="n">__e</span>
     <span class="k">finally</span><span class="p">:</span>
+        <span class="n">start_channels_thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">broker_url</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
             <span class="n">r</span><span class="o">.</span><span class="n">flushdb</span><span class="p">()</span></div>
