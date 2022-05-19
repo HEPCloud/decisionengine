@@ -106,7 +106,11 @@ class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
 class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServer):
     def __init__(self, global_config, channel_config_loader, server_address):
         xmlrpc.server.SimpleXMLRPCServer.__init__(
-            self, server_address, logRequests=False, requestHandler=RequestHandler
+            self,
+            server_address,
+            logRequests=False,
+            requestHandler=RequestHandler,
+            allow_none=True,
         )
         signal.signal(signal.SIGHUP, self.handle_sighup)
         self.channel_config_loader = channel_config_loader
@@ -135,12 +139,14 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return self.logger
 
     def _dispatch(self, method, params):
+        client_logger = logging.getLogger("xmlrpc_client")
+        client_logger.addHandler(logging.StreamHandler(stream=sys.stdout))
         try:
             # methods allowed to be executed by rpc have 'rpc_' pre-pended
             func = getattr(self, "rpc_" + method)
         except AttributeError:
             raise Exception(f'method "{method}" is not supported')
-        return func(*params)
+        return func(client_logger, *params)
 
     def service_actions(self):
         # Overrides the base class service_actions, taking sources
@@ -204,18 +210,19 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def _dataframe_to_csv(self, df):
         return f"{df.to_csv()}\n"
 
-    def rpc_ping(self):
-        return "pong"
+    def rpc_ping(self, client_logger):
+        client_logger.info("pong\n")
 
-    def rpc_block_while(self, state_str, timeout=None):
+    def rpc_block_while(self, client_logger, state_str, timeout=None):
         allowed_state = None
         try:
             allowed_state = ProcessingState.State[state_str]
         except Exception:
-            return f"{state_str} is not a valid channel state."
-        return self.block_while(allowed_state, timeout)
+            return client_logger.info(f"{state_str} is not a valid channel state.")
+        res = self.block_while(allowed_state, timeout)
+        return client_logger.info(res)
 
-    def rpc_show_config(self, channel):
+    def rpc_show_config(self, client_logger, channel):
         """
         Show the configuration for a channel.
 
@@ -227,20 +234,20 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             for ch in channels:
                 txt += _channel_preamble(ch)
                 txt += self.channel_config_loader.print_channel_config(ch)
-            return txt
+            return client_logger.info(txt + "\n")
 
         if channel not in channels:
-            return f"There is no active channel named {channel}."
+            return client_logger.info(f"There is no active channel named {channel}.\n")
 
         txt += _channel_preamble(channel)
         txt += self.channel_config_loader.print_channel_config(channel)
-        return txt
+        client_logger.info(txt + "\n")
 
-    def rpc_show_de_config(self):
-        return self.global_config.dump()
+    def rpc_show_de_config(self, client_logger):
+        client_logger.info(self.global_config.dump())
 
     @PRINT_PRODUCT_HISTOGRAM.time()
-    def rpc_print_product(self, product, columns=None, query=None, types=False, format=None):
+    def rpc_print_product(self, client_logger, product, columns=None, query=None, types=False, format=None):
         if not isinstance(product, str):
             raise ValueError(f"Requested product should be a string not {type(product)}")
 
@@ -303,13 +310,13 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                     txt += f"\t\t{e}\n"
         if not found:
             txt += "Not produced by any module\n"
-        return txt[:-1]
+        return client_logger.info(txt[:-1])
 
-    def rpc_print_products(self):
+    def rpc_print_products(self, client_logger):
         with self.channel_workers.access() as workers:
             channel_keys = workers.keys()
             if not channel_keys:
-                return "No channels are currently active.\n"
+                return client_logger.info("No channels are currently active.\n")
 
             width = max(len(x) for x in channel_keys) + 1
             txt = ""
@@ -339,24 +346,23 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                                 txt += f"{tabulate.tabulate(df, headers='keys', tablefmt='psql')}\n"
                             except Exception as e:  # pragma: no cover
                                 txt += f"\t\t\t{e}\n"
-        return txt[:-1]
+        return client_logger.info(txt[:-1])
 
     @STATUS_HISTOGRAM.time()
-    def rpc_status(self):
+    def rpc_status(self, client_logger):
         workers = self.source_workers.get_unguarded()
         source_keys = workers.keys()
         if not source_keys:
-            return "No sources or channels are currently active.\n" + self.reaper_status()
+            return client_logger.info("No sources or channels are currently active.\n" + self.reaper_status())
 
-        txt = ""
         width = max(len(x) for x in source_keys)
         queue_width = max(len(x.queue.name) for x in workers.values())
         for source, worker in workers.items():
             state = worker.state.get().name
             queue = worker.queue.name
-            txt += f"source: {source:<{width}}, queue id = {queue:<{queue_width}}, state = {state}\n"
+            client_logger.info(f"source: {source:<{width}}, queue id = {queue:<{queue_width}}, state = {state}")
 
-        txt += "\n"
+        client_logger.info("")
 
         workers = self.channel_workers.get_unguarded()
         channel_keys = workers.keys()
@@ -364,17 +370,21 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
         width = max(len(x) for x in channel_keys)
         for ch, worker in workers.items():
-            txt += f"channel: {ch:<{width}}, id = {worker.task_manager.id:<{width}}, state = {worker.get_state_name():<10}\n"
-        return txt + self.reaper_status()
+            client_logger.info(
+                f"channel: {ch:<{width}}, id = {worker.task_manager.id:<{width}}, state = {worker.get_state_name():<10}"
+            )
+        return client_logger.info(self.reaper_status())
 
-    def rpc_queue_status(self):
+    def rpc_queue_status(self, client_logger):
         status = redis_stats(self.broker_url, self.exchange.name)
-        return f"\n{tabulate.tabulate(status, headers=['Source name', 'Queue name', 'Unconsumed messages'])}"
+        return client_logger.info(
+            f"\n{tabulate.tabulate(status, headers=['Source name', 'Queue name', 'Unconsumed messages'])}"
+        )
 
-    def rpc_product_dependencies(self):
+    def rpc_product_dependencies(self, client_logger):
         workers = self.source_workers.get_unguarded()
         if not workers:
-            return "No sources or channels are currently active."
+            return client_logger.info("No sources or channels are currently active.")
 
         txt = "\nsources\n"
         for source, worker in sorted(workers.items()):
@@ -406,9 +416,9 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 txt += f"\t\t{mod_name}\n"
                 txt += f"\t\t\tconsumes: {consumes[mod_name]}\n"
 
-        return txt
+        return client_logger.info(txt)
 
-    def rpc_stop(self):
+    def rpc_stop(self, client_logger=None):
         self.shutdown()
         self.stop_channels()
         self.reaper_stop()
@@ -418,7 +428,8 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             cherrypy.engine.exit()
 
         de_logger.stop_queue_logger()
-        return "OK"
+        if client_logger is not None:
+            return client_logger.info("OK")
 
     def create_channel(self, channel_name, channel_config):
         channel_config = copy.deepcopy(channel_config)
@@ -495,44 +506,47 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             except Exception as e:
                 self.logger.exception(f"Channel {name} failed to start: {e}")
 
-    def rpc_start_channel(self, channel_name):
+    def rpc_start_channel(self, client_logger, channel_name):
         with self.channel_workers.access() as workers:
             if channel_name in workers:
-                return f"ERROR, channel {channel_name} is running"
+                return client_logger.info(f"ERROR, channel {channel_name} is running")
 
         success, result = self.channel_config_loader.load_channel(channel_name)
         if not success:
-            return result
+            return client_logger.info(result)
         src_workers = self.create_channel(channel_name, result)
         self.start_channel(channel_name, src_workers)
-        return "OK"
+        return client_logger.info("OK")
 
-    def rpc_start_channels(self):
+    def rpc_start_channels(self, client_logger):
         self.start_channels()
-        return "OK"
+        return client_logger.info("OK")
 
-    def rpc_stop_channel(self, channel):
-        return self.rpc_rm_channel(channel, None)
+    def rpc_stop_channel(self, client_logger, channel):
+        return self.rpc_rm_channel(client_logger, channel, None)
 
-    def rpc_kill_channel(self, channel, timeout=None):
+    def rpc_kill_channel(self, client_logger, channel, timeout=None):
         if timeout is None:
             timeout = self.global_config.get("shutdown_timeout", 10)
-        return self.rpc_rm_channel(channel, timeout)
+        return self.rpc_rm_channel(client_logger, channel, timeout)
 
-    def rpc_rm_channel(self, channel, maybe_timeout):
+    def rpc_rm_channel(self, client_logger, channel, maybe_timeout):
         rc = self.rm_channel(channel, maybe_timeout)
         if rc == StopState.NotFound:
-            return f"No channel found with the name {channel}."
+            return client_logger.info(f"No channel found with the name {channel}.")
         elif rc == StopState.Terminated:
             if maybe_timeout == 0:
-                return f"Channel {channel} has been killed."
+                client_logger.info(f"Channel {channel} has been killed.")
+                return
             # Would be better to use something like the inflect
             # module, but that introduces another dependency.
             suffix = "s" if maybe_timeout > 1 else ""
-            return f"Channel {channel} has been killed due to shutdown timeout ({maybe_timeout} second{suffix})."
+            return client_logger.info(
+                f"Channel {channel} has been killed due to shutdown timeout ({maybe_timeout} second{suffix})."
+            )
         assert rc == StopState.Clean
         WORKERS_COUNT.dec()
-        return f"Channel {channel} stopped cleanly."
+        return client_logger.info(f"Channel {channel} stopped cleanly.")
 
     def rm_channel(self, channel, maybe_timeout):
         with RM_CHANNEL_HISTOGRAM.labels(channel).time():
@@ -573,9 +587,9 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             workers.clear()
         self.source_workers.remove_all(countdown.time_left)
 
-    def rpc_stop_channels(self):
+    def rpc_stop_channels(self, client_logger):
         self.stop_channels()
-        return "All channels stopped."
+        return client_logger.info("All channels stopped.")
 
     def handle_sighup(self, signum, frame):
         self.reaper_stop()
@@ -583,65 +597,65 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.start_channels()
         self.reaper_start(delay=self.global_config["dataspace"].get("reaper_start_delay_seconds", 1818))
 
-    def rpc_get_log_level(self):
+    def rpc_get_log_level(self, client_logger):
         engineloglevel = self.get_logger().getEffectiveLevel()
-        return logging.getLevelName(engineloglevel)
+        return client_logger.info(logging.getLevelName(engineloglevel))
 
-    def rpc_get_channel_log_level(self, channel):
+    def rpc_get_channel_log_level(self, client_logger, channel):
         with self.channel_workers.access() as workers:
             worker = workers.get(channel)
             if worker is None:
-                return f"No channel found with the name {channel}."
+                return client_logger.info(f"No channel found with the name {channel}.")
 
             if not worker.is_alive():
-                return f"Channel {channel} is in ERROR state."
-            return logging.getLevelName(worker.task_manager.get_loglevel())
+                return client_logger.info(f"Channel {channel} is in ERROR state.")
+            return client_logger.info(logging.getLevelName(worker.task_manager.get_loglevel()))
 
-    def rpc_set_channel_log_level(self, channel, log_level):
+    def rpc_set_channel_log_level(self, client_logger, channel, log_level):
         """Assumes log_level is a string corresponding to the supported logging-module levels."""
         with self.channel_workers.access() as workers:
             worker = workers.get(channel)
             if worker is None:
-                return f"No channel found with the name {channel}."
+                return client_logger.info(f"No channel found with the name {channel}.")
 
             if not worker.is_alive():
-                return f"Channel {channel} is in ERROR state."
+                return client_logger.info(f"Channel {channel} is in ERROR state.")
 
             log_level_code = getattr(logging, log_level)
             if worker.task_manager.get_loglevel() == log_level_code:
-                return f"Nothing to do. Current log level is : {log_level}"
+                return client_logger.info(f"Nothing to do. Current log level is : {log_level}")
             worker.task_manager.set_loglevel_value(log_level)
-        return f"Log level changed to : {log_level}"
+        return client_logger.info(f"Log level changed to : {log_level}")
 
-    def rpc_reaper_start(self, delay=0):
+    def rpc_reaper_start(self, client_logger, delay=0):
         """
         Start the reaper process after 'delay' seconds.
         Default 0 seconds delay.
         :type delay: int
         """
         self.reaper_start(delay)
-        return "OK"
+        return client_logger.info("OK")
 
     def reaper_start(self, delay):
         self.reaper.start(delay)
 
-    def rpc_reaper_stop(self):
+    def rpc_reaper_stop(self, client_logger):
         self.reaper_stop()
-        return "OK"
+        return client_logger.info("OK")
 
     def reaper_stop(self):
         self.reaper.stop()
 
-    def rpc_reaper_status(self):
+    def rpc_reaper_status(self, client_logger):
         interval = self.reaper.retention_interval
         state = self.reaper.state.get()
-        return f"reaper:\n\tstate: {state}\n\tretention_interval: {interval}"
+        return client_logger.info(f"reaper:\n\tstate: {state}\n\tretention_interval: {interval}")
 
     def reaper_status(self):
         state = self.reaper.state.get()
         return f"\nreaper: state = {state.name}\n"
 
-    def rpc_query_tool(self, product, format=None, start_time=None):
+    def rpc_query_tool(self, client_logger, product, format=None, start_time=None):
         with QUERY_TOOL_HISTOGRAM.labels(product).time():
             found = False
             result = pd.DataFrame()
@@ -690,7 +704,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 txt += dataframe_formatter(result)
             else:
                 txt += "Not produced by any module\n"
-            return txt
+            return client_logger.info(txt)
 
     def start_webserver(self):
         """
@@ -722,7 +736,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return self.rpc_metrics()
 
     @METRICS_HISTOGRAM.time()
-    def rpc_metrics(self):
+    def rpc_metrics(self, client_logger=None):
         """
         Display collected metrics
         """

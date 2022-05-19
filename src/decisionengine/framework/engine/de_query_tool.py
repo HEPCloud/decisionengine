@@ -81,10 +81,8 @@ def console_scripts_main(args_to_parse=None):
     Setuptools thinks a return from this function is an error message.
     """
     msg = main(args_to_parse)
-    if "An error occurred while trying to access a DE server" in msg:
+    if msg is not None:
         return msg
-    else:
-        print(msg)
 
 
 if __name__ == "__main__":

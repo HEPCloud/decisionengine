@@ -138,11 +138,7 @@ def execute_command_from_args(argsparsed, de_socket):
     if argsparsed.start_channels:
         return de_socket.start_channels()
     if argsparsed.get_channel_loglevel:
-        level = argsparsed.get_channel_loglevel
-        if level == "UNITTEST":
-            return "NOTSET"
-        else:
-            return de_socket.get_channel_log_level(argsparsed.get_channel_loglevel)
+        return de_socket.get_channel_log_level(argsparsed.get_channel_loglevel)
     if argsparsed.set_channel_loglevel:
         return de_socket.set_channel_log_level(argsparsed.set_channel_loglevel[0], argsparsed.set_channel_loglevel[1])
     if argsparsed.show_config:
@@ -199,10 +195,8 @@ def console_scripts_main(args_to_parse=None):
     Setuptools thinks a return from this function is an error message.
     """
     msg = main(args_to_parse)
-    if "An error occurred while trying to access a DE server" in msg:
+    if msg is not None:
         return msg
-    else:
-        print(msg)
 
 
 if __name__ == "__main__":

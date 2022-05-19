@@ -65,13 +65,13 @@ def test_client_print_product(deserver):
 
     # Test against bad values
     with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
-        deserver.de_server.rpc_print_product(123)
+        deserver.de_server.rpc_print_product(None, 123)
     with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
-        deserver.de_server.rpc_print_product(b"123")
+        deserver.de_server.rpc_print_product(None, b"123")
     with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
-        deserver.de_server.rpc_print_product(pytest)
+        deserver.de_server.rpc_print_product(None, pytest)
     with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
-        deserver.de_server.rpc_print_product({"a": "b"})
+        deserver.de_server.rpc_print_product(None, {"a": "b"})
 
     # Test --types
     output = deserver.de_client_run_cli("--print-product", "foo", "--types")

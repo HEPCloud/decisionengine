@@ -95,7 +95,15 @@ class DETestWorker(threading.Thread):
         self.global_config["webserver"]["port"] = get_random_port()
 
         self.de_server = _create_de_server(self.global_config, self.channel_config_loader)
+        self.caplog = None
         self.stdout_at_setup = None
+
+    def logged_messages(self, logger):
+        txt = ""
+        for record in filter(lambda record: record.name == logger, self.caplog.records):
+            txt += record.msg + "\n"
+        self.caplog.clear()
+        return txt[:-1]  # Remove trailing newline for ease of testing
 
     def run(self):
         _start_de_server(self.de_server)
@@ -105,7 +113,7 @@ class DETestWorker(threading.Thread):
         Run the DE Client CLI with these args
         The DE Server host/port are automatically set for you
         """
-        return de_client.main(
+        de_client.main(
             [
                 "--host",
                 self.server_address[0],
@@ -114,6 +122,7 @@ class DETestWorker(threading.Thread):
                 *args,
             ]
         )
+        return self.logged_messages(logger="xmlrpc_client")
 
     def de_query_tool_run_cli(self, *args):
         """
@@ -123,7 +132,7 @@ class DETestWorker(threading.Thread):
         Returns:
             str: Query result
         """
-        return de_query_tool.main(
+        de_query_tool.main(
             [
                 "--host",
                 self.server_address[0],
@@ -132,6 +141,7 @@ class DETestWorker(threading.Thread):
                 *args,
             ]
         )
+        return self.logged_messages(logger="xmlrpc_client")
 
 
 # pylint: disable=invalid-name
@@ -148,7 +158,7 @@ def DEServer(
     """A DE Server using a private database"""
 
     @pytest.fixture(params=DATABASES_TO_TEST)
-    def de_server_factory(tmp_path, request, capsys, monkeypatch):
+    def de_server_factory(tmp_path, request, caplog, capsys, monkeypatch):
         """
         This parameterized fixture will mock up various datasources.
 
@@ -208,6 +218,7 @@ def DEServer(
             logger.debug("Starting DE Fixture")
             server_proc.start()
 
+            server_proc.caplog = caplog
             if block_until_startup_complete:
                 # Ensure the channels have started
                 logger.debug(
