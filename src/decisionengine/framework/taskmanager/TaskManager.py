@@ -11,7 +11,7 @@ import uuid
 
 import structlog
 
-from kombu import Connection, Queue
+from kombu import Queue
 
 from decisionengine.framework.dataspace import datablock
 from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
@@ -117,7 +117,6 @@ class TaskManager:
 
         self.exchange = exchange
         self.broker_url = broker_url
-        self.connection = Connection(self.broker_url)
 
         self.source_product_cache = SourceProductCache(expected_products, self.logger)
         self.routing_keys = routing_keys

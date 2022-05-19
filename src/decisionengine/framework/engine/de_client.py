@@ -6,6 +6,10 @@
 import argparse
 import xmlrpc.client
 
+from functools import partial
+
+from decisionengine.framework.engine.ClientMessageReceiver import ClientMessageReceiver
+
 
 def create_parser():
     parser = argparse.ArgumentParser()
@@ -100,35 +104,35 @@ def create_parser():
     return parser
 
 
-def execute_command_from_args(argsparsed, de_socket):
+def command_for_args(argsparsed, de_socket):
     """argsparsed should be from create_parser in this file"""
 
     # Server-specific options
     if argsparsed.ping:
-        return de_socket.ping()
+        return partial(de_socket.ping)
     if argsparsed.status:
-        return de_socket.status()
+        return partial(de_socket.status)
     if argsparsed.queue_status:
-        return de_socket.queue_status()
+        return partial(de_socket.queue_status)
     if argsparsed.show_de_config:
-        return de_socket.show_de_config()
+        return partial(de_socket.show_de_config)
     if argsparsed.stop:
-        return de_socket.stop()
+        return partial(de_socket.stop)
     if argsparsed.print_engine_loglevel:
-        return de_socket.get_log_level()
+        return partial(de_socket.get_log_level)
     if argsparsed.product_dependencies:
-        return de_socket.product_dependencies()
+        return partial(de_socket.product_dependencies)
     if argsparsed.block_while:
         timeout = argsparsed.timeout
         if timeout is not None:
             timeout = float(timeout)
-        return de_socket.block_while(argsparsed.block_while, timeout)
+        return partial(de_socket.block_while, argsparsed.block_while, timeout)
     if argsparsed.metrics:
-        return de_socket.metrics()
+        return partial(de_socket.metrics)
 
     # Channel-specific options
     if argsparsed.stop_channel:
-        return de_socket.stop_channel(argsparsed.stop_channel)
+        return partial(de_socket.stop_channel, argsparsed.stop_channel)
     if argsparsed.force and not argsparsed.kill_channel:
         return "The --force (-f) option may be used only with --kill-channel."
     if argsparsed.timeout and not argsparsed.kill_channel and not argsparsed.block_while:
@@ -139,56 +143,57 @@ def execute_command_from_args(argsparsed, de_socket):
             timeout = 0
         elif argsparsed.timeout:
             timeout = float(argsparsed.timeout)
-        return de_socket.kill_channel(argsparsed.kill_channel, timeout)
+        return partial(de_socket.kill_channel, argsparsed.kill_channel, timeout)
     if argsparsed.start_channel:
-        return de_socket.start_channel(argsparsed.start_channel)
+        return partial(de_socket.start_channel, argsparsed.start_channel)
     if argsparsed.stop_channels:
-        return de_socket.stop_channels()
+        return partial(de_socket.stop_channels)
     if argsparsed.start_channels:
-        return de_socket.start_channels()
+        return partial(de_socket.start_channels)
     if argsparsed.get_channel_loglevel:
-        level = argsparsed.get_channel_loglevel
-        if level == "UNITTEST":
-            return "NOTSET"
-        else:
-            return de_socket.get_channel_log_level(argsparsed.get_channel_loglevel)
+        return partial(de_socket.get_channel_log_level, argsparsed.get_channel_loglevel)
     if argsparsed.set_channel_loglevel:
-        return de_socket.set_channel_log_level(argsparsed.set_channel_loglevel[0], argsparsed.set_channel_loglevel[1])
+        return partial(
+            de_socket.set_channel_log_level, argsparsed.set_channel_loglevel[0], argsparsed.set_channel_loglevel[1]
+        )
     if argsparsed.show_config:
-        return de_socket.show_config("all")
+        return partial(de_socket.show_config, "all")
     if argsparsed.show_channel_config:
-        return de_socket.show_config(argsparsed.show_channel_config)
+        return partial(de_socket.show_config, argsparsed.show_channel_config)
 
     # Product-specific options
     if argsparsed.print_products:
-        return de_socket.print_products()
+        return partial(de_socket.print_products)
     if argsparsed.print_product:
-        return de_socket.print_product(
-            argsparsed.print_product, argsparsed.columns, argsparsed.query, argsparsed.types, argsparsed.format
+        return partial(
+            de_socket.print_product,
+            argsparsed.print_product,
+            argsparsed.columns,
+            argsparsed.query,
+            argsparsed.types,
+            argsparsed.format,
         )
 
     # Source-specific options
     if argsparsed.get_source_loglevel:
-        level = argsparsed.get_source_loglevel
-        if level == "UNITTEST":
-            return "NOTSET"
-        else:
-            return de_socket.get_source_log_level(argsparsed.get_source_loglevel)
+        return partial(de_socket.get_source_log_level, argsparsed.get_source_loglevel)
     if argsparsed.set_source_loglevel:
-        return de_socket.set_source_log_level(argsparsed.set_source_loglevel[0], argsparsed.set_source_loglevel[1])
+        return partial(
+            de_socket.set_source_log_level, argsparsed.set_source_loglevel[0], argsparsed.set_source_loglevel[1]
+        )
 
     # Database-reaper options
     if argsparsed.reaper_stop:
-        return de_socket.reaper_stop()
+        return partial(de_socket.reaper_stop)
     if argsparsed.reaper_start:
-        return de_socket.reaper_start(argsparsed.reaper_start_delay_secs)
+        return partial(de_socket.reaper_start, argsparsed.reaper_start_delay_secs)
     if argsparsed.reaper_status:
-        return de_socket.reaper_status()
+        return partial(de_socket.reaper_status)
 
     return "No command specified, try --help"
 
 
-def main(args_to_parse=None):
+def main(args_to_parse=None, logger_name="de_client"):
     """If you pass a list of args, they will be used instead of sys.argv"""
 
     parser = create_parser()
@@ -196,7 +201,11 @@ def main(args_to_parse=None):
     url = f"http://{args.host}:{args.port}"
     de_socket = xmlrpc.client.ServerProxy(url, allow_none=True)
     try:
-        return execute_command_from_args(args, de_socket)
+        res = command_for_args(args, de_socket)
+        if isinstance(res, str):
+            return res
+        receiver = ClientMessageReceiver(*de_socket.kombu_info(), "de_client", logger_name)
+        return receiver.execute(res)
     except OSError as e:
         msg = (
             f"An error occurred while trying to access a DE server at '{url}'\n"
@@ -218,10 +227,11 @@ def console_scripts_main(args_to_parse=None):
     Setuptools thinks a return from this function is an error message.
     """
     msg = main(args_to_parse)
-    if "An error occurred while trying to access a DE server" in msg:
+    if msg is None or isinstance(msg, int):
         return msg
-    else:
-        print(msg)
+    if isinstance(msg, str) and msg.startswith("An error occurred while trying to access a DE server at"):
+        return msg
+    print(msg)
 
 
 if __name__ == "__main__":

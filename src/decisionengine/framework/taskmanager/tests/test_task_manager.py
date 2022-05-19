@@ -7,6 +7,7 @@ import string
 
 import kombu
 import pytest
+import redis
 
 import decisionengine.framework.config.policies as policies
 
@@ -100,8 +101,15 @@ class RunChannel:
         self._source_workers.remove_all(None)
 
 
+@pytest.fixture(scope="module")
+def cleanup_redis():
+    # Do not cleanup database until everyone is done using it.
+    yield
+    redis.Redis.from_url(_BROKER_URL).flushdb()
+
+
 @pytest.fixture()
-def global_config(dataspace):  # noqa: F811
+def global_config(dataspace, cleanup_redis):  # noqa: F811
     conf = ValidConfig(policies.global_config_file(_CONFIG_PATH))
     conf["dataspace"] = dataspace.config["dataspace"]
     yield conf

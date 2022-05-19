@@ -6,6 +6,10 @@
 import argparse
 import xmlrpc.client
 
+from functools import partial
+
+from decisionengine.framework.engine.ClientMessageReceiver import ClientMessageReceiver
+
 
 def create_parser():
     parser = argparse.ArgumentParser()
@@ -30,7 +34,7 @@ def create_parser():
     return parser
 
 
-def execute_command_from_args(argsparsed, de_socket):
+def command_for_args(argsparsed, de_socket):
     """Calls the proper function for the arguments passed to de_query_tool.
 
     Args:
@@ -41,10 +45,10 @@ def execute_command_from_args(argsparsed, de_socket):
         str: Output of the command.
     """
 
-    return de_socket.query_tool(argsparsed.product, argsparsed.format, argsparsed.since)
+    return partial(de_socket.query_tool, argsparsed.product, argsparsed.format, argsparsed.since)
 
 
-def main(args_to_parse=None):
+def main(args_to_parse=None, logger_name="de_query_tool"):
     """Main function for de_query_tool
 
     Args:
@@ -59,7 +63,8 @@ def main(args_to_parse=None):
     url = f"http://{args.host}:{args.port}"
     de_socket = xmlrpc.client.ServerProxy(url, allow_none=True)
     try:
-        return execute_command_from_args(args, de_socket)
+        receiver = ClientMessageReceiver(*de_socket.kombu_info(), "de_query_tool", logger_name)
+        return receiver.execute(command_for_args(args, de_socket))
     except OSError as e:
         msg = (
             f"An error occurred while trying to access a DE server at '{url}'\n"
@@ -81,10 +86,11 @@ def console_scripts_main(args_to_parse=None):
     Setuptools thinks a return from this function is an error message.
     """
     msg = main(args_to_parse)
-    if "An error occurred while trying to access a DE server" in msg:
+    if msg is None or isinstance(msg, int):
         return msg
-    else:
-        print(msg)
+    if isinstance(msg, str) and msg.startswith("An error occurred while trying to access a DE server at"):
+        return msg
+    print(msg)
 
 
 if __name__ == "__main__":

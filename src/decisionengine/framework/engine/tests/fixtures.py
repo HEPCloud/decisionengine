@@ -84,7 +84,6 @@ class DETestWorker(threading.Thread):
             assert int(db_number) < 16
         else:
             db_number = random.randrange(0, 16)
-
         # Override global configuration for testing
         self.global_config["broker_url"] = f"redis://localhost:6379/{db_number}"
         self.global_config["shutdown_timeout"] = 1
@@ -112,7 +111,8 @@ class DETestWorker(threading.Thread):
                 "--port",
                 str(self.server_address[1]),
                 *args,
-            ]
+            ],
+            logger_name=None,
         )
 
     def de_query_tool_run_cli(self, *args):
@@ -130,7 +130,8 @@ class DETestWorker(threading.Thread):
                 "--port",
                 str(self.server_address[1]),
                 *args,
-            ]
+            ],
+            logger_name=None,
         )
 
 

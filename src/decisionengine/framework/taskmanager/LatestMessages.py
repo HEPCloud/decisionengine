@@ -79,9 +79,6 @@ class LatestMessages:
                     # timeout so that the 'should_stop()' method called in the while condition
                     # will yield false and thus terminate the loop.
                     conn.drain_events(timeout=5)
-                except TimeoutError:
-                    # no events found in time
-                    pass
-                except socket.timeout:
+                except (TimeoutError, socket.timeout):
                     # no events found in time
                     pass

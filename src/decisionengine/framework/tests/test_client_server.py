@@ -4,9 +4,6 @@
 """Fixture based DE Server for the de-client tests"""
 # pylint: disable=redefined-outer-name
 
-import io
-import sys
-
 import pytest
 
 from decisionengine.framework.tests.fixtures import (  # noqa: F401
@@ -24,17 +21,14 @@ deserver = DEServer(
 )  # pylint: disable=invalid-name
 
 
-def test_client_status_msg_to_stdout(deserver):
-    """Make sure the actual client console call goes to stdout"""
+def test_client_status_msg_to_logger(deserver, caplog):
+    """Make sure the actual client console call goes to a logging destination"""
     import decisionengine.framework.engine.de_client as de_client
 
-    myoutput = io.StringIO()
-    sys.stdout = myoutput
     de_client.console_scripts_main(
         ["--host", deserver.server_address[0], "--port", str(deserver.server_address[1]), "--status"]
     )
-    sys.stdout = sys.__stdout__
-    assert "channel: test_channel" in myoutput.getvalue()
+    assert any(filter(lambda r: r.msg.startswith("channel: test_channel") and r.name == "de_client", caplog.records))
 
 
 def test_client_set_loglevel(deserver):
@@ -87,13 +81,13 @@ def test_client_print_product(deserver):
 
     # Test against bad values
     with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
-        deserver.de_server.rpc_print_product(123)
+        deserver.de_server.rpc_print_product(None, 123)
     with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
-        deserver.de_server.rpc_print_product(b"123")
+        deserver.de_server.rpc_print_product(None, b"123")
     with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
-        deserver.de_server.rpc_print_product(pytest)
+        deserver.de_server.rpc_print_product(None, pytest)
     with pytest.raises(ValueError, match=r"Requested product should be a string.*"):
-        deserver.de_server.rpc_print_product({"a": "b"})
+        deserver.de_server.rpc_print_product(None, {"a": "b"})
 
     # Test --types
     output = deserver.de_client_run_cli("--print-product", "foo", "--types")
