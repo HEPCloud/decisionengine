@@ -6,6 +6,8 @@ import time
 
 from concurrent.futures import ThreadPoolExecutor, wait
 
+import redis
+
 from kombu import Connection, Exchange, Queue
 from kombu.pools import producers
 
@@ -57,3 +59,4 @@ def test_latest_messages():
         senders = [ex.submit(send_messages, name, num_messages, barrier) for name, num_messages in sources.items()]
         wait(senders)
         assert msgs.result() == ref
+    redis.Redis.from_url(_BROKER_URL).flushdb()

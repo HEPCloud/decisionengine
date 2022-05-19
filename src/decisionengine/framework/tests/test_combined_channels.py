@@ -50,6 +50,8 @@ def test_combined_channels_3g(deserver_combined):
     ref_pattern = r"""
 Source name      Queue name\s+      Unconsumed messages
 ---------------  ------------------------------------------------.*  ---------------------
+                 client\.requests\s+      None
+                 client\.requests\.listener\.de_client\s+ None
 first_source     first_source.*          None
 first_source     first_source\.last.*    None
 last_source_A    last_source_A.*         None

@@ -22,13 +22,13 @@ deserver = DEServer(
 
 
 def test_defaults(deserver):
-    # Verify unknown channel has NOTSET
+    # Verify DE does not attempt to get log level for unknown channel.
     output = deserver.de_client_run_cli("--get-channel-loglevel=UNITTEST")
-    assert output == "NOTSET"
+    assert output == "No channel found with the name UNITTEST."
 
-    # Verify unknown source has NOTSET
+    # Verify DE does not attempt to get log level for unknown source.
     output = deserver.de_client_run_cli("--get-source-loglevel=UNITTEST")
-    assert output == "NOTSET"
+    assert output == "No source found with the name UNITTEST."
 
     # Verify global_channel_log_level setting exists
     output = deserver.de_client_run_cli("--show-de-config")
