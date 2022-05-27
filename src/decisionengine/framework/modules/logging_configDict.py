@@ -17,6 +17,7 @@ DELOGGER_CHANNEL_NAME = "engine"
 # (the channel name as recorded in the logs is by default the name of the config file
 # for the channel OR alternately can be set in the config file using the key "channel_name")
 CHANNELLOGGERNAME = "channel"
+SOURCELOGGERNAME = "source"
 
 # name suffixes and log levels of the output files from the main logger
 # the base name is given by the "log_file" config parameter in the config file
@@ -30,6 +31,7 @@ de_outfile_info = (
     ("_structlog_debug.log", logging.DEBUG, "%(message)s"),
 )
 
+# location in de_outfile_info of structlog info
 structlog_file_index = [2]
 
 timestamper = structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S", utc=False)
