@@ -26,6 +26,10 @@ def test_defaults(deserver):
     output = deserver.de_client_run_cli("--get-channel-loglevel=UNITTEST")
     assert output == "NOTSET"
 
+    # Verify unknown source has NOTSET
+    output = deserver.de_client_run_cli("--get-source-loglevel=UNITTEST")
+    assert output == "NOTSET"
+
     # Verify global_channel_log_level setting exists
     output = deserver.de_client_run_cli("--show-de-config")
     assert "global_channel_log_level" in output

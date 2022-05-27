@@ -42,9 +42,9 @@ def channel_config(channel_name):
     return ValidConfig(os.path.join(_CHANNEL_CONFIG_DIR, channel_name + ".jsonnet"))
 
 
-def source_workers(channel_name, source_configs):
+def source_workers(channel_name, source_configs, logger_config):
     src_workers = SourceWorkers(_EXCHANGE, _BROKER_URL)
-    return src_workers, src_workers.update(channel_name, source_configs)
+    return src_workers, src_workers.update(channel_name, source_configs, logger_config)
 
 
 def task_manager_for(global_config, channel_name, ch_config=None, src_workers=None):
@@ -56,7 +56,7 @@ def task_manager_for(global_config, channel_name, ch_config=None, src_workers=No
     # ensures that we avoid file collisions.
     channel_name = ch_config.get("channel_name", channel_name + "-" + random_suffix())
     if src_workers is None:
-        _, src_workers = source_workers(channel_name, ch_config["sources"])
+        _, src_workers = source_workers(channel_name, ch_config["sources"], global_config["logger"])
     keys = [worker.key for worker in src_workers.values()]
     module_workers = validated_workflow(channel_name, src_workers, ch_config)
     return TaskManager(
@@ -73,7 +73,7 @@ def task_manager_for(global_config, channel_name, ch_config=None, src_workers=No
 class RunChannel:
     def __init__(self, global_config, channel):
         ch_config = channel_config(channel)
-        src_workers, workers_to_start = source_workers(channel, ch_config["sources"])
+        src_workers, workers_to_start = source_workers(channel, ch_config["sources"], global_config["logger"])
         self._source_workers = src_workers
         self._workers_to_start = workers_to_start
         self._tm = task_manager_for(global_config, channel, ch_config, self._workers_to_start)

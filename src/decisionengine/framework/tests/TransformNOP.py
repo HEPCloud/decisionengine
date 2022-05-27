@@ -13,7 +13,7 @@ class TransformNOP(Transform.Transform):
         super().__init__(config)
 
     def transform(self, data_block):
-        df_in = self.foo(data_block)
+        df_in = self.foo(data_block)  # pylint: disable=no-member
         return {"bar": pd.DataFrame(df_in["key2"])}
 
 

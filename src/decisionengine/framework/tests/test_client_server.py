@@ -41,8 +41,30 @@ def test_client_set_loglevel(deserver):
     # these shouldn't error out even if the channels are dead
     # they should report the channel is dead, if it did die.
     assert "DEBUG" in deserver.de_client_run_cli("--print-engine-loglevel")
+
+    # channel logger tests
     deserver.de_client_run_cli("--set-channel-loglevel", "test_channel", "DEBUG")
+    output = deserver.de_client_run_cli("--set-channel-loglevel", "test_channel", "DEBUG")
+    assert output == "Nothing to do. Current log level is : DEBUG"
     assert "ERROR" in deserver.de_client_run_cli("--set-channel-loglevel", "test_channel", "ERROR")
+    output = deserver.de_client_run_cli("--set-channel-loglevel", "bad_channel", "DEBUG")
+    assert output == "No channel found with the name bad_channel."
+
+    # source logger tests
+    deserver.de_client_run_cli("--set-source-loglevel", "source1", "DEBUG")
+    output = deserver.de_client_run_cli("--set-source-loglevel", "source1", "DEBUG")
+    assert output == "Nothing to do. Current log level is : DEBUG"
+    assert "ERROR" in deserver.de_client_run_cli("--set-source-loglevel", "source1", "ERROR")
+    output = deserver.de_client_run_cli("--set-source-loglevel", "bad_source", "DEBUG")
+    assert output == "No source found with the name bad_source."
+
+
+def test_client_get_loglevel(deserver):
+    output = deserver.de_client_run_cli("--get-channel-loglevel", "bad_channel")
+    assert output == "No channel found with the name bad_channel."
+
+    output = deserver.de_client_run_cli("--get-source-loglevel", "bad_source")
+    assert output == "No source found with the name bad_source."
 
 
 def test_client_print_product(deserver):

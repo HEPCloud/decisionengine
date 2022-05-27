@@ -426,7 +426,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             # NB: Possibly override channel name
             channel_name = channel_config.get("channel_name", channel_name)
             source_configs = channel_config.pop("sources")
-            src_workers = self.source_workers.update(channel_name, source_configs)
+            src_workers = self.source_workers.update(channel_name, source_configs, self.global_config["logger"])
             module_workers = validated_workflow(channel_name, src_workers, channel_config, self.logger)
 
             routing_keys = [worker.key for worker in src_workers.values()]
@@ -611,6 +611,33 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             if worker.task_manager.get_loglevel() == log_level_code:
                 return f"Nothing to do. Current log level is : {log_level}"
             worker.task_manager.set_loglevel_value(log_level)
+        return f"Log level changed to : {log_level}"
+
+    def rpc_get_source_log_level(self, source):
+        with self.source_workers.access() as workers:
+            worker = workers.get(source)
+            if worker is None:
+                return f"No source found with the name {source}."
+
+            if not worker.is_alive():
+                return f"Source {source} is in ERROR state."
+
+            return logging.getLevelName(worker.get_loglevel())
+
+    def rpc_set_source_log_level(self, source, log_level):
+        """Assumes log_level is a string corresponding to the supported logging-module levels."""
+        with self.source_workers.access() as workers:
+            worker = workers.get(source)
+            if worker is None:
+                return f"No source found with the name {source}."
+
+            if not worker.is_alive():
+                return f"Source {source} is in ERROR state."
+
+            log_level_code = getattr(logging, log_level)
+            if worker.get_loglevel() == log_level_code:
+                return f"Nothing to do. Current log level is : {log_level}"
+            worker.set_loglevel_value(log_level)
         return f"Log level changed to : {log_level}"
 
     def rpc_reaper_start(self, delay=0):
