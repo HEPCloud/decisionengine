@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import contextlib
+import logging
 import multiprocessing
+import os
 import pickle
 import time
 import uuid
@@ -13,8 +15,10 @@ import structlog
 from kombu import Connection, Queue
 from kombu.pools import producers
 
+import decisionengine.framework.modules.de_logger as de_logger
+import decisionengine.framework.modules.logging_configDict as logconf
+
 from decisionengine.framework.modules import Module
-from decisionengine.framework.modules.logging_configDict import LOGGERNAME
 from decisionengine.framework.modules.Source import Source
 from decisionengine.framework.taskmanager.module_graph import _create_module_instance
 from decisionengine.framework.taskmanager.ProcessingState import ProcessingState, State
@@ -22,6 +26,8 @@ from decisionengine.framework.util.countdown import Countdown
 from decisionengine.framework.util.metrics import Gauge
 
 _DEFAULT_SCHEDULE = 300  # 5 minutes
+
+MB = 1000000
 
 SOURCE_ACQUIRE_GAUGE = Gauge(
     "de_source_last_acquire_timestamp_seconds",
@@ -34,11 +40,11 @@ SOURCE_ACQUIRE_GAUGE = Gauge(
 
 class SourceWorker(multiprocessing.Process):
     """
-    Provides interface to loadable modules an events to sycronise
+    Provides interface to loadable modules an events to sycronize
     execution
     """
 
-    def __init__(self, key, config, channel_name, exchange, broker_url):
+    def __init__(self, key, config, logger_config, channel_name, exchange, broker_url):
         """
         :type config: :obj:`dict`
         :arg config: configuration dictionary describing the worker
@@ -46,13 +52,19 @@ class SourceWorker(multiprocessing.Process):
         super().__init__(name=f"SourceWorker-{key}")
         self.module_instance = _create_module_instance(config, Source, channel_name)
         self.config = config
+        self.logger_config = logger_config
+        self.channel_name = channel_name
         self.module = self.config["module"]
         self.key = key
         self.class_name = self.module_instance.__class__.__name__
         SOURCE_ACQUIRE_GAUGE.labels(self.key)
 
-        self.logger = structlog.getLogger(LOGGERNAME)
-        self.logger = self.logger.bind(module=__name__.split(".")[-1], source=self.key)
+        self.loglevel = multiprocessing.Value("i", logging.WARNING)
+        self.logger = structlog.getLogger(logconf.SOURCELOGGERNAME)
+        self.logger.setLevel(logging.DEBUG)
+
+        logger = structlog.getLogger(logconf.LOGGERNAME)
+        logger = logger.bind(module=__name__.split(".")[-1], source=self.key)
 
         self.exchange = exchange
         self.connection = Connection(broker_url)
@@ -60,7 +72,7 @@ class SourceWorker(multiprocessing.Process):
 
         # We use a random name to avoid queue collisions when running tests
         queue_id = self.key + "." + str(uuid.uuid4()).upper()
-        self.logger.debug(f"Creating queue {queue_id} with routing key {self.key}")
+        logger.debug(f"Creating queue {queue_id} with routing key {self.key}")
         self.queue = Queue(
             queue_id,
             exchange=self.exchange,
@@ -71,9 +83,61 @@ class SourceWorker(multiprocessing.Process):
         self.state = ProcessingState()
         self.schedule = config.get("schedule", _DEFAULT_SCHEDULE)
 
-        self.logger.debug(
+        logger.debug(
             f"Creating worker: module={self.module} name={self.key} class_name={self.class_name} parameters={config['parameters']} schedule={self.schedule}"
         )
+
+    def get_loglevel(self):
+        with self.loglevel.get_lock():
+            return self.loglevel.value
+
+    def set_loglevel_value(self, log_level):
+        """Assumes log_level is a string corresponding to the supported logging-module levels."""
+        with self.loglevel.get_lock():
+            # Convert from string to int form using technique
+            # suggested by logging module
+            self.loglevel.value = getattr(logging, log_level)
+            self.logger.setLevel(self.loglevel.value)
+
+    # setup the Source specific loggers
+    def setup_logger(self):
+        myname = self.key
+        myfilename = os.path.join(os.path.dirname(self.logger_config["log_file"]), myname + ".log")
+        start_q_logger = self.logger_config.get("start_q_logger", "True")
+
+        # self.logger = structlog.getLogger(logconf.SOURCELOGGERNAME)
+        # setting a default value here. value from config file is set in call
+        # self.worker.set_loglevel_value after logger configuration is completed
+        # self.logger.setLevel(logging.DEBUG)
+
+        logger_rotate_by = self.logger_config.get("file_rotate_by", "size")
+        if logger_rotate_by == "size":
+            handler = logging.handlers.RotatingFileHandler(
+                filename=myfilename,
+                maxBytes=self.logger_config.get("max_file_size", 200 * MB),
+                backupCount=self.logger_config.get("max_backup_count", 6),
+            )
+
+        elif logger_rotate_by == "time":
+            handler = logging.handlers.TimedRotatingFileHandler(
+                filename=myfilename,
+                when=self.logger_config.get("rotation_time_unit", "D"),
+                interval=self.logger_config.get("rotation_time_interval", 1),
+                backupCount=self.logger_config.get("max_backup_count", 6),
+            )
+        else:
+            raise ValueError(f"In SourceWorkers, incorrect 'logger_rotate_by':'{logger_rotate_by}:'")
+
+        handler.setLevel(logging.DEBUG)
+        handler.setFormatter(logging.Formatter(logconf.userformat))
+
+        self.logger.addHandler(handler)
+
+        if start_q_logger == "True":
+            self.logger.addHandler(de_logger.get_queue_logger().structlog_q_handler)
+
+        self.logger = self.logger.bind(module=myname, channel=self.channel_name)
+        self.logger.setLevel(self.logger_config.get("global_source_log_level", "WARNING"))
 
     def take_offline(self):
         if self.state.has_value(State.ERROR):
@@ -85,6 +149,7 @@ class SourceWorker(multiprocessing.Process):
         Get the data from source
         """
         self.state.set(State.ACTIVE)
+        self.setup_logger()
         self.logger.info(f"Starting source loop for {self.key}")
         SOURCE_ACQUIRE_GAUGE.labels(self.key)
         with producers[self.connection].acquire(block=True) as producer:
@@ -139,7 +204,28 @@ class SourceWorker(multiprocessing.Process):
 
 
 class SourceWorkers:
-    def __init__(self, exchange, broker_url, logger=structlog.getLogger(LOGGERNAME)):
+    """
+    This class manages and provides access to the Source workers.
+
+    The intention is that the decision engine never directly interacts with the
+    workers but refers to them via a context manager:
+
+      with workers.access() as ws:
+          # Access to ws now protected
+          ws['new_source'] = SourceWorker(...)
+
+    In cases where the decision engine's block_while method must be
+    called (e.g. during tests), one should use unguarded access:
+
+      ws = workers.get_unguarded()
+      # Access to ws is unprotected
+      ws['new_source'].wait_while(...)
+
+    Calling a blocking method while using the protected context
+    manager (i.e. workers.access()) will likely result in a deadlock.
+    """
+
+    def __init__(self, exchange, broker_url, logger=structlog.getLogger(logconf.LOGGERNAME)):
         self._exchange = exchange
         self._broker_url = broker_url
         self._logger = logger
@@ -147,10 +233,25 @@ class SourceWorkers:
         self._use_count = {}
         self._lock = multiprocessing.Lock()
 
+    class Access:
+        def __init__(self, workers, lock):
+            self._workers = workers
+            self._lock = lock
+
+        def __enter__(self):
+            self._lock.acquire()
+            return self._workers
+
+        def __exit__(self, error, type, bt):
+            self._lock.release()
+
+    def access(self):
+        return self.Access(self._workers, self._lock)
+
     def get_unguarded(self):
         return self._workers
 
-    def update(self, channel_name, source_configs):
+    def update(self, channel_name, source_configs, logger_config):
         workers = {}
 
         # Reuse already existing sources
@@ -174,7 +275,7 @@ class SourceWorkers:
             # The remaining configuration correspond to new sources
             for key, config in source_configs.items():
                 self._logger.info(f"Creating source {key} for channel {channel_name}")
-                worker = SourceWorker(key, config, channel_name, self._exchange, self._broker_url)
+                worker = SourceWorker(key, config, logger_config, channel_name, self._exchange, self._broker_url)
                 self._workers[key] = worker
                 workers[key] = worker
                 self._use_count[key] = {channel_name}

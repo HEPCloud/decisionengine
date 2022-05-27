@@ -68,6 +68,15 @@ def create_parser():
         help="Possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL",
     )
 
+    sources = parser.add_argument_group("Source-specific options")
+    sources.add_argument("--get-source-loglevel", metavar="<source name>", help="print source log level")
+    sources.add_argument(
+        "--set-source-loglevel",
+        nargs=2,
+        metavar=("<source name>", "<log level>"),
+        help="Possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL",
+    )
+
     products = parser.add_argument_group("Product-specific options")
     products.add_argument("--print-product", metavar="<product name>")
     products.add_argument("--print-products", action="store_true", help="print products")
@@ -157,6 +166,16 @@ def execute_command_from_args(argsparsed, de_socket):
         return de_socket.print_product(
             argsparsed.print_product, argsparsed.columns, argsparsed.query, argsparsed.types, argsparsed.format
         )
+
+    # Source-specific options
+    if argsparsed.get_source_loglevel:
+        level = argsparsed.get_source_loglevel
+        if level == "UNITTEST":
+            return "NOTSET"
+        else:
+            return de_socket.get_source_log_level(argsparsed.get_source_loglevel)
+    if argsparsed.set_source_loglevel:
+        return de_socket.set_source_log_level(argsparsed.set_source_loglevel[0], argsparsed.set_source_loglevel[1])
 
     # Database-reaper options
     if argsparsed.reaper_stop:
