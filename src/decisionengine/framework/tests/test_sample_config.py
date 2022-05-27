@@ -143,12 +143,16 @@ def test_client_logger_level(deserver):
     output = deserver.de_client_run_cli("--get-channel-loglevel", "test_channel")
     assert output in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
+    # Verify can fetch log level for a source
+    output = deserver.de_client_run_cli("--get-source-loglevel", "source1")
+    assert output in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+
     # Verify set log level for a channel
     output = deserver.de_client_run_cli("--set-channel-loglevel", "test_channel", "DEBUG")
     output = deserver.de_client_run_cli("--get-channel-loglevel", "test_channel")
     assert output == "DEBUG"
 
-    # Verify set log level to current level isn't an error
-    output = deserver.de_client_run_cli("--set-channel-loglevel", "test_channel", "DEBUG")
-    output = deserver.de_client_run_cli("--get-channel-loglevel", "test_channel")
+    # Verify set log level for a source
+    output = deserver.de_client_run_cli("--set-source-loglevel", "source1", "DEBUG")
+    output = deserver.de_client_run_cli("--get-source-loglevel", "source1")
     assert output == "DEBUG"

@@ -12,7 +12,7 @@ class PublisherNOP(Publisher.Publisher):
         super().__init__(config)
 
     def publish(self, data_block):
-        self.bar(data_block)
+        self.bar(data_block)  # pylint: disable=no-member
 
 
 Publisher.describe(PublisherNOP)
