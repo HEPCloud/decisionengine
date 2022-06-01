@@ -46,7 +46,7 @@ def reaper(request):
     with contextlib.suppress(Exception):
         if reaper.thread.is_alive() or not reaper.state.should_stop():
             reaper.state.set(State.OFFLINE)
-            reaper.join(timeout=1)
+            reaper.thread.join(timeout=1)
 
     del reaper
     gc.collect()

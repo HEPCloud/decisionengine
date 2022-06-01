@@ -10,6 +10,7 @@ from decisionengine.framework.modules import Publisher
 class PublisherNOP(Publisher.Publisher):
     def __init__(self, config):
         super().__init__(config)
+        self.bar = None
 
     def publish(self, data_block):
         self.bar(data_block)

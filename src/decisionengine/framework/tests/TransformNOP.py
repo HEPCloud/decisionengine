@@ -11,6 +11,7 @@ from decisionengine.framework.modules import Transform
 class TransformNOP(Transform.Transform):
     def __init__(self, config):
         super().__init__(config)
+        self.foo = None
 
     def transform(self, data_block):
         df_in = self.foo(data_block)
