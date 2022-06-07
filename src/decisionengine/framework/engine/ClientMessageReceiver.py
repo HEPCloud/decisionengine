@@ -3,6 +3,7 @@
 
 import logging
 import socket
+import sys
 
 from kombu import Connection, Exchange, Queue
 
@@ -17,12 +18,17 @@ class ClientMessageReceiver:
             routing_key=f"client.requests.{routing_key_suffix}",
             auto_delete=True,
         )
-        self._logger_name = logger_name
         self._done = False
-        self.text = "" if logger_name is None else None
+        self._logger = None
+        self._text = None
+        if logger_name is not None:
+            self._logger = logging.getLogger(logger_name)
+            self._logger.setLevel(logging.INFO)
+            self._logger.addHandler(logging.StreamHandler(sys.stdout))
+        else:
+            self._text = ""
 
     def _receive(self, body, message):
-        # print("Received", body, flush=True)
         # None is used to indicate the end of the message from the DE server
         if body is None:
             self._done = True
@@ -30,10 +36,11 @@ class ClientMessageReceiver:
             return
         if isinstance(body, bytes):
             body = body.decode()
-        if self._logger_name is None:
-            self.text += body
+        if self._text is not None:
+            self._text += body
         else:
-            logging.getLogger(self._logger_name).info(body)
+            assert self._logger is not None
+            self._logger.info(body)
         message.ack()
 
     def execute(self, func, *args):
@@ -45,4 +52,5 @@ class ClientMessageReceiver:
                 except (TimeoutError, socket.timeout):  # pragma: no cover
                     # no events found in time
                     pass
-        return self.text
+            self._queue.bind(conn.channel()).purge()
+        return self._text
