@@ -4,6 +4,7 @@
 import logging
 import multiprocessing
 import os
+import threading
 
 import structlog
 
@@ -119,7 +120,7 @@ class ChannelWorkers:
 
     def __init__(self):
         self._workers = {}
-        self._lock = multiprocessing.Lock()
+        self._lock = threading.Lock()
 
     class Access:
         def __init__(self, workers, lock):
@@ -132,6 +133,9 @@ class ChannelWorkers:
 
         def __exit__(self, error, type, bt):
             self._lock.release()
+
+    def accessed_by_another_thread(self):
+        return self._lock.locked()
 
     def access(self):
         return self.Access(self._workers, self._lock)

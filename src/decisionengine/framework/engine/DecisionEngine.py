@@ -186,6 +186,14 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def service_actions(self):
         # Overrides the base class service_actions, taking sources
         # offline whenever the client task managers have gone offline.
+
+        # We take sources offline only if the channel workers are not
+        # being accesssed by another thread.  This is important
+        # whenever (e.g.) channels are being brought online and an
+        # operator wants to check the DE status via an XMLRPC request.
+        if self.channel_workers.accessed_by_another_thread():
+            return
+
         with self.channel_workers.access() as workers:
             for channel_name, worker in workers.items():
                 tm = worker.task_manager
@@ -789,8 +797,14 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
         self.logger.debug(f"Trying to start metrics server on {_socket_host}:{_port}")
 
+        # TODO: We might consider setting adding "server.thread_pool": 1 to the cherrypy config.
+        #       Otherwise we get ~8 threads devoted to cherrypy, which might be overkill.
         cherrypy.config.update(
-            {"server.socket_port": _port, "server.socket_host": _socket_host, "server.shutdown_timeout": 1}
+            {
+                "server.socket_port": _port,
+                "server.socket_host": _socket_host,
+                "server.shutdown_timeout": 1,
+            }
         )
         cherrypy.engine.signals.subscribe()
         cherrypy.tree.mount(self)

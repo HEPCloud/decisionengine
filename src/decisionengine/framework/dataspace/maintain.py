@@ -185,6 +185,7 @@ class Reaper:
                 if self.state.has_value(State.SHUTTINGDOWN):
                     self.state.wait_while(State.SHUTTINGDOWN)
                 self.logger.info(f"Reaper shutdown : {self.state.get()}.")
+                self.thread.join()
             else:
                 self.logger.debug(f"Reaper tried to stop but is stopped already: {self.state.get()}.")
         else:
