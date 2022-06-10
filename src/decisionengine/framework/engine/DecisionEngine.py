@@ -18,7 +18,6 @@ import json
 import logging
 import os
 import re
-import signal
 import socketserver
 import sys
 import time
@@ -114,7 +113,6 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             requestHandler=RequestHandler,
             allow_none=True,
         )
-        signal.signal(signal.SIGHUP, self.handle_sighup)
         self.channel_config_loader = channel_config_loader
         self.global_config = global_config
         self.dataspace = dataspace.DataSpace(self.global_config)
@@ -639,12 +637,6 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def rpc_stop_channels(self, client_queue):
         self.stop_channels()
         return client_queue.send("All channels stopped.")
-
-    def handle_sighup(self, signum, frame):
-        self.reaper_stop()
-        self.stop_channels()
-        self.start_channels()
-        self.reaper_start(delay=self.global_config["dataspace"].get("reaper_start_delay_seconds", 1818))
 
     def rpc_get_log_level(self, client_queue):
         engineloglevel = self.get_logger().getEffectiveLevel()
