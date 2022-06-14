@@ -37,6 +37,7 @@ runtime_require = [
     "toposort >= 1.6",
     "sqlalchemy >= 1.4.20",
     "structlog >= 21.1.0",
+    "typing_extensions == 4.1.1",
     "numpy == 1.19.5; python_version <= '3.6'",
     "numpy >= 1.19.5; python_version >= '3.7'",
     "pandas == 1.1.5; python_version <= '3.6'",
