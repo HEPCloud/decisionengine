@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.1.dev12+ge44e9210 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.1.dev13+g29a1ee25 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -504,7 +504,7 @@
             <span class="c1"># NB: Possibly override channel name</span>
             <span class="n">channel_name</span> <span class="o">=</span> <span class="n">channel_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;channel_name&quot;</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
             <span class="n">source_configs</span> <span class="o">=</span> <span class="n">channel_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sources&quot;</span><span class="p">)</span>
-            <span class="n">src_workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">source_configs</span><span class="p">)</span>
+            <span class="n">src_workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">source_configs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">])</span>
             <span class="n">module_workers</span> <span class="o">=</span> <span class="n">validated_workflow</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">src_workers</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
 
             <span class="n">routing_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">worker</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">src_workers</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
@@ -689,6 +689,33 @@
             <span class="k">if</span> <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">get_loglevel</span><span class="p">()</span> <span class="o">==</span> <span class="n">log_level_code</span><span class="p">:</span>
                 <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Nothing to do. Current log level is : </span><span class="si">{</span><span class="n">log_level</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">set_loglevel_value</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Log level changed to : </span><span class="si">{</span><span class="n">log_level</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+<div class="viewcode-block" id="DecisionEngine.rpc_get_source_log_level"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_get_source_log_level">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_get_source_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
+            <span class="n">worker</span> <span class="o">=</span> <span class="n">workers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">worker</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;No source found with the name </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Source </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> is in ERROR state.&quot;</span>
+
+            <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">get_loglevel</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DecisionEngine.rpc_set_source_log_level"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_set_source_log_level">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_set_source_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Assumes log_level is a string corresponding to the supported logging-module levels.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
+            <span class="n">worker</span> <span class="o">=</span> <span class="n">workers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">worker</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;No source found with the name </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Source </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> is in ERROR state.&quot;</span>
+
+            <span class="n">log_level_code</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">log_level</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">worker</span><span class="o">.</span><span class="n">get_loglevel</span><span class="p">()</span> <span class="o">==</span> <span class="n">log_level_code</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Nothing to do. Current log level is : </span><span class="si">{</span><span class="n">log_level</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">worker</span><span class="o">.</span><span class="n">set_loglevel_value</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Log level changed to : </span><span class="si">{</span><span class="n">log_level</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 <div class="viewcode-block" id="DecisionEngine.rpc_reaper_start"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_reaper_start">[docs]</a>    <span class="k">def</span> <span class="nf">rpc_reaper_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>

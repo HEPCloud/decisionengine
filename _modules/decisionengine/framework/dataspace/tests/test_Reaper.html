@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.tests.test_Reaper &mdash; decisionengine 2.0.1.dev12+ge44e9210 documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_Reaper &mdash; decisionengine 2.0.1.dev13+g29a1ee25 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -124,7 +124,7 @@
     <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">reaper</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
             <span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">OFFLINE</span><span class="p">)</span>
-            <span class="n">reaper</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">reaper</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">del</span> <span class="n">reaper</span>
     <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>decisionengine.framework.engine.tests.test_SourceWorkers &mdash; decisionengine 2.0.1.dev13+g29a1ee25 documentation</title>
+      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> decisionengine
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../release_notes/release_notes_2.0.html">Latest</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../install.html">Installing and running HEPCloud’s Decision Engine</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/decisionengine.html">decisionengine package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">decisionengine</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+      <li>decisionengine.framework.engine.tests.test_SourceWorkers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for decisionengine.framework.engine.tests.test_SourceWorkers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC</span>
+<span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">kombu</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">import</span> <span class="nn">decisionengine.framework.config.policies</span> <span class="k">as</span> <span class="nn">policies</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.config.ValidConfig</span> <span class="kn">import</span> <span class="n">ValidConfig</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.SourceWorkers</span> <span class="kn">import</span> <span class="n">SourceWorker</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.tests.fixtures</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
+    <span class="n">DATABASES_TO_TEST</span><span class="p">,</span>
+    <span class="n">dataspace</span><span class="p">,</span>
+    <span class="n">PG_DE_DB_WITHOUT_SCHEMA</span><span class="p">,</span>
+    <span class="n">PG_PROG</span><span class="p">,</span>
+    <span class="n">SQLALCHEMY_PG_WITH_SCHEMA</span><span class="p">,</span>
+    <span class="n">SQLALCHEMY_TEMPFILE_SQLITE</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">_CWD</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="n">_CONFIG_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_CWD</span><span class="p">,</span> <span class="s2">&quot;../../tests/etc/decisionengine&quot;</span><span class="p">)</span>
+<span class="n">_CHANNEL_CONFIG_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_CWD</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">)</span>
+
+<span class="n">_KEY</span> <span class="o">=</span> <span class="s2">&quot;test_key&quot;</span>
+<span class="n">_CHANNEL_NAME</span> <span class="o">=</span> <span class="s2">&quot;test_channel&quot;</span>
+<span class="n">_SOURCE_NAME</span> <span class="o">=</span> <span class="s2">&quot;source1&quot;</span>
+<span class="n">_BROKER_URL</span> <span class="o">=</span> <span class="s2">&quot;redis://localhost:6379/14&quot;</span>  <span class="c1"># Use 14 to avoid collisions with other tests</span>
+<span class="n">_EXCHANGE</span> <span class="o">=</span> <span class="n">kombu</span><span class="o">.</span><span class="n">Exchange</span><span class="p">(</span><span class="s2">&quot;test_topic_exchange&quot;</span><span class="p">,</span> <span class="s2">&quot;topic&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="global_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_SourceWorkers.global_config">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">global_config</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
+    <span class="n">conf</span> <span class="o">=</span> <span class="n">ValidConfig</span><span class="p">(</span><span class="n">policies</span><span class="o">.</span><span class="n">global_config_file</span><span class="p">(</span><span class="n">_CONFIG_PATH</span><span class="p">))</span>
+    <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">]</span>
+    <span class="k">yield</span> <span class="n">conf</span></div>
+
+
+<div class="viewcode-block" id="source_config"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_SourceWorkers.source_config">[docs]</a><span class="k">def</span> <span class="nf">source_config</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">source_name</span><span class="p">):</span>
+    <span class="n">ch_config</span> <span class="o">=</span> <span class="n">ValidConfig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_CHANNEL_CONFIG_DIR</span><span class="p">,</span> <span class="n">channel_name</span> <span class="o">+</span> <span class="s2">&quot;.jsonnet&quot;</span><span class="p">))</span>
+    <span class="n">src_config</span> <span class="o">=</span> <span class="n">ch_config</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">src_config</span><span class="p">[</span><span class="n">source_name</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="source_worker_for"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_SourceWorkers.source_worker_for">[docs]</a><span class="k">def</span> <span class="nf">source_worker_for</span><span class="p">(</span><span class="n">src_config</span><span class="p">,</span> <span class="n">global_config</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">SourceWorker</span><span class="p">(</span><span class="n">_KEY</span><span class="p">,</span> <span class="n">src_config</span><span class="p">,</span> <span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">],</span> <span class="n">_CHANNEL_NAME</span><span class="p">,</span> <span class="n">_EXCHANGE</span><span class="p">,</span> <span class="n">_BROKER_URL</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="test_worker_name"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_SourceWorkers.test_worker_name">[docs]</a><span class="k">def</span> <span class="nf">test_worker_name</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
+    <span class="n">src_config</span> <span class="o">=</span> <span class="n">source_config</span><span class="p">(</span><span class="n">_CHANNEL_NAME</span><span class="p">,</span> <span class="n">_SOURCE_NAME</span><span class="p">)</span>
+    <span class="n">worker</span> <span class="o">=</span> <span class="n">source_worker_for</span><span class="p">(</span><span class="n">src_config</span><span class="p">,</span> <span class="n">global_config</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">worker</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;SourceWorker-</span><span class="si">{</span><span class="n">_KEY</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="test_worker_logger_sized_rotation"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_SourceWorkers.test_worker_logger_sized_rotation">[docs]</a><span class="k">def</span> <span class="nf">test_worker_logger_sized_rotation</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
+    <span class="n">src_config</span> <span class="o">=</span> <span class="n">source_config</span><span class="p">(</span><span class="n">_CHANNEL_NAME</span><span class="p">,</span> <span class="n">_SOURCE_NAME</span><span class="p">)</span>
+    <span class="n">worker</span> <span class="o">=</span> <span class="n">source_worker_for</span><span class="p">(</span><span class="n">src_config</span><span class="p">,</span> <span class="n">global_config</span><span class="p">)</span>
+    <span class="n">worker</span><span class="o">.</span><span class="n">setup_logger</span><span class="p">()</span>
+
+    <span class="k">assert</span> <span class="s2">&quot;RotatingFileHandler&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="test_worker_logger_timed_rotation"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_SourceWorkers.test_worker_logger_timed_rotation">[docs]</a><span class="k">def</span> <span class="nf">test_worker_logger_timed_rotation</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
+    <span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">][</span><span class="s2">&quot;file_rotate_by&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
+    <span class="n">src_config</span> <span class="o">=</span> <span class="n">source_config</span><span class="p">(</span><span class="n">_CHANNEL_NAME</span><span class="p">,</span> <span class="n">_SOURCE_NAME</span><span class="p">)</span>
+    <span class="n">worker</span> <span class="o">=</span> <span class="n">source_worker_for</span><span class="p">(</span><span class="n">src_config</span><span class="p">,</span> <span class="n">global_config</span><span class="p">)</span>
+    <span class="n">worker</span><span class="o">.</span><span class="n">setup_logger</span><span class="p">()</span>
+
+    <span class="k">assert</span> <span class="s2">&quot;TimedRotatingFileHandler&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="test_worker_logger_wrong_rotation_method"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.test_SourceWorkers.test_worker_logger_wrong_rotation_method">[docs]</a><span class="k">def</span> <span class="nf">test_worker_logger_wrong_rotation_method</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
+    <span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">][</span><span class="s2">&quot;file_rotate_by&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+    <span class="n">src_config</span> <span class="o">=</span> <span class="n">source_config</span><span class="p">(</span><span class="n">_CHANNEL_NAME</span><span class="p">,</span> <span class="n">_SOURCE_NAME</span><span class="p">)</span>
+    <span class="n">worker</span> <span class="o">=</span> <span class="n">source_worker_for</span><span class="p">(</span><span class="n">src_config</span><span class="p">,</span> <span class="n">global_config</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">worker</span><span class="o">.</span><span class="n">setup_logger</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Fermilab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

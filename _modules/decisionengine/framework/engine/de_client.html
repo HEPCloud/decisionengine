@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.de_client &mdash; decisionengine 2.0.1.dev12+ge44e9210 documentation</title>
+  <title>decisionengine.framework.engine.de_client &mdash; decisionengine 2.0.1.dev13+g29a1ee25 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -146,6 +146,15 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Source-specific options&quot;</span><span class="p">)</span>
+    <span class="n">sources</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--get-source-loglevel&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;source name&gt;&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print source log level&quot;</span><span class="p">)</span>
+    <span class="n">sources</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--set-source-loglevel&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&lt;source name&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;log level&gt;&quot;</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">products</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Product-specific options&quot;</span><span class="p">)</span>
     <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--print-product&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;product name&gt;&quot;</span><span class="p">)</span>
     <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--print-products&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print products&quot;</span><span class="p">)</span>
@@ -235,6 +244,16 @@
         <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">print_product</span><span class="p">(</span>
             <span class="n">argsparsed</span><span class="o">.</span><span class="n">print_product</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">types</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">format</span>
         <span class="p">)</span>
+
+    <span class="c1"># Source-specific options</span>
+    <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">get_source_loglevel</span><span class="p">:</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">get_source_loglevel</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="s2">&quot;UNITTEST&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;NOTSET&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">get_source_log_level</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">get_source_loglevel</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_source_loglevel</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">set_source_log_level</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">set_source_loglevel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_source_loglevel</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="c1"># Database-reaper options</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">reaper_stop</span><span class="p">:</span>

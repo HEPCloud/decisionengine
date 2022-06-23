@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.SourceWorkers &mdash; decisionengine 2.0.1.dev12+ge44e9210 documentation</title>
+  <title>decisionengine.framework.engine.SourceWorkers &mdash; decisionengine 2.0.1.dev13+g29a1ee25 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -80,7 +80,9 @@
 <span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
 
 <span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
@@ -91,8 +93,10 @@
 <span class="kn">from</span> <span class="nn">kombu</span> <span class="kn">import</span> <span class="n">Connection</span><span class="p">,</span> <span class="n">Queue</span>
 <span class="kn">from</span> <span class="nn">kombu.pools</span> <span class="kn">import</span> <span class="n">producers</span>
 
+<span class="kn">import</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="k">as</span> <span class="nn">de_logger</span>
+<span class="kn">import</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="k">as</span> <span class="nn">logconf</span>
+
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">Module</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Source</span> <span class="kn">import</span> <span class="n">Source</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.module_graph</span> <span class="kn">import</span> <span class="n">_create_module_instance</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">ProcessingState</span><span class="p">,</span> <span class="n">State</span>
@@ -100,6 +104,8 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.metrics</span> <span class="kn">import</span> <span class="n">Gauge</span>
 
 <span class="n">_DEFAULT_SCHEDULE</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes</span>
+
+<span class="n">MB</span> <span class="o">=</span> <span class="mi">1000000</span>
 
 <span class="n">SOURCE_ACQUIRE_GAUGE</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
     <span class="s2">&quot;de_source_last_acquire_timestamp_seconds&quot;</span><span class="p">,</span>
@@ -112,11 +118,11 @@
 
 <div class="viewcode-block" id="SourceWorker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker">[docs]</a><span class="k">class</span> <span class="nc">SourceWorker</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Provides interface to loadable modules an events to sycronise</span>
+<span class="sd">    Provides interface to loadable modules an events to sycronize</span>
 <span class="sd">    execution</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">exchange</span><span class="p">,</span> <span class="n">broker_url</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">logger_config</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">exchange</span><span class="p">,</span> <span class="n">broker_url</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :type config: :obj:`dict`</span>
 <span class="sd">        :arg config: configuration dictionary describing the worker</span>
@@ -124,13 +130,19 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;SourceWorker-</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">module_instance</span> <span class="o">=</span> <span class="n">_create_module_instance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">Source</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span> <span class="o">=</span> <span class="n">logger_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span> <span class="o">=</span> <span class="n">channel_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">class_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="n">SOURCE_ACQUIRE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logconf</span><span class="o">.</span><span class="n">SOURCELOGGERNAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logconf</span><span class="o">.</span><span class="n">LOGGERNAME</span><span class="p">)</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">exchange</span> <span class="o">=</span> <span class="n">exchange</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="n">broker_url</span><span class="p">)</span>
@@ -138,7 +150,7 @@
 
         <span class="c1"># We use a random name to avoid queue collisions when running tests</span>
         <span class="n">queue_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating queue </span><span class="si">{</span><span class="n">queue_id</span><span class="si">}</span><span class="s2"> with routing key </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating queue </span><span class="si">{</span><span class="n">queue_id</span><span class="si">}</span><span class="s2"> with routing key </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">(</span>
             <span class="n">queue_id</span><span class="p">,</span>
             <span class="n">exchange</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="p">,</span>
@@ -149,9 +161,61 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">ProcessingState</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schedule&quot;</span><span class="p">,</span> <span class="n">_DEFAULT_SCHEDULE</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Creating worker: module=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> class_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">class_name</span><span class="si">}</span><span class="s2"> parameters=</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> schedule=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
+
+<div class="viewcode-block" id="SourceWorker.get_loglevel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.get_loglevel">[docs]</a>    <span class="k">def</span> <span class="nf">get_loglevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="SourceWorker.set_loglevel_value"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.set_loglevel_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_loglevel_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Assumes log_level is a string corresponding to the supported logging-module levels.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
+            <span class="c1"># Convert from string to int form using technique</span>
+            <span class="c1"># suggested by logging module</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">log_level</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
+
+    <span class="c1"># setup the Source specific loggers</span>
+<div class="viewcode-block" id="SourceWorker.setup_logger"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.setup_logger">[docs]</a>    <span class="k">def</span> <span class="nf">setup_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">myname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
+        <span class="n">myfilename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="p">[</span><span class="s2">&quot;log_file&quot;</span><span class="p">]),</span> <span class="n">myname</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span><span class="p">)</span>
+        <span class="n">start_q_logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_q_logger&quot;</span><span class="p">,</span> <span class="s2">&quot;True&quot;</span><span class="p">)</span>
+
+        <span class="c1"># self.logger = structlog.getLogger(logconf.SOURCELOGGERNAME)</span>
+        <span class="c1"># setting a default value here. value from config file is set in call</span>
+        <span class="c1"># self.worker.set_loglevel_value after logger configuration is completed</span>
+        <span class="c1"># self.logger.setLevel(logging.DEBUG)</span>
+
+        <span class="n">logger_rotate_by</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;file_rotate_by&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">logger_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">RotatingFileHandler</span><span class="p">(</span>
+                <span class="n">filename</span><span class="o">=</span><span class="n">myfilename</span><span class="p">,</span>
+                <span class="n">maxBytes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_file_size&quot;</span><span class="p">,</span> <span class="mi">200</span> <span class="o">*</span> <span class="n">MB</span><span class="p">),</span>
+                <span class="n">backupCount</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_backup_count&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">logger_rotate_by</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">TimedRotatingFileHandler</span><span class="p">(</span>
+                <span class="n">filename</span><span class="o">=</span><span class="n">myfilename</span><span class="p">,</span>
+                <span class="n">when</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rotation_time_unit&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">),</span>
+                <span class="n">interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rotation_time_interval&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="n">backupCount</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_backup_count&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;In SourceWorkers, incorrect &#39;logger_rotate_by&#39;:&#39;</span><span class="si">{</span><span class="n">logger_rotate_by</span><span class="si">}</span><span class="s2">:&#39;&quot;</span><span class="p">)</span>
+
+        <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">logconf</span><span class="o">.</span><span class="n">userformat</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">start_q_logger</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">de_logger</span><span class="o">.</span><span class="n">get_queue_logger</span><span class="p">()</span><span class="o">.</span><span class="n">structlog_q_handler</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">myname</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;global_source_log_level&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="SourceWorker.take_offline"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.take_offline">[docs]</a>    <span class="k">def</span> <span class="nf">take_offline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ERROR</span><span class="p">):</span>
@@ -163,6 +227,7 @@
 <span class="sd">        Get the data from source</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_logger</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting source loop for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">SOURCE_ACQUIRE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">producers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">]</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">producer</span><span class="p">:</span>
@@ -217,7 +282,28 @@
 
 
 <div class="viewcode-block" id="SourceWorkers"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers">[docs]</a><span class="k">class</span> <span class="nc">SourceWorkers</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exchange</span><span class="p">,</span> <span class="n">broker_url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class manages and provides access to the Source workers.</span>
+
+<span class="sd">    The intention is that the decision engine never directly interacts with the</span>
+<span class="sd">    workers but refers to them via a context manager:</span>
+
+<span class="sd">      with workers.access() as ws:</span>
+<span class="sd">          # Access to ws now protected</span>
+<span class="sd">          ws[&#39;new_source&#39;] = SourceWorker(...)</span>
+
+<span class="sd">    In cases where the decision engine&#39;s block_while method must be</span>
+<span class="sd">    called (e.g. during tests), one should use unguarded access:</span>
+
+<span class="sd">      ws = workers.get_unguarded()</span>
+<span class="sd">      # Access to ws is unprotected</span>
+<span class="sd">      ws[&#39;new_source&#39;].wait_while(...)</span>
+
+<span class="sd">    Calling a blocking method while using the protected context</span>
+<span class="sd">    manager (i.e. workers.access()) will likely result in a deadlock.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exchange</span><span class="p">,</span> <span class="n">broker_url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logconf</span><span class="o">.</span><span class="n">LOGGERNAME</span><span class="p">)):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exchange</span> <span class="o">=</span> <span class="n">exchange</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_broker_url</span> <span class="o">=</span> <span class="n">broker_url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span>
@@ -225,10 +311,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_use_count</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
+<div class="viewcode-block" id="SourceWorkers.Access"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.Access">[docs]</a>    <span class="k">class</span> <span class="nc">Access</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workers</span><span class="p">,</span> <span class="n">lock</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span> <span class="o">=</span> <span class="n">workers</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">lock</span>
+
+        <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span>
+
+        <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">bt</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SourceWorkers.access"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="SourceWorkers.get_unguarded"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.get_unguarded">[docs]</a>    <span class="k">def</span> <span class="nf">get_unguarded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span></div>
 
-<div class="viewcode-block" id="SourceWorkers.update"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">source_configs</span><span class="p">):</span>
+<div class="viewcode-block" id="SourceWorkers.update"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">source_configs</span><span class="p">,</span> <span class="n">logger_config</span><span class="p">):</span>
         <span class="n">workers</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># Reuse already existing sources</span>
@@ -252,7 +353,7 @@
             <span class="c1"># The remaining configuration correspond to new sources</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">source_configs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating source </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> for channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">worker</span> <span class="o">=</span> <span class="n">SourceWorker</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exchange</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_broker_url</span><span class="p">)</span>
+                <span class="n">worker</span> <span class="o">=</span> <span class="n">SourceWorker</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">logger_config</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exchange</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_broker_url</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">worker</span>
                 <span class="n">workers</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">worker</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_use_count</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">channel_name</span><span class="p">}</span>

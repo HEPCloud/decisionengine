@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 2.0.1.dev12+ge44e9210 documentation</title>
+  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 2.0.1.dev13+g29a1ee25 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -119,8 +119,30 @@
     <span class="c1"># these shouldn&#39;t error out even if the channels are dead</span>
     <span class="c1"># they should report the channel is dead, if it did die.</span>
     <span class="k">assert</span> <span class="s2">&quot;DEBUG&quot;</span> <span class="ow">in</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--print-engine-loglevel&quot;</span><span class="p">)</span>
+
+    <span class="c1"># channel logger tests</span>
     <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;test_channel&quot;</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s2">&quot;ERROR&quot;</span> <span class="ow">in</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;test_channel&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span></div>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;test_channel&quot;</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;Nothing to do. Current log level is : DEBUG&quot;</span>
+    <span class="k">assert</span> <span class="s2">&quot;ERROR&quot;</span> <span class="ow">in</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;test_channel&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;bad_channel&quot;</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;No channel found with the name bad_channel.&quot;</span>
+
+    <span class="c1"># source logger tests</span>
+    <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-source-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;source1&quot;</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-source-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;source1&quot;</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;Nothing to do. Current log level is : DEBUG&quot;</span>
+    <span class="k">assert</span> <span class="s2">&quot;ERROR&quot;</span> <span class="ow">in</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-source-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;source1&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-source-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;bad_source&quot;</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;No source found with the name bad_source.&quot;</span></div>
+
+
+<div class="viewcode-block" id="test_client_get_loglevel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_get_loglevel">[docs]</a><span class="k">def</span> <span class="nf">test_client_get_loglevel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;bad_channel&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;No channel found with the name bad_channel.&quot;</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-source-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;bad_source&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;No source found with the name bad_source.&quot;</span></div>
 
 
 <div class="viewcode-block" id="test_client_print_product"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product">[docs]</a><span class="k">def</span> <span class="nf">test_client_print_product</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>

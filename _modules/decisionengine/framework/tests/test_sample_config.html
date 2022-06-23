@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_sample_config &mdash; decisionengine 2.0.1.dev12+ge44e9210 documentation</title>
+  <title>decisionengine.framework.tests.test_sample_config &mdash; decisionengine 2.0.1.dev13+g29a1ee25 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -221,14 +221,18 @@
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;test_channel&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;CRITICAL&quot;</span><span class="p">]</span>
 
+    <span class="c1"># Verify can fetch log level for a source</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-source-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;source1&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;CRITICAL&quot;</span><span class="p">]</span>
+
     <span class="c1"># Verify set log level for a channel</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;test_channel&quot;</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;test_channel&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;DEBUG&quot;</span>
 
-    <span class="c1"># Verify set log level to current level isn&#39;t an error</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;test_channel&quot;</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;test_channel&quot;</span><span class="p">)</span>
+    <span class="c1"># Verify set log level for a source</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--set-source-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;source1&quot;</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-source-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;source1&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;DEBUG&quot;</span></div>
 </pre></div>
 
