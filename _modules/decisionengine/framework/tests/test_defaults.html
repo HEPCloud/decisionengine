@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_defaults &mdash; decisionengine 2.0.1.dev13+g29a1ee25 documentation</title>
+  <title>decisionengine.framework.tests.test_defaults &mdash; decisionengine 2.0.1.dev18+gb5e56ab8 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -100,13 +100,13 @@
 
 
 <div class="viewcode-block" id="test_defaults"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_defaults.test_defaults">[docs]</a><span class="k">def</span> <span class="nf">test_defaults</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
-    <span class="c1"># Verify unknown channel has NOTSET</span>
+    <span class="c1"># Verify DE does not attempt to get log level for unknown channel.</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-channel-loglevel=UNITTEST&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;NOTSET&quot;</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;No channel found with the name UNITTEST.&quot;</span>
 
-    <span class="c1"># Verify unknown source has NOTSET</span>
+    <span class="c1"># Verify DE does not attempt to get log level for unknown source.</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-source-loglevel=UNITTEST&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;NOTSET&quot;</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;No source found with the name UNITTEST.&quot;</span>
 
     <span class="c1"># Verify global_channel_log_level setting exists</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--show-de-config&quot;</span><span class="p">)</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.LatestMessages &mdash; decisionengine 2.0.1.dev13+g29a1ee25 documentation</title>
+  <title>decisionengine.framework.taskmanager.LatestMessages &mdash; decisionengine 2.0.1.dev18+gb5e56ab8 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -157,10 +157,7 @@
                     <span class="c1"># timeout so that the &#39;should_stop()&#39; method called in the while condition</span>
                     <span class="c1"># will yield false and thus terminate the loop.</span>
                     <span class="n">conn</span><span class="o">.</span><span class="n">drain_events</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
-                    <span class="c1"># no events found in time</span>
-                    <span class="k">pass</span>
-                <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">):</span>
                     <span class="c1"># no events found in time</span>
                     <span class="k">pass</span></div></div>
 </pre></div>

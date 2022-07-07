@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.de_client &mdash; decisionengine 2.0.1.dev13+g29a1ee25 documentation</title>
+  <title>decisionengine.framework.engine.de_client &mdash; decisionengine 2.0.1.dev18+gb5e56ab8 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -83,6 +83,10 @@
 
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">xmlrpc.client</span>
+
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.ClientMessageReceiver</span> <span class="kn">import</span> <span class="n">ClientMessageReceiver</span>
 
 
 <div class="viewcode-block" id="create_parser"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.de_client.create_parser">[docs]</a><span class="k">def</span> <span class="nf">create_parser</span><span class="p">():</span>
@@ -178,35 +182,35 @@
     <span class="k">return</span> <span class="n">parser</span></div>
 
 
-<div class="viewcode-block" id="execute_command_from_args"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.de_client.execute_command_from_args">[docs]</a><span class="k">def</span> <span class="nf">execute_command_from_args</span><span class="p">(</span><span class="n">argsparsed</span><span class="p">,</span> <span class="n">de_socket</span><span class="p">):</span>
+<div class="viewcode-block" id="command_for_args"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.de_client.command_for_args">[docs]</a><span class="k">def</span> <span class="nf">command_for_args</span><span class="p">(</span><span class="n">argsparsed</span><span class="p">,</span> <span class="n">de_socket</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;argsparsed should be from create_parser in this file&quot;&quot;&quot;</span>
 
     <span class="c1"># Server-specific options</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">ping</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">ping</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">ping</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">status</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">queue_status</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">queue_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">queue_status</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_de_config</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">show_de_config</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">show_de_config</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">print_engine_loglevel</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">get_log_level</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">get_log_level</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">product_dependencies</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">product_dependencies</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">product_dependencies</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">block_while</span><span class="p">:</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">timeout</span>
         <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">timeout</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">block_while</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">block_while</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">block_while</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">metrics</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
 
     <span class="c1"># Channel-specific options</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">force</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">kill_channel</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;The --force (-f) option may be used only with --kill-channel.&quot;</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">timeout</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">kill_channel</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">block_while</span><span class="p">:</span>
@@ -217,56 +221,57 @@
             <span class="n">timeout</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">elif</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
             <span class="n">timeout</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">kill_channel</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">kill_channel</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">kill_channel</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">kill_channel</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">start_channel</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">start_channel</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">start_channel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">start_channel</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">start_channel</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">start_channels</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">start_channels</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">get_channel_loglevel</span><span class="p">:</span>
-        <span class="n">level</span> <span class="o">=</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">get_channel_loglevel</span>
-        <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="s2">&quot;UNITTEST&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;NOTSET&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">get_channel_log_level</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">get_channel_loglevel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">get_channel_log_level</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">get_channel_loglevel</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">set_channel_log_level</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span>
+            <span class="n">de_socket</span><span class="o">.</span><span class="n">set_channel_log_level</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_config</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">show_config</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">show_config</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_channel_config</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">show_config</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">show_channel_config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">show_config</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_channel_config</span><span class="p">)</span>
 
     <span class="c1"># Product-specific options</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">print_products</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">print_products</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">print_products</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">print_product</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">print_product</span><span class="p">(</span>
-            <span class="n">argsparsed</span><span class="o">.</span><span class="n">print_product</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">types</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">format</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span>
+            <span class="n">de_socket</span><span class="o">.</span><span class="n">print_product</span><span class="p">,</span>
+            <span class="n">argsparsed</span><span class="o">.</span><span class="n">print_product</span><span class="p">,</span>
+            <span class="n">argsparsed</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+            <span class="n">argsparsed</span><span class="o">.</span><span class="n">query</span><span class="p">,</span>
+            <span class="n">argsparsed</span><span class="o">.</span><span class="n">types</span><span class="p">,</span>
+            <span class="n">argsparsed</span><span class="o">.</span><span class="n">format</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="c1"># Source-specific options</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">get_source_loglevel</span><span class="p">:</span>
-        <span class="n">level</span> <span class="o">=</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">get_source_loglevel</span>
-        <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="s2">&quot;UNITTEST&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;NOTSET&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">get_source_log_level</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">get_source_loglevel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">get_source_log_level</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">get_source_loglevel</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_source_loglevel</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">set_source_log_level</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">set_source_loglevel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_source_loglevel</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span>
+            <span class="n">de_socket</span><span class="o">.</span><span class="n">set_source_log_level</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_source_loglevel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_source_loglevel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
 
     <span class="c1"># Database-reaper options</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">reaper_stop</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">reaper_stop</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">reaper_stop</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">(</span><span class="n">argsparsed</span><span class="o">.</span><span class="n">reaper_start_delay_secs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">reaper_start</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">reaper_start_delay_secs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">reaper_status</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">de_socket</span><span class="o">.</span><span class="n">reaper_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">reaper_status</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="s2">&quot;No command specified, try --help&quot;</span></div>
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.de_client.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.de_client.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger_name</span><span class="o">=</span><span class="s2">&quot;de_client&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;If you pass a list of args, they will be used instead of sys.argv&quot;&quot;&quot;</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">create_parser</span><span class="p">()</span>
@@ -274,7 +279,11 @@
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">de_socket</span> <span class="o">=</span> <span class="n">xmlrpc</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">execute_command_from_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">de_socket</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">command_for_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">de_socket</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">res</span>
+        <span class="n">receiver</span> <span class="o">=</span> <span class="n">ClientMessageReceiver</span><span class="p">(</span><span class="o">*</span><span class="n">de_socket</span><span class="o">.</span><span class="n">kombu_info</span><span class="p">(),</span> <span class="s2">&quot;de_client&quot;</span><span class="p">,</span> <span class="n">logger_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">receiver</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;An error occurred while trying to access a DE server at &#39;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -296,10 +305,11 @@
 <span class="sd">    Setuptools thinks a return from this function is an error message.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="n">main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;An error occurred while trying to access a DE server&quot;</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">msg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">msg</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;An error occurred while trying to access a DE server at&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">msg</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

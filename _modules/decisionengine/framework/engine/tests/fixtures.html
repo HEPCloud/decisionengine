@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 2.0.1.dev13+g29a1ee25 documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 2.0.1.dev18+gb5e56ab8 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -162,7 +162,6 @@
             <span class="k">assert</span> <span class="nb">int</span><span class="p">(</span><span class="n">db_number</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">16</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">db_number</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
-
         <span class="c1"># Override global configuration for testing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;broker_url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;redis://localhost:6379/</span><span class="si">{</span><span class="n">db_number</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;shutdown_timeout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
@@ -190,7 +189,8 @@
                 <span class="s2">&quot;--port&quot;</span><span class="p">,</span>
                 <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
                 <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-            <span class="p">]</span>
+            <span class="p">],</span>
+            <span class="n">logger_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">de_query_tool_run_cli</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -208,7 +208,8 @@
                 <span class="s2">&quot;--port&quot;</span><span class="p">,</span>
                 <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
                 <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-            <span class="p">]</span>
+            <span class="p">],</span>
+            <span class="n">logger_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
 
