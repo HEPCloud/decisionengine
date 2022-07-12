@@ -1,6 +1,71 @@
 .. SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 .. SPDX-License-Identifier: Apache-2.0
 
+Release 2.0.1
+-------------
+
+Patch level (bug fix) release.
+
+
+Issues fixed in this release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Bugs fixed
+
+- `DE 639 <https://github.com/HEPCloud/decisionengine/issues/639>`_: de-client --status stalls whenever channels are not yet in STEADY state
+- `DE 638 <https://github.com/HEPCloud/decisionengine/issues/638>`_: Sources should go offline if the client channel offline
+- `DE 634 <https://github.com/HEPCloud/decisionengine/issues/634>`_: de-client --stop-channel / --start-channel doesn't work in 2.0rc2
+- `DE 626 <https://github.com/HEPCloud/decisionengine/issues/626>`_: New DE 2.0rc2 regularly takes 2-3 minutes to shut down
+- `DE 599 <https://github.com/HEPCloud/decisionengine/issues/599>`_: Clarify timeout variable in block_while()
+- `DE 522 <https://github.com/HEPCloud/decisionengine/issues/522>`_: Decision engine log files get split between several different processes with several different versions open
+- `DE 236 <https://github.com/HEPCloud/decisionengine/issues/236>`_: New race condition in de-client
+
+Enhancements:
+
+- `DE 650 <https://github.com/HEPCloud/decisionengine/issues/650>`_: Added separate log files for Sources
+
+
+Full list of commits since version 2.0.0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`b5e56ab8 <https://github.com/HEPCloud/decisionengine/commit/b5e56ab8701266e890fed6e9ca4baff49c131c86>`_:   Remove signal handler.
+
+`0fb6814b <https://github.com/HEPCloud/decisionengine/commit/0fb6814b8e26c1249fe80f1b3df19f76f1b2ddf1>`_:   Prevent blocking (if possible) during service actions.
+
+`bb68fc31 <https://github.com/HEPCloud/decisionengine/commit/bb68fc311d8a35e3ebccecfff5148ba5396b5557>`_:   Add logging handler to client-message receiver.
+
+`53fefbc5 <https://github.com/HEPCloud/decisionengine/commit/53fefbc5adce62c0d70b3c8e0154d1ff27fa3650>`_:   Update kombu version.
+
+`009cdd95 <https://github.com/HEPCloud/decisionengine/commit/009cdd95108719f9b19f6bc6f4d8941f59478a1b>`_:   Use kombu queues for server/client communication.
+
+`29a1ee25 <https://github.com/HEPCloud/decisionengine/commit/29a1ee25c8b71d73a029f7b2e13e19b8fca061dd>`_:   add distinct logging for sources
+
+`e44e9210 <https://github.com/HEPCloud/decisionengine/commit/e44e9210059ffa28215e57c120c61418c9b2b4e9>`_:   Update GitHub actions; pylint workaround.
+
+`d192f8fb <https://github.com/HEPCloud/decisionengine/commit/d192f8fb19810bd9ff7f2fdb60effcb42e8a5927>`_:   Lock typing_extensions for Python 3.6 compat
+
+`2b946043 <https://github.com/HEPCloud/decisionengine/commit/2b9460433338c9245ae9dbc065584f8cc36c3679>`_:   Fix pre-commit node version to 17.9.0, the last to support SL7.
+
+`76f3ddfb <https://github.com/HEPCloud/decisionengine/commit/76f3ddfb8060f0f21dba80fc595ea668c130d7e3>`_:   lock pyupgrade to python3.6 support
+
+`c9c7cb3e <https://github.com/HEPCloud/decisionengine/commit/c9c7cb3ec3533873a431303a85282424203bbb48>`_:   Include psutil as part of runtime requirements.
+
+`df8a3941 <https://github.com/HEPCloud/decisionengine/commit/df8a394181c98c35189aca885b5471ae86b99bf0>`_:   Make sure to kill worker process.
+
+`69924d0c <https://github.com/HEPCloud/decisionengine/commit/69924d0c1dbc6c863c691bfee576396c9fadef63>`_:   Do not block de-client calls during startup.
+
+`ddb18d7c <https://github.com/HEPCloud/decisionengine/commit/ddb18d7cc1004742a4b41ef347f04c171dc50afe>`_:   Minor cleanups.
+
+`f4dc7da7 <https://github.com/HEPCloud/decisionengine/commit/f4dc7da7ed9c1162a352bd7f50260252528b5deb>`_:   Do not take source offline more than once during detach.
+
+`cbffa992 <https://github.com/HEPCloud/decisionengine/commit/cbffa992f59c666540c6b19b2443acbfcdf02f07>`_:   Update Docker entrypoint script for DE 2.0 branch
+
+`e10fe5af <https://github.com/HEPCloud/decisionengine/commit/e10fe5afbb72d3c96fc83da9a6d889ebdbac4dd9>`_:   Fixed cross-package link in the documentation
+
+`9da1eac8 <https://github.com/HEPCloud/decisionengine/commit/9da1eac86efa2f8f6519ad3faca19e2f518d737a>`_:   Added cross-package link in the documentation
+
+`d278726b <https://github.com/HEPCloud/decisionengine/commit/d278726b1747385d42ad4e8264223376fa488ce8>`_:   Updated 2.0 release notes and indexes, ready for 2.0.0
+
 
 Release 2.0.0
 -------------
