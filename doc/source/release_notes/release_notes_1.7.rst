@@ -1,3 +1,9 @@
+Release 1.7.3
+-------------
+
+Same as 1.7.1 release. Dome to mantain the same version number as decisionengine_modules.
+
+
 Release 1.7.2
 -------------
 
