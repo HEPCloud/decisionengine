@@ -66,7 +66,7 @@ devel_req = [
     "sphinx_rtd_theme >= 0.5.1",
 ]
 
-rpm_require = ["shadow-utils", "systemd", "python3"]
+rpm_require = ["shadow-utils", "systemd"]
 
 #
 # Because some python modules are required, but not packaged
@@ -76,8 +76,12 @@ rpm_require = ["shadow-utils", "systemd", "python3"]
 # NOTE: in an ideal world, we wouldn't need the following:
 #       hopefully one day we can drop these.
 #
-__base_pip_requires = ["python3-pip", "python3-setuptools", "python3-wheel"]
-__jsonnet_requires = ["gcc", "gcc-c++", "make", "python3-devel"]
+__base_pip_requires = [
+    f"python3.{sys.version_info.minor}dist(pip)",
+    f"python3.{sys.version_info.minor}dist(setuptools)",
+    f"python3.{sys.version_info.minor}dist(wheel)",
+]
+__jsonnet_requires = ["gcc", "gcc-c++", "make", f"python3{sys.version_info.minor}-devel"]
 rpm_require.extend(__base_pip_requires)
 rpm_require.extend(__jsonnet_requires)
 
@@ -118,8 +122,7 @@ setup(
     },
     options={
         "bdist_rpm": {
-            "build_requires": "python3",
-            "provides": "python3-" + about.__title__,
+            "build_requires": __base_pip_requires,
             "install_script": "package/rpm/install_section",
             "pre_install": "package/rpm/pre_install_section",
             "post_install": "package/rpm/post_install_section",
