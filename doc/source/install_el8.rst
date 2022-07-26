@@ -112,7 +112,7 @@ Install Decision Engine and the standard modules
 
   The complete version of the GlideinWMS installation instructions is available `here<https://opensciencegrid.org/docs/other/install-gwms-frontend/>`.
   For a minimal installation, you can use the following command:
-    
+
     dnf install glideinwms-vofrontend-libs glideinwms-vofrontend-glidein glideinwms-userschedd glideinwms-usercollector
 
 2. Setup the decision engine user and git repositories ::
