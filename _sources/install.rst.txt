@@ -103,7 +103,7 @@ Install Decision Engine and the standard modules
     priority=99
     vi /etc/yum.repos.d/epel.repo
 
-  The complete version of the GlideinWMS installation instructions is available `here<https://opensciencegrid.org/docs/other/install-gwms-frontend/>`
+   The complete version of the GlideinWMS installation instructions is available `here <https://opensciencegrid.org/docs/other/install-gwms-frontend>`_
 
 2. Setup the decision engine yum repositories ::
 
@@ -114,8 +114,6 @@ Install Decision Engine and the standard modules
 
     yum install decisionengine
     yum install decisionengine_modules
-    # The modules RPM was renamed. For versions <1.7 use instead
-    yum install decisionengine-standard-library
 
 4. Not all packages are available as RPM. It is necessary to install directly some Python dependencies.
    To avoid to pollute the system Python we will install them for the ``decisionengine`` user,
@@ -134,16 +132,18 @@ Install Decision Engine and the standard modules
 
     su decisionengine -s /bin/bash
     # from decisionengine setup.py
-    python3 -m pip install --user jsonnet tabulate toposort structlog
+    python3 -m pip install --user jsonnet==0.17.0 tabulate toposort structlog
     python3 -m pip install --user wheel DBUtils sqlalchemy
     python3 -m pip install --user pandas==1.1.5 numpy==1.19.5
     python3 -m pip install --user "psycopg2-binary >= 2.8.6; platform_python_implementation == 'CPython'"
     python3 -m pip install --user "psycopg2cffi >= 2.9.0; platform_python_implementation == 'PyPy'"
+    python3 -m pip install --user "cherrypy>=18.6.0" "kombu[redis]>=5.2.0rc1" "prometheus-client>=0.10.0"
+    python3 -m pip install --user "psutil>=5.8.0" "typing_extensions==4.1.1"
     # from decisionengine_modules setup.py
-    python3 -m pip install --user boto3 google_auth google-api-python-client
+    python3 -m pip install --user boto3 google-api-python-client
+    python3 -m pip install --user "google_auth<2dev,>=1.16.0" "urllib3>=1.26.2"
     python3 -m pip install --user gcs-oauth2-boto-plugin
     # Condor should be already there from the RPM, if not add: python3 -m pip install htcondor
-    # bill-calculator-hep is only for versions >= 1.7
     python3 -m pip install --user bill-calculator-hep
 
     # The following are additional requirements for v1.6 and earlier
@@ -287,3 +287,98 @@ Finally, restart decision engine to start the new channel::
 
 
 ``de-client --status`` should show the active test channel
+
+
+Setup pressure-based pilot submission
+-------------------------------------
+
+| At this point Decision Engine, GlideinWMS and HTCondor are supposed to be installed and able to run.
+| We assume that the Frontend proxy and the VO proxy are already available.
+|
+| Decision Engine configuration templates referred in this section are available in the `contrib repo <https://github.com/HEPCloud/contrib/tree/master/config_template>`_.
+| Files from ``decisionengine`` folder need to be copied inside ``/etc/decisionengine``. Those configuration files have the placeholder field ``@CHANGEME@`` that needs to be replaced with a proper parameter according to the specific system setup.
+
+Once those configuration file have been updated, we are ready to finalize the Decision Engine configuration.
+
+**- Setup Redis**
+
+Start the message broker (Redis) as pod container::
+
+  podman run --name decisionengine-redis -p 127.0.0.1:6379:6379 -d redis:6 --loglevel warning
+
+**- Create GWMS frontend configuration**
+For this step it is needed to run::
+
+  chown -R decisionengine: /var/lib/gwms-frontend
+  systemctl start decisionengine
+  ksu decisionengine -e /usr/bin/python3 /usr/lib/python3.6/site-packages/decisionengine_modules/glideinwms/configure_gwms_frontend.py
+
+This command will create the file ``/var/lib/gwms-frontend/vofrontend/de_frontend_config``
+
+At this point it is needed to stop decisionengine service and remove the Redis container::
+
+  systemctl stop decisionengine
+  podman stop decisionengine-redis | xargs podman rm
+
+Now all should be ready to run Decision Engine.
+
+**- Run Decision Engine**
+
+The procedure to run Decision Engine is as follow:
+
+* Reset decisionengine DB::
+
+    dropdb -U postgres decisionengine
+    createdb -U postgres decisionengine
+
+* Run Redis container::
+
+    podman run --name decisionengine-redis -p 127.0.0.1:6379:6379 -d redis:6 --loglevel warning
+
+* Start decisionengine service and check its status::
+
+    systemctl start decisionengine
+    sleep 5
+    systemctl status decisionengine
+
+**- Submit a test job**
+
+* Switch to ``decisionengine`` user and make sure channel and sources are ``STEADY``::
+
+  ksu decisionengine -e /bin/bash
+  de-client --status
+
+
+* prepare a Condor submission file ``mytest.submit`` with the following content::
+
+    #  A test Condor submission file - mytest.submit
+    executable = /bin/hostname
+    universe = vanilla
+    +DESIRED_Sites = "@CHANGEME@"
+    log = test.log
+    output = test.out.$(Cluster).$(Process)
+    error = test.err.$(Cluster).$(Process)
+    queue 1
+
+* submit the test job::
+
+    condor_submit mytest.submit
+
+* check jobs in the queue::
+
+    condor_q
+
+* check for available glideins::
+
+    condor_status
+
+after test jobs are submitted it will take few minutes (usually no more than 10 minutes) to get some glideins and then get the job running.
+
+Now the ``decisionengine`` user session can be closed to get back to the ``root`` session.
+
+**- Stop Decision Engine service**
+
+Finally stop Decision Engine service and remove the Redis container::
+
+  systemctl stop decisionengine.service
+  podman stop decisionengine-redis | xargs podman rm
