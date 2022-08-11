@@ -67,6 +67,7 @@ METRICS_HISTOGRAM = Histogram("de_client_metrics_duration_seconds", "Time to run
 WORKERS_COUNT = Gauge("de_workers_total", "Number of workers started by the Decision Engine")
 DE_STATUS = Gauge("de_status", "Status of Decision Engine server")
 
+
 class StopState(enum.Enum):
     NotFound = 1
     Clean = 2
@@ -944,7 +945,7 @@ def _start_de_server(server):
         start_channels_thread.start()
 
         server.get_logger().debug("running _start_de_server: step serve_forever")
-        DE_STATUS.set(1) 
+        DE_STATUS.set(1)
         server.serve_forever(
             poll_interval=1
         )  # Once per second is sufficient, given the amount of work done in the service actions.
@@ -962,7 +963,7 @@ def _start_de_server(server):
         raise __e
     finally:
         start_channels_thread.join(None)
-        DE_STATUS.set(0) 
+        DE_STATUS.set(0)
         server.shutdown_complete.wait()
         r = redis.Redis.from_url(server.broker_url)
         while _requests_in_flight(r, server.exchange.name):
