@@ -58,6 +58,7 @@ devel_req = [
     "pytest-postgresql >= 3.0.0, < 4.0.0",
     "pytest-timeout >= 1.4.2",
     "pytest-xdist[psutil] >= 2.3.0",
+    "flake8 >= 4.0.0, < 5.0.0",  # https://github.com/tholo/pytest-flake8/issues/87
     "pre-commit >= 2.13.0",
     "pylint >= 2.7.4",
     "reuse",
