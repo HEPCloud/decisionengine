@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.2.dev4+gfc76a1f0 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.2.dev6+g51d5293f documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -144,6 +144,7 @@
 <span class="n">QUERY_TOOL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="s2">&quot;de_client_query_duration_seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;Time to run de-client --query&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;product&quot;</span><span class="p">])</span>
 <span class="n">METRICS_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="s2">&quot;de_client_metrics_duration_seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;Time to run de-client --status&quot;</span><span class="p">)</span>
 <span class="n">WORKERS_COUNT</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span><span class="s2">&quot;de_workers_total&quot;</span><span class="p">,</span> <span class="s2">&quot;Number of workers started by the Decision Engine&quot;</span><span class="p">)</span>
+<span class="n">DE_STATUS</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span><span class="s2">&quot;de_status&quot;</span><span class="p">,</span> <span class="s2">&quot;Status of Decision Engine server&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="StopState"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.StopState">[docs]</a><span class="k">class</span> <span class="nc">StopState</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
@@ -1023,6 +1024,7 @@
         <span class="n">start_channels_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
         <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step serve_forever&quot;</span><span class="p">)</span>
+        <span class="n">DE_STATUS</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">(</span>
             <span class="n">poll_interval</span><span class="o">=</span><span class="mi">1</span>
         <span class="p">)</span>  <span class="c1"># Once per second is sufficient, given the amount of work done in the service actions.</span>
@@ -1040,6 +1042,7 @@
         <span class="k">raise</span> <span class="n">__e</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">start_channels_thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">DE_STATUS</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">server</span><span class="o">.</span><span class="n">shutdown_complete</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">broker_url</span><span class="p">)</span>
         <span class="k">while</span> <span class="n">_requests_in_flight</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">server</span><span class="o">.</span><span class="n">exchange</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
