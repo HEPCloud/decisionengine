@@ -11,14 +11,16 @@ available, consume() returns an empty dictionary.
 
 The LatestMessages class is intended to be used as a context manager (e.g.):
 
-  with LatestMessages(queues, broker_url) as messages:
-      while some_predicate():
-          msgs = messages.consume()
-          if not msgs:
-              continue
+.. code-block:: python
 
-          for routing_key, msg in msgs.items():
-              ...
+    with LatestMessages(queues, broker_url) as messages:
+        while some_predicate():
+            msgs = messages.consume()
+            if not msgs:
+                continue
+
+            for routing_key, msg in msgs.items():
+                ...
 
 Upon exiting the the context, a LatestMessage object will no longer
 listen for any messages.

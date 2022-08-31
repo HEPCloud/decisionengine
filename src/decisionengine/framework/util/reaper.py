@@ -6,11 +6,16 @@
 """
 A stand-alone script purges data in database older than specified
 in configuration. Configuration file has to have this bit added:
-   {
-     "dataspace" : { "retention_interval_in_days" : 365,
-                      "datasource" :  { ... }
-                   }
-    }
+
+    .. code-block:: json
+
+        {
+            "dataspace" : {
+                "retention_interval_in_days" : 365,
+                "datasource" :  {}
+            }
+        }
+
 Can be used in a cron job.
 """
 import os

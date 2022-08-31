@@ -22,7 +22,7 @@ Enhancements:
 
 
 Full list of commits since version 1.6.1
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `c4c7681 <https://github.com/HEPCloud/decisionengine/commit/c4c7681ccb391acdca1da79a972f2cbf8b31b87a>`_:   Updated de-query-tool w/ cherry pick of fixes from latest version of PR#332
 

@@ -91,15 +91,20 @@ class LogicEngine(Module):
         ['rule_name', 'fact_name', fact_value']
 
         facts dict format:
-        'newfacts': {
-            'publish_glidein_requests': {
-                'allow_hpc_new': True,
-                'allow_foo': True
-            },
-            'dummy_rule': {
-                'dummy_new_fact': True
+
+        .. code-block:: json
+
+            {
+                "newfacts": {
+                    "publish_glidein_requests": {
+                        "allow_hpc_new": true,
+                        "allow_foo": true
+                    },
+                    "dummy_rule": {
+                        "dummy_new_fact": true
+                    }
+                }
             }
-        }
         """
         self.logger.debug("in LE::_create_facts_dataframe")
         # Extract new facts from le_result

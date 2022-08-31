@@ -278,18 +278,25 @@ class DataBlock:
     def get_taskmanager(self, taskmanager_name, taskmanager_id=None):
         """
         Retrieve TaskManager
-        :type taskmanager_name: :obj:`string`
-        :arg taskmanager_name: name of taskmanager to retrieve
-        :type taskmanager_id: :obj:`string`
-        :arg taskmanager_id: id of taskmanager to retrieve
-        :rtype: :obj: `dict`
+
+        Args:
+            taskmanager_name (str): Name of the TaskManager
+            taskmanager_id (str, optional): ID of the TaskManager to retrieve. Defaults to None.
+        
+        Returns:
+            dict: TaskManager information
 
         The dictionary returned looks like :
-        {'datestamp': datetime.datetime(2017, 12, 20, 17, 37, 17, 503210,
-                      tzinfo=psycopg2.tz.FixedOffsetTimezone(offset=-360, name=None)),
-         'sequence_id': 135L,
-         'name': 'AWS_Calculations',
-         'taskmanager_id': '77B16EB5-C79E-45B0-B1B1-37E846692E1D'}
+
+        .. code-block:: python
+
+            {
+                'datestamp': datetime.datetime(2017, 12, 20, 17, 37, 17, 503210,
+                            tzinfo=psycopg2.tz.FixedOffsetTimezone(offset=-360, name=None)),
+                'sequence_id': 135L,
+                'name': 'AWS_Calculations',
+                'taskmanager_id': '77B16EB5-C79E-45B0-B1B1-37E846692E1D'
+            }
         """
         return self.dataspace.get_taskmanager(taskmanager_name, taskmanager_id)
 
