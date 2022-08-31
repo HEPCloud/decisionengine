@@ -282,7 +282,7 @@ class DataBlock:
         Args:
             taskmanager_name (str): Name of the TaskManager
             taskmanager_id (str, optional): ID of the TaskManager to retrieve. Defaults to None.
-        
+
         Returns:
             dict: TaskManager information
 
