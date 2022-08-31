@@ -20,23 +20,28 @@ class FactLookup:
 
     As an example, consider the following configuration:
 
-      facts: {
-        should_publish: "(True)",
-      },
-      rules: {
-        publish_1: {
-          expression: "should_publish",
-          facts: ["should_publish"]
-        },
-        publish_2: {
-          expression: "should_publish",
-          actions: ["go_to_press"]
-          facts: ["should_publish"]
+    .. code-block:: json
+
+        {
+            "facts": {
+                "should_publish": "(True)"
+            },
+            "rules": {
+                "publish_1": {
+                    "expression": "should_publish",
+                    "facts": ["should_publish"]
+                },
+                "publish_2": {
+                    "expression": "should_publish",
+                    "actions": ["go_to_press"],
+                    "facts": ["should_publish"]
+                },
+                "retract": {
+                    "expression": "not should_publish",
+                    "facts": ["should_retract"]
+                }
+            }
         }
-        retract: {
-          expression: "not should_publish",
-          facts: ["should_retract"]
-      }
 
     In the above, the first fact to be evaluated will always be the
     top-level facts (i.e. those not encapsulated by the 'rules' table).

@@ -32,22 +32,24 @@ class SQLAlchemyDS(ds.DataSource):
     """
     A DecisionEngine data source via the SQL Alchemy ORM
 
-    {
-      "dataspace": {
-        "datasource": {
-          "module": "decisionengine.framework.dataspace.datasources.sqlalchemy_ds",
-          "name": "SQLAlchemyDS",
-          "params": {
-            "pool_size": 5,
-            "max_overflow": 10,
-            "timeout": 30,
+    .. code-block:: python
 
-            # url is mandatory, but any `engine` keyword is accepted here.
-            "url": "dialect[+driver]://user:password@host/dbname"
-          }
+        {
+            "dataspace": {
+                "datasource": {
+                    "module": "decisionengine.framework.dataspace.datasources.sqlalchemy_ds",
+                    "name": "SQLAlchemyDS",
+                    "params": {
+                        "pool_size": 5,
+                        "max_overflow": 10,
+                        "timeout": 30,
+
+                        # url is mandatory, but any `engine` keyword is accepted here.
+                        "url": "dialect[+driver]://user:password@host/dbname"
+                    }
+                }
+            }
         }
-      }
-    }
 
     Exceptions should be caught and logged by the caller.
     """

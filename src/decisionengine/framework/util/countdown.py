@@ -12,6 +12,8 @@ class Countdown:
     should not take longer than a specified period of time.  This is done
     by occasionally querying the 'time_left' attribute (e.g.):
 
+    .. code-block:: python
+
         countdown = Countdown(wait_up_to=10)
         for p in processes:
             with countdown:
