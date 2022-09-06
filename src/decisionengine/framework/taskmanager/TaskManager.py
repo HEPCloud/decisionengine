@@ -17,6 +17,7 @@ from decisionengine.framework.dataspace import datablock
 from decisionengine.framework.modules.logging_configDict import CHANNELLOGGERNAME
 from decisionengine.framework.taskmanager.LatestMessages import LatestMessages
 from decisionengine.framework.taskmanager.ProcessingState import ProcessingState, State
+from decisionengine.framework.taskmanager.PublisherStatus import PublisherStatus
 from decisionengine.framework.taskmanager.SourceProductCache import SourceProductCache
 from decisionengine.framework.util.metrics import Gauge, Histogram
 
@@ -114,6 +115,7 @@ class TaskManager:
         self.transform_workers = workers["transforms"]
         self.logic_engine = workers["logic_engine"]
         self.publisher_workers = workers["publishers"]
+        self.publisher_status = PublisherStatus(self.publisher_workers.keys())
 
         self.exchange = exchange
         self.broker_url = broker_url
@@ -405,7 +407,9 @@ class TaskManager:
                     self.logger.debug(f"Run publisher {name} {data_block}")
                     try:
                         with PUBLISHER_RUN_HISTOGRAM.labels(self.name, name).time():
-                            worker.module_instance.publish(data_block)
+                            rc = worker.module_instance.publish(data_block)
+                            if rc is False:
+                                self.publisher_status.update(name, rc)
                             PUBLISHER_RUN_GAUGE.labels(self.name, name).set_to_current_time()
                     except KeyError as e:
                         if self.state.should_stop():
