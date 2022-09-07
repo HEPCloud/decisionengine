@@ -16,6 +16,7 @@ from decisionengine.framework.logicengine.LogicEngine import LogicEngine, passth
 from decisionengine.framework.modules.logging_configDict import DELOGGER_CHANNEL_NAME, LOGGERNAME
 from decisionengine.framework.modules.Publisher import Publisher
 from decisionengine.framework.modules.Transform import Transform
+from decisionengine.framework.taskmanager.PublisherStatus import PublisherStatus
 from decisionengine.framework.util.subclasses import all_subclasses
 
 _DEFAULT_SCHEDULE = 300  # 5 minutes
@@ -34,6 +35,7 @@ def _produced_products(*worker_lists):
                 missing_produces.append(name)
             else:
                 result.update(dict.fromkeys(produces, name))
+    result.update(publisher_status=PublisherStatus.__name__)
     return result, missing_produces
 
 

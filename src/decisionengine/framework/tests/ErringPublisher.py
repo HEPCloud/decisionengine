@@ -5,7 +5,7 @@ from decisionengine.framework.modules import Publisher
 
 
 @Publisher.consumes(bar=None)
-class FailingPublisher(Publisher.Publisher):
+class ErringPublisher(Publisher.Publisher):
     def __init__(self, config):
         super().__init__(config)
 
