@@ -149,8 +149,8 @@ def test_take_task_manager_offline(global_config):
     assert task_manager.get_state_value() == State.OFFLINE.value
 
 
-def test_failing_publisher(global_config):
-    with RunChannel(global_config, "failing_publisher") as task_manager:
+def test_erring_publisher(global_config):
+    with RunChannel(global_config, "erring_publisher") as task_manager:
         task_manager.state.wait_while(State.ACTIVE)  # While launching sources
         task_manager.state.wait_while(State.SHUTTINGDOWN)  # Never gets into steady state due to producer failure
     assert task_manager.state.has_value(State.OFFLINE)
