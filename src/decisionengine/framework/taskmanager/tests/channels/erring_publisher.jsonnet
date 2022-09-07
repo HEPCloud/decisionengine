@@ -31,7 +31,7 @@
   },
   publishers: {
     fail: {
-      module: "decisionengine.framework.tests.FailingPublisher",
+      module: "decisionengine.framework.tests.ErringPublisher",
       parameters: {},
     },
   },
