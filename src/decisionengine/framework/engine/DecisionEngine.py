@@ -404,7 +404,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             queue = worker.queue.name
             client_queue.push(f"source: {source:<{width}}, queue id = {queue:<{queue_width}}, state = {state}")
 
-        client_queue.push("")
+        client_queue.push("\n\n")
 
         workers = self.channel_workers.get_unguarded()
         channel_keys = workers.keys()
@@ -415,6 +415,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             client_queue.push(
                 f"channel: {ch:<{width}}, id = {worker.task_manager.id:<{width}}, state = {worker.get_state_name():<10}"
             )
+        client_queue.push("\n")
         return client_queue.send(self.reaper_status())
 
     def rpc_queue_status(self, client_queue):

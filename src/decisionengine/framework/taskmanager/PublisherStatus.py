@@ -3,6 +3,14 @@
 
 
 class PublisherStatus:
+    def __init__(self, enabled):
+        self._enabled = enabled
+
+    def is_enabled(self, publisher_name):
+        return self._enabled[publisher_name]
+
+
+class PublisherStatusBoard:
     def __init__(self, publisher_names):
         # All publishers are enabled by default
         self._enabled = dict.fromkeys(publisher_names, True)
@@ -10,8 +18,8 @@ class PublisherStatus:
     def update(self, publisher_name, result_of_publish):
         # It is a logical error to call update on a publisher whose
         # name has not been specified in the constructor.
-        assert publisher_name in self.enabled
+        assert publisher_name in self._enabled
         self._enabled[publisher_name] = result_of_publish
 
-    def is_enabled(self, publisher_name):
-        return self._enabled[publisher_name]
+    def snapshot(self):
+        return PublisherStatus(self._enabled)
