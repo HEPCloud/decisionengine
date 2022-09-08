@@ -1,0 +1,242 @@
+// SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+// SPDX-License-Identifier: Apache-2.0
+
+pipeline {
+    agent { label 'docker' }
+    stages{
+        stage('DE tests') {
+            parallel {
+                stage('flake8') {
+                    agent {
+                        node {
+                            label 'docker'
+                            customWorkspace "${WORKSPACE}/${STAGE_NAME}"
+                        }
+                    }
+                    options {
+                        timeout(time: "${STAGE_TIMEOUT}", activity: false, unit: 'MINUTES')
+                    }
+                    steps {
+                        script {
+                            // DOCKER_IMAGE is defined through Jenkins project
+                            flake8StageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                            // Set custom Build Name
+                            if (params.GITHUB_PR_NUMBER) {
+                                if (params.GITHUB_PR_STATE == 'CLOSED') {
+                                    currentBuild.displayName="${BUILD_NUMBER}#${EL_VERSION}#PR#${GITHUB_PR_NUMBER}#CLOSED"
+                                } else {
+                                    currentBuild.displayName="${BUILD_NUMBER}#${EL_VERSION}#PR#${GITHUB_PR_NUMBER}"
+                                }
+                            } else {
+                                currentBuild.displayName="${BUILD_NUMBER}#${BRANCH}"
+                            }
+                        }
+                        echo "cleanup workspace"
+                        sh 'for f in $(ls -A); do rm -rf ${f}; done'
+                        // DE_REPO is defined through Jenkins project
+                        echo "clone decisionengine code from ${DE_REPO}"
+                        sh '''
+                            git clone ${DE_REPO}
+                            cd decisionengine
+                            echo "checkout ${BRANCH} branch"
+                            git checkout ${BRANCH}
+                            echo GITHUB_PR_NUMBER: ${GITHUB_PR_NUMBER} - GITHUB_PR_STATE: ${GITHUB_PR_STATE}
+                            if [[ -n ${GITHUB_PR_NUMBER} && ${GITHUB_PR_STATE} == OPEN ]]; then
+                                git fetch origin pull/${GITHUB_PR_NUMBER}/merge:merge${GITHUB_PR_NUMBER}
+                                git checkout merge${GITHUB_PR_NUMBER}
+                            fi
+                            cd ..
+                        '''
+                        echo "prepare docker image ${flake8StageDockerImage}"
+                        sh "docker build --pull --tag ${flake8StageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el8:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL8/Dockerfile decisionengine/package/ci/EL8/"
+                        echo "Run ${STAGE_NAME} tests"
+                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${flake8StageDockerImage} \"-m pytest -m flake8 --flake8\" \"flake8.log\""
+                    }
+                    post {
+                        always {
+                            archiveArtifacts artifacts: "decisionengine/flake8.log"
+                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // eventually kill the python process that spawn the test to cleanup CI processes left behind
+                            sh '''
+                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${DOCKERID} ]]; then
+                                    docker exec ${DOCKERID} ps -xww && \
+                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
+                                    docker exec ${DOCKERID} ps -xww  || true
+                                fi
+                            '''
+                            echo "cleanup docker image ${flake8StageDockerImage}"
+                            sh "docker rmi ${flake8StageDockerImage}"
+                        }
+                    }
+                }
+                stage('pylint') {
+                    agent {
+                        node {
+                            label 'docker'
+                            customWorkspace "${WORKSPACE}/${STAGE_NAME}"
+                        }
+                    }
+                    options {
+                        timeout(time: "${STAGE_TIMEOUT}", activity: false, unit: 'MINUTES')
+                    }
+                    steps {
+                        script {
+                            // DOCKER_IMAGE is defined through Jenkins project
+                            pylintStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                        }
+                        echo "cleanup workspace"
+                        sh 'for f in $(ls -A); do rm -rf ${f}; done'
+                        // DE_REPO is defined through Jenkins project
+                        echo "clone decisionengine code from ${DE_REPO}"
+                        sh '''
+                            git clone ${DE_REPO}
+                            cd decisionengine
+                            echo "checkout ${BRANCH} branch"
+                            git checkout ${BRANCH}
+                            echo GITHUB_PR_NUMBER: ${GITHUB_PR_NUMBER} - GITHUB_PR_STATE: ${GITHUB_PR_STATE}
+                            if [[ -n ${GITHUB_PR_NUMBER} && ${GITHUB_PR_STATE} == OPEN ]]; then
+                                git fetch origin pull/${GITHUB_PR_NUMBER}/merge:merge${GITHUB_PR_NUMBER}
+                                git checkout merge${GITHUB_PR_NUMBER}
+                            fi
+                            cd ..
+                        '''
+                        echo "prepare docker image ${pylintStageDockerImage}"
+                        sh "docker build --pull --tag ${pylintStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el8:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL8/Dockerfile decisionengine/package/ci/EL8/"
+                        echo "Run ${STAGE_NAME} tests"
+                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${pylintStageDockerImage} \"-m pylint src/decisionengine/ src/tests/\" \"pylint.log\""
+                    }
+                    post {
+                        always {
+                            archiveArtifacts artifacts: "decisionengine/pylint.log"
+                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // eventually kill the python process that spawn the test to cleanup CI processes left behind
+                            sh '''
+                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${DOCKERID} ]]; then
+                                    docker exec ${DOCKERID} ps -xww && \
+                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
+                                    docker exec ${DOCKERID} ps -xww  || true
+                                fi
+                            '''
+                            echo "cleanup docker image ${pylintStageDockerImage}"
+                            sh "docker rmi ${pylintStageDockerImage}"
+                        }
+                    }
+                }
+                stage('unit_tests') {
+                    agent {
+                        node {
+                            label 'docker'
+                            customWorkspace "${WORKSPACE}/${STAGE_NAME}"
+                        }
+                    }
+                    options {
+                        timeout(time: "${STAGE_TIMEOUT}", activity: false, unit: 'MINUTES')
+                    }
+                    steps {
+                        script {
+                            // DOCKER_IMAGE is defined through Jenkins project
+                            unit_testsStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                        }
+                        echo "cleanup workspace"
+                        sh 'for f in $(ls -A); do rm -rf ${f}; done'
+                        // DE_REPO is defined through Jenkins project
+                        echo "clone decisionengine code from ${DE_REPO}"
+                        sh '''
+                            git clone ${DE_REPO}
+                            cd decisionengine
+                            echo "checkout ${BRANCH} branch"
+                            git checkout ${BRANCH}
+                            echo GITHUB_PR_NUMBER: ${GITHUB_PR_NUMBER} - GITHUB_PR_STATE: ${GITHUB_PR_STATE}
+                            if [[ -n ${GITHUB_PR_NUMBER} && ${GITHUB_PR_STATE} == OPEN ]]; then
+                                git fetch origin pull/${GITHUB_PR_NUMBER}/merge:merge${GITHUB_PR_NUMBER}
+                                git checkout merge${GITHUB_PR_NUMBER}
+                            fi
+                            cd ..
+                        '''
+                        echo "prepare docker image ${unit_testsStageDockerImage}"
+                        sh "docker build --pull --tag ${unit_testsStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el8:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL8/Dockerfile decisionengine/package/ci/EL8/"
+                        echo "Run ${STAGE_NAME} tests"
+                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${unit_testsStageDockerImage} \"-m pytest --cov-report term --cov=decisionengine --no-cov-on-fail\" \"pytest.log\""
+                    }
+                    post {
+                        always {
+                            archiveArtifacts artifacts: "decisionengine/pytest.log"
+                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // eventually kill the python process that spawn the test to cleanup CI processes left behind
+                            sh '''
+                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${DOCKERID} ]]; then
+                                    docker exec ${DOCKERID} ps -xww && \
+                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
+                                    docker exec ${DOCKERID} ps -xww  || true
+                                fi
+                            '''
+                            echo "cleanup docker image ${unit_testsStageDockerImage}"
+                            sh "docker rmi ${unit_testsStageDockerImage}"
+                        }
+                    }
+                }
+                stage('rpmbuild') {
+                    agent {
+                        node {
+                            label 'docker'
+                            customWorkspace "${WORKSPACE}/${STAGE_NAME}"
+                        }
+                    }
+                    options {
+                        timeout(time: "${STAGE_TIMEOUT}", activity: false, unit: 'MINUTES')
+                    }
+                    steps {
+                        script {
+                            // DOCKER_IMAGE is defined through Jenkins project
+                            rpmbuildStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                        }
+                        echo "cleanup workspace"
+                        sh 'for f in $(ls -A); do rm -rf ${f}; done'
+                        // DE_REPO is defined through Jenkins project
+                        echo "clone decisionengine code from ${DE_REPO}"
+                        sh '''
+                            git clone ${DE_REPO}
+                            cd decisionengine
+                            echo "checkout ${BRANCH} branch"
+                            git checkout ${BRANCH}
+                            echo GITHUB_PR_NUMBER: ${GITHUB_PR_NUMBER} - GITHUB_PR_STATE: ${GITHUB_PR_STATE}
+                            if [[ -n ${GITHUB_PR_NUMBER} && ${GITHUB_PR_STATE} == OPEN ]]; then
+                                git fetch origin pull/${GITHUB_PR_NUMBER}/merge:merge${GITHUB_PR_NUMBER}
+                                git checkout merge${GITHUB_PR_NUMBER}
+                            fi
+                            cd ..
+                        '''
+                        echo "prepare docker image ${rpmbuildStageDockerImage}"
+                        sh "docker build --pull --tag ${rpmbuildStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el8:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL8/Dockerfile decisionengine/package/ci/EL8/"
+                        echo "Run ${STAGE_NAME} tests"
+                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${rpmbuildStageDockerImage} \"setup.py bdist_rpm\" \"rpmbuild.log\""
+                    }
+                    post {
+                        always {
+                            archiveArtifacts artifacts: "decisionengine/rpmbuild.log,decisionengine/dist/*.rpm"
+                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // eventually kill the python process that spawn the test to cleanup CI processes left behind
+                            sh '''
+                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${DOCKERID} ]]; then
+                                    docker exec ${DOCKERID} ps -xww && \
+                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
+                                    docker exec ${DOCKERID} ps -xww  || true
+                                fi
+                            '''
+                            echo "cleanup docker image ${rpmbuildStageDockerImage}"
+                            sh "docker rmi ${rpmbuildStageDockerImage}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

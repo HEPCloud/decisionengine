@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 SPDX-License-Identifier: Apache-2.0
 -->
 
-We are providing a few `Dockerfile`s here to simplify a number of deployments.
+We are providing a few EL7 `Dockerfile`s here to simplify a number of deployments.
 
 These containers are a bit "proof-of-concept" and may not repersent best practices.
 

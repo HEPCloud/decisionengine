@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-name: Test in EL7 container
+name: Test in EL7/EL8 container
 
 on:
   push:
@@ -14,7 +14,7 @@ on:
       - master
       - 1.7
 jobs:
-  pytest:
+  pytest_el7:
     runs-on: ubuntu-latest
     name: A job to test the decision engine framework on EL7
     timeout-minutes: 30
@@ -27,6 +27,28 @@ jobs:
 
       - name: Run the tests in a container (SL7/HEPCloud-CI)
         uses: ./.github/actions/python-command-in-sl7-container
+
+      - name: Archive logs
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-log
+          path: pytest.log
+          if-no-files-found: error
+
+  pytest_el8:
+    if: ${{ false }} # temporary disable this job
+    runs-on: ubuntu-latest
+    name: A job to test the decision engine framework on EL8
+    timeout-minutes: 30
+
+    steps:
+      - name: checkout code tree
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Run the tests in a container (EL8/HEPCloud-CI)
+        uses: ./.github/actions/python-command-in-el8-container
 
       - name: Archive logs
         uses: actions/upload-artifact@v2

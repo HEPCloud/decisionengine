@@ -23,9 +23,9 @@ pipeline {
                             // Set custom Build Name
                             if (params.GITHUB_PR_NUMBER) {
                                 if (params.GITHUB_PR_STATE == 'CLOSED') {
-                                    currentBuild.displayName="${BUILD_NUMBER}#PR#${GITHUB_PR_NUMBER}#CLOSED"
+                                    currentBuild.displayName="${BUILD_NUMBER}#${EL_VERSION}#PR#${GITHUB_PR_NUMBER}#CLOSED"
                                 } else {
-                                    currentBuild.displayName="${BUILD_NUMBER}#PR#${GITHUB_PR_NUMBER}"
+                                    currentBuild.displayName="${BUILD_NUMBER}#${EL_VERSION}#PR#${GITHUB_PR_NUMBER}"
                                 }
                             } else {
                                 currentBuild.displayName="${BUILD_NUMBER}#${BRANCH}"
@@ -48,7 +48,7 @@ pipeline {
                             cd ..
                         '''
                         echo "prepare docker image ${flake8StageDockerImage}"
-                        sh "docker build --pull --tag ${flake8StageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/Dockerfile decisionengine/package/ci/"
+                        sh "docker build --pull --tag ${flake8StageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el7:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL7/Dockerfile decisionengine/package/ci/EL7/"
                         echo "Run ${STAGE_NAME} tests"
                         sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${flake8StageDockerImage} \"-m pytest -m flake8 --flake8\" \"flake8.log\""
                     }
@@ -103,7 +103,7 @@ pipeline {
                             cd ..
                         '''
                         echo "prepare docker image ${pylintStageDockerImage}"
-                        sh "docker build --pull --tag ${pylintStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/Dockerfile decisionengine/package/ci/"
+                        sh "docker build --pull --tag ${pylintStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el7:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL7/Dockerfile decisionengine/package/ci/EL7/"
                         echo "Run ${STAGE_NAME} tests"
                         sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${pylintStageDockerImage} \"-m pylint src/decisionengine/ src/tests/\" \"pylint.log\""
                     }
@@ -158,7 +158,7 @@ pipeline {
                             cd ..
                         '''
                         echo "prepare docker image ${unit_testsStageDockerImage}"
-                        sh "docker build --pull --tag ${unit_testsStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/Dockerfile decisionengine/package/ci/"
+                        sh "docker build --pull --tag ${unit_testsStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el7:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL7/Dockerfile decisionengine/package/ci/EL7/"
                         echo "Run ${STAGE_NAME} tests"
                         sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${unit_testsStageDockerImage} \"-m pytest --cov-report term --cov=decisionengine --no-cov-on-fail\" \"pytest.log\""
                     }
@@ -213,7 +213,7 @@ pipeline {
                             cd ..
                         '''
                         echo "prepare docker image ${rpmbuildStageDockerImage}"
-                        sh "docker build --pull --tag ${rpmbuildStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/Dockerfile decisionengine/package/ci/"
+                        sh "docker build --pull --tag ${rpmbuildStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el7:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL7/Dockerfile decisionengine/package/ci/EL7/"
                         echo "Run ${STAGE_NAME} tests"
                         sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${rpmbuildStageDockerImage} \"setup.py bdist_rpm\" \"rpmbuild.log\""
                     }
