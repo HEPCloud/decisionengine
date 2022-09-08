@@ -129,6 +129,7 @@ setup(
             "post_install": "package/rpm/post_install_section",
             "post_uninstall": "package/rpm/post_uninstall_section",
             "requires": rpm_require,
+            "release": "1%{?dist}",
         },
     },
     zip_safe=True,
