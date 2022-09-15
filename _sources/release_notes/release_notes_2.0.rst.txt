@@ -8,7 +8,7 @@ Patch level (bug fix) release.
 
 
 Issues fixed in this release
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Bugs fixed
 
@@ -26,7 +26,7 @@ Enhancements:
 
 
 Full list of commits since version 2.0.0
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `b5e56ab8 <https://github.com/HEPCloud/decisionengine/commit/b5e56ab8701266e890fed6e9ca4baff49c131c86>`_:   Remove signal handler.
 

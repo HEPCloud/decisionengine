@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 2.0.2.dev7+gfc6aefd5 documentation</title>
+  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 2.0.2.dev11+g7ec132e9 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -45,6 +45,7 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing and running HEPCloud’s Decision Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install_el8.html">Installing and running HEPCloud’s Decision Engine on EL8</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
@@ -111,23 +112,16 @@ method, which returns a dictionary whose key is the message routing
 key and whose value is the full message.  If no messages are
 available, consume() returns an empty dictionary.</p>
 <p>The LatestMessages class is intended to be used as a context manager (e.g.):</p>
-<blockquote>
-<div><dl>
-<dt>with LatestMessages(queues, broker_url) as messages:</dt><dd><dl>
-<dt>while some_predicate():</dt><dd><p>msgs = messages.consume()
-if not msgs:</p>
-<blockquote>
-<div><p>continue</p>
-</div></blockquote>
-<dl class="simple">
-<dt>for routing_key, msg in msgs.items():</dt><dd><p>…</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">LatestMessages</span><span class="p">(</span><span class="n">queues</span><span class="p">,</span> <span class="n">broker_url</span><span class="p">)</span> <span class="k">as</span> <span class="n">messages</span><span class="p">:</span>
+    <span class="k">while</span> <span class="n">some_predicate</span><span class="p">():</span>
+        <span class="n">msgs</span> <span class="o">=</span> <span class="n">messages</span><span class="o">.</span><span class="n">consume</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">msgs</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">for</span> <span class="n">routing_key</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">msgs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="o">...</span>
+</pre></div>
+</div>
 <p>Upon exiting the the context, a LatestMessage object will no longer
 listen for any messages.</p>
 <dl class="py class">

@@ -18,7 +18,7 @@ Patch level (bug fix) release.
 
 
 Issues fixed in this release
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 Bugs fixed
@@ -31,7 +31,7 @@ Enhancements:
 
 
 Full list of commits since version 1.7.0
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `606e1e9f <https://github.com/HEPCloud/decisionengine/commit/606e1e9fdd56b17e51fef92da679bfbb90485747>`_:   Merge pull request #585 from vitodb/fix/1.7/vito_port_PR527
 

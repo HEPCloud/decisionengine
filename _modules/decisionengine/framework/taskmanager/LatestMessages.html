@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.LatestMessages &mdash; decisionengine 2.0.2.dev7+gfc6aefd5 documentation</title>
+  <title>decisionengine.framework.taskmanager.LatestMessages &mdash; decisionengine 2.0.2.dev11+g7ec132e9 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -42,6 +42,7 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../install.html">Installing and running HEPCloud’s Decision Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install_el8.html">Installing and running HEPCloud’s Decision Engine on EL8</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
@@ -90,14 +91,16 @@
 
 <span class="sd">The LatestMessages class is intended to be used as a context manager (e.g.):</span>
 
-<span class="sd">  with LatestMessages(queues, broker_url) as messages:</span>
-<span class="sd">      while some_predicate():</span>
-<span class="sd">          msgs = messages.consume()</span>
-<span class="sd">          if not msgs:</span>
-<span class="sd">              continue</span>
+<span class="sd">.. code-block:: python</span>
 
-<span class="sd">          for routing_key, msg in msgs.items():</span>
-<span class="sd">              ...</span>
+<span class="sd">    with LatestMessages(queues, broker_url) as messages:</span>
+<span class="sd">        while some_predicate():</span>
+<span class="sd">            msgs = messages.consume()</span>
+<span class="sd">            if not msgs:</span>
+<span class="sd">                continue</span>
+
+<span class="sd">            for routing_key, msg in msgs.items():</span>
+<span class="sd">                ...</span>
 
 <span class="sd">Upon exiting the the context, a LatestMessage object will no longer</span>
 <span class="sd">listen for any messages.</span>

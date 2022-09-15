@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.LogicEngine &mdash; decisionengine 2.0.2.dev7+gfc6aefd5 documentation</title>
+  <title>decisionengine.framework.logicengine.LogicEngine &mdash; decisionengine 2.0.2.dev11+g7ec132e9 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -42,6 +42,7 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../install.html">Installing and running HEPCloud’s Decision Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install_el8.html">Installing and running HEPCloud’s Decision Engine on EL8</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
@@ -170,15 +171,20 @@
 <span class="sd">        [&#39;rule_name&#39;, &#39;fact_name&#39;, fact_value&#39;]</span>
 
 <span class="sd">        facts dict format:</span>
-<span class="sd">        &#39;newfacts&#39;: {</span>
-<span class="sd">            &#39;publish_glidein_requests&#39;: {</span>
-<span class="sd">                &#39;allow_hpc_new&#39;: True,</span>
-<span class="sd">                &#39;allow_foo&#39;: True</span>
-<span class="sd">            },</span>
-<span class="sd">            &#39;dummy_rule&#39;: {</span>
-<span class="sd">                &#39;dummy_new_fact&#39;: True</span>
+
+<span class="sd">        .. code-block:: json</span>
+
+<span class="sd">            {</span>
+<span class="sd">                &quot;newfacts&quot;: {</span>
+<span class="sd">                    &quot;publish_glidein_requests&quot;: {</span>
+<span class="sd">                        &quot;allow_hpc_new&quot;: true,</span>
+<span class="sd">                        &quot;allow_foo&quot;: true</span>
+<span class="sd">                    },</span>
+<span class="sd">                    &quot;dummy_rule&quot;: {</span>
+<span class="sd">                        &quot;dummy_new_fact&quot;: true</span>
+<span class="sd">                    }</span>
+<span class="sd">                }</span>
 <span class="sd">            }</span>
-<span class="sd">        }</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;in LE::_create_facts_dataframe&quot;</span><span class="p">)</span>
         <span class="c1"># Extract new facts from le_result</span>

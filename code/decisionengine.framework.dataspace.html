@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace package &mdash; decisionengine 2.0.2.dev7+gfc6aefd5 documentation</title>
+  <title>decisionengine.framework.dataspace package &mdash; decisionengine 2.0.2.dev11+g7ec132e9 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -45,6 +45,7 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing and running HEPCloud’s Decision Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install_el8.html">Installing and running HEPCloud’s Decision Engine on EL8</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
@@ -231,22 +232,31 @@ TODO: Make this threadsafe</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="decisionengine.framework.dataspace.datablock.DataBlock.get_taskmanager">
 <span class="sig-name descname"><span class="pre">get_taskmanager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taskmanager_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taskmanager_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datablock.html#DataBlock.get_taskmanager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datablock.DataBlock.get_taskmanager" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieve TaskManager
-:type taskmanager_name: <code class="xref py py-obj docutils literal notranslate"><span class="pre">string</span></code>
-:arg taskmanager_name: name of taskmanager to retrieve
-:type taskmanager_id: <code class="xref py py-obj docutils literal notranslate"><span class="pre">string</span></code>
-:arg taskmanager_id: id of taskmanager to retrieve
-:rtype: :obj: <cite>dict</cite></p>
-<p>The dictionary returned looks like :
-{‘datestamp’: datetime.datetime(2017, 12, 20, 17, 37, 17, 503210,</p>
-<blockquote>
-<div><blockquote>
-<div><p>tzinfo=psycopg2.tz.FixedOffsetTimezone(offset=-360, name=None)),</p>
-</div></blockquote>
-<p>‘sequence_id’: 135L,
-‘name’: ‘AWS_Calculations’,
-‘taskmanager_id’: ‘77B16EB5-C79E-45B0-B1B1-37E846692E1D’}</p>
-</div></blockquote>
+<dd><p>Retrieve TaskManager</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>taskmanager_name</strong> (<em>str</em>) – Name of the TaskManager</p></li>
+<li><p><strong>taskmanager_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the TaskManager to retrieve. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>TaskManager information</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p>The dictionary returned looks like :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;datestamp&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2017</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">503210</span><span class="p">,</span>
+                <span class="n">tzinfo</span><span class="o">=</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">tz</span><span class="o">.</span><span class="n">FixedOffsetTimezone</span><span class="p">(</span><span class="n">offset</span><span class="o">=-</span><span class="mi">360</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)),</span>
+    <span class="s1">&#39;sequence_id&#39;</span><span class="p">:</span> <span class="mi">135</span><span class="n">L</span><span class="p">,</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;AWS_Calculations&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;taskmanager_id&#39;</span><span class="p">:</span> <span class="s1">&#39;77B16EB5-C79E-45B0-B1B1-37E846692E1D&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">

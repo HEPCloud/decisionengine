@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.FactLookup &mdash; decisionengine 2.0.2.dev7+gfc6aefd5 documentation</title>
+  <title>decisionengine.framework.logicengine.FactLookup &mdash; decisionengine 2.0.2.dev11+g7ec132e9 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -42,6 +42,7 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../install.html">Installing and running HEPCloud’s Decision Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install_el8.html">Installing and running HEPCloud’s Decision Engine on EL8</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
@@ -99,23 +100,28 @@
 
 <span class="sd">    As an example, consider the following configuration:</span>
 
-<span class="sd">      facts: {</span>
-<span class="sd">        should_publish: &quot;(True)&quot;,</span>
-<span class="sd">      },</span>
-<span class="sd">      rules: {</span>
-<span class="sd">        publish_1: {</span>
-<span class="sd">          expression: &quot;should_publish&quot;,</span>
-<span class="sd">          facts: [&quot;should_publish&quot;]</span>
-<span class="sd">        },</span>
-<span class="sd">        publish_2: {</span>
-<span class="sd">          expression: &quot;should_publish&quot;,</span>
-<span class="sd">          actions: [&quot;go_to_press&quot;]</span>
-<span class="sd">          facts: [&quot;should_publish&quot;]</span>
+<span class="sd">    .. code-block:: json</span>
+
+<span class="sd">        {</span>
+<span class="sd">            &quot;facts&quot;: {</span>
+<span class="sd">                &quot;should_publish&quot;: &quot;(True)&quot;</span>
+<span class="sd">            },</span>
+<span class="sd">            &quot;rules&quot;: {</span>
+<span class="sd">                &quot;publish_1&quot;: {</span>
+<span class="sd">                    &quot;expression&quot;: &quot;should_publish&quot;,</span>
+<span class="sd">                    &quot;facts&quot;: [&quot;should_publish&quot;]</span>
+<span class="sd">                },</span>
+<span class="sd">                &quot;publish_2&quot;: {</span>
+<span class="sd">                    &quot;expression&quot;: &quot;should_publish&quot;,</span>
+<span class="sd">                    &quot;actions&quot;: [&quot;go_to_press&quot;],</span>
+<span class="sd">                    &quot;facts&quot;: [&quot;should_publish&quot;]</span>
+<span class="sd">                },</span>
+<span class="sd">                &quot;retract&quot;: {</span>
+<span class="sd">                    &quot;expression&quot;: &quot;not should_publish&quot;,</span>
+<span class="sd">                    &quot;facts&quot;: [&quot;should_retract&quot;]</span>
+<span class="sd">                }</span>
+<span class="sd">            }</span>
 <span class="sd">        }</span>
-<span class="sd">        retract: {</span>
-<span class="sd">          expression: &quot;not should_publish&quot;,</span>
-<span class="sd">          facts: [&quot;should_retract&quot;]</span>
-<span class="sd">      }</span>
 
 <span class="sd">    In the above, the first fact to be evaluated will always be the</span>
 <span class="sd">    top-level facts (i.e. those not encapsulated by the &#39;rules&#39; table).</span>

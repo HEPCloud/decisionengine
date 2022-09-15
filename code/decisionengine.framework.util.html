@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.util package &mdash; decisionengine 2.0.2.dev7+gfc6aefd5 documentation</title>
+  <title>decisionengine.framework.util package &mdash; decisionengine 2.0.2.dev11+g7ec132e9 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -45,6 +45,7 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing and running HEPCloud’s Decision Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install_el8.html">Installing and running HEPCloud’s Decision Engine on EL8</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
@@ -112,20 +113,14 @@
 <p>It is designed to be used for cases where a sequence of operations
 should not take longer than a specified period of time.  This is done
 by occasionally querying the ‘time_left’ attribute (e.g.):</p>
-<blockquote>
-<div><p>countdown = Countdown(wait_up_to=10)
-for p in processes:</p>
-<blockquote>
-<div><dl>
-<dt>with countdown:</dt><dd><p>rc = p.join(countdown.time_left)
-if rc is None:</p>
-<blockquote>
-<div><p>p.terminate()</p>
-</div></blockquote>
-</dd>
-</dl>
-</div></blockquote>
-</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">countdown</span> <span class="o">=</span> <span class="n">Countdown</span><span class="p">(</span><span class="n">wait_up_to</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">processes</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">countdown</span><span class="p">:</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">countdown</span><span class="o">.</span><span class="n">time_left</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</pre></div>
+</div>
 <p>In the above example, the time it takes to shutdown all processes
 should not exceed 10 seconds.  Upon entering the countdown
 context, a timer starts.  Once that context is exited, the timer
@@ -314,19 +309,14 @@ the default as opposed to ‘all’</p>
 <p>A stand-alone script purges data in database older than specified
 in configuration. Configuration file has to have this bit added:</p>
 <blockquote>
-<div><dl>
-<dt>{</dt><dd><blockquote>
-<div><dl>
-<dt>“dataspace”<span class="classifier">{ “retention_interval_in_days”</span><span class="classifier">365,</span></dt><dd><blockquote>
-<div><p>“datasource” :  { … }</p>
-</div></blockquote>
-<p>}</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>}</p>
-</dd>
-</dl>
+<div><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;dataspace&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;retention_interval_in_days&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">365</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;datasource&quot;</span><span class="w"> </span><span class="p">:</span><span class="w">  </span><span class="p">{}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
 </div></blockquote>
 <p>Can be used in a cron job.</p>
 <dl class="py function">

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds package &mdash; decisionengine 2.0.2.dev7+gfc6aefd5 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds package &mdash; decisionengine 2.0.2.dev11+g7ec132e9 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -45,6 +45,7 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing and running HEPCloud’s Decision Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install_el8.html">Installing and running HEPCloud’s Decision Engine on EL8</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
@@ -112,29 +113,24 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemyDS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/sqlalchemy_ds/datasource_api.html#SQLAlchemyDS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource" title="decisionengine.framework.dataspace.datasource.DataSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSource</span></code></a></p>
 <p>A DecisionEngine data source via the SQL Alchemy ORM</p>
-<dl>
-<dt>{</dt><dd><dl>
-<dt>“dataspace”: {</dt><dd><dl>
-<dt>“datasource”: {</dt><dd><p>“module”: “decisionengine.framework.dataspace.datasources.sqlalchemy_ds”,
-“name”: “SQLAlchemyDS”,
-“params”: {</p>
-<blockquote>
-<div><p>“pool_size”: 5,
-“max_overflow”: 10,
-“timeout”: 30,</p>
-<p># url is mandatory, but any <cite>engine</cite> keyword is accepted here.
-“url”: “dialect[+driver]://user:password&#64;host/dbname”</p>
-</div></blockquote>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;dataspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;datasource&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.sqlalchemy_ds&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SQLAlchemyDS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;pool_size&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="s2">&quot;max_overflow&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+
+                <span class="c1"># url is mandatory, but any `engine` keyword is accepted here.</span>
+                <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;dialect[+driver]://user:password@host/dbname&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p>Exceptions should be caught and logged by the caller.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.sqlalchemy_ds.datasource_api.SQLAlchemyDS._abc_impl">
@@ -802,29 +798,24 @@ Dataproduct</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.dataspace.datasources.sqlalchemy_ds.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemyDS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/dataspace/datasources/sqlalchemy_ds/datasource_api.html#SQLAlchemyDS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.SQLAlchemyDS" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource" title="decisionengine.framework.dataspace.datasource.DataSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSource</span></code></a></p>
 <p>A DecisionEngine data source via the SQL Alchemy ORM</p>
-<dl>
-<dt>{</dt><dd><dl>
-<dt>“dataspace”: {</dt><dd><dl>
-<dt>“datasource”: {</dt><dd><p>“module”: “decisionengine.framework.dataspace.datasources.sqlalchemy_ds”,
-“name”: “SQLAlchemyDS”,
-“params”: {</p>
-<blockquote>
-<div><p>“pool_size”: 5,
-“max_overflow”: 10,
-“timeout”: 30,</p>
-<p># url is mandatory, but any <cite>engine</cite> keyword is accepted here.
-“url”: “dialect[+driver]://user:password&#64;host/dbname”</p>
-</div></blockquote>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;dataspace&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;datasource&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.sqlalchemy_ds&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SQLAlchemyDS&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;pool_size&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="s2">&quot;max_overflow&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+
+                <span class="c1"># url is mandatory, but any `engine` keyword is accepted here.</span>
+                <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;dialect[+driver]://user:password@host/dbname&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p>Exceptions should be caught and logged by the caller.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="decisionengine.framework.dataspace.datasources.sqlalchemy_ds.SQLAlchemyDS._abc_impl">

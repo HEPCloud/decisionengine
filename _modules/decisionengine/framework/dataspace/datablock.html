@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datablock &mdash; decisionengine 2.0.2.dev7+gfc6aefd5 documentation</title>
+  <title>decisionengine.framework.dataspace.datablock &mdash; decisionengine 2.0.2.dev11+g7ec132e9 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -42,6 +42,7 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../install.html">Installing and running HEPCloud’s Decision Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../install_el8.html">Installing and running HEPCloud’s Decision Engine on EL8</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
@@ -357,18 +358,25 @@
 <div class="viewcode-block" id="DataBlock.get_taskmanager"><a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.get_taskmanager">[docs]</a>    <span class="k">def</span> <span class="nf">get_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve TaskManager</span>
-<span class="sd">        :type taskmanager_name: :obj:`string`</span>
-<span class="sd">        :arg taskmanager_name: name of taskmanager to retrieve</span>
-<span class="sd">        :type taskmanager_id: :obj:`string`</span>
-<span class="sd">        :arg taskmanager_id: id of taskmanager to retrieve</span>
-<span class="sd">        :rtype: :obj: `dict`</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            taskmanager_name (str): Name of the TaskManager</span>
+<span class="sd">            taskmanager_id (str, optional): ID of the TaskManager to retrieve. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: TaskManager information</span>
 
 <span class="sd">        The dictionary returned looks like :</span>
-<span class="sd">        {&#39;datestamp&#39;: datetime.datetime(2017, 12, 20, 17, 37, 17, 503210,</span>
-<span class="sd">                      tzinfo=psycopg2.tz.FixedOffsetTimezone(offset=-360, name=None)),</span>
-<span class="sd">         &#39;sequence_id&#39;: 135L,</span>
-<span class="sd">         &#39;name&#39;: &#39;AWS_Calculations&#39;,</span>
-<span class="sd">         &#39;taskmanager_id&#39;: &#39;77B16EB5-C79E-45B0-B1B1-37E846692E1D&#39;}</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            {</span>
+<span class="sd">                &#39;datestamp&#39;: datetime.datetime(2017, 12, 20, 17, 37, 17, 503210,</span>
+<span class="sd">                            tzinfo=psycopg2.tz.FixedOffsetTimezone(offset=-360, name=None)),</span>
+<span class="sd">                &#39;sequence_id&#39;: 135L,</span>
+<span class="sd">                &#39;name&#39;: &#39;AWS_Calculations&#39;,</span>
+<span class="sd">                &#39;taskmanager_id&#39;: &#39;77B16EB5-C79E-45B0-B1B1-37E846692E1D&#39;</span>
+<span class="sd">            }</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">)</span></div>
 

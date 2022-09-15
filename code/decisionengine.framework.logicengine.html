@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine package &mdash; decisionengine 2.0.2.dev7+gfc6aefd5 documentation</title>
+  <title>decisionengine.framework.logicengine package &mdash; decisionengine 2.0.2.dev11+g7ec132e9 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -45,6 +45,7 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing and running HEPCloud’s Decision Engine</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install_el8.html">Installing and running HEPCloud’s Decision Engine on EL8</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
@@ -165,35 +166,28 @@ of the given data ‘d’.</p>
 <p>To wit, the first fact with a given name is the one that is used
 in the evaluation of all subsequent facts.</p>
 <p>As an example, consider the following configuration:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>facts: {</dt><dd><p>should_publish: “(True)”,</p>
-</dd>
-</dl>
-<p>},
-rules: {</p>
-<blockquote>
-<div><dl class="simple">
-<dt>publish_1: {</dt><dd><p>expression: “should_publish”,
-facts: [“should_publish”]</p>
-</dd>
-</dl>
-<p>},
-publish_2: {</p>
-<blockquote>
-<div><p>expression: “should_publish”,
-actions: [“go_to_press”]
-facts: [“should_publish”]</p>
-</div></blockquote>
-<p>}
-retract: {</p>
-<blockquote>
-<div><p>expression: “not should_publish”,
-facts: [“should_retract”]</p>
-</div></blockquote>
-</div></blockquote>
-<p>}</p>
-</div></blockquote>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;facts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;should_publish&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(True)&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;rules&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;publish_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;expression&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;should_publish&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;facts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;should_publish&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;publish_2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;expression&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;should_publish&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;actions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;go_to_press&quot;</span><span class="p">],</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;facts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;should_publish&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;retract&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;expression&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;not should_publish&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;facts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;should_retract&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
 <p>In the above, the first fact to be evaluated will always be the
 top-level facts (i.e. those not encapsulated by the ‘rules’ table).
 The rules labeled ‘publish_1’ and ‘publish_2’ both rely on the
@@ -249,22 +243,20 @@ the top-level ‘facts’ table.</p>
 <span class="sig-name descname"><span class="pre">_create_facts_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newfacts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/logicengine/LogicEngine.html#LogicEngine._create_facts_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.logicengine.LogicEngine.LogicEngine._create_facts_dataframe" title="Permalink to this definition"></a></dt>
 <dd><p>Convert newfacts dict in format below to dataframe with columns
 [‘rule_name’, ‘fact_name’, fact_value’]</p>
-<p>facts dict format:
-‘newfacts’: {</p>
-<blockquote>
-<div><dl class="simple">
-<dt>‘publish_glidein_requests’: {</dt><dd><p>‘allow_hpc_new’: True,
-‘allow_foo’: True</p>
-</dd>
-</dl>
-<p>},
-‘dummy_rule’: {</p>
-<blockquote>
-<div><p>‘dummy_new_fact’: True</p>
-</div></blockquote>
-<p>}</p>
-</div></blockquote>
-<p>}</p>
+<p>facts dict format:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;newfacts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;publish_glidein_requests&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;allow_hpc_new&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;allow_foo&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;dummy_rule&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;dummy_new_fact&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
