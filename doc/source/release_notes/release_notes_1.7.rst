@@ -1,6 +1,12 @@
 .. SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 .. SPDX-License-Identifier: Apache-2.0
 
+Release 1.7.4
+-------------
+
+Same as 1.7.1 release. Dome to mantain the same version number as decisionengine_modules.
+
+
 Release 1.7.3
 -------------
 

@@ -1,6 +1,46 @@
 .. SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 .. SPDX-License-Identifier: Apache-2.0
 
+Release 2.0.2
+-------------
+
+This is mainly a bug fix and documentation release. Instructions to run on EL8 have been added.
+Also a UP/DOWN status metric was added via Prometheus.
+
+Issues fixed in this release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- `428 <https://github.com/HEPCloud/decisionengine_modules/issues/428>`_ : Decision engine 1.7.3 bug too many open file descriptors in glide_frontend_element.py
+- `427 <https://github.com/HEPCloud/decisionengine_modules/pull/427>`_ : Set CONTINUE_IF_NO_PROXY to False to allow hybrid configuration
+
+Full list of commits since version 2.0.1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`7ec132e9 <https://github.com/HEPCloud/decisionengine/commit/7ec132e9f66d22f44ad7ebc87bf901ba7009aee1>`_:   [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+`b942241a <https://github.com/HEPCloud/decisionengine/commit/b942241a8fdbc69a12a3562b1010afdbad6d82c9>`_:   Add installation instructions for CentOS 8
+
+`4f6fc134 <https://github.com/HEPCloud/decisionengine/commit/4f6fc134c7e830bfdcc9c34c54e263950970d85a>`_:   [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+`e8d1922e <https://github.com/HEPCloud/decisionengine/commit/e8d1922ecbe4a301d72ad0370d4b759d4f4adf23>`_:   Fix docstrings errors and warnings
+
+`fc6aefd5 <https://github.com/HEPCloud/decisionengine/commit/fc6aefd5ae51e1a2336e34a9d44e82d949cd9eaf>`_:   Docker container and test setup for EL8
+
+`51d5293f <https://github.com/HEPCloud/decisionengine/commit/51d5293f30c00cc1844166ce6dce80096a9e1bb4>`_:   [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+`0c15d3bd <https://github.com/HEPCloud/decisionengine/commit/0c15d3bd6ff308a90ad4068dc29e2fad4441afa1>`_:   Added UP/DOWN status metric of the decision engine
+
+`fc76a1f0 <https://github.com/HEPCloud/decisionengine/commit/fc76a1f0e86bfd948b632c80694f9352f382a36b>`_:   Fixup coverage for new version
+
+`04b18750 <https://github.com/HEPCloud/decisionengine/commit/04b187501ee41114a972cc12b15aa2fad5e20859>`_:   Set upper limit version for flake8. This is needed to have pytest-flake8 and flake8 versions working together.
+
+`98797411 <https://github.com/HEPCloud/decisionengine/commit/98797411868f9c2791976d078141d97eab0ad946>`_:   Add 'Setup pressure-based pilot submission' section to install document
+
+`0165183c <https://github.com/HEPCloud/decisionengine/commit/0165183cb7fa72bfb0927b023b324143ae92668f>`_:   make RPM requires more flexible
+
+`28e2a0d4 <https://github.com/HEPCloud/decisionengine/commit/28e2a0d4211d02f80eee12b87be1764c456195bf>`_:   Updated release notes for 2.0.1 and porting of 1.7.3
+
+
 Release 2.0.1
 -------------
 
