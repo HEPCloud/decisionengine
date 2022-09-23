@@ -31,6 +31,7 @@ Decision Engine using the distributed RPM packages.
    :maxdepth: 1
 
    install
+   install_el8
 
 
 Developer Documentation
