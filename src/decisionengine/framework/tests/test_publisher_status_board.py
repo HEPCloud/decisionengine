@@ -10,14 +10,14 @@ from decisionengine.framework.taskmanager.PublisherStatus import PublisherStatus
 def test_publisher_status_board():
     board = PublisherStatusBoard(["a", "b"])
     snapshot = board.snapshot()
-    a1_enabled, _, a1_since = snapshot.status("a")
-    b1_enabled, _, b1_since = snapshot.status("b")
+    a1_enabled, _, a1_since = snapshot.state("a")
+    b1_enabled, _, b1_since = snapshot.state("b")
     assert a1_enabled and b1_enabled
 
     board.update("a", False)
 
-    a2_enabled, _, a2_since = snapshot.status("a")
-    b2_enabled, _, b2_since = snapshot.status("b")
+    a2_enabled, _, a2_since = snapshot.state("a")
+    b2_enabled, _, b2_since = snapshot.state("b")
     assert not a2_enabled and b2_enabled
     assert a2_since > a1_since
     assert b2_since == b1_since
@@ -25,4 +25,4 @@ def test_publisher_status_board():
     re.search(r"a\s+False.*b\s+True", str(snapshot), re.DOTALL)
 
     time.sleep(2)
-    assert board.snapshot().status("a").duration.seconds >= 2
+    assert board.snapshot().state("a").duration.seconds >= 2
