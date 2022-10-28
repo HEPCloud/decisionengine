@@ -50,18 +50,19 @@ class SourceWorker(multiprocessing.Process):
         :arg config: configuration dictionary describing the worker
         """
         super().__init__(name=f"SourceWorker-{key}")
-        self.module_instance = _create_module_instance(config, Source, channel_name)
         self.config = config
         self.logger_config = logger_config
         self.channel_name = channel_name
         self.module = self.config["module"]
         self.key = key
-        self.class_name = self.module_instance.__class__.__name__
         SOURCE_ACQUIRE_GAUGE.labels(self.key)
 
         self.loglevel = multiprocessing.Value("i", logging.WARNING)
         self.logger = structlog.getLogger(logconf.SOURCELOGGERNAME)
         self.logger.setLevel(logging.DEBUG)
+
+        self.module_instance = _create_module_instance(config, Source, channel_name)
+        self.class_name = self.module_instance.__class__.__name__
 
         logger = structlog.getLogger(logconf.LOGGERNAME)
         logger = logger.bind(module=__name__.split(".")[-1], source=self.key)
