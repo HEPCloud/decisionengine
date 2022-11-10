@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 2.0.2.dev12+ge0749d8b documentation</title>
+  <title>decisionengine.framework.taskmanager package &mdash; decisionengine 2.0.3.dev5+g669555cc documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -85,11 +86,11 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">Welcome to decisionengine’s documentation!</a> &raquo;</li>
-          <li><a href="decisionengine.html">decisionengine package</a> &raquo;</li>
-          <li><a href="decisionengine.framework.html">decisionengine.framework package</a> &raquo;</li>
-      <li>decisionengine.framework.taskmanager package</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Welcome to decisionengine’s documentation!</a></li>
+          <li class="breadcrumb-item"><a href="decisionengine.html">decisionengine package</a></li>
+          <li class="breadcrumb-item"><a href="decisionengine.framework.html">decisionengine.framework package</a></li>
+      <li class="breadcrumb-item active">decisionengine.framework.taskmanager package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/code/decisionengine.framework.taskmanager.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -271,6 +272,141 @@ sync between threads if need be.</p>
 <dt class="sig sig-object py" id="decisionengine.framework.taskmanager.ProcessingState.State.STEADY">
 <span class="sig-name descname"><span class="pre">STEADY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.ProcessingState.State.STEADY" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-decisionengine.framework.taskmanager.PublisherStatus">
+<span id="decisionengine-framework-taskmanager-publisherstatus-module"></span><h2>decisionengine.framework.taskmanager.PublisherStatus module<a class="headerlink" href="#module-decisionengine.framework.taskmanager.PublisherStatus" title="Permalink to this heading"></a></h2>
+<p>PublisherStatus</p>
+<p>The status of each decision-engine publisher is captured by a PublisherStatus object.
+The status can be queried to determine if a given publisher is enabled, and when it was last
+enabled or disabled.  To access this information from a datablock, one must specify the
+a consumes statement:</p>
+<p>The API for each relevant class is given below.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherState">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.PublisherStatus.</span></span><span class="sig-name descname"><span class="pre">PublisherState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">since</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/PublisherStatus.html#PublisherState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherState" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherState._asdict">
+<span class="sig-name descname"><span class="pre">_asdict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherState._asdict" title="Permalink to this definition"></a></dt>
+<dd><p>Return a new dict which maps field names to their values.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherState._field_defaults">
+<span class="sig-name descname"><span class="pre">_field_defaults</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherState._field_defaults" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherState._fields">
+<span class="sig-name descname"><span class="pre">_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('enabled',</span> <span class="pre">'duration',</span> <span class="pre">'since')</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherState._fields" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherState._make">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_make</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherState._make" title="Permalink to this definition"></a></dt>
+<dd><p>Make a new PublisherState object from a sequence or iterable</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherState._replace">
+<span class="sig-name descname"><span class="pre">_replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherState._replace" title="Permalink to this definition"></a></dt>
+<dd><p>Return a new PublisherState object replacing specified fields with new values</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherState.duration">
+<span class="sig-name descname"><span class="pre">duration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">timedelta</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherState.duration" title="Permalink to this definition"></a></dt>
+<dd><p>datetime.timedelta object representing duration between now and when publisher was last enabled/disabled</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherState.enabled">
+<span class="sig-name descname"><span class="pre">enabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherState.enabled" title="Permalink to this definition"></a></dt>
+<dd><p>Boolean value indicating if publisher is enabled.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherState.since">
+<span class="sig-name descname"><span class="pre">since</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherState.since" title="Permalink to this definition"></a></dt>
+<dd><p>datetime.datetime object representing when publisher was last enabled/disabled</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.PublisherStatus.</span></span><span class="sig-name descname"><span class="pre">PublisherStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status_snapshot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/PublisherStatus.html#PublisherStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Proxy object that provides publisher-status information.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus.is_enabled">
+<span class="sig-name descname"><span class="pre">is_enabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">publisher_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/PublisherStatus.html#PublisherStatus.is_enabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus.is_enabled" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>publisher_name</strong> (<em>str</em>) – The name of the configured publisher</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If publisher is enabled or disabled</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus.state">
+<span class="sig-name descname"><span class="pre">state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">publisher_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/PublisherStatus.html#PublisherStatus.state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus.state" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>publisher_name</strong> (<em>str</em>) – The name of the configured publisher</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Full state of publisher</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherState" title="decisionengine.framework.taskmanager.PublisherStatus.PublisherState"><code class="xref py py-class docutils literal notranslate"><span class="pre">PublisherState</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">decisionengine.framework.taskmanager.PublisherStatus.</span></span><span class="sig-name descname"><span class="pre">PublisherStatusBoard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">publisher_names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/PublisherStatus.html#PublisherStatusBoard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Publisher status board owned by each decision channel</p>
+<p>The status board is not a user-facing entity; it is owned by each decision
+channel, which updates the status of each publisher after they have been run.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard.snapshot">
+<span class="sig-name descname"><span class="pre">snapshot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/PublisherStatus.html#PublisherStatusBoard.snapshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard.snapshot" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An publisher-status object corresponding to now</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus" title="decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">PublisherStatus</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">publisher_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_of_publish</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/decisionengine/framework/taskmanager/PublisherStatus.html#PublisherStatusBoard.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard.update" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>publisher_name</strong> (<em>str</em>) – The name of the configured publisher</p></li>
+<li><p><strong>result_of_publish</strong> (<em>bool</em>) – Whether the last execution of the publisher was successsul</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

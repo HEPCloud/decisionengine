@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 2.0.2.dev12+ge0749d8b documentation</title>
+  <title>decisionengine.framework.taskmanager.TaskManager &mdash; decisionengine 2.0.3.dev5+g669555cc documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -15,6 +15,7 @@
         <script src="../../../../_static/underscore.js"></script>
         <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -67,9 +68,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../../index.html">Module code</a> &raquo;</li>
-      <li>decisionengine.framework.taskmanager.TaskManager</li>
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">decisionengine.framework.taskmanager.TaskManager</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -98,6 +99,7 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">CHANNELLOGGERNAME</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.LatestMessages</span> <span class="kn">import</span> <span class="n">LatestMessages</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">ProcessingState</span><span class="p">,</span> <span class="n">State</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.PublisherStatus</span> <span class="kn">import</span> <span class="n">PublisherStatusBoard</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.SourceProductCache</span> <span class="kn">import</span> <span class="n">SourceProductCache</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.metrics</span> <span class="kn">import</span> <span class="n">Gauge</span><span class="p">,</span> <span class="n">Histogram</span>
 
@@ -195,6 +197,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">transform_workers</span> <span class="o">=</span> <span class="n">workers</span><span class="p">[</span><span class="s2">&quot;transforms&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logic_engine</span> <span class="o">=</span> <span class="n">workers</span><span class="p">[</span><span class="s2">&quot;logic_engine&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">publisher_workers</span> <span class="o">=</span> <span class="n">workers</span><span class="p">[</span><span class="s2">&quot;publishers&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher_status_board</span> <span class="o">=</span> <span class="n">PublisherStatusBoard</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">publisher_workers</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">exchange</span> <span class="o">=</span> <span class="n">exchange</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span> <span class="o">=</span> <span class="n">broker_url</span>
@@ -262,6 +265,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source </span><span class="si">{</span><span class="n">source_name</span><span class="si">}</span><span class="s2"> data block put done&quot;</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_block_put</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;publisher_status&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher_status_board</span><span class="o">.</span><span class="n">snapshot</span><span class="p">()},</span> <span class="n">header</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_block_t0</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">decision_cycle</span><span class="p">()</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="p">):</span>
@@ -486,7 +492,9 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Run publisher </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">data_block</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="k">with</span> <span class="n">PUBLISHER_RUN_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
-                            <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">data_block</span><span class="p">)</span>
+                            <span class="n">rc</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">data_block</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">rc</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">publisher_status_board</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">module_key</span><span class="p">,</span> <span class="n">rc</span><span class="p">)</span>
                             <span class="n">PUBLISHER_RUN_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set_to_current_time</span><span class="p">()</span>
                     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
