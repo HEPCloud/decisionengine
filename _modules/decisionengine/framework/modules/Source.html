@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.Source &mdash; decisionengine 2.0.3.dev5+g669555cc documentation</title>
+  <title>decisionengine.framework.modules.Source &mdash; decisionengine 2.0.3.dev6+g85617b14 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -86,6 +86,10 @@
 <span class="kn">import</span> <span class="nn">pprint</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
+<span class="kn">import</span> <span class="nn">structlog</span>
+
+<span class="kn">import</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="k">as</span> <span class="nn">logconf</span>
+
 <span class="kn">from</span> <span class="nn">decisionengine.framework.config.ValidConfig</span> <span class="kn">import</span> <span class="n">ValidConfig</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules</span> <span class="kn">import</span> <span class="n">describe</span> <span class="k">as</span> <span class="n">_describe</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.describe</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">supports_config</span>
@@ -99,6 +103,8 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_of_parameters</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">set_of_parameters</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logconf</span><span class="o">.</span><span class="n">SOURCELOGGERNAME</span><span class="p">)</span>
 
     <span class="c1"># acquire: The action function for a source. Will</span>
     <span class="c1"># retrieve data from external sources and issue a</span>
