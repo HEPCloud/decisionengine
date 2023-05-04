@@ -14,5 +14,5 @@ except ImportError:  # pragma: no cover
 __title__ = "decisionengine"
 __description__ = "The HEPCloud Decision Engine Framework"
 __author__ = "Fermilab"
-__license__ = "Fermitools Software Legal Information (Modified BSD License)"
-__url__ = "http://hepcloud.fnal.gov"
+__license__ = "Apache-2.0"
+__url__ = "http://hepcloud.fnal.gov/"

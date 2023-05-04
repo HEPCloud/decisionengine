@@ -30,14 +30,14 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 runtime_require = [
     "cherrypy >= 18.6.0",
     "kombu[redis] >= 5.2.0rc1",
-    "jsonnet == 0.17.0",
+    "jsonnet >= 0.17.0",
     "prometheus-client >= 0.10.0",
     "psutil >= 5.8.0",
     "tabulate >= 0.8.7",
     "toposort >= 1.6",
     "sqlalchemy >= 1.4.20",
     "structlog >= 21.1.0",
-    "typing_extensions == 4.1.1",
+    "typing_extensions >= 4.1.1",
     "numpy == 1.19.5; python_version <= '3.6'",
     "numpy >= 1.19.5; python_version >= '3.7'",
     "pandas == 1.1.5; python_version <= '3.6'",
@@ -82,7 +82,7 @@ __base_pip_requires = [
     f"python3.{sys.version_info.minor}dist(setuptools)",
     f"python3.{sys.version_info.minor}dist(wheel)",
 ]
-__jsonnet_requires = ["gcc", "gcc-c++", "make", f"python3{sys.version_info.minor}-devel"]
+__jsonnet_requires = ["gcc", "gcc-c++", "make", f"python3.{sys.version_info.minor}-devel"]
 rpm_require.extend(__base_pip_requires)
 rpm_require.extend(__jsonnet_requires)
 

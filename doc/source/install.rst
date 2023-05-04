@@ -98,9 +98,9 @@ Install needed RPMs prerequisites
     dnf install -y yum-utils
     dnf config-manager --set-enabled crb
     # EPEL is used for OSG dependencies
-    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+    dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
     # OSG is used for GlideinWMS, HTCSS and others
-    yum install https://repo.opensciencegrid.org/osg/3.6/osg-3.6-el9-release-latest.rpm
+    dnf install https://repo.opensciencegrid.org/osg/3.6/osg-3.6-el9-release-latest.rpm
     dnf repolist
     # Make sure all the above repos are enabled
     # And change the Epel repository priority to make sure that comes after the OSG repositories, which are 98 by default.
@@ -122,8 +122,8 @@ Install needed RPMs prerequisites
 
 
 
-Install via RPMs
-----------------
+Use PIP installation below - Install via RPMs - coming soon
+-----------------------------------------------------------
 
 You can install using the provided RPMs (recommended for production) or via PIP install (recommended for development whnen you want to clone the Git repository and change the code).
 This sectoin is for the RPM installation, the next one for the PIP installation. Use one or the other.
@@ -137,8 +137,8 @@ This sectoin is for the RPM installation, the next one for the PIP installation.
 
 2. Install the decision engine and add ``--enablerepo=ssi-hepcloud-dev`` for the latest development version ::
 
-    yum install decisionengine
-    yum install decisionengine_modules
+    dnf install decisionengine
+    dnf install decisionengine_modules
 
 3. Not all packages are available as RPM. It is necessary to install directly some Python dependencies.
    To avoid to pollute the system Python we will install them for the ``decisionengine`` user,
@@ -194,6 +194,7 @@ There are a few extra steps (dependencies installation ansd setups) that are aut
   For a minimal installation, you can use the following command: ::
 
     dnf install glideinwms-vofrontend-libs glideinwms-vofrontend-glidein glideinwms-userschedd glideinwms-usercollector
+    dnf install glideinwms-vofrontend-core glideinwms-vofrontend-httpd
 
 2. Setup the decision engine user and git repositories ::
 
@@ -204,7 +205,8 @@ There are a few extra steps (dependencies installation ansd setups) that are aut
 3. Install the decision engine from the git repositories ::
 
     # Install the decisionengine framework and modules using setuptools
-    su - decisionengine
+    su - decisionengine -s /bin/bash
+    # Now you should be the decisionengine user in its home directory
     pushd decisionengine
     python3 setup.py develop --user
     popd
@@ -255,28 +257,7 @@ Any extra keywords you can pass to the ``sqlalchemy.engine.Engine`` constructor 
 SQLAlchemy will create any tablespace objects it requires automatically.
 
 
-**The PostgreSQL Data Source (deprecated)**
-
-The postgresql Data Source is now deprecated. It was the only one supported pre v1.7 and is setup with a config like::
-
-    "datasource": {
-      "module": "decisionengine.framework.dataspace.datasources.postgresql",
-     "name": "Postgresql",
-      "config": {
-        "user": "postgres",
-        "blocking": true,
-        "host": "localhost",
-        "port": 5432,
-        "database": "decisionengine",
-        "maxconnections": 100,
-        "maxcached": 10
-        }
-      }
-
-If you use this datasource you must also load the database schema by hand.
-To load the database schema run::
-
-    psql -U postgres decisionengine -f /usr/share/doc/decisionengine/datasources/postgresql.sql
+The PostgreSQL data source, used until v1.7, is no more supported.
 
 
 Start decision engine
@@ -447,3 +428,11 @@ Finally stop Decision Engine service and remove the Redis container::
 
   systemctl stop decisionengine.service
   podman stop decisionengine-redis | xargs podman rm
+
+
+Troubleshooting
+---------------
+
+`podman` is leaking volumes each time it starts a container, in the long run this is exhausting system resources.
+To check current volumes used by podman user can run `podman volume list`.
+To clean up volumes user can run `podman volume prune -f` after all podman container have been stop and removed.
