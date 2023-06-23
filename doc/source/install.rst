@@ -226,6 +226,9 @@ There are a few extra steps (dependencies installation ansd setups) that are aut
 Now you can type ``decisionengine --help`` while logged in as decisionengine to print the help message.
 To do more you need first to configure Decision Engine.
 
+Remember that all the times that you start a new shell as decisionengine you need to add the PIP binary directory to the PATH::
+
+    export PATH="~/.local/bin:$PATH"
 
 Configure Decision Engine
 -------------------------
@@ -265,10 +268,25 @@ Start decision engine
 
 Start the service ::
 
-    # For the RPM install:
+    # For the RPM install, as root:
     systemctl start decisionengine
-    # For the PIP install, as decisionengine user
+    # For the PIP install, as decisionengine user (Python packages are installed in ~decisionengine/.local/bin/):
+    export PATH="~/.local/bin:$PATH"
     decisionengine --no-webserver &
+
+
+Stop decision engine
+--------------------
+
+To stop the service and remove the Redis container once you are done run the following::
+
+    # If you are in a RPM installation, as root:
+    systemctl stop decisionengine
+    # If you installed via PIP, as decisionengine:
+    export PATH="~/.local/bin:$PATH"
+    de-client --stop
+    # Run the following as root (root started the container)
+    podman stop decisionengine-redis | xargs podman rm
 
 
 Add channels to decision engine
@@ -363,7 +381,11 @@ This command will create the file ``/var/lib/gwms-frontend/vofrontend/de_fronten
 
 At this point it is needed to stop decisionengine service and remove the Redis container::
 
+  # If you are in a RPM installation, as root:
   systemctl stop decisionengine
+  # If you installed via PIP, as decisionengine:
+  de-client --stop
+  # Run the following as root (root started the container)
   podman stop decisionengine-redis | xargs podman rm
 
 Now all should be ready to run Decision Engine.
@@ -383,9 +405,15 @@ The procedure to run Decision Engine is as follow:
 
 * Start decisionengine service and check its status::
 
+    # For RPM installations:
     systemctl start decisionengine
     sleep 5
     systemctl status decisionengine
+    # For PIP installations:
+    decisionengine --no-webserver &
+    sleep 5
+    de-client --status
+
 
 **- Submit a test job**
 
@@ -427,12 +455,14 @@ Now the ``decisionengine`` user session can be closed to get back to the ``root`
 Finally stop Decision Engine service and remove the Redis container::
 
   systemctl stop decisionengine.service
+  # Run de-client --stop as decisionengine if you installed w/ PIP
   podman stop decisionengine-redis | xargs podman rm
 
 
 Troubleshooting
 ---------------
 
-`podman` is leaking volumes each time it starts a container, in the long run this is exhausting system resources.
-To check current volumes used by podman user can run `podman volume list`.
-To clean up volumes user can run `podman volume prune -f` after all podman container have been stop and removed.
+There is a known podman bug.
+``podman`` is leaking volumes each time it starts a container, in the long run this is exhausting system resources.
+To check current volumes used by podman user can run ``podman volume list``.
+To clean up volumes user can run ``podman volume prune -f`` after all podman container have been stopped and removed.
