@@ -30,18 +30,18 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 runtime_require = [
     "cherrypy >= 18.6.0",
     "kombu[redis] >= 5.2.0rc1",
-    "jsonnet >= 0.17.0",
+    "jsonnet >= 0.20.0",
     "prometheus-client >= 0.10.0",
     "psutil >= 5.8.0",
     "tabulate >= 0.8.7",
     "toposort >= 1.6",
-    "sqlalchemy >= 1.4.20",
+    "sqlalchemy >= 1.4.48, < 2.0.0",
     "structlog >= 21.1.0",
     "typing_extensions >= 4.1.1",
     "numpy == 1.19.5; python_version <= '3.6'",
-    "numpy >= 1.19.5; python_version >= '3.7'",
+    "numpy >= 1.19.5, < 2.0.0; python_version >= '3.7'",
     "pandas == 1.1.5; python_version <= '3.6'",
-    "pandas >= 1.1.5; python_version >= '3.7' and platform_python_implementation == 'CPython'",
+    "pandas >= 1.1.5, < 2.0.0; python_version >= '3.7' and platform_python_implementation == 'CPython'",
     "psycopg2-binary >= 2.8.6; platform_python_implementation == 'CPython'",  # noqa: E501
 ]  # noqa: E501
 
@@ -52,16 +52,15 @@ devel_req = [
     "packaging >= 20.4",
     "wheel >= 0.36.2",
     "coverage >= 6.1.2",
-    "pytest >= 6.2.2, < 7.0",  # pytest 7 incompatible with pytest-postgres < 4
+    "pytest >= 7.0.0, < 8.0",
     "pytest-cov >= 2.11.1",
-    "pytest-flake8 >= 1.0.7",
-    "pytest-postgresql >= 3.0.0, < 4.0.0",
+    "pytest-postgresql >= 5.0.0, < 6.0.0",
     "pytest-timeout >= 1.4.2",
     "pytest-xdist[psutil] >= 2.3.0",
-    "flake8 >= 4.0.0, < 5.0.0",  # https://github.com/tholo/pytest-flake8/issues/87
+    "flake8 >= 6.0.0, < 7.0.0",
     "pre-commit >= 2.13.0",
     "pylint >= 2.7.4",
-    "reuse",
+    "reuse >= 1.1.2",
     "importlib_resources >= 5.1.2; python_version <= '3.8'",
     "sphinx >= 3.5.3",
     "sphinx_rtd_theme >= 0.5.1",
