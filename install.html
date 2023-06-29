@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.3.dev10+g84ebaa52 documentation</title>
+  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.3.dev11+g87b3f6e9 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -61,6 +61,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#start-decision-engine">Start decision engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stop-decision-engine">Stop decision engine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#add-channels-to-decision-engine">Add channels to decision engine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setup-pressure-based-pilot-submission">Setup pressure-based pilot submission</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
@@ -333,6 +334,10 @@ For a minimal installation, you can use the following command:</p>
 </ol>
 <p>Now you can type <code class="docutils literal notranslate"><span class="pre">decisionengine</span> <span class="pre">--help</span></code> while logged in as decisionengine to print the help message.
 To do more you need first to configure Decision Engine.</p>
+<p>Remember that all the times that you start a new shell as decisionengine you need to add the PIP binary directory to the PATH:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">&quot;~/.local/bin:$PATH&quot;</span>
+</pre></div>
+</div>
 </section>
 <section id="configure-decision-engine">
 <h2>Configure Decision Engine<a class="headerlink" href="#configure-decision-engine" title="Permalink to this heading"></a></h2>
@@ -361,10 +366,24 @@ Each datasource has its own unique schema and cannot be used with a different da
 <section id="start-decision-engine">
 <h2>Start decision engine<a class="headerlink" href="#start-decision-engine" title="Permalink to this heading"></a></h2>
 <p>Start the service</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># For the RPM install:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># For the RPM install, as root:</span>
 <span class="n">systemctl</span> <span class="n">start</span> <span class="n">decisionengine</span>
-<span class="c1"># For the PIP install, as decisionengine user</span>
+<span class="c1"># For the PIP install, as decisionengine user (Python packages are installed in ~decisionengine/.local/bin/):</span>
+<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">&quot;~/.local/bin:$PATH&quot;</span>
 <span class="n">decisionengine</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">webserver</span> <span class="o">&amp;</span>
+</pre></div>
+</div>
+</section>
+<section id="stop-decision-engine">
+<h2>Stop decision engine<a class="headerlink" href="#stop-decision-engine" title="Permalink to this heading"></a></h2>
+<p>To stop the service and remove the Redis container once you are done run the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are in a RPM installation, as root:</span>
+<span class="n">systemctl</span> <span class="n">stop</span> <span class="n">decisionengine</span>
+<span class="c1"># If you installed via PIP, as decisionengine:</span>
+<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">&quot;~/.local/bin:$PATH&quot;</span>
+<span class="n">de</span><span class="o">-</span><span class="n">client</span> <span class="o">--</span><span class="n">stop</span>
+<span class="c1"># Run the following as root (root started the container)</span>
+<span class="n">podman</span> <span class="n">stop</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">redis</span> <span class="o">|</span> <span class="n">xargs</span> <span class="n">podman</span> <span class="n">rm</span>
 </pre></div>
 </div>
 </section>
@@ -449,7 +468,11 @@ For this step it is needed to run:</p>
 </div>
 <p>This command will create the file <code class="docutils literal notranslate"><span class="pre">/var/lib/gwms-frontend/vofrontend/de_frontend_config</span></code></p>
 <p>At this point it is needed to stop decisionengine service and remove the Redis container:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">stop</span> <span class="n">decisionengine</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are in a RPM installation, as root:</span>
+<span class="n">systemctl</span> <span class="n">stop</span> <span class="n">decisionengine</span>
+<span class="c1"># If you installed via PIP, as decisionengine:</span>
+<span class="n">de</span><span class="o">-</span><span class="n">client</span> <span class="o">--</span><span class="n">stop</span>
+<span class="c1"># Run the following as root (root started the container)</span>
 <span class="n">podman</span> <span class="n">stop</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">redis</span> <span class="o">|</span> <span class="n">xargs</span> <span class="n">podman</span> <span class="n">rm</span>
 </pre></div>
 </div>
@@ -469,9 +492,14 @@ For this step it is needed to run:</p>
 </div>
 </li>
 <li><p>Start decisionengine service and check its status:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">start</span> <span class="n">decisionengine</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># For RPM installations:</span>
+<span class="n">systemctl</span> <span class="n">start</span> <span class="n">decisionengine</span>
 <span class="n">sleep</span> <span class="mi">5</span>
 <span class="n">systemctl</span> <span class="n">status</span> <span class="n">decisionengine</span>
+<span class="c1"># For PIP installations:</span>
+<span class="n">decisionengine</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">webserver</span> <span class="o">&amp;</span>
+<span class="n">sleep</span> <span class="mi">5</span>
+<span class="n">de</span><span class="o">-</span><span class="n">client</span> <span class="o">--</span><span class="n">status</span>
 </pre></div>
 </div>
 </li>
@@ -515,15 +543,17 @@ queue 1
 <p><strong>- Stop Decision Engine service</strong></p>
 <p>Finally stop Decision Engine service and remove the Redis container:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">stop</span> <span class="n">decisionengine</span><span class="o">.</span><span class="n">service</span>
+<span class="c1"># Run de-client --stop as decisionengine if you installed w/ PIP</span>
 <span class="n">podman</span> <span class="n">stop</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">redis</span> <span class="o">|</span> <span class="n">xargs</span> <span class="n">podman</span> <span class="n">rm</span>
 </pre></div>
 </div>
 </section>
 <section id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading"></a></h2>
-<p><cite>podman</cite> is leaking volumes each time it starts a container, in the long run this is exhausting system resources.
-To check current volumes used by podman user can run <cite>podman volume list</cite>.
-To clean up volumes user can run <cite>podman volume prune -f</cite> after all podman container have been stop and removed.</p>
+<p>There is a known podman bug.
+<code class="docutils literal notranslate"><span class="pre">podman</span></code> is leaking volumes each time it starts a container, in the long run this is exhausting system resources.
+To check current volumes used by podman user can run <code class="docutils literal notranslate"><span class="pre">podman</span> <span class="pre">volume</span> <span class="pre">list</span></code>.
+To clean up volumes user can run <code class="docutils literal notranslate"><span class="pre">podman</span> <span class="pre">volume</span> <span class="pre">prune</span> <span class="pre">-f</span></code> after all podman container have been stopped and removed.</p>
 </section>
 </section>
 
