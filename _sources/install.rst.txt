@@ -32,7 +32,7 @@ Install the default postgresql distributed on RHEL9, Postgress 13:
 
 3. Init the database ::
 
-    postgresql-setup --initdb
+    postgresql-setup --initdb -k
 
 4. edit ``/var/lib/pgsql/data/pg_hba.conf`` like the following::
 
