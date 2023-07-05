@@ -121,26 +121,27 @@ Install needed RPMs prerequisites
     python3 -m pip install --upgrade --user setuptools wheel setuptools-scm[toml]
 
 
+..
 
-Use PIP installation below - Install via RPMs - coming soon
------------------------------------------------------------
+  Use PIP installation below - Install via RPMs - coming soon
+  -----------------------------------------------------------
 
-You can install using the provided RPMs (recommended for production) or via PIP install (recommended for development whnen you want to clone the Git repository and change the code).
-This sectoin is for the RPM installation, the next one for the PIP installation. Use one or the other.
+  You can install using the provided RPMs (recommended for production) or via PIP install (recommended for development whnen you want to clone the Git repository and change the code).
+  This sectoin is for the RPM installation, the next one for the PIP installation. Use one or the other.
 
-1. The yum repositories are available only within Fermilab. From the outside you will have to download the RPMs from `GitHub<https://github.com/HEPCloud/decisionengine/releases>` or use the PIP installarion (below).
+  1. The yum repositories are available only within Fermilab. From the outside you will have to download the RPMs from `GitHub<https://github.com/HEPCloud/decisionengine/releases>` or use the PIP installarion (below).
    Setup the decision engine yum repositories ::
 
     # You need the development version wget -O /etc/yum.repos.d/ssi-hepcloud.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud.repo
     wget -O /etc/yum.repos.d/ssi-hepcloud-dev.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud-dev.repo
     # This is the same as the EL9 development repo: http://ssi-rpm.fnal.gov/hep/hepcloud-el9/ssi-hepcloud-dev.repo (http://ssi-rpm.fnal.gov/hep/hepcloud-el9/development/)
 
-2. Install the decision engine and add ``--enablerepo=ssi-hepcloud-dev`` for the latest development version ::
+  2. Install the decision engine and add ``--enablerepo=ssi-hepcloud-dev`` for the latest development version ::
 
     dnf install decisionengine
     dnf install decisionengine_modules
 
-3. Not all packages are available as RPM. It is necessary to install directly some Python dependencies.
+  3. Not all packages are available as RPM. It is necessary to install directly some Python dependencies.
    To avoid to pollute the system Python we will install them for the ``decisionengine`` user,
    the user the service is running as.
    Install the required Python packages (these are taken from setup.py) ::
@@ -178,9 +179,11 @@ This sectoin is for the RPM installation, the next one for the PIP installation.
 
     exit
 
-Now you can type ``decisionengine --help`` to print the help message.
-To do more you need first to configure Decision Engine.
-Skip the PIP installation and go to the configuration section.
+  Now you can type ``decisionengine --help`` to print the help message.
+  To do more you need first to configure Decision Engine.
+  Skip the PIP installation and go to the configuration section.
+
+..
 
 
 Install via PIP
@@ -359,10 +362,17 @@ Setup pressure-based pilot submission
 | At this point Decision Engine, GlideinWMS and HTCondor are supposed to be installed and able to run.
 | We assume that the Frontend proxy and the VO proxy are already available.
 |
-| Decision Engine configuration templates referred in this section are available in the `contrib repo <https://github.com/HEPCloud/contrib/tree/master/config_template>`_.
-| Files from ``decisionengine`` folder need to be copied inside ``/etc/decisionengine``. Those configuration files have the placeholder field ``@CHANGEME@`` that needs to be replaced with a proper parameter according to the specific system setup.
 
-Once those configuration file have been updated, we are ready to finalize the Decision Engine configuration.
+**- Configure the pressure-based submisison**
+| Write the configuration for the Decision Engine glideinwms module
+| To ease the process you can use the templates available in the `config_template contrib repo <https://github.com/HEPCloud/contrib/tree/master/config_template>`_.
+| Copy the files from the ``EL9`` folder into ``/etc/decisionengine``, and the files in ``EL9/config.d/`` into ``/etc/decisionengine/config.d``.
+| If you made changes to ``decision_engine.jsonnet`` please merge it with the version form the repository.
+| The important part  from the is the glideinwms import ``decision_engine.jsonnet`` template is the line: ``glideinwms: import 'glideinwms.libsonnet',``.
+| Those configuration files have a placeholder field ``@TEMPLATE...@``
+| that needs to be replaced with the proper parameters according to your specific system setup. The README file has some suggestions.
+
+Once those configuration files have been updated, we are ready to finalize the Decision Engine configuration.
 
 **- Setup Redis**
 
@@ -371,33 +381,44 @@ Start the message broker (Redis) as pod container::
   podman run --name decisionengine-redis -p 127.0.0.1:6379:6379 -d redis:6 --loglevel warning
 
 **- Create GWMS frontend configuration**
-For this step it is needed to run::
+For this step you need first to restart the Decision Engine and then to run a configuration script. To do so, run::
 
+  # as root (fix the ownership of the frontend library files)
   chown -R decisionengine: /var/lib/gwms-frontend
+  # for RPM installation as root
+  systemctl staop decisionengine
   systemctl start decisionengine
-  ksu decisionengine -e /usr/bin/python3 /usr/lib/python3.6/site-packages/decisionengine_modules/glideinwms/configure_gwms_frontend.py
+  ksu decisionengine -e /usr/bin/python3 /usr/lib/python3.9/site-packages/decisionengine_modules/glideinwms/configure_gwms_frontend.py
+  # for PIP installation as decisionengine
+  de-client --stop
+  decisionengine --no-webserver &
+  python3 ~decisionengine/decisionengine_modules/src/decisionengine_modules/glideinwms/configure_gwms_frontend.py
 
 This command will create the file ``/var/lib/gwms-frontend/vofrontend/de_frontend_config``
 
-At this point it is needed to stop decisionengine service and remove the Redis container::
+To allow a fresh start stop and reset everything:
+
+1. stop the decisionengine (service)::
 
   # If you are in a RPM installation, as root:
   systemctl stop decisionengine
   # If you installed via PIP, as decisionengine:
   de-client --stop
+
+2. remove the Redis container::
+
   # Run the following as root (root started the container)
   podman stop decisionengine-redis | xargs podman rm
 
-Now all should be ready to run Decision Engine.
-
-**- Run Decision Engine**
-
-The procedure to run Decision Engine is as follow:
-
-* Reset decisionengine DB::
+3. and reset the decisionengine DB in PostgreSQL::
 
     dropdb -U postgres decisionengine
     createdb -U postgres decisionengine
+
+
+**- Run Decision Engine**
+Now all should be ready to run Decision Engine with a fresh start.
+Start the Redis container and the decisionengine service.
 
 * Run Redis container::
 
@@ -405,17 +426,18 @@ The procedure to run Decision Engine is as follow:
 
 * Start decisionengine service and check its status::
 
-    # For RPM installations:
+    # For RPM installations as root:
     systemctl start decisionengine
     sleep 5
     systemctl status decisionengine
-    # For PIP installations:
+    # For PIP installations as decisionengine:
     decisionengine --no-webserver &
     sleep 5
     de-client --status
 
 
 **- Submit a test job**
+Finally you can submit a test job to trigger Glidein requests and test the system.
 
 * Switch to ``decisionengine`` user and make sure channel and sources are ``STEADY``::
 
@@ -454,6 +476,7 @@ Now the ``decisionengine`` user session can be closed to get back to the ``root`
 
 Finally stop Decision Engine service and remove the Redis container::
 
+  # If you istalled via RPMs run
   systemctl stop decisionengine.service
   # Run de-client --stop as decisionengine if you installed w/ PIP
   podman stop decisionengine-redis | xargs podman rm
