@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 2.0.3.dev15+gaa12938f documentation</title>
+  <title>decisionengine.framework.tests.test_start_with_bad_channels &mdash; decisionengine 2.0.3.dev17+g97915e0b documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -124,7 +124,8 @@
 
 <div class="viewcode-block" id="_expected_circularity"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_start_with_bad_channels._expected_circularity">[docs]</a><span class="k">def</span> <span class="nf">_expected_circularity</span><span class="p">(</span><span class="n">test_str</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
-        <span class="sa">r</span><span class="s2">&quot;Circular dependencies exist among these items: {&#39;a_uses_b&#39;:{&#39;b_uses_a&#39;}, &#39;b_uses_a&#39;:{&#39;a_uses_b&#39;}}&quot;</span><span class="p">,</span>
+        <span class="c1"># Future changes in toposort could reinstate the quotes removed (https://gitlab.com/ericvsmith/toposort/-/issues/7)</span>
+        <span class="sa">r</span><span class="s2">&quot;Circular dependencies exist among these items: {a_uses_b:{&#39;b_uses_a&#39;}, b_uses_a:{&#39;a_uses_b&#39;}}&quot;</span><span class="p">,</span>
         <span class="n">test_str</span><span class="p">,</span>
         <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">,</span>
     <span class="p">)</span></div>
