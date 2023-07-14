@@ -38,6 +38,7 @@ def _consumes_not_subset(test_str):
 
 def _expected_circularity(test_str):
     return re.search(
+        # Future changes in toposort could reinstate the quotes removed (https://gitlab.com/ericvsmith/toposort/-/issues/7)
         r"Circular dependencies exist among these items: {a_uses_b:{'b_uses_a'}, b_uses_a:{'a_uses_b'}}",
         test_str,
         re.DOTALL,
