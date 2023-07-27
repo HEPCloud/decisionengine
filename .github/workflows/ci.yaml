@@ -160,6 +160,7 @@ jobs:
           make rst html latexpdf
 
   rpmbuild_el7:
+    if: ${{ github.ref == 'refs/heads/1.7' }}
     name: Build an EL7 rpm
     runs-on: ubuntu-latest
     needs: pytest
