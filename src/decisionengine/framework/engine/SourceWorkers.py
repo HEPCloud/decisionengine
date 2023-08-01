@@ -23,15 +23,31 @@ from decisionengine.framework.modules.Source import Source
 from decisionengine.framework.taskmanager.module_graph import _create_module_instance
 from decisionengine.framework.taskmanager.ProcessingState import ProcessingState, State
 from decisionengine.framework.util.countdown import Countdown
-from decisionengine.framework.util.metrics import Gauge
+from decisionengine.framework.util.metrics import Gauge, Histogram
 
 _DEFAULT_SCHEDULE = 300  # 5 minutes
 
 MB = 1000000
 
+SOURCE_STATUS = Gauge(
+    "de_source_status",
+    "Status of Source Data",
+    [
+        "source_name",
+    ],
+)
+
 SOURCE_ACQUIRE_GAUGE = Gauge(
     "de_source_last_acquire_timestamp_seconds",
     "Last time a source successfully ran its acquire function",
+    [
+        "source_name",
+    ],
+)
+
+SOURCE_ACQUIRE_HISTOGRAM = Histogram(
+    "de_source_acquire_seconds",
+    "How long it took to acquire the source data",
     [
         "source_name",
     ],
@@ -144,12 +160,14 @@ class SourceWorker(multiprocessing.Process):
         if self.state.has_value(State.ERROR):
             return
         self.state.set(State.OFFLINE)
+        SOURCE_STATUS.labels(self.key).set(State.OFFLINE.value)
 
     def run(self):
         """
         Get the data from source
         """
         self.state.set(State.ACTIVE)
+        SOURCE_STATUS.labels(self.key).set(State.ACTIVE.value)
         self.setup_logger()
         self.logger.info(f"Starting source loop for {self.key}")
         SOURCE_ACQUIRE_GAUGE.labels(self.key)
@@ -158,7 +176,8 @@ class SourceWorker(multiprocessing.Process):
             while not self.state.should_stop():
                 try:
                     self.logger.info(f"Source {self.key} calling acquire")
-                    data = self.module_instance.acquire()
+                    with SOURCE_ACQUIRE_HISTOGRAM.labels(self.key).time():
+                        data = self.module_instance.acquire()
                     Module.verify_products(self.module_instance, data)
                     self.logger.info(f"Source {self.key} acquire returned")
                     SOURCE_ACQUIRE_GAUGE.labels(self.key).set_to_current_time()
@@ -180,10 +199,12 @@ class SourceWorker(multiprocessing.Process):
                     self.logger.info(f"Source {self.key} finished cycle")
                     if not self.state.should_stop() and not self.state.has_value(State.STEADY):
                         self.state.set(State.STEADY)
+                        SOURCE_STATUS.labels(self.key).set(State.STEADY.value)
                 except Exception:
                     self.logger.exception(f"Exception running source {self.key} ")
                     self.logger.debug(f"Sending shutdown flag to queue {self.queue.name}")
                     self.state.set(State.ERROR)
+                    SOURCE_STATUS.labels(self.key).set(State.ERROR.value)
                     producer.publish(
                         dict(source_name=self.key, source_module=self.module, data=State.SHUTDOWN),
                         routing_key=self.key,
