@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>decisionengine.framework.tests.test_client_server &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -107,7 +107,9 @@
 <span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
 
 
-<div class="viewcode-block" id="test_client_status_msg_to_logger"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_status_msg_to_logger">[docs]</a><span class="k">def</span> <span class="nf">test_client_status_msg_to_logger</span><span class="p">(</span><span class="n">deserver</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
+<div class="viewcode-block" id="test_client_status_msg_to_logger">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_status_msg_to_logger">[docs]</a>
+<span class="k">def</span> <span class="nf">test_client_status_msg_to_logger</span><span class="p">(</span><span class="n">deserver</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make sure the actual client console call goes to a logging destination&quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">decisionengine.framework.engine.de_client</span> <span class="k">as</span> <span class="nn">de_client</span>
 
@@ -117,7 +119,10 @@
     <span class="k">assert</span> <span class="nb">any</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;channel: test_channel&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;de_client&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">records</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="test_client_set_loglevel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_set_loglevel">[docs]</a><span class="k">def</span> <span class="nf">test_client_set_loglevel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+
+<div class="viewcode-block" id="test_client_set_loglevel">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_set_loglevel">[docs]</a>
+<span class="k">def</span> <span class="nf">test_client_set_loglevel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># these shouldn&#39;t error out even if the channels are dead</span>
     <span class="c1"># they should report the channel is dead, if it did die.</span>
     <span class="k">assert</span> <span class="s2">&quot;DEBUG&quot;</span> <span class="ow">in</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--print-engine-loglevel&quot;</span><span class="p">)</span>
@@ -139,7 +144,10 @@
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;No source found with the name bad_source.&quot;</span></div>
 
 
-<div class="viewcode-block" id="test_client_get_loglevel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_get_loglevel">[docs]</a><span class="k">def</span> <span class="nf">test_client_get_loglevel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+
+<div class="viewcode-block" id="test_client_get_loglevel">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_get_loglevel">[docs]</a>
+<span class="k">def</span> <span class="nf">test_client_get_loglevel</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-channel-loglevel&quot;</span><span class="p">,</span> <span class="s2">&quot;bad_channel&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;No channel found with the name bad_channel.&quot;</span>
 
@@ -147,7 +155,10 @@
     <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;No source found with the name bad_source.&quot;</span></div>
 
 
-<div class="viewcode-block" id="test_client_print_product"><a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product">[docs]</a><span class="k">def</span> <span class="nf">test_client_print_product</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
+
+<div class="viewcode-block" id="test_client_print_product">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_client_server.test_client_print_product">[docs]</a>
+<span class="k">def</span> <span class="nf">test_client_print_product</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Test default options</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--print-product&quot;</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="p">(</span>
@@ -296,6 +307,7 @@
         <span class="s2">&quot;    }</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="s2">&quot;}&quot;</span>
     <span class="p">)</span></div>
+
 </pre></div>
 
            </div>

@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.FactLookup &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>decisionengine.framework.logicengine.FactLookup &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -97,7 +97,9 @@
 <span class="n">_TOP_LEVEL</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># Indicates facts not contained by rules</span>
 
 
-<div class="viewcode-block" id="FactLookup"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup">[docs]</a><span class="k">class</span> <span class="nc">FactLookup</span><span class="p">:</span>
+<div class="viewcode-block" id="FactLookup">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup">[docs]</a>
+<span class="k">class</span> <span class="nc">FactLookup</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Establishes a policy for looking up a fact based on the given name.</span>
 
@@ -156,7 +158,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registered the following facts:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="FactLookup.sorted_rules"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup.sorted_rules">[docs]</a>    <span class="k">def</span> <span class="nf">sorted_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rules_cfg</span><span class="p">):</span>
+<div class="viewcode-block" id="FactLookup.sorted_rules">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup.sorted_rules">[docs]</a>
+    <span class="k">def</span> <span class="nf">sorted_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rules_cfg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Rules sorted according to rule dependencies.</span>
 
@@ -185,7 +189,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculated the following order for evaluating rules:</span><span class="se">\n</span><span class="si">{</span><span class="n">ordered_dependencies</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">initial_rules</span><span class="p">[</span><span class="n">rule</span><span class="p">]</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">ordered_dependencies</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="FactLookup.rule_for"><a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup.rule_for">[docs]</a>    <span class="k">def</span> <span class="nf">rule_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fact_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="FactLookup.rule_for">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup.rule_for">[docs]</a>
+    <span class="k">def</span> <span class="nf">rule_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fact_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Selects rule required to evaluate fact with the supplied name.</span>
 
@@ -194,7 +201,9 @@
 <span class="sd">        :rtype: str</span>
 <span class="sd">        :returns: Rule name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="p">[</span><span class="n">fact_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="p">[</span><span class="n">fact_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
 </pre></div>
 
            </div>

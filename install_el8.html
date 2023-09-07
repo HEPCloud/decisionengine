@@ -4,18 +4,18 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installing and running HEPCloud’s Decision Engine on EL8 &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>Installing and running HEPCloud’s Decision Engine on EL8 &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -98,13 +98,13 @@
            <div itemprop="articleBody">
              
   <section id="installing-and-running-hepcloud-s-decision-engine-on-el8">
-<h1>Installing and running HEPCloud’s Decision Engine on EL8<a class="headerlink" href="#installing-and-running-hepcloud-s-decision-engine-on-el8" title="Permalink to this heading"></a></h1>
+<h1>Installing and running HEPCloud’s Decision Engine on EL8<a class="headerlink" href="#installing-and-running-hepcloud-s-decision-engine-on-el8" title="Link to this heading"></a></h1>
 <p>Decision engine uses a PostgreSQL database back-end and Redis as message broker and cache.</p>
 <p>You need to install first PostgreSQL, Redis, and then the Decision engine framework (decisionengine) and install and add the standard channels (decisionengine_modules).</p>
 <p>The following instructions assume a system installation, performed as <code class="docutils literal notranslate"><span class="pre">root</span></code>.
 decisionengine will run as the decisionengine user.</p>
 <section id="install-postgresql">
-<h2>Install PostgreSQL<a class="headerlink" href="#install-postgresql" title="Permalink to this heading"></a></h2>
+<h2>Install PostgreSQL<a class="headerlink" href="#install-postgresql" title="Link to this heading"></a></h2>
 <p>The default postgresql installed on RH8 is 9.2 which is outdated. Suggest to remove it and install 12 instead :</p>
 <ol class="arabic">
 <li><p>Disable the built-in PostgreSQL module</p>
@@ -167,7 +167,7 @@ decisionengine will run as the decisionengine user.</p>
 </div>
 </section>
 <section id="install-redis">
-<h2>Install Redis<a class="headerlink" href="#install-redis" title="Permalink to this heading"></a></h2>
+<h2>Install Redis<a class="headerlink" href="#install-redis" title="Link to this heading"></a></h2>
 <p>Install and start the message broker (Redis) container on your system. You can find more details on the <a class="reference internal" href="redis.html"><span class="doc">redis document</span></a></p>
 <ol class="arabic">
 <li><p>Install Padman</p>
@@ -184,7 +184,7 @@ decisionengine will run as the decisionengine user.</p>
 </ol>
 </section>
 <section id="install-decision-engine-and-the-standard-modules">
-<h2>Install Decision Engine and the standard modules<a class="headerlink" href="#install-decision-engine-and-the-standard-modules" title="Permalink to this heading"></a></h2>
+<h2>Install Decision Engine and the standard modules<a class="headerlink" href="#install-decision-engine-and-the-standard-modules" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p>Prerequisites setup. Make sure that the required packages (python39, gcc, …) are installed and up to date.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># gcc, swig and make are needed for dependencies (jsonnet)</span>
@@ -250,11 +250,11 @@ For a minimal installation, you can use the following command:</p>
 To do more you need first to configure Decision Engine.</p>
 </section>
 <section id="configure-decision-engine">
-<h2>Configure Decision Engine<a class="headerlink" href="#configure-decision-engine" title="Permalink to this heading"></a></h2>
+<h2>Configure Decision Engine<a class="headerlink" href="#configure-decision-engine" title="Link to this heading"></a></h2>
 <p>The default configuration file lives in <code class="docutils literal notranslate"><span class="pre">/etc/decisionengine/decision_engine.jsonnet</span></code>.</p>
 <p>A number of defaults are set for you.</p>
 <section id="selecting-your-datasource">
-<h3>Selecting your datasource<a class="headerlink" href="#selecting-your-datasource" title="Permalink to this heading"></a></h3>
+<h3>Selecting your datasource<a class="headerlink" href="#selecting-your-datasource" title="Link to this heading"></a></h3>
 <p>You need a datasource to store in the database the channel’s data (datablocks).
 Each datasource has its own unique schema and cannot be used with a different datasource.</p>
 <p><strong>The SQLAlchemy Data Source</strong></p>
@@ -295,7 +295,7 @@ To load the database schema run:</p>
 </section>
 </section>
 <section id="start-decision-engine">
-<h2>Start decision engine<a class="headerlink" href="#start-decision-engine" title="Permalink to this heading"></a></h2>
+<h2>Start decision engine<a class="headerlink" href="#start-decision-engine" title="Link to this heading"></a></h2>
 <p>Start the service</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># As decisionengine user</span>
 <span class="n">decisionengine</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">webserver</span> <span class="o">&amp;</span>
@@ -303,7 +303,7 @@ To load the database schema run:</p>
 </div>
 </section>
 <section id="add-channels-to-decision-engine">
-<h2>Add channels to decision engine<a class="headerlink" href="#add-channels-to-decision-engine" title="Permalink to this heading"></a></h2>
+<h2>Add channels to decision engine<a class="headerlink" href="#add-channels-to-decision-engine" title="Link to this heading"></a></h2>
 <p>Decision engine decision cycles happen in channels.
 You can add channels by adding configuration files in <code class="docutils literal notranslate"><span class="pre">/etc/decisionengine/config.d/</span></code>
 and restarting the decision engine.</p>

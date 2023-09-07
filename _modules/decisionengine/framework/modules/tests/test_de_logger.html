@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.tests.test_de_logger &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>decisionengine.framework.modules.tests.test_de_logger &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../../_static/jquery.js"></script>
-        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-        <script src="../../../../../_static/doctools.js"></script>
-        <script src="../../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -98,7 +98,9 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">LOGGERNAME</span>
 
 
-<div class="viewcode-block" id="log_setup"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.log_setup">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
+<div class="viewcode-block" id="log_setup">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.log_setup">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">log_setup</span><span class="p">():</span>
     <span class="n">my_log</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
 
@@ -115,7 +117,10 @@
     <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="test_by_nonsense_is_err"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_nonsense_is_err">[docs]</a><span class="k">def</span> <span class="nf">test_by_nonsense_is_err</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
+
+<div class="viewcode-block" id="test_by_nonsense_is_err">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_nonsense_is_err">[docs]</a>
+<span class="k">def</span> <span class="nf">test_by_nonsense_is_err</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;.*Incorrect &#39;file_rotate_by&#39;.*&quot;</span><span class="p">),</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="n">de_logger</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span>
@@ -127,7 +132,10 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="test_by_size"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_size">[docs]</a><span class="k">def</span> <span class="nf">test_by_size</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
+
+<div class="viewcode-block" id="test_by_size">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_size">[docs]</a>
+<span class="k">def</span> <span class="nf">test_by_size</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="n">de_logger</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span>
@@ -145,7 +153,10 @@
         <span class="k">assert</span> <span class="n">log_setup</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;infomsg&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="test_by_time"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_time">[docs]</a><span class="k">def</span> <span class="nf">test_by_time</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
+
+<div class="viewcode-block" id="test_by_time">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_de_logger.test_by_time">[docs]</a>
+<span class="k">def</span> <span class="nf">test_by_time</span><span class="p">(</span><span class="n">log_setup</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="n">de_logger</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span>
@@ -161,6 +172,7 @@
         <span class="k">assert</span> <span class="s2">&quot;TimedRotatingFileHandler&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">log_setup</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">log_setup</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="k">assert</span> <span class="n">log_setup</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;infomsg&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span></div>
+
 </pre></div>
 
            </div>

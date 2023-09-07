@@ -4,18 +4,18 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -103,7 +103,7 @@
            <div itemprop="articleBody">
              
   <section id="installing-and-running-hepcloud-s-decision-engine-on-el9">
-<h1>Installing and running HEPCloud’s Decision Engine on EL9<a class="headerlink" href="#installing-and-running-hepcloud-s-decision-engine-on-el9" title="Permalink to this heading"></a></h1>
+<h1>Installing and running HEPCloud’s Decision Engine on EL9<a class="headerlink" href="#installing-and-running-hepcloud-s-decision-engine-on-el9" title="Link to this heading"></a></h1>
 <p>Currently the only version supporting EL9 is the development version, DE 2.0.x, which corresponds to the master branch in Git.</p>
 <p>Decision engine uses a PostgreSQL database back-end and Redis as message broker and cache.</p>
 <p>You need to install first PostgreSQL, Redis, and then the Decision engine framework (decisionengine) and install and add the standard channels (decisionengine_modules).</p>
@@ -111,7 +111,7 @@
 <p>These also assume a system installation, performed as <code class="docutils literal notranslate"><span class="pre">root</span></code>.
 decisionengine will run as the decisionengine user.</p>
 <section id="install-postgresql">
-<h2>Install PostgreSQL<a class="headerlink" href="#install-postgresql" title="Permalink to this heading"></a></h2>
+<h2>Install PostgreSQL<a class="headerlink" href="#install-postgresql" title="Link to this heading"></a></h2>
 <p>Install the default postgresql distributed on RHEL9, Postgress 13:</p>
 <ol class="arabic">
 <li><p>Install postgresql</p>
@@ -168,7 +168,7 @@ decisionengine will run as the decisionengine user.</p>
 </div>
 </section>
 <section id="install-redis">
-<h2>Install Redis<a class="headerlink" href="#install-redis" title="Permalink to this heading"></a></h2>
+<h2>Install Redis<a class="headerlink" href="#install-redis" title="Link to this heading"></a></h2>
 <p>Install and start the message broker (Redis) container on your system. You can find more details on the <a class="reference internal" href="redis.html"><span class="doc">redis document</span></a></p>
 <ol class="arabic">
 <li><p>Install Padman</p>
@@ -185,10 +185,10 @@ decisionengine will run as the decisionengine user.</p>
 </ol>
 </section>
 <section id="install-decision-engine-and-the-standard-modules">
-<h2>Install Decision Engine and the standard modules<a class="headerlink" href="#install-decision-engine-and-the-standard-modules" title="Permalink to this heading"></a></h2>
+<h2>Install Decision Engine and the standard modules<a class="headerlink" href="#install-decision-engine-and-the-standard-modules" title="Link to this heading"></a></h2>
 </section>
 <section id="install-needed-rpms-prerequisites">
-<h2>Install needed RPMs prerequisites<a class="headerlink" href="#install-needed-rpms-prerequisites" title="Permalink to this heading"></a></h2>
+<h2>Install needed RPMs prerequisites<a class="headerlink" href="#install-needed-rpms-prerequisites" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p>Make sure the correct repositories and priorities are set.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># CRB (&quot;Code Ready Builder&quot; - PowerTools ) is used for swig and other dependencies</span>
@@ -290,7 +290,7 @@ Skip the PIP installation and go to the configuration section.</p>
 </div></blockquote>
 </section>
 <section id="install-via-pip">
-<h2>Install via PIP<a class="headerlink" href="#install-via-pip" title="Permalink to this heading"></a></h2>
+<h2>Install via PIP<a class="headerlink" href="#install-via-pip" title="Link to this heading"></a></h2>
 <p>Skip this if you did the RPM installation. This PIP installation is recommended for development whnen you want to clone the Git repository and change the code.
 There are a few extra steps (dependencies installation ansd setups) that are automated in the RPM installation.</p>
 <ol class="arabic simple">
@@ -343,11 +343,11 @@ To do more you need first to configure Decision Engine.</p>
 </div>
 </section>
 <section id="configure-decision-engine">
-<h2>Configure Decision Engine<a class="headerlink" href="#configure-decision-engine" title="Permalink to this heading"></a></h2>
+<h2>Configure Decision Engine<a class="headerlink" href="#configure-decision-engine" title="Link to this heading"></a></h2>
 <p>The default configuration file lives in <code class="docutils literal notranslate"><span class="pre">/etc/decisionengine/decision_engine.jsonnet</span></code>.</p>
 <p>A number of defaults are set for you.</p>
 <section id="selecting-your-datasource">
-<h3>Selecting your datasource<a class="headerlink" href="#selecting-your-datasource" title="Permalink to this heading"></a></h3>
+<h3>Selecting your datasource<a class="headerlink" href="#selecting-your-datasource" title="Link to this heading"></a></h3>
 <p>You need a datasource to store in the database the channel’s data (datablocks).
 Each datasource has its own unique schema and cannot be used with a different datasource.</p>
 <p><strong>The SQLAlchemy Data Source</strong></p>
@@ -367,7 +367,7 @@ Each datasource has its own unique schema and cannot be used with a different da
 </section>
 </section>
 <section id="start-decision-engine">
-<h2>Start decision engine<a class="headerlink" href="#start-decision-engine" title="Permalink to this heading"></a></h2>
+<h2>Start decision engine<a class="headerlink" href="#start-decision-engine" title="Link to this heading"></a></h2>
 <p>Start the service</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># For the RPM install, as root:</span>
 <span class="n">systemctl</span> <span class="n">start</span> <span class="n">decisionengine</span>
@@ -378,7 +378,7 @@ Each datasource has its own unique schema and cannot be used with a different da
 </div>
 </section>
 <section id="stop-decision-engine">
-<h2>Stop decision engine<a class="headerlink" href="#stop-decision-engine" title="Permalink to this heading"></a></h2>
+<h2>Stop decision engine<a class="headerlink" href="#stop-decision-engine" title="Link to this heading"></a></h2>
 <p>To stop the service and remove the Redis container once you are done run the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are in a RPM installation, as root:</span>
 <span class="n">systemctl</span> <span class="n">stop</span> <span class="n">decisionengine</span>
@@ -391,7 +391,7 @@ Each datasource has its own unique schema and cannot be used with a different da
 </div>
 </section>
 <section id="add-channels-to-decision-engine">
-<h2>Add channels to decision engine<a class="headerlink" href="#add-channels-to-decision-engine" title="Permalink to this heading"></a></h2>
+<h2>Add channels to decision engine<a class="headerlink" href="#add-channels-to-decision-engine" title="Link to this heading"></a></h2>
 <p>Decision engine decision cycles happen in channels.
 You can add channels by adding configuration files in <code class="docutils literal notranslate"><span class="pre">/etc/decisionengine/config.d/</span></code>
 and restarting the decision engine.</p>
@@ -448,7 +448,7 @@ This test channel is using some NOP classes currently defined in the unit tests 
 <p>Once the decisionengine is running, <code class="docutils literal notranslate"><span class="pre">de-client</span> <span class="pre">--status</span></code> should show the active test channel.</p>
 </section>
 <section id="setup-pressure-based-pilot-submission">
-<h2>Setup pressure-based pilot submission<a class="headerlink" href="#setup-pressure-based-pilot-submission" title="Permalink to this heading"></a></h2>
+<h2>Setup pressure-based pilot submission<a class="headerlink" href="#setup-pressure-based-pilot-submission" title="Link to this heading"></a></h2>
 <div class="line-block">
 <div class="line">At this point Decision Engine, GlideinWMS and HTCondor are supposed to be installed and able to run.</div>
 <div class="line">We assume that the Frontend proxy and the VO proxy are already available.</div>
@@ -577,7 +577,7 @@ queue 1
 </div>
 </section>
 <section id="troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading"></a></h2>
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
 <p>There is a known podman bug.
 <code class="docutils literal notranslate"><span class="pre">podman</span></code> is leaking volumes each time it starts a container, in the long run this is exhausting system resources.
 To check current volumes used by podman user can run <code class="docutils literal notranslate"><span class="pre">podman</span> <span class="pre">volume</span> <span class="pre">list</span></code>.

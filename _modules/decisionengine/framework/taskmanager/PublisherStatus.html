@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.PublisherStatus &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>decisionengine.framework.taskmanager.PublisherStatus &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -117,10 +117,13 @@
 <span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
 
 
-<div class="viewcode-block" id="PublisherState"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherState">[docs]</a><span class="k">class</span> <span class="nc">PublisherState</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<div class="viewcode-block" id="PublisherState">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherState">[docs]</a>
+<span class="k">class</span> <span class="nc">PublisherState</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
     <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">duration</span><span class="p">:</span> <span class="n">timedelta</span>
     <span class="n">since</span><span class="p">:</span> <span class="n">datetime</span></div>
+
 
 
 <span class="n">PublisherState</span><span class="o">.</span><span class="n">enabled</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Boolean value indicating if publisher is enabled.&quot;</span>
@@ -130,13 +133,17 @@
 <span class="n">PublisherState</span><span class="o">.</span><span class="n">since</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;datetime.datetime object representing when publisher was last enabled/disabled&quot;</span>
 
 
-<div class="viewcode-block" id="PublisherStatus"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus">[docs]</a><span class="k">class</span> <span class="nc">PublisherStatus</span><span class="p">:</span>
+<div class="viewcode-block" id="PublisherStatus">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus">[docs]</a>
+<span class="k">class</span> <span class="nc">PublisherStatus</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Proxy object that provides publisher-status information.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status_snapshot</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">status_snapshot</span>
 
-<div class="viewcode-block" id="PublisherStatus.is_enabled"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus.is_enabled">[docs]</a>    <span class="k">def</span> <span class="nf">is_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publisher_name</span><span class="p">):</span>
+<div class="viewcode-block" id="PublisherStatus.is_enabled">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus.is_enabled">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publisher_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param str publisher_name: The name of the configured publisher</span>
 <span class="sd">        :return: If publisher is enabled or disabled</span>
@@ -144,7 +151,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">[</span><span class="n">publisher_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="PublisherStatus.state"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus.state">[docs]</a>    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publisher_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PublisherStatus.state">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatus.state">[docs]</a>
+    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publisher_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param str publisher_name: The name of the configured publisher</span>
 <span class="sd">        :return: Full state of publisher</span>
@@ -153,11 +163,15 @@
         <span class="n">is_enabled</span><span class="p">,</span> <span class="n">time_of_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">[</span><span class="n">publisher_name</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">PublisherState</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="n">is_enabled</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">time_of_update</span><span class="p">,</span> <span class="n">since</span><span class="o">=</span><span class="n">time_of_update</span><span class="p">)</span></div>
 
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tabulate</span><span class="p">([(</span><span class="n">k</span><span class="p">,)</span> <span class="o">+</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">items</span><span class="p">()],</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Publisher&quot;</span><span class="p">,</span> <span class="s2">&quot;Enabled&quot;</span><span class="p">,</span> <span class="s2">&quot;Since&quot;</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="PublisherStatusBoard"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard">[docs]</a><span class="k">class</span> <span class="nc">PublisherStatusBoard</span><span class="p">:</span>
+
+<div class="viewcode-block" id="PublisherStatusBoard">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard">[docs]</a>
+<span class="k">class</span> <span class="nc">PublisherStatusBoard</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Publisher status board owned by each decision channel</span>
 
 <span class="sd">    The status board is not a user-facing entity; it is owned by each decision</span>
@@ -168,7 +182,9 @@
         <span class="c1"># All publishers are enabled by default</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">publisher_names</span><span class="p">,</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()))</span>
 
-<div class="viewcode-block" id="PublisherStatusBoard.update"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publisher_name</span><span class="p">,</span> <span class="n">result_of_publish</span><span class="p">):</span>
+<div class="viewcode-block" id="PublisherStatusBoard.update">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publisher_name</span><span class="p">,</span> <span class="n">result_of_publish</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param str publisher_name: The name of the configured publisher</span>
 <span class="sd">        :param bool result_of_publish: Whether the last execution of the publisher was successsul</span>
@@ -184,12 +200,17 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">[</span><span class="n">publisher_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result_of_publish</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="PublisherStatusBoard.snapshot"><a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard.snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PublisherStatusBoard.snapshot">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.PublisherStatus.PublisherStatusBoard.snapshot">[docs]</a>
+    <span class="k">def</span> <span class="nf">snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: An publisher-status object corresponding to now</span>
 <span class="sd">        :rtype: :class:`PublisherStatus`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">PublisherStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">PublisherStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

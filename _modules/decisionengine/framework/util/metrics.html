@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.util.metrics &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>decisionengine.framework.util.metrics &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -94,7 +94,9 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Gauge&quot;</span><span class="p">,</span> <span class="s2">&quot;Counter&quot;</span><span class="p">,</span> <span class="s2">&quot;Histogram&quot;</span><span class="p">,</span> <span class="s2">&quot;Summary&quot;</span><span class="p">,</span> <span class="s2">&quot;display_metrics&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="Gauge"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Gauge">[docs]</a><span class="k">class</span> <span class="nc">Gauge</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Gauge</span><span class="p">):</span>
+<div class="viewcode-block" id="Gauge">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Gauge">[docs]</a>
+<span class="k">class</span> <span class="nc">Gauge</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Gauge</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Override prometheus client Gauge so that muliproccess_mode &#39;liveall&quot; is</span>
 <span class="sd">    the default as opposed to &#39;all&#39;&quot;&quot;&quot;</span>
 
@@ -112,23 +114,36 @@
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MULTIPROC_MODES</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Counter"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Counter">[docs]</a><span class="k">class</span> <span class="nc">Counter</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Counter</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Counter">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Counter">[docs]</a>
+<span class="k">class</span> <span class="nc">Counter</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Counter</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="Histogram"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Histogram">[docs]</a><span class="k">class</span> <span class="nc">Histogram</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Histogram</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Histogram">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Histogram">[docs]</a>
+<span class="k">class</span> <span class="nc">Histogram</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Histogram</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="Summary"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Summary">[docs]</a><span class="k">class</span> <span class="nc">Summary</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Summary</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Summary">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Summary">[docs]</a>
+<span class="k">class</span> <span class="nc">Summary</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Summary</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="display_metrics"><a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.display_metrics">[docs]</a><span class="k">def</span> <span class="nf">display_metrics</span><span class="p">():</span>
+
+<div class="viewcode-block" id="display_metrics">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.display_metrics">[docs]</a>
+<span class="k">def</span> <span class="nf">display_metrics</span><span class="p">():</span>
     <span class="n">registry</span> <span class="o">=</span> <span class="n">prometheus_client</span><span class="o">.</span><span class="n">CollectorRegistry</span><span class="p">()</span>
     <span class="n">MultiProcessCollector</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">prometheus_client</span><span class="o">.</span><span class="n">generate_latest</span><span class="p">(</span><span class="n">registry</span><span class="o">=</span><span class="n">registry</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
 </pre></div>
 
            </div>

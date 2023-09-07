@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../../../_static/jquery.js"></script>
-        <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
-        <script src="../../../../../../_static/doctools.js"></script>
-        <script src="../../../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../../_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="../../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" /> 
@@ -112,7 +112,9 @@
 <span class="n">SBigInteger</span> <span class="o">=</span> <span class="n">BigInteger</span><span class="p">()</span><span class="o">.</span><span class="n">with_variant</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="s2">&quot;sqlite&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Schema"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema.Schema">[docs]</a><span class="k">class</span> <span class="nc">Schema</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Schema">
+<a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema.Schema">[docs]</a>
+<span class="k">class</span> <span class="nc">Schema</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This table may not be in use</span>
 
@@ -124,12 +126,15 @@
     <span class="n">schema_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">LargeBinary</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
+
     <span class="c1"># XXX:</span>
     <span class="c1"># don&#39;t seed relationship since we aren&#39;t using it</span>
     <span class="c1"># header = relationship(&quot;Header&quot;, backref=&#39;schema&#39;, cascade=&quot;all&quot;)</span>
 
 
-<div class="viewcode-block" id="Taskmanager"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema.Taskmanager">[docs]</a><span class="k">class</span> <span class="nc">Taskmanager</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Taskmanager">
+<a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema.Taskmanager">[docs]</a>
+<span class="k">class</span> <span class="nc">Taskmanager</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Has a one-to-many relationship with:</span>
 <span class="sd">     Header</span>
@@ -180,7 +185,10 @@
     <span class="n">task_dataproduct</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Dataproduct&quot;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;taskmanager&quot;</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="s2">&quot;delete&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Header"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema.Header">[docs]</a><span class="k">class</span> <span class="nc">Header</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Header">
+<a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema.Header">[docs]</a>
+<span class="k">class</span> <span class="nc">Header</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The PRIMARY KEY on this table isn&#39;t used....</span>
 
@@ -225,7 +233,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Metadata"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema.Metadata">[docs]</a><span class="k">class</span> <span class="nc">Metadata</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Metadata">
+<a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema.Metadata">[docs]</a>
+<span class="k">class</span> <span class="nc">Metadata</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The PRIMARY KEY on this table isn&#39;t used....</span>
 
@@ -269,7 +280,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Dataproduct"><a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema.Dataproduct">[docs]</a><span class="k">class</span> <span class="nc">Dataproduct</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Dataproduct">
+<a class="viewcode-back" href="../../../../../../code/decisionengine.framework.dataspace.datasources.sqlalchemy_ds.html#decisionengine.framework.dataspace.datasources.sqlalchemy_ds.db_schema.Dataproduct">[docs]</a>
+<span class="k">class</span> <span class="nc">Dataproduct</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The PRIMARY KEY on this table isn&#39;t used....</span>
 
@@ -303,6 +317,7 @@
             <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">,</span> <span class="s2">&quot;generation_id&quot;</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;uq_dataproduct_taskmanager_id_generation_id_key&quot;</span>
         <span class="p">),</span>
     <span class="p">)</span></div>
+
 </pre></div>
 
            </div>

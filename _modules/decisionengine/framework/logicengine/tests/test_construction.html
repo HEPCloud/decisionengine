@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.tests.test_construction &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>decisionengine.framework.logicengine.tests.test_construction &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../../_static/jquery.js"></script>
-        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-        <script src="../../../../../_static/doctools.js"></script>
-        <script src="../../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -92,22 +92,30 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.logicengine.LogicEngine</span> <span class="kn">import</span> <span class="n">LogicEngine</span>
 
 
-<div class="viewcode-block" id="test_default_construction"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_construction.test_default_construction">[docs]</a><span class="k">def</span> <span class="nf">test_default_construction</span><span class="p">():</span>
+<div class="viewcode-block" id="test_default_construction">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_construction.test_default_construction">[docs]</a>
+<span class="k">def</span> <span class="nf">test_default_construction</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;LogicEngine is not default constructible.&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
         <span class="c1"># pylint: disable=no-value-for-parameter</span>
         <span class="n">LogicEngine</span><span class="p">()</span></div>
+
         <span class="c1"># pylint: enable=no-value-for-parameter</span>
 
 
-<div class="viewcode-block" id="test_wrong_configuration"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_construction.test_wrong_configuration">[docs]</a><span class="k">def</span> <span class="nf">test_wrong_configuration</span><span class="p">():</span>
+<div class="viewcode-block" id="test_wrong_configuration">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_construction.test_wrong_configuration">[docs]</a>
+<span class="k">def</span> <span class="nf">test_wrong_configuration</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;LogicEngine construction requires rules and facts;</span>
 <span class="sd">    if we don&#39;t supply them it is an error.&quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">):</span>
         <span class="n">LogicEngine</span><span class="p">({})</span></div>
 
 
-<div class="viewcode-block" id="test_trivial_configuration"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_construction.test_trivial_configuration">[docs]</a><span class="k">def</span> <span class="nf">test_trivial_configuration</span><span class="p">():</span>
+
+<div class="viewcode-block" id="test_trivial_configuration">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_construction.test_trivial_configuration">[docs]</a>
+<span class="k">def</span> <span class="nf">test_trivial_configuration</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Logic engine constructed with trivial rules and facts.&quot;&quot;&quot;</span>
     <span class="n">cfg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;rules&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">}</span>
     <span class="n">le</span> <span class="o">=</span> <span class="n">LogicEngine</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
@@ -115,7 +123,10 @@
     <span class="k">assert</span> <span class="n">le</span><span class="o">.</span><span class="n">consumes</span><span class="p">()</span> <span class="o">==</span> <span class="p">[]</span></div>
 
 
-<div class="viewcode-block" id="test_configuration_with_fact_using_function"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_construction.test_configuration_with_fact_using_function">[docs]</a><span class="k">def</span> <span class="nf">test_configuration_with_fact_using_function</span><span class="p">():</span>
+
+<div class="viewcode-block" id="test_configuration_with_fact_using_function">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_construction.test_configuration_with_fact_using_function">[docs]</a>
+<span class="k">def</span> <span class="nf">test_configuration_with_fact_using_function</span><span class="p">():</span>
     <span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;f1&quot;</span><span class="p">:</span> <span class="s2">&quot;len(vals) == 10&quot;</span><span class="p">}</span>
     <span class="n">rules</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;expression&quot;</span><span class="p">:</span> <span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="s2">&quot;actions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;launch&quot;</span><span class="p">]}}</span>
     <span class="n">le</span> <span class="o">=</span> <span class="n">LogicEngine</span><span class="p">({</span><span class="s2">&quot;rules&quot;</span><span class="p">:</span> <span class="n">rules</span><span class="p">,</span> <span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="n">facts</span><span class="p">,</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">})</span>
@@ -123,12 +134,16 @@
     <span class="k">assert</span> <span class="n">le</span><span class="o">.</span><span class="n">consumes</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;vals&quot;</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="test_configuration_with_numy_facts"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_construction.test_configuration_with_numy_facts">[docs]</a><span class="k">def</span> <span class="nf">test_configuration_with_numy_facts</span><span class="p">():</span>
+
+<div class="viewcode-block" id="test_configuration_with_numy_facts">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.logicengine.tests.html#decisionengine.framework.logicengine.tests.test_construction.test_configuration_with_numy_facts">[docs]</a>
+<span class="k">def</span> <span class="nf">test_configuration_with_numy_facts</span><span class="p">():</span>
     <span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;f1&quot;</span><span class="p">:</span> <span class="s2">&quot;vals.sum() &gt; blob.available&quot;</span><span class="p">}</span>
     <span class="n">rules</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;expression&quot;</span><span class="p">:</span> <span class="s2">&quot;f1&quot;</span><span class="p">,</span> <span class="s2">&quot;actions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;launch&quot;</span><span class="p">]}}</span>
     <span class="n">le</span> <span class="o">=</span> <span class="n">LogicEngine</span><span class="p">({</span><span class="s2">&quot;rules&quot;</span><span class="p">:</span> <span class="n">rules</span><span class="p">,</span> <span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="n">facts</span><span class="p">,</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">})</span>
     <span class="k">assert</span> <span class="n">le</span><span class="o">.</span><span class="n">produces</span><span class="p">()</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">,</span> <span class="s2">&quot;newfacts&quot;</span><span class="p">]</span>
     <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">le</span><span class="o">.</span><span class="n">consumes</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;vals&quot;</span><span class="p">,</span> <span class="s2">&quot;blob&quot;</span><span class="p">}</span></div>
+
     <span class="c1"># cfg = { &quot;rules&quot;: {}, &quot;facts&quot;: {} }</span>
 </pre></div>
 

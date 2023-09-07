@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>decisionengine.framework.config.ChannelConfigHandler &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -109,7 +109,9 @@
 <span class="n">_MANDATORY_MODULE_KEYS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;module&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">}</span>
 
 
-<div class="viewcode-block" id="_make_de_logger"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._make_de_logger">[docs]</a><span class="k">def</span> <span class="nf">_make_de_logger</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
+<div class="viewcode-block" id="_make_de_logger">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._make_de_logger">[docs]</a>
+<span class="k">def</span> <span class="nf">_make_de_logger</span><span class="p">(</span><span class="n">global_config</span><span class="p">):</span>
     <span class="k">if</span> <span class="s2">&quot;logger&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">global_config</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No logger configuration has been specified.&quot;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -129,7 +131,10 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create log: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="_check_keys"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._check_keys">[docs]</a><span class="k">def</span> <span class="nf">_check_keys</span><span class="p">(</span><span class="n">channel_conf_dict</span><span class="p">):</span>
+
+<div class="viewcode-block" id="_check_keys">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler._check_keys">[docs]</a>
+<span class="k">def</span> <span class="nf">_check_keys</span><span class="p">(</span><span class="n">channel_conf_dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    check that channel config has mandatory keys</span>
 <span class="sd">    :type data: :obj:`dict`</span>
@@ -158,20 +163,31 @@
                 <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ChannelConfigHandler"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler">[docs]</a><span class="k">class</span> <span class="nc">ChannelConfigHandler</span><span class="p">:</span>
+
+<div class="viewcode-block" id="ChannelConfigHandler">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler">[docs]</a>
+<span class="k">class</span> <span class="nc">ChannelConfigHandler</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_dir</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span> <span class="o">=</span> <span class="n">channel_config_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">_make_de_logger</span><span class="p">(</span><span class="n">global_config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ChannelConfigHandler.get_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.get_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChannelConfigHandler.get_channels">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.get_channels">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span></div>
 
-<div class="viewcode-block" id="ChannelConfigHandler.print_channel_config"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.print_channel_config">[docs]</a>    <span class="k">def</span> <span class="nf">print_channel_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChannelConfigHandler.print_channel_config">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.print_channel_config">[docs]</a>
+    <span class="k">def</span> <span class="nf">print_channel_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ChannelConfigHandler._load_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler._load_channel">[docs]</a>    <span class="k">def</span> <span class="nf">_load_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChannelConfigHandler._load_channel">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler._load_channel">[docs]</a>
+    <span class="k">def</span> <span class="nf">_load_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="n">channel_config</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -194,7 +210,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel_config</span>
         <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChannelConfigHandler.load_channel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.load_channel">[docs]</a>    <span class="k">def</span> <span class="nf">load_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChannelConfigHandler.load_channel">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.load_channel">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a single configuration for a channel with the supplied name.</span>
 
@@ -209,7 +228,10 @@
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_config_dir</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.jsonnet&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChannelConfigHandler.load_all_channels"><a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.load_all_channels">[docs]</a>    <span class="k">def</span> <span class="nf">load_all_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ChannelConfigHandler.load_all_channels">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.config.html#decisionengine.framework.config.ChannelConfigHandler.ChannelConfigHandler.load_all_channels">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_all_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load all channel configurations inside the stored channel-configuration directory.</span>
 
@@ -230,7 +252,9 @@
 
             <span class="n">success</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">full_path</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CHANNEL LOAD FAILURE: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CHANNEL LOAD FAILURE: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.SourceWorkers &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>decisionengine.framework.engine.SourceWorkers &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -109,11 +109,19 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.module_graph</span> <span class="kn">import</span> <span class="n">_create_module_instance</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="kn">import</span> <span class="n">ProcessingState</span><span class="p">,</span> <span class="n">State</span>
 <span class="kn">from</span> <span class="nn">decisionengine.framework.util.countdown</span> <span class="kn">import</span> <span class="n">Countdown</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.util.metrics</span> <span class="kn">import</span> <span class="n">Gauge</span>
+<span class="kn">from</span> <span class="nn">decisionengine.framework.util.metrics</span> <span class="kn">import</span> <span class="n">Gauge</span><span class="p">,</span> <span class="n">Histogram</span>
 
 <span class="n">_DEFAULT_SCHEDULE</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes</span>
 
 <span class="n">MB</span> <span class="o">=</span> <span class="mi">1000000</span>
+
+<span class="n">SOURCE_STATUS</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
+    <span class="s2">&quot;de_source_status&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Status of Source Data&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;source_name&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
 
 <span class="n">SOURCE_ACQUIRE_GAUGE</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
     <span class="s2">&quot;de_source_last_acquire_timestamp_seconds&quot;</span><span class="p">,</span>
@@ -123,8 +131,18 @@
     <span class="p">],</span>
 <span class="p">)</span>
 
+<span class="n">SOURCE_ACQUIRE_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_source_acquire_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;How long it took to acquire the source data&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;source_name&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
 
-<div class="viewcode-block" id="SourceWorker"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker">[docs]</a><span class="k">class</span> <span class="nc">SourceWorker</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SourceWorker">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker">[docs]</a>
+<span class="k">class</span> <span class="nc">SourceWorker</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides interface to loadable modules an events to sycronize</span>
 <span class="sd">    execution</span>
@@ -174,11 +192,16 @@
             <span class="sa">f</span><span class="s2">&quot;Creating worker: module=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> class_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">class_name</span><span class="si">}</span><span class="s2"> parameters=</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> schedule=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="SourceWorker.get_loglevel"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.get_loglevel">[docs]</a>    <span class="k">def</span> <span class="nf">get_loglevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SourceWorker.get_loglevel">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.get_loglevel">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_loglevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">value</span></div>
 
-<div class="viewcode-block" id="SourceWorker.set_loglevel_value"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.set_loglevel_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_loglevel_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SourceWorker.set_loglevel_value">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.set_loglevel_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_loglevel_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Assumes log_level is a string corresponding to the supported logging-module levels.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
             <span class="c1"># Convert from string to int form using technique</span>
@@ -186,8 +209,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">log_level</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
+
     <span class="c1"># setup the Source specific loggers</span>
-<div class="viewcode-block" id="SourceWorker.setup_logger"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.setup_logger">[docs]</a>    <span class="k">def</span> <span class="nf">setup_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SourceWorker.setup_logger">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.setup_logger">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">myname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span>
         <span class="n">myfilename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="p">[</span><span class="s2">&quot;log_file&quot;</span><span class="p">]),</span> <span class="n">myname</span> <span class="o">+</span> <span class="s2">&quot;.log&quot;</span><span class="p">)</span>
         <span class="n">start_q_logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_q_logger&quot;</span><span class="p">,</span> <span class="s2">&quot;True&quot;</span><span class="p">)</span>
@@ -226,16 +252,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="n">myname</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;global_source_log_level&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="SourceWorker.take_offline"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.take_offline">[docs]</a>    <span class="k">def</span> <span class="nf">take_offline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SourceWorker.take_offline">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.take_offline">[docs]</a>
+    <span class="k">def</span> <span class="nf">take_offline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ERROR</span><span class="p">):</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">OFFLINE</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">OFFLINE</span><span class="p">)</span>
+        <span class="n">SOURCE_STATUS</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">OFFLINE</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SourceWorker.run"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SourceWorker.run">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorker.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the data from source</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span>
+        <span class="n">SOURCE_STATUS</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_logger</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting source loop for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">SOURCE_ACQUIRE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
@@ -244,7 +278,8 @@
             <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">():</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> calling acquire&quot;</span><span class="p">)</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+                    <span class="k">with</span> <span class="n">SOURCE_ACQUIRE_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">module_instance</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
                     <span class="n">Module</span><span class="o">.</span><span class="n">verify_products</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module_instance</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> acquire returned&quot;</span><span class="p">)</span>
                     <span class="n">SOURCE_ACQUIRE_GAUGE</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">set_to_current_time</span><span class="p">()</span>
@@ -266,10 +301,12 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> finished cycle&quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">should_stop</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="p">):</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="p">)</span>
+                        <span class="n">SOURCE_STATUS</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">STEADY</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception running source </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sending shutdown flag to queue </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+                    <span class="n">SOURCE_STATUS</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">ERROR</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                     <span class="n">producer</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
                         <span class="nb">dict</span><span class="p">(</span><span class="n">source_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">source_module</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">State</span><span class="o">.</span><span class="n">SHUTDOWN</span><span class="p">),</span>
                         <span class="n">routing_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
@@ -287,10 +324,14 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> runs only once&quot;</span><span class="p">)</span>
                     <span class="k">break</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stopped source </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> state&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stopped source </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> state&quot;</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="SourceWorkers"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers">[docs]</a><span class="k">class</span> <span class="nc">SourceWorkers</span><span class="p">:</span>
+
+<div class="viewcode-block" id="SourceWorkers">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers">[docs]</a>
+<span class="k">class</span> <span class="nc">SourceWorkers</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class manages and provides access to the Source workers.</span>
 
@@ -320,7 +361,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_use_count</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
-<div class="viewcode-block" id="SourceWorkers.Access"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.Access">[docs]</a>    <span class="k">class</span> <span class="nc">Access</span><span class="p">:</span>
+<div class="viewcode-block" id="SourceWorkers.Access">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.Access">[docs]</a>
+    <span class="k">class</span> <span class="nc">Access</span><span class="p">:</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workers</span><span class="p">,</span> <span class="n">lock</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span> <span class="o">=</span> <span class="n">workers</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">lock</span>
@@ -332,13 +375,22 @@
         <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">bt</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SourceWorkers.access"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.access">[docs]</a>    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SourceWorkers.access">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.access">[docs]</a>
+    <span class="k">def</span> <span class="nf">access</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SourceWorkers.get_unguarded"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.get_unguarded">[docs]</a>    <span class="k">def</span> <span class="nf">get_unguarded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SourceWorkers.get_unguarded">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.get_unguarded">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_unguarded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span></div>
 
-<div class="viewcode-block" id="SourceWorkers.update"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">source_configs</span><span class="p">,</span> <span class="n">logger_config</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SourceWorkers.update">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">source_configs</span><span class="p">,</span> <span class="n">logger_config</span><span class="p">):</span>
         <span class="n">workers</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># Reuse already existing sources</span>
@@ -369,7 +421,10 @@
 
         <span class="k">return</span> <span class="n">workers</span></div>
 
-<div class="viewcode-block" id="SourceWorkers.detach"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.detach">[docs]</a>    <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">source_names</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SourceWorkers.detach">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.detach">[docs]</a>
+    <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">source_names</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">source_name</span> <span class="ow">in</span> <span class="n">source_names</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_use_count</span><span class="p">[</span><span class="n">source_name</span><span class="p">]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">channel_name</span><span class="p">)</span>
@@ -380,7 +435,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Taking source </span><span class="si">{</span><span class="n">source_name</span><span class="si">}</span><span class="s2"> offline&quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span><span class="p">[</span><span class="n">source_name</span><span class="p">]</span><span class="o">.</span><span class="n">take_offline</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SourceWorkers.prune"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.prune">[docs]</a>    <span class="k">def</span> <span class="nf">prune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">source_names</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SourceWorkers.prune">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.prune">[docs]</a>
+    <span class="k">def</span> <span class="nf">prune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">source_names</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">detach</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">source_names</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">source_name</span> <span class="ow">in</span> <span class="n">source_names</span><span class="p">:</span>
@@ -392,7 +450,10 @@
                     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_count</span><span class="p">[</span><span class="n">source_name</span><span class="p">]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed source </span><span class="si">{</span><span class="n">source_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SourceWorkers.remove_all"><a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.remove_all">[docs]</a>    <span class="k">def</span> <span class="nf">remove_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SourceWorkers.remove_all">
+<a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.SourceWorkers.SourceWorkers.remove_all">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="n">countdown</span> <span class="o">=</span> <span class="n">Countdown</span><span class="p">(</span><span class="n">wait_up_to</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -409,7 +470,9 @@
                             <span class="n">psutil</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">worker</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_use_count</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_use_count</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+</div>
+
 </pre></div>
 
            </div>

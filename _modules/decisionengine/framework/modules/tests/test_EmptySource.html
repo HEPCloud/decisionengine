@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.tests.test_EmptySource &mdash; decisionengine 2.0.3.dev19+gf54b92a5 documentation</title>
+  <title>decisionengine.framework.modules.tests.test_EmptySource &mdash; decisionengine 2.0.3.dev20+g438621a0 documentation</title>
       <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../../_static/jquery.js"></script>
-        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-        <script src="../../../../../_static/doctools.js"></script>
-        <script src="../../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=b1dff79c"></script>
+        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -92,7 +92,9 @@
 <span class="kn">from</span> <span class="nn">decisionengine.framework.modules.EmptySource</span> <span class="kn">import</span> <span class="n">EmptySource</span><span class="p">,</span> <span class="n">pd</span>
 
 
-<div class="viewcode-block" id="test_empty_source_structure"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_EmptySource.test_empty_source_structure">[docs]</a><span class="k">def</span> <span class="nf">test_empty_source_structure</span><span class="p">():</span>
+<div class="viewcode-block" id="test_empty_source_structure">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_EmptySource.test_empty_source_structure">[docs]</a>
+<span class="k">def</span> <span class="nf">test_empty_source_structure</span><span class="p">():</span>
     <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data_product_name&quot;</span><span class="p">:</span> <span class="s2">&quot;empty_data&quot;</span><span class="p">,</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">}</span>
     <span class="n">test_empty_source</span> <span class="o">=</span> <span class="n">EmptySource</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
 
@@ -107,11 +109,15 @@
     <span class="k">assert</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span></div>
 
 
-<div class="viewcode-block" id="test_missing_data_product_name_not_supported"><a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_EmptySource.test_missing_data_product_name_not_supported">[docs]</a><span class="k">def</span> <span class="nf">test_missing_data_product_name_not_supported</span><span class="p">():</span>
+
+<div class="viewcode-block" id="test_missing_data_product_name_not_supported">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_EmptySource.test_missing_data_product_name_not_supported">[docs]</a>
+<span class="k">def</span> <span class="nf">test_missing_data_product_name_not_supported</span><span class="p">():</span>
     <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;data_product_name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">}</span>
 
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;No data_product_name found in configuration&quot;</span><span class="p">):</span>
         <span class="n">EmptySource</span><span class="p">(</span><span class="n">params</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>
