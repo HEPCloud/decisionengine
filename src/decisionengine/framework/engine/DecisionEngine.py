@@ -63,7 +63,7 @@ RM_CHANNEL_HISTOGRAM = Histogram(
     "de_client_rm_channel_duration_seconds", "Time to run de-client --stop-channel", ["channel_name"]
 )
 QUERY_TOOL_HISTOGRAM = Histogram("de_client_query_duration_seconds", "Time to run de-client --query", ["product"])
-METRICS_HISTOGRAM = Histogram("de_client_metrics_duration_seconds", "Time to run de-client --status")
+METRICS_HISTOGRAM = Histogram("de_client_metrics_duration_seconds", "Time to run de-client --metrics")
 PING_HISTOGRAM = Histogram("de_client_ping_duration_seconds", "Time to run de-client --ping")
 BLOCK_WHILE_HISTOGRAM = Histogram("de_client_block_while_duration_seconds", "Time to run de-client --block-while", ["state"])
 SHOW_CONFIG_HISTOGRAM = Histogram("de_client_show_config_duration_seconds", "Time to run de-client --show-config")
