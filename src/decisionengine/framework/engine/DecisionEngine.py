@@ -65,23 +65,51 @@ RM_CHANNEL_HISTOGRAM = Histogram(
 QUERY_TOOL_HISTOGRAM = Histogram("de_client_query_duration_seconds", "Time to run de-client --query", ["product"])
 METRICS_HISTOGRAM = Histogram("de_client_metrics_duration_seconds", "Time to run de-client --metrics")
 PING_HISTOGRAM = Histogram("de_client_ping_duration_seconds", "Time to run de-client --ping")
-BLOCK_WHILE_HISTOGRAM = Histogram("de_client_block_while_duration_seconds", "Time to run de-client --block-while", ["state"])
+BLOCK_WHILE_HISTOGRAM = Histogram(
+    "de_client_block_while_duration_seconds", "Time to run de-client --block-while", ["state"]
+)
 SHOW_CONFIG_HISTOGRAM = Histogram("de_client_show_config_duration_seconds", "Time to run de-client --show-config")
-SHOW_DE_CONFIG_HISTOGRAM = Histogram("de_client_show_de_config_duration_seconds", "Time to run de-client --show-de-config")
-PRINT_PRODUCTS_HISTOGRAM = Histogram("de_client_print_products_duration_seconds", "Time to run de-client --print-products")
+SHOW_DE_CONFIG_HISTOGRAM = Histogram(
+    "de_client_show_de_config_duration_seconds", "Time to run de-client --show-de-config"
+)
+PRINT_PRODUCTS_HISTOGRAM = Histogram(
+    "de_client_print_products_duration_seconds", "Time to run de-client --print-products"
+)
 QUEUE_STATUS_HISTOGRAM = Histogram("de_client_queue_status_duration_seconds", "Time to run de-client --queue-status")
-PRODUCT_DEPENDENCIES_HISTOGRAM = Histogram("de_client_product_dependencies_duration_seconds", "Time to run de-client --product-dependencies")
+PRODUCT_DEPENDENCIES_HISTOGRAM = Histogram(
+    "de_client_product_dependencies_duration_seconds", "Time to run de-client --product-dependencies"
+)
 STOP_HISTOGRAM = Histogram("de_client_stop_duration_seconds", "Time to run de-client --stop")
-CREATE_CHANNEL_HISTOGRAM = Histogram("de_client_create_channel_duration_seconds", "Time to run de-client --create-channel")
-START_CHANNELS_HISTOGRAM = Histogram("de_client_start_channels_duration_seconds", "Time to run de-client --start-channels")
+CREATE_CHANNEL_HISTOGRAM = Histogram(
+    "de_client_create_channel_duration_seconds", "Time to run de-client --create-channel"
+)
+START_CHANNELS_HISTOGRAM = Histogram(
+    "de_client_start_channels_duration_seconds", "Time to run de-client --start-channels"
+)
 STOP_CHANNELS_HISTOGRAM = Histogram("de_client_stop_channels_duration_seconds", "Time to run de-client --stop-channels")
-STOP_CHANNEL_HISTOGRAM = Histogram("de_client_stop_channel_duration_seconds", "Time to run de-client --stop-channel", ["channel_name"])
-KILL_CHANNEL_HISTOGRAM = Histogram("de_client_kill_channel_duration_seconds", "Time to run de-client --kill-channel", ["channel_name"])
+STOP_CHANNEL_HISTOGRAM = Histogram(
+    "de_client_stop_channel_duration_seconds", "Time to run de-client --stop-channel", ["channel_name"]
+)
+KILL_CHANNEL_HISTOGRAM = Histogram(
+    "de_client_kill_channel_duration_seconds", "Time to run de-client --kill-channel", ["channel_name"]
+)
 GET_LOG_LEVEL_HISTOGRAM = Histogram("de_client_get_log_level_duration_seconds", "Time to run de-client --get-log-level")
-GET_CHANNEL_LOG_LEVEL_HISTOGRAM = Histogram("de_client_get_channel_log_level_duration_seconds", "Time to run de-client --get-channel-log-level", ["channel_name"])
-SET_CHANNEL_LOG_LEVEL_HISTOGRAM = Histogram("de_client_set_channel_log_level_duration_seconds", "Time to run de-client --set-channel-log-level", ["channel_name"])
-GET_SOURCE_LOG_LEVEL_HISTOGRAM = Histogram("de_client_get_source_log_level_duration_seconds", "Time to run de-client --get-source-log-level", ["source_name"])
-SET_SOURCE_LOG_LEVEL_HISTOGRAM = Histogram("de_client_set_source_log_level_duration_seconds", "Time to run de-client --set-source-log-level", ["source_name"])
+GET_CHANNEL_LOG_LEVEL_HISTOGRAM = Histogram(
+    "de_client_get_channel_log_level_duration_seconds",
+    "Time to run de-client --get-channel-log-level",
+    ["channel_name"],
+)
+SET_CHANNEL_LOG_LEVEL_HISTOGRAM = Histogram(
+    "de_client_set_channel_log_level_duration_seconds",
+    "Time to run de-client --set-channel-log-level",
+    ["channel_name"],
+)
+GET_SOURCE_LOG_LEVEL_HISTOGRAM = Histogram(
+    "de_client_get_source_log_level_duration_seconds", "Time to run de-client --get-source-log-level", ["source_name"]
+)
+SET_SOURCE_LOG_LEVEL_HISTOGRAM = Histogram(
+    "de_client_set_source_log_level_duration_seconds", "Time to run de-client --set-source-log-level", ["source_name"]
+)
 REAPER_START_HISTOGRAM = Histogram("de_client_reaper_start_duration_seconds", "Time to run de-client --reaper-start")
 REAPER_STOP_HISTOGRAM = Histogram("de_client_reaper_stop_duration_seconds", "Time to run de-client --reaper-stop")
 REAPER_STATUS_HISTOGRAM = Histogram("de_client_reaper_status_duration_seconds", "Time to run de-client --reaper-status")
@@ -288,7 +316,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             return client_queue.send(f"{state_str} is not a valid channel state.")
         res = self.block_while(allowed_state, timeout)
         return client_queue.send(res)
-    
+
     @SHOW_CONFIG_HISTOGRAM.time()
     def rpc_show_config(self, client_queue, channel):
         """
