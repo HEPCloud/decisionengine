@@ -768,7 +768,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             return client_queue.send(f"{state_str} is not a valid channel state.")
         res = self.block_while(allowed_state, timeout)
         return client_queue.send(res)
-
+    
     @SHOW_CONFIG_HISTOGRAM.time()
     def rpc_show_config(self, client_queue, channel):
         """
