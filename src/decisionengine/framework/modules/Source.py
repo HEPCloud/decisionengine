@@ -2,6 +2,9 @@ __all__ = ['Parameter', 'Source', 'describe', 'produces', 'supports_config']
 
 import pprint
 import sys
+import structlog
+
+import decisionengine.framework.modules.logging_configDict as logconf
 
 from decisionengine.framework.config.ValidConfig import ValidConfig
 from decisionengine.framework.modules.Module import Module, produces
@@ -14,6 +17,7 @@ class Source(Module):
 
     def __init__(self, set_of_parameters):
         super().__init__(set_of_parameters)
+        self.logger = structlog.getLogger(logconf.SOURCELOGGERNAME)
 
     # acquire: The action function for a source. Will
     # retrieve data from external sources and issue a
