@@ -1,3 +1,26 @@
+Release 1.7.5
+-------------
+
+The code is the same as 1.7.1 release. Pinned some dependencies to maintain Python 3.6 compatibility.
+
+Full list of commits since version 1.7.1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`ea6ef79d <https://github.com/HEPCloud/decisionengine/commit/ea6ef79d7a6ce5f5ebe0b65efc121702a0211fe0>`_:   pin ubuntu version to 20.04 to get python versions we use to run DE 1.7 tests and set upper limit for python modules to be used by tests
+
+`a1af36f5 <https://github.com/HEPCloud/decisionengine/commit/a1af36f5e91f42da018169388e9b61b0f1b68d8c>`_:   For branch 1.7 pin pytest version to 6.2.5
+
+`352eab54 <https://github.com/HEPCloud/decisionengine/commit/352eab540e9260969542ffc669b5499738b3b1bc>`_:   For branch 1.7 pin jsonnet version to 0.17.0
+
+`bfcfef2f <https://github.com/HEPCloud/decisionengine/commit/bfcfef2f013a41f8e0e87bfdfcfb7a659ba232b2>`_:   Updated release notes for 1.7.4
+
+`4ff9db91 <https://github.com/HEPCloud/decisionengine/commit/4ff9db9104a3226f1ff83a77abcbf9d07739d984>`_:   Updated release notes for 1.7.3
+
+`53aba118 <https://github.com/HEPCloud/decisionengine/commit/53aba118683ccb5106365c66ecd9b319d97c48c6>`_:   Updated release notes, ready for 1.7.2
+
+`a461a8f9 <https://github.com/HEPCloud/decisionengine/commit/a461a8f979a2e46d169f8a7fa52e690e87311bb4>`_:   Updated documentation for 1.7.1 release
+
+
 Release 1.7.4
 -------------
 
