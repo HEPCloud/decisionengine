@@ -127,7 +127,7 @@ Install needed RPMs prerequisites
   -----------------------------------------------------------
 
   You can install using the provided RPMs (recommended for production) or via PIP install (recommended for development whnen you want to clone the Git repository and change the code).
-  This sectoin is for the RPM installation, the next one for the PIP installation. Use one or the other.
+  This section is for the RPM installation, the next one for the PIP installation. Use one or the other.
 
   1. The yum repositories are available only within Fermilab. From the outside you will have to download the RPMs from `GitHub<https://github.com/HEPCloud/decisionengine/releases>` or use the PIP installarion (below).
    Setup the decision engine yum repositories ::
