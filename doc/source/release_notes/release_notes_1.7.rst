@@ -6,6 +6,10 @@ The code is the same as 1.7.1 release. Pinned some dependencies to maintain Pyth
 Full list of commits since version 1.7.1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+`0c90cdfb6 <https://github.com/HEPCloud/decisionengine/commit/0c90cdfb632a213537cdd12f4ff4bfc0ad56c05b>`_:   fix source logging by defining logger in Sources after PR670 plus missing adjustments
+
+`670a618f2 <https://github.com/HEPCloud/decisionengine/commit/670a618f260b721acd4d4a1daa985171fef5563a>`_:   Updated release notes for 1.7.5
+
 `ea6ef79d <https://github.com/HEPCloud/decisionengine/commit/ea6ef79d7a6ce5f5ebe0b65efc121702a0211fe0>`_:   pin ubuntu version to 20.04 to get python versions we use to run DE 1.7 tests and set upper limit for python modules to be used by tests
 
 `a1af36f5 <https://github.com/HEPCloud/decisionengine/commit/a1af36f5e91f42da018169388e9b61b0f1b68d8c>`_:   For branch 1.7 pin pytest version to 6.2.5
