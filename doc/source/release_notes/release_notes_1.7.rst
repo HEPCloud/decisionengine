@@ -1,6 +1,40 @@
 .. SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 .. SPDX-License-Identifier: Apache-2.0
 
+Release 1.7.5
+-------------
+
+Fixed source logging. Pinned some dependencies to maintain Python 3.6 compatibility.
+
+Issues fixed in this release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Bugs fixed
+
+- `DE 522 <https://github.com/HEPCloud/decisionengine/issues/522>`_: Decision engine log files get split between several different processes with several different versions open: (`fd1e99ce <https://github.com/HEPCloud/decisionengine/commit/fd1e99ce77a82dbe478c2c7d15f4b100300b2e5d>`_)
+
+Full list of commits since version 1.7.1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`0c90cdfb6 <https://github.com/HEPCloud/decisionengine/commit/0c90cdfb632a213537cdd12f4ff4bfc0ad56c05b>`_:   fix source logging by defining logger in Sources after PR670 plus missing adjustments
+
+`670a618f2 <https://github.com/HEPCloud/decisionengine/commit/670a618f260b721acd4d4a1daa985171fef5563a>`_:   Updated release notes for 1.7.5
+
+`ea6ef79d <https://github.com/HEPCloud/decisionengine/commit/ea6ef79d7a6ce5f5ebe0b65efc121702a0211fe0>`_:   pin ubuntu version to 20.04 to get python versions we use to run DE 1.7 tests and set upper limit for python modules to be used by tests
+
+`a1af36f5 <https://github.com/HEPCloud/decisionengine/commit/a1af36f5e91f42da018169388e9b61b0f1b68d8c>`_:   For branch 1.7 pin pytest version to 6.2.5
+
+`352eab54 <https://github.com/HEPCloud/decisionengine/commit/352eab540e9260969542ffc669b5499738b3b1bc>`_:   For branch 1.7 pin jsonnet version to 0.17.0
+
+`bfcfef2f <https://github.com/HEPCloud/decisionengine/commit/bfcfef2f013a41f8e0e87bfdfcfb7a659ba232b2>`_:   Updated release notes for 1.7.4
+
+`4ff9db91 <https://github.com/HEPCloud/decisionengine/commit/4ff9db9104a3226f1ff83a77abcbf9d07739d984>`_:   Updated release notes for 1.7.3
+
+`53aba118 <https://github.com/HEPCloud/decisionengine/commit/53aba118683ccb5106365c66ecd9b319d97c48c6>`_:   Updated release notes, ready for 1.7.2
+
+`a461a8f9 <https://github.com/HEPCloud/decisionengine/commit/a461a8f979a2e46d169f8a7fa52e690e87311bb4>`_:   Updated documentation for 1.7.1 release
+
+
 Release 1.7.4
 -------------
 
