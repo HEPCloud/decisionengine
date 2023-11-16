@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.3.dev26+g7fe99a64 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.3.dev31+gba29da2a documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -12,7 +12,7 @@
   
         <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../../_static/documentation_options.js?v=caab1707"></script>
+        <script src="../../../../_static/documentation_options.js?v=05b85acd"></script>
         <script src="../../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -140,16 +140,519 @@
 <span class="n">DEFAULT_WEBSERVER_PORT</span> <span class="o">=</span> <span class="mi">8000</span>
 
 <span class="c1"># DecisionEngine metrics</span>
-<span class="n">STATUS_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="s2">&quot;de_client_status_duration_seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;Time to run de-client --status&quot;</span><span class="p">)</span>
-<span class="n">PRINT_PRODUCT_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="s2">&quot;de_client_print_product_duration_seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;Time to run de-client --print-product&quot;</span><span class="p">)</span>
+<span class="n">STATUS_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_status_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --status&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.075</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">PRINT_PRODUCT_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_print_product_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --print-product&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
 <span class="n">START_CHANNEL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
-    <span class="s2">&quot;de_client_start_channel_duration_seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;Time to run de-client --start-channel&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;channel_name&quot;</span><span class="p">]</span>
+    <span class="s2">&quot;de_client_start_channel_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --start-channel&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;channel_name&quot;</span><span class="p">],</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
 <span class="p">)</span>
 <span class="n">RM_CHANNEL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
-    <span class="s2">&quot;de_client_rm_channel_duration_seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;Time to run de-client --stop-channel&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;channel_name&quot;</span><span class="p">]</span>
+    <span class="s2">&quot;de_client_rm_channel_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --stop-channel&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;channel_name&quot;</span><span class="p">],</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
 <span class="p">)</span>
-<span class="n">QUERY_TOOL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="s2">&quot;de_client_query_duration_seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;Time to run de-client --query&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;product&quot;</span><span class="p">])</span>
-<span class="n">METRICS_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="s2">&quot;de_client_metrics_duration_seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;Time to run de-client --status&quot;</span><span class="p">)</span>
+<span class="n">QUERY_TOOL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_query_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --query&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;product&quot;</span><span class="p">],</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">METRICS_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_metrics_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --metrics&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.075</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">PING_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_ping_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --ping&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.0075</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">BLOCK_WHILE_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_block_while_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --block-while&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">],</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">SHOW_CONFIG_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_show_config_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --show-config&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.0075</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.075</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">SHOW_DE_CONFIG_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_show_de_config_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --show-de-config&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.0075</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.075</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">PRINT_PRODUCTS_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_print_products_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --print-products&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">12.5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mf">17.5</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mf">22.5</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mf">27.5</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">QUEUE_STATUS_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_queue_status_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --queue-status&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.0075</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.075</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">PRODUCT_DEPENDENCIES_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_product_dependencies_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --product-dependencies&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.0075</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.075</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">STOP_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_stop_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --stop&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mf">0.05</span><span class="p">,</span>
+        <span class="mf">0.075</span><span class="p">,</span>
+        <span class="mf">0.1</span><span class="p">,</span>
+        <span class="mf">0.15</span><span class="p">,</span>
+        <span class="mf">0.2</span><span class="p">,</span>
+        <span class="mf">0.25</span><span class="p">,</span>
+        <span class="mf">0.3</span><span class="p">,</span>
+        <span class="mf">0.4</span><span class="p">,</span>
+        <span class="mf">0.5</span><span class="p">,</span>
+        <span class="mf">0.75</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">CREATE_CHANNEL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_create_channel_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --create-channel&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">START_CHANNELS_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_start_channels_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --start-channels&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">STOP_CHANNELS_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_stop_channels_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --stop-channels&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">STOP_CHANNEL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_stop_channel_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --stop-channel&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;channel_name&quot;</span><span class="p">],</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">KILL_CHANNEL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_kill_channel_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --kill-channel&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;channel_name&quot;</span><span class="p">],</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">GET_LOG_LEVEL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="s2">&quot;de_client_get_log_level_duration_seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;Time to run de-client --get-log-level&quot;</span><span class="p">)</span>
+<span class="n">GET_CHANNEL_LOG_LEVEL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_get_channel_log_level_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --get-channel-log-level&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;channel_name&quot;</span><span class="p">],</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">SET_CHANNEL_LOG_LEVEL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_set_channel_log_level_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --set-channel-log-level&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;channel_name&quot;</span><span class="p">],</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">GET_SOURCE_LOG_LEVEL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_get_source_log_level_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --get-source-log-level&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;source_name&quot;</span><span class="p">],</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">SET_SOURCE_LOG_LEVEL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_set_source_log_level_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --set-source-log-level&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;source_name&quot;</span><span class="p">],</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
+        <span class="mf">0.01</span><span class="p">,</span>
+        <span class="mf">0.015</span><span class="p">,</span>
+        <span class="mf">0.02</span><span class="p">,</span>
+        <span class="mf">0.025</span><span class="p">,</span>
+        <span class="mf">0.03</span><span class="p">,</span>
+        <span class="mf">0.035</span><span class="p">,</span>
+        <span class="mf">0.04</span><span class="p">,</span>
+        <span class="mf">0.045</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mf">7.5</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">,</span>
+        <span class="mf">12.5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="mf">17.5</span><span class="p">,</span>
+        <span class="mi">20</span><span class="p">,</span>
+        <span class="mf">22.5</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">,</span>
+        <span class="mf">27.5</span><span class="p">,</span>
+        <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">35</span><span class="p">,</span>
+        <span class="mi">40</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">REAPER_START_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_reaper_start_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --reaper-start&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.0075</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.075</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">REAPER_STOP_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_reaper_stop_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --reaper-stop&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.0075</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.075</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">REAPER_STATUS_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+    <span class="s2">&quot;de_client_reaper_status_duration_seconds&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time to run de-client --reaper-status&quot;</span><span class="p">,</span>
+    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.005</span><span class="p">,</span> <span class="mf">0.0075</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.025</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.035</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.045</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">),</span>
+<span class="p">)</span>
+
+
 <span class="n">WORKERS_COUNT</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span><span class="s2">&quot;de_workers_total&quot;</span><span class="p">,</span> <span class="s2">&quot;Number of workers started by the Decision Engine&quot;</span><span class="p">)</span>
 <span class="n">DE_STATUS</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span><span class="s2">&quot;de_status&quot;</span><span class="p">,</span> <span class="s2">&quot;Status of Decision Engine server&quot;</span><span class="p">)</span>
 
@@ -384,12 +887,14 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_ping">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_ping">[docs]</a>
+    <span class="nd">@PING_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;pong&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_block_while">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_block_while">[docs]</a>
+    <span class="nd">@BLOCK_WHILE_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">state_str</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">allowed_state</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
@@ -402,6 +907,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_show_config">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_show_config">[docs]</a>
+    <span class="nd">@SHOW_CONFIG_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show the configuration for a channel.</span>
@@ -426,6 +932,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_show_de_config">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_show_de_config">[docs]</a>
+    <span class="nd">@SHOW_DE_CONFIG_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_show_de_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">dump</span><span class="p">())</span></div>
 
@@ -501,6 +1008,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_print_products">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_print_products">[docs]</a>
+    <span class="nd">@PRINT_PRODUCTS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_print_products</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
             <span class="n">channel_keys</span> <span class="o">=</span> <span class="n">workers</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -571,6 +1079,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_queue_status">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_queue_status">[docs]</a>
+    <span class="nd">@QUEUE_STATUS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_queue_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">status</span> <span class="o">=</span> <span class="n">redis_stats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">status</span><span class="p">:</span>
@@ -583,6 +1092,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_product_dependencies">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_product_dependencies">[docs]</a>
+    <span class="nd">@PRODUCT_DEPENDENCIES_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_product_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">get_unguarded</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">workers</span><span class="p">:</span>
@@ -623,6 +1133,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_stop">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop">[docs]</a>
+    <span class="nd">@STOP_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
@@ -726,6 +1237,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_start_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channel">[docs]</a>
+    <span class="nd">@START_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">channel_name</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
@@ -741,6 +1253,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_start_channels">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channels">[docs]</a>
+    <span class="nd">@START_CHANNELS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">)</span></div>
@@ -748,12 +1261,14 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_stop_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop_channel">[docs]</a>
+    <span class="nd">@STOP_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_stop_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rpc_rm_channel</span><span class="p">(</span><span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_kill_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_kill_channel">[docs]</a>
+    <span class="nd">@KILL_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_kill_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shutdown_timeout&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
@@ -762,6 +1277,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_rm_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_rm_channel">[docs]</a>
+    <span class="nd">@RM_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_rm_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">maybe_timeout</span><span class="p">):</span>
         <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">maybe_timeout</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">rc</span> <span class="o">==</span> <span class="n">StopState</span><span class="o">.</span><span class="n">NotFound</span><span class="p">:</span>
@@ -831,6 +1347,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_stop_channels">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop_channels">[docs]</a>
+    <span class="nd">@STOP_CHANNELS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;All channels stopped.&quot;</span><span class="p">)</span></div>
@@ -838,6 +1355,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_get_log_level">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_get_log_level">[docs]</a>
+    <span class="nd">@GET_LOG_LEVEL_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_get_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">engineloglevel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">engineloglevel</span><span class="p">))</span></div>
@@ -845,6 +1363,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_get_channel_log_level">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_get_channel_log_level">[docs]</a>
+    <span class="nd">@GET_CHANNEL_LOG_LEVEL_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_get_channel_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
             <span class="n">worker</span> <span class="o">=</span> <span class="n">workers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
@@ -858,6 +1377,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_set_channel_log_level">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_set_channel_log_level">[docs]</a>
+    <span class="nd">@SET_CHANNEL_LOG_LEVEL_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_set_channel_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Assumes log_level is a string corresponding to the supported logging-module levels.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
@@ -877,6 +1397,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_get_source_log_level">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_get_source_log_level">[docs]</a>
+    <span class="nd">@GET_SOURCE_LOG_LEVEL_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_get_source_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
             <span class="n">worker</span> <span class="o">=</span> <span class="n">workers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
@@ -891,6 +1412,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_set_source_log_level">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_set_source_log_level">[docs]</a>
+    <span class="nd">@SET_SOURCE_LOG_LEVEL_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_set_source_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Assumes log_level is a string corresponding to the supported logging-module levels.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
@@ -910,6 +1432,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_reaper_start">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_reaper_start">[docs]</a>
+    <span class="nd">@REAPER_START_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_reaper_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the reaper process after &#39;delay&#39; seconds.</span>
@@ -935,12 +1458,14 @@
 
 <div class="viewcode-block" id="DecisionEngine.reaper_stop">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.reaper_stop">[docs]</a>
+    <span class="nd">@REAPER_STOP_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">reaper_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_reaper_status">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_reaper_status">[docs]</a>
+    <span class="nd">@REAPER_STATUS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_reaper_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">retention_interval</span>
         <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
@@ -956,6 +1481,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_query_tool">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_query_tool">[docs]</a>
+    <span class="nd">@QUERY_TOOL_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">rpc_query_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">QUERY_TOOL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">product</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
