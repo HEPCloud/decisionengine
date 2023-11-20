@@ -1,0 +1,61 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
+# on dockerhub hepcloud/??????
+FROM almalinux:9
+LABEL description="hepcloud/decision-engine-framework-minimal-el9"
+
+# If you want to run decisionengine in this container
+# you'll need to bind mount onto these points
+RUN mkdir -m 750 -p /var/log/decisionengine ; \
+    mkdir -m 750 -p /etc/decisionengine
+
+# Identity information for the decisionengine user
+ARG UID=1001
+ARG USERNAME=decisionengine
+ARG GID=116
+ARG GROUPNAME=decisionengine
+ARG HOMEDIR=/home/decisionengine
+
+# Make user and place for logs/configs owned correctly
+RUN groupadd -g $GID $GROUPNAME ; \
+    useradd -u $UID -g $GID -d $HOMEDIR -m $USERNAME ; \
+    chown $USERNAME:$GROUPNAME /var/log/decisionengine /etc/decisionengine
+
+# Extra repos we need
+RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm \
+ && dnf -y clean all
+
+# Install python utils we need
+RUN dnf -y install --enablerepo crb \
+    python3 python3-rpm-macros python3-pip python3-setuptools python3-wheel \
+ && dnf -y clean all
+
+# Wheels for these don't always exist for these on our python version
+RUN dnf -y install --enablerepo=epel \
+    python3-jsonnet python3-psycopg2 \
+ && dnf -y clean all
+
+# Ensure pip/setuptools are up to date
+#  updates put into /usr/local
+RUN python3 -m pip install --upgrade pip ; \
+    python3 -m pip install --upgrade setuptools wheel setuptools-scm[toml]
+
+# Install decisionengine requirements (runtime)
+#  do as one layer to simplify merges
+#  new/updates put into /usr/local
+RUN su - adm -s /bin/bash -c "git clone https://github.com/HEPCloud/decisionengine.git /tmp/decisionengine.git"; \
+    cd /tmp/decisionengine.git ; \
+    su adm -s /bin/bash -c "cd /tmp/decisionengine.git ; python3 setup.py bdist_wheel" ; \
+    python3 -m pip install dist/*.whl ; \
+    python3 -m pip uninstall -y decisionengine ; \
+    rm -rf /tmp/decisionengine.git
+
+# Become container user
+USER $USERNAME
+WORKDIR $HOMEDIR
+
+# Set where to collect metrics "on disk"
+ENV PROMETHEUS_MULTIPROC_DIR=/tmp/
+
+ENTRYPOINT ["/home/decisionengine/src/decisionengine/framework/engine/DecisionEngine.py"]

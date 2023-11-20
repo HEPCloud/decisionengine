@@ -39,7 +39,7 @@ runtime_require = [
     "structlog >= 21.1.0",
     "typing_extensions >= 4.1.1",
     "numpy == 1.19.5; python_version <= '3.6'",
-    "numpy >= 1.19.5, < 2.0.0; python_version >= '3.7'",
+    "numpy >= 1.22, < 2.0.0; python_version >= '3.7'",
     "pandas == 1.1.5; python_version <= '3.6'",
     "pandas >= 1.1.5, < 2.0.0; python_version >= '3.7' and platform_python_implementation == 'CPython'",
     "psycopg2-binary >= 2.8.6; platform_python_implementation == 'CPython'",  # noqa: E501

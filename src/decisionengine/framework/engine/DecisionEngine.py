@@ -54,16 +54,519 @@ from decisionengine.framework.util.redis_stats import redis_stats
 DEFAULT_WEBSERVER_PORT = 8000
 
 # DecisionEngine metrics
-STATUS_HISTOGRAM = Histogram("de_client_status_duration_seconds", "Time to run de-client --status")
-PRINT_PRODUCT_HISTOGRAM = Histogram("de_client_print_product_duration_seconds", "Time to run de-client --print-product")
+STATUS_HISTOGRAM = Histogram(
+    "de_client_status_duration_seconds",
+    "Time to run de-client --status",
+    buckets=(0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.075, 0.1, 0.15, 0.2),
+)
+PRINT_PRODUCT_HISTOGRAM = Histogram(
+    "de_client_print_product_duration_seconds",
+    "Time to run de-client --print-product",
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
 START_CHANNEL_HISTOGRAM = Histogram(
-    "de_client_start_channel_duration_seconds", "Time to run de-client --start-channel", ["channel_name"]
+    "de_client_start_channel_duration_seconds",
+    "Time to run de-client --start-channel",
+    ["channel_name"],
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
 )
 RM_CHANNEL_HISTOGRAM = Histogram(
-    "de_client_rm_channel_duration_seconds", "Time to run de-client --stop-channel", ["channel_name"]
+    "de_client_rm_channel_duration_seconds",
+    "Time to run de-client --stop-channel",
+    ["channel_name"],
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
 )
-QUERY_TOOL_HISTOGRAM = Histogram("de_client_query_duration_seconds", "Time to run de-client --query", ["product"])
-METRICS_HISTOGRAM = Histogram("de_client_metrics_duration_seconds", "Time to run de-client --status")
+QUERY_TOOL_HISTOGRAM = Histogram(
+    "de_client_query_duration_seconds",
+    "Time to run de-client --query",
+    ["product"],
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
+METRICS_HISTOGRAM = Histogram(
+    "de_client_metrics_duration_seconds",
+    "Time to run de-client --metrics",
+    buckets=(0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.075, 0.1, 0.15, 0.2, 0.25, 0.3),
+)
+PING_HISTOGRAM = Histogram(
+    "de_client_ping_duration_seconds",
+    "Time to run de-client --ping",
+    buckets=(0.005, 0.0075, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05),
+)
+BLOCK_WHILE_HISTOGRAM = Histogram(
+    "de_client_block_while_duration_seconds",
+    "Time to run de-client --block-while",
+    ["state"],
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
+SHOW_CONFIG_HISTOGRAM = Histogram(
+    "de_client_show_config_duration_seconds",
+    "Time to run de-client --show-config",
+    buckets=(0.005, 0.0075, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.075, 0.1),
+)
+SHOW_DE_CONFIG_HISTOGRAM = Histogram(
+    "de_client_show_de_config_duration_seconds",
+    "Time to run de-client --show-de-config",
+    buckets=(0.005, 0.0075, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.075, 0.1),
+)
+PRINT_PRODUCTS_HISTOGRAM = Histogram(
+    "de_client_print_products_duration_seconds",
+    "Time to run de-client --print-products",
+    buckets=(5, 7.5, 10, 12.5, 15, 17.5, 20, 22.5, 25, 27.5, 30, 35, 40, 50, 60),
+)
+QUEUE_STATUS_HISTOGRAM = Histogram(
+    "de_client_queue_status_duration_seconds",
+    "Time to run de-client --queue-status",
+    buckets=(0.005, 0.0075, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.075, 0.1),
+)
+PRODUCT_DEPENDENCIES_HISTOGRAM = Histogram(
+    "de_client_product_dependencies_duration_seconds",
+    "Time to run de-client --product-dependencies",
+    buckets=(0.005, 0.0075, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.075, 0.1),
+)
+STOP_HISTOGRAM = Histogram(
+    "de_client_stop_duration_seconds",
+    "Time to run de-client --stop",
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        0.05,
+        0.075,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.4,
+        0.5,
+        0.75,
+        1,
+    ),
+)
+CREATE_CHANNEL_HISTOGRAM = Histogram(
+    "de_client_create_channel_duration_seconds",
+    "Time to run de-client --create-channel",
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
+START_CHANNELS_HISTOGRAM = Histogram(
+    "de_client_start_channels_duration_seconds",
+    "Time to run de-client --start-channels",
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
+STOP_CHANNELS_HISTOGRAM = Histogram(
+    "de_client_stop_channels_duration_seconds",
+    "Time to run de-client --stop-channels",
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
+STOP_CHANNEL_HISTOGRAM = Histogram(
+    "de_client_stop_channel_duration_seconds",
+    "Time to run de-client --stop-channel",
+    ["channel_name"],
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
+KILL_CHANNEL_HISTOGRAM = Histogram(
+    "de_client_kill_channel_duration_seconds",
+    "Time to run de-client --kill-channel",
+    ["channel_name"],
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
+GET_LOG_LEVEL_HISTOGRAM = Histogram("de_client_get_log_level_duration_seconds", "Time to run de-client --get-log-level")
+GET_CHANNEL_LOG_LEVEL_HISTOGRAM = Histogram(
+    "de_client_get_channel_log_level_duration_seconds",
+    "Time to run de-client --get-channel-log-level",
+    ["channel_name"],
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
+SET_CHANNEL_LOG_LEVEL_HISTOGRAM = Histogram(
+    "de_client_set_channel_log_level_duration_seconds",
+    "Time to run de-client --set-channel-log-level",
+    ["channel_name"],
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
+GET_SOURCE_LOG_LEVEL_HISTOGRAM = Histogram(
+    "de_client_get_source_log_level_duration_seconds",
+    "Time to run de-client --get-source-log-level",
+    ["source_name"],
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
+SET_SOURCE_LOG_LEVEL_HISTOGRAM = Histogram(
+    "de_client_set_source_log_level_duration_seconds",
+    "Time to run de-client --set-source-log-level",
+    ["source_name"],
+    buckets=(
+        0.01,
+        0.015,
+        0.02,
+        0.025,
+        0.03,
+        0.035,
+        0.04,
+        0.045,
+        5,
+        7.5,
+        10,
+        12.5,
+        15,
+        17.5,
+        20,
+        22.5,
+        25,
+        27.5,
+        30,
+        35,
+        40,
+        50,
+        60,
+        120,
+    ),
+)
+REAPER_START_HISTOGRAM = Histogram(
+    "de_client_reaper_start_duration_seconds",
+    "Time to run de-client --reaper-start",
+    buckets=(0.005, 0.0075, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.075, 0.1),
+)
+REAPER_STOP_HISTOGRAM = Histogram(
+    "de_client_reaper_stop_duration_seconds",
+    "Time to run de-client --reaper-stop",
+    buckets=(0.005, 0.0075, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.075, 0.1),
+)
+REAPER_STATUS_HISTOGRAM = Histogram(
+    "de_client_reaper_status_duration_seconds",
+    "Time to run de-client --reaper-status",
+    buckets=(0.005, 0.0075, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05),
+)
+
+
 WORKERS_COUNT = Gauge("de_workers_total", "Number of workers started by the Decision Engine")
 DE_STATUS = Gauge("de_status", "Status of Decision Engine server")
 
@@ -252,9 +755,11 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def _dataframe_to_csv(self, df):
         return f"{df.to_csv()}\n"
 
+    @PING_HISTOGRAM.time()
     def rpc_ping(self, client_queue):
         client_queue.send("pong")
 
+    @BLOCK_WHILE_HISTOGRAM.time()
     def rpc_block_while(self, client_queue, state_str, timeout=None):
         allowed_state = None
         try:
@@ -264,6 +769,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         res = self.block_while(allowed_state, timeout)
         return client_queue.send(res)
 
+    @SHOW_CONFIG_HISTOGRAM.time()
     def rpc_show_config(self, client_queue, channel):
         """
         Show the configuration for a channel.
@@ -285,6 +791,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         txt += self.channel_config_loader.print_channel_config(channel)
         client_queue.send(txt)
 
+    @SHOW_DE_CONFIG_HISTOGRAM.time()
     def rpc_show_de_config(self, client_queue):
         client_queue.send(self.global_config.dump())
 
@@ -354,6 +861,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             txt += "Not produced by any module\n"
         return client_queue.send(txt[:-1])
 
+    @PRINT_PRODUCTS_HISTOGRAM.time()
     def rpc_print_products(self, client_queue):
         with self.channel_workers.access() as workers:
             channel_keys = workers.keys()
@@ -418,6 +926,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         client_queue.push("\n")
         return client_queue.send(self.reaper_status())
 
+    @QUEUE_STATUS_HISTOGRAM.time()
     def rpc_queue_status(self, client_queue):
         status = redis_stats(self.broker_url, self.exchange.name)
         for entry in status:
@@ -427,6 +936,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             f"\n{tabulate.tabulate(status, headers=['Source name', 'Queue name', 'Unconsumed messages'])}"
         )
 
+    @PRODUCT_DEPENDENCIES_HISTOGRAM.time()
     def rpc_product_dependencies(self, client_queue):
         workers = self.source_workers.get_unguarded()
         if not workers:
@@ -464,6 +974,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
         return client_queue.send(txt)
 
+    @STOP_HISTOGRAM.time()
     def rpc_stop(self, client_queue=None):
         self.shutdown()
         self.stop_channels()
@@ -555,6 +1066,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             except Exception as e:
                 self.logger.exception(f"Channel {name} failed to start: {e}")
 
+    @START_CHANNEL_HISTOGRAM.time()
     def rpc_start_channel(self, client_queue, channel_name):
         with self.channel_workers.access() as workers:
             if channel_name in workers:
@@ -567,18 +1079,22 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.start_channel(channel_name, src_workers)
         return client_queue.send("OK")
 
+    @START_CHANNELS_HISTOGRAM.time()
     def rpc_start_channels(self, client_queue):
         self.start_channels()
         return client_queue.send("OK")
 
+    @STOP_CHANNEL_HISTOGRAM.time()
     def rpc_stop_channel(self, client_queue, channel):
         return self.rpc_rm_channel(client_queue, channel, None)
 
+    @KILL_CHANNEL_HISTOGRAM.time()
     def rpc_kill_channel(self, client_queue, channel, timeout=None):
         if timeout is None:
             timeout = self.global_config.get("shutdown_timeout", 10)
         return self.rpc_rm_channel(client_queue, channel, timeout)
 
+    @RM_CHANNEL_HISTOGRAM.time()
     def rpc_rm_channel(self, client_queue, channel, maybe_timeout):
         rc = self.rm_channel(channel, maybe_timeout)
         if rc == StopState.NotFound:
@@ -636,14 +1152,17 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             workers.clear()
         self.source_workers.remove_all(countdown.time_left)
 
+    @STOP_CHANNELS_HISTOGRAM.time()
     def rpc_stop_channels(self, client_queue):
         self.stop_channels()
         return client_queue.send("All channels stopped.")
 
+    @GET_LOG_LEVEL_HISTOGRAM.time()
     def rpc_get_log_level(self, client_queue):
         engineloglevel = self.get_logger().getEffectiveLevel()
         return client_queue.send(logging.getLevelName(engineloglevel))
 
+    @GET_CHANNEL_LOG_LEVEL_HISTOGRAM.time()
     def rpc_get_channel_log_level(self, client_queue, channel):
         with self.channel_workers.access() as workers:
             worker = workers.get(channel)
@@ -654,6 +1173,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 return client_queue.send(f"Channel {channel} is in ERROR state.")
             return client_queue.send(logging.getLevelName(worker.task_manager.get_loglevel()))
 
+    @SET_CHANNEL_LOG_LEVEL_HISTOGRAM.time()
     def rpc_set_channel_log_level(self, client_queue, channel, log_level):
         """Assumes log_level is a string corresponding to the supported logging-module levels."""
         with self.channel_workers.access() as workers:
@@ -670,6 +1190,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             worker.task_manager.set_loglevel_value(log_level)
         return client_queue.send(f"Log level changed to : {log_level}")
 
+    @GET_SOURCE_LOG_LEVEL_HISTOGRAM.time()
     def rpc_get_source_log_level(self, client_queue, source):
         with self.source_workers.access() as workers:
             worker = workers.get(source)
@@ -681,6 +1202,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
             return client_queue.send(logging.getLevelName(worker.get_loglevel()))
 
+    @SET_SOURCE_LOG_LEVEL_HISTOGRAM.time()
     def rpc_set_source_log_level(self, client_queue, source, log_level):
         """Assumes log_level is a string corresponding to the supported logging-module levels."""
         with self.source_workers.access() as workers:
@@ -697,6 +1219,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             worker.set_loglevel_value(log_level)
         return client_queue.send(f"Log level changed to : {log_level}")
 
+    @REAPER_START_HISTOGRAM.time()
     def rpc_reaper_start(self, client_queue, delay=0):
         """
         Start the reaper process after 'delay' seconds.
@@ -713,9 +1236,11 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.reaper_stop()
         return client_queue.send("OK")
 
+    @REAPER_STOP_HISTOGRAM.time()
     def reaper_stop(self):
         self.reaper.stop()
 
+    @REAPER_STATUS_HISTOGRAM.time()
     def rpc_reaper_status(self, client_queue):
         interval = self.reaper.retention_interval
         state = self.reaper.state.get()
@@ -725,6 +1250,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         state = self.reaper.state.get()
         return f"\nreaper: state = {state.name}\n"
 
+    @QUERY_TOOL_HISTOGRAM.time()
     def rpc_query_tool(self, client_queue, product, format=None, start_time=None):
         with QUERY_TOOL_HISTOGRAM.labels(product).time():
             found = False
