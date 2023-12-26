@@ -15,8 +15,7 @@ on:
 
 jobs:
   run_flake8:
-    if: ${{ github.ref == 'refs/heads/1.7' }}
-    name: Run pytest-flake8 against code tree
+    name: Run flake8 against code tree
     runs-on: ubuntu-latest
     steps:
       - name: checkout code tree
@@ -65,7 +64,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/src
         run: |
-          pytest -m flake8 --flake8 --log-level=error
+          python3 -m flake8
 
   run_pylint:
     name: Run pylint against code tree
