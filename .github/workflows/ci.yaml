@@ -159,6 +159,45 @@ jobs:
           cd doc
           make rst html latexpdf
 
+  build_whl:
+    if: ${{ github.ref != 'refs/heads/1.7' }}
+    name: Build DE whl
+    runs-on: ubuntu-latest
+    needs: pytest
+    steps:
+      - name: make date tag
+        id: mkdatetag
+        run: echo "::set-output name=dtag::$(date +%Y%m%d_%H%M%S)"
+
+      - name: make ref tag case 1
+        id: mkreftag1
+        if: ${{ github.event.inputs.ref != '' }}
+        run: echo "::set-output name=reftag::${{github.event.inputs.ref}}"
+
+      - name: make ref tag case 2
+        id: mkreftag2
+        if: ${{ github.event.inputs.ref == '' }}
+        run: echo "::set-output name=reftag::${GITHUB_BASE_REF:+PR}"$(awk -F"/" '{print $3}' <<< ${GITHUB_REF})
+
+      - name: checkout code tree
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{github.event.inputs.ref}}
+
+      - name: Run the build in a container (EL9/HEPCloud-CI)
+        uses: ./.github/actions/python-command-in-el9-container
+        with:
+          python-command: "setup.py bdist_wheel"
+          logfile: "rpmbuild.log"
+
+      - name: Archive whl
+        uses: actions/upload-artifact@v3
+        with:
+          name: whl-DE-EL9-${{steps.mkreftag1.outputs.reftag}}${{steps.mkreftag2.outputs.reftag}}-${{steps.mkdatetag.outputs.dtag}}
+          path: dist/*.whl
+          if-no-files-found: error
+
   rpmbuild_el7:
     if: ${{ github.ref == 'refs/heads/1.7' }}
     name: Build an EL7 rpm
