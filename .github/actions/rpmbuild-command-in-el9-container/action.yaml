@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
+name: "rpmbuild action"
+description: "Run rpmbuild action in preconfigured EL9 container image"
+inputs:
+  rpmbuild-options:
+    description: "What to run"
+    required: true
+    default: "--build-in-place -bb package/rpm/decisionengine-deps.spec"
+  logfile:
+    description: "Where to log output"
+    required: true
+    default: "depsrpmbuild.log"
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.rpmbuild-options }}
+    - ${{ inputs.logfile }}

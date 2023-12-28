@@ -1,12 +1,11 @@
-# The is a parameter "_dedir" that is used in the install section.
 # To build the RPM it is needed to run the following command from inside the decisionengine code folder:
-#  rpmbuild --define "_dedir $(pwd)" -bb package/rpm/decisionengine-deps.spec
+# rpmbuild --build-in-place -bb package/rpm/decisionengine-deps.spec
 
 %define name decisionengine-deps
 # to get the version set properly the "rpmbuild" command needs to be executed from inside the decisionengine repo folder
 %define version %(FULLVER=$(git describe --tag | sed 's/-/_/g');  GVER=$(sed 's/.*_\\\([[:digit:]].*\\\)_/dev\\\1+/g' <<< ${FULLVER}); VER=${FULLVER//_*}; echo ${VER%.*}.$((${VER##*.}+1)).${GVER})
 %define release 1%{?dist}
-%define pwd %(echo $(pwd))
+%define _rpmdir ./dist
 
 Summary: The HEPCloud Decision Engine Framework
 Name: %{name}
@@ -55,7 +54,7 @@ mkdir -p %{buildroot}/%{_sharedstatedir}/decisionengine
 echo "%attr(0750,decisionengine,decisionengine) %{_sharedstatedir}/decisionengine" >> INSTALLED_FILES
 
 mkdir -p %{buildroot}/%{_sysconfdir}/decisionengine/config.d
-cp -r %{_dedir}/config/* %{buildroot}/%{_sysconfdir}/decisionengine/
+cp -r config/* %{buildroot}/%{_sysconfdir}/decisionengine/
 
 echo "%dir %attr(0750,decisionengine,decisionengine) %{_sysconfdir}/decisionengine/" >> INSTALLED_FILES
 echo "%attr(0640,decisionengine,decisionengine) %config(noreplace) %{_sysconfdir}/decisionengine/decision_engine.jsonnet" >> INSTALLED_FILES
