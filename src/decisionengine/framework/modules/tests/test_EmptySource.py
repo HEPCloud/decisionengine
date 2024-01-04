@@ -17,7 +17,7 @@ def test_empty_source_structure():
 
     key, df = test_empty_source.acquire().popitem()
     assert key == test_empty_source.data_product_name
-    assert type(df) == pd.DataFrame
+    assert isinstance(df, pd.DataFrame)
     assert df.empty
 
 
