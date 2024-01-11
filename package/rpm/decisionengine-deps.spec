@@ -5,7 +5,7 @@
 
 # To build the RPM it is needed to run the following command from inside the decisionengine code folder:
 # rpmbuild --build-in-place -bb package/rpm/decisionengine-deps.spec
-# This is needed to properly get parameter "version" set and to access files in the %install section
+# This is needed to properly get parameter "version" set and to access files in the "install" section
 
 %define name decisionengine-deps
 %define version %(FULLVER=$(git describe --tag | sed 's/-/_/g');  GVER=$(sed 's/.*_\\\([[:digit:]].*\\\)_/dev\\\1+/g' <<< ${FULLVER}); VER=${FULLVER//_*}; echo ${VER%.*}.$((${VER##*.}+1)).${GVER})
