@@ -1,8 +1,13 @@
+#<!--
+#SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+#SPDX-License-Identifier: Apache-2.0
+#-->
+
 # To build the RPM it is needed to run the following command from inside the decisionengine code folder:
 # rpmbuild --build-in-place -bb package/rpm/decisionengine-deps.spec
+# This is needed to properly get parameter "version" set and to access files in the %install section
 
 %define name decisionengine-deps
-# to get the version set properly the "rpmbuild" command needs to be executed from inside the decisionengine repo folder
 %define version %(FULLVER=$(git describe --tag | sed 's/-/_/g');  GVER=$(sed 's/.*_\\\([[:digit:]].*\\\)_/dev\\\1+/g' <<< ${FULLVER}); VER=${FULLVER//_*}; echo ${VER%.*}.$((${VER##*.}+1)).${GVER})
 %define release 1%{?dist}
 %define _rpmdir ./dist
@@ -21,23 +26,12 @@ Requires: shadow-utils systemd python3.9dist(pip) python3.9dist(setuptools) pyth
 Url: http://hepcloud.fnal.gov/
 
 %description
-<!--
-SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
-SPDX-License-Identifier: Apache-2.0
--->
-
-# HEPCloud Decision Engine
-
 The Decision Engine is a critical component of the HEP Cloud Facility. It provides the
 functionality of resource scheduling for disparate resource providers, including those
 which may have a cost or a restricted allocation of cycles
 
 Code documentation, release notes and install instructions are on github.io:
 https://hepcloud.github.io/decisionengine/
-
-# Getting Started with development
-
-There is a specfic document on this at https://github.com/HEPCloud/decisionengine/blob/master/DEVELOPMENT.md
 
 
 %prep
