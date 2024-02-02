@@ -425,10 +425,10 @@ KILL_CHANNEL_HISTOGRAM = Histogram(
         120,
     ),
 )
-GET_LOG_LEVEL_HISTOGRAM = Histogram("de_client_get_log_level_duration_seconds", "Time to run de-client --get-log-level")
+GET_LOG_LEVEL_HISTOGRAM = Histogram("de_client_get_log_level_duration_seconds", "Time to run de-client --get-loglevel")
 GET_CHANNEL_LOG_LEVEL_HISTOGRAM = Histogram(
     "de_client_get_channel_log_level_duration_seconds",
-    "Time to run de-client --get-channel-log-level",
+    "Time to run de-client --get-channel-loglevel",
     ["channel_name"],
     buckets=(
         0.01,
@@ -459,7 +459,7 @@ GET_CHANNEL_LOG_LEVEL_HISTOGRAM = Histogram(
 )
 SET_CHANNEL_LOG_LEVEL_HISTOGRAM = Histogram(
     "de_client_set_channel_log_level_duration_seconds",
-    "Time to run de-client --set-channel-log-level",
+    "Time to run de-client --set-channel-loglevel",
     ["channel_name"],
     buckets=(
         0.01,
@@ -490,7 +490,7 @@ SET_CHANNEL_LOG_LEVEL_HISTOGRAM = Histogram(
 )
 GET_SOURCE_LOG_LEVEL_HISTOGRAM = Histogram(
     "de_client_get_source_log_level_duration_seconds",
-    "Time to run de-client --get-source-log-level",
+    "Time to run de-client --get-source-loglevel",
     ["source_name"],
     buckets=(
         0.01,
@@ -521,7 +521,7 @@ GET_SOURCE_LOG_LEVEL_HISTOGRAM = Histogram(
 )
 SET_SOURCE_LOG_LEVEL_HISTOGRAM = Histogram(
     "de_client_set_source_log_level_duration_seconds",
-    "Time to run de-client --set-source-log-level",
+    "Time to run de-client --set-source-loglevel",
     ["source_name"],
     buckets=(
         0.01,
@@ -759,15 +759,15 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def rpc_ping(self, client_queue):
         client_queue.send("pong")
 
-    @BLOCK_WHILE_HISTOGRAM.time()
     def rpc_block_while(self, client_queue, state_str, timeout=None):
-        allowed_state = None
-        try:
-            allowed_state = ProcessingState.State[state_str]
-        except Exception:
-            return client_queue.send(f"{state_str} is not a valid channel state.")
-        res = self.block_while(allowed_state, timeout)
-        return client_queue.send(res)
+        with BLOCK_WHILE_HISTOGRAM.labels(state=state_str).time():
+            allowed_state = None
+            try:
+                allowed_state = ProcessingState.State[state_str]
+            except Exception:
+                return client_queue.send(f"{state_str} is not a valid channel state.")
+            res = self.block_while(allowed_state, timeout)
+            return client_queue.send(res)
 
     @SHOW_CONFIG_HISTOGRAM.time()
     def rpc_show_config(self, client_queue, channel):
@@ -993,31 +993,30 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
     def create_channel(self, channel_name, channel_config):
         channel_config = copy.deepcopy(channel_config)
-        with START_CHANNEL_HISTOGRAM.labels(channel_name).time():
             # NB: Possibly override channel name
-            channel_name = channel_config.get("channel_name", channel_name)
-            source_configs = channel_config.pop("sources")
-            src_workers = self.source_workers.update(channel_name, source_configs, self.global_config["logger"])
-            module_workers = validated_workflow(channel_name, src_workers, channel_config, self.logger)
+        channel_name = channel_config.get("channel_name", channel_name)
+        source_configs = channel_config.pop("sources")
+        src_workers = self.source_workers.update(channel_name, source_configs, self.global_config["logger"])
+        module_workers = validated_workflow(channel_name, src_workers, channel_config, self.logger)
 
-            routing_keys = [worker.key for worker in src_workers.values()]
-            self.logger.debug(f"Building TaskManger for {channel_name}")
-            task_manager = TaskManager.TaskManager(
-                channel_name,
-                module_workers,
-                dataspace.DataSpace(self.global_config),
-                source_products(src_workers),
-                self.exchange,
-                self.broker_url,
-                routing_keys,
-            )
-            self.logger.debug(f"Building Worker for {channel_name}")
-            worker = ChannelWorker(task_manager, self.global_config["logger"])
-            WORKERS_COUNT.inc()
-            with self.channel_workers.access() as workers:
-                workers[channel_name] = worker
+        routing_keys = [worker.key for worker in src_workers.values()]
+        self.logger.debug(f"Building TaskManger for {channel_name}")
+        task_manager = TaskManager.TaskManager(
+            channel_name,
+            module_workers,
+            dataspace.DataSpace(self.global_config),
+            source_products(src_workers),
+            self.exchange,
+            self.broker_url,
+            routing_keys,
+        )
+        self.logger.debug(f"Building Worker for {channel_name}")
+        worker = ChannelWorker(task_manager, self.global_config["logger"])
+        WORKERS_COUNT.inc()
+        with self.channel_workers.access() as workers:
+            workers[channel_name] = worker
 
-            return src_workers
+        return src_workers
 
     def start_channel(self, channel_name, src_workers):
         with self.channel_workers.access() as workers:
@@ -1066,52 +1065,51 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             except Exception as e:
                 self.logger.exception(f"Channel {name} failed to start: {e}")
 
-    @START_CHANNEL_HISTOGRAM.time()
     def rpc_start_channel(self, client_queue, channel_name):
-        with self.channel_workers.access() as workers:
-            if channel_name in workers:
-                return client_queue.send(f"ERROR, channel {channel_name} is running")
-
-        success, result = self.channel_config_loader.load_channel(channel_name)
-        if not success:
-            return client_queue.send(result)
-        src_workers = self.create_channel(channel_name, result)
-        self.start_channel(channel_name, src_workers)
-        return client_queue.send("OK")
+        with START_CHANNEL_HISTOGRAM.labels(channel_name=channel_name).time():
+            with self.channel_workers.access() as workers:
+                if channel_name in workers:
+                    return client_queue.send(f"ERROR, channel {channel_name} is running")
+            success, result = self.channel_config_loader.load_channel(channel_name)
+            if not success:
+                return client_queue.send(result)
+            src_workers = self.create_channel(channel_name, result)
+            self.start_channel(channel_name, src_workers)
+            return client_queue.send("OK")
 
     @START_CHANNELS_HISTOGRAM.time()
     def rpc_start_channels(self, client_queue):
         self.start_channels()
         return client_queue.send("OK")
 
-    @STOP_CHANNEL_HISTOGRAM.time()
     def rpc_stop_channel(self, client_queue, channel):
-        return self.rpc_rm_channel(client_queue, channel, None)
+        with STOP_CHANNEL_HISTOGRAM.labels(channel_name=channel).time():        
+            return self.rpc_rm_channel(client_queue, channel, None)
 
-    @KILL_CHANNEL_HISTOGRAM.time()
     def rpc_kill_channel(self, client_queue, channel, timeout=None):
-        if timeout is None:
-            timeout = self.global_config.get("shutdown_timeout", 10)
-        return self.rpc_rm_channel(client_queue, channel, timeout)
+        with KILL_CHANNEL_HISTOGRAM.labels(channel_name=channel).time():
+            if timeout is None:
+                timeout = self.global_config.get("shutdown_timeout", 10)
+            return self.rpc_rm_channel(client_queue, channel, timeout)
 
-    @RM_CHANNEL_HISTOGRAM.time()
     def rpc_rm_channel(self, client_queue, channel, maybe_timeout):
-        rc = self.rm_channel(channel, maybe_timeout)
-        if rc == StopState.NotFound:
-            return client_queue.send(f"No channel found with the name {channel}.")
-        elif rc == StopState.Terminated:
-            if maybe_timeout == 0:
-                client_queue.send(f"Channel {channel} has been killed.")
-                return
-            # Would be better to use something like the inflect
-            # module, but that introduces another dependency.
-            suffix = "s" if maybe_timeout > 1 else ""
-            return client_queue.send(
-                f"Channel {channel} has been killed due to shutdown timeout ({maybe_timeout} second{suffix})."
-            )
-        assert rc == StopState.Clean
-        WORKERS_COUNT.dec()
-        return client_queue.send(f"Channel {channel} stopped cleanly.")
+        with RM_CHANNEL_HISTOGRAM.labels(channel_name=channel).time():
+            rc = self.rm_channel(channel, maybe_timeout)
+            if rc == StopState.NotFound:
+                return client_queue.send(f"No channel found with the name {channel}.")
+            elif rc == StopState.Terminated:
+                if maybe_timeout == 0:
+                    client_queue.send(f"Channel {channel} has been killed.")
+                    return
+                # Would be better to use something like the inflect
+                # module, but that introduces another dependency.
+                suffix = "s" if maybe_timeout > 1 else ""
+                return client_queue.send(
+                    f"Channel {channel} has been killed due to shutdown timeout ({maybe_timeout} second{suffix})."
+                )
+            assert rc == StopState.Clean
+            WORKERS_COUNT.dec()
+            return client_queue.send(f"Channel {channel} stopped cleanly.")
 
     def rm_channel(self, channel, maybe_timeout):
         with RM_CHANNEL_HISTOGRAM.labels(channel).time():
@@ -1162,62 +1160,62 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         engineloglevel = self.get_logger().getEffectiveLevel()
         return client_queue.send(logging.getLevelName(engineloglevel))
 
-    @GET_CHANNEL_LOG_LEVEL_HISTOGRAM.time()
     def rpc_get_channel_log_level(self, client_queue, channel):
-        with self.channel_workers.access() as workers:
-            worker = workers.get(channel)
-            if worker is None:
-                return client_queue.send(f"No channel found with the name {channel}.")
+        with GET_CHANNEL_LOG_LEVEL_HISTOGRAM.labels(channel_name=channel).time():
+            with self.channel_workers.access() as workers:
+                worker = workers.get(channel)
+                if worker is None:
+                    return client_queue.send(f"No channel found with the name {channel}.")
 
-            if not worker.is_alive():
-                return client_queue.send(f"Channel {channel} is in ERROR state.")
-            return client_queue.send(logging.getLevelName(worker.task_manager.get_loglevel()))
+                if not worker.is_alive():
+                    return client_queue.send(f"Channel {channel} is in ERROR state.")
+                return client_queue.send(logging.getLevelName(worker.task_manager.get_loglevel()))
 
-    @SET_CHANNEL_LOG_LEVEL_HISTOGRAM.time()
     def rpc_set_channel_log_level(self, client_queue, channel, log_level):
         """Assumes log_level is a string corresponding to the supported logging-module levels."""
-        with self.channel_workers.access() as workers:
-            worker = workers.get(channel)
-            if worker is None:
-                return client_queue.send(f"No channel found with the name {channel}.")
+        with SET_CHANNEL_LOG_LEVEL_HISTOGRAM.labels(channel_name=channel).time():
+            with self.channel_workers.access() as workers:
+                worker = workers.get(channel)
+                if worker is None:
+                    return client_queue.send(f"No channel found with the name {channel}.")
 
-            if not worker.is_alive():
-                return client_queue.send(f"Channel {channel} is in ERROR state.")
+                if not worker.is_alive():
+                    return client_queue.send(f"Channel {channel} is in ERROR state.")
 
-            log_level_code = getattr(logging, log_level)
-            if worker.task_manager.get_loglevel() == log_level_code:
-                return client_queue.send(f"Nothing to do. Current log level is : {log_level}")
-            worker.task_manager.set_loglevel_value(log_level)
-        return client_queue.send(f"Log level changed to : {log_level}")
+                log_level_code = getattr(logging, log_level)
+                if worker.task_manager.get_loglevel() == log_level_code:
+                    return client_queue.send(f"Nothing to do. Current log level is : {log_level}")
+                worker.task_manager.set_loglevel_value(log_level)
+            return client_queue.send(f"Log level changed to : {log_level}")
 
-    @GET_SOURCE_LOG_LEVEL_HISTOGRAM.time()
     def rpc_get_source_log_level(self, client_queue, source):
-        with self.source_workers.access() as workers:
-            worker = workers.get(source)
-            if worker is None:
-                return client_queue.send(f"No source found with the name {source}.")
+        with GET_SOURCE_LOG_LEVEL_HISTOGRAM.labels(source_name=source).time():
+            with self.source_workers.access() as workers:
+                worker = workers.get(source)
+                if worker is None:
+                    return client_queue.send(f"No source found with the name {source}.")
 
-            if not worker.is_alive():
-                return client_queue.send(f"Source {source} is in ERROR state.")
+                if not worker.is_alive():
+                    return client_queue.send(f"Source {source} is in ERROR state.")
 
-            return client_queue.send(logging.getLevelName(worker.get_loglevel()))
+                return client_queue.send(logging.getLevelName(worker.get_loglevel()))
 
-    @SET_SOURCE_LOG_LEVEL_HISTOGRAM.time()
     def rpc_set_source_log_level(self, client_queue, source, log_level):
         """Assumes log_level is a string corresponding to the supported logging-module levels."""
-        with self.source_workers.access() as workers:
-            worker = workers.get(source)
-            if worker is None:
-                return client_queue.send(f"No source found with the name {source}.")
+        with SET_SOURCE_LOG_LEVEL_HISTOGRAM.labels(source_name=source).time():
+            with self.source_workers.access() as workers:
+                worker = workers.get(source)
+                if worker is None:
+                    return client_queue.send(f"No source found with the name {source}.")
 
-            if not worker.is_alive():
-                return client_queue.send(f"Source {source} is in ERROR state.")
+                if not worker.is_alive():
+                    return client_queue.send(f"Source {source} is in ERROR state.")
 
-            log_level_code = getattr(logging, log_level)
-            if worker.get_loglevel() == log_level_code:
-                return client_queue.send(f"Nothing to do. Current log level is : {log_level}")
-            worker.set_loglevel_value(log_level)
-        return client_queue.send(f"Log level changed to : {log_level}")
+                log_level_code = getattr(logging, log_level)
+                if worker.get_loglevel() == log_level_code:
+                    return client_queue.send(f"Nothing to do. Current log level is : {log_level}")
+                worker.set_loglevel_value(log_level)
+            return client_queue.send(f"Log level changed to : {log_level}")
 
     @REAPER_START_HISTOGRAM.time()
     def rpc_reaper_start(self, client_queue, delay=0):
@@ -1250,7 +1248,6 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         state = self.reaper.state.get()
         return f"\nreaper: state = {state.name}\n"
 
-    @QUERY_TOOL_HISTOGRAM.time()
     def rpc_query_tool(self, client_queue, product, format=None, start_time=None):
         with QUERY_TOOL_HISTOGRAM.labels(product).time():
             found = False
