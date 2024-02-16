@@ -993,7 +993,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
     def create_channel(self, channel_name, channel_config):
         channel_config = copy.deepcopy(channel_config)
-            # NB: Possibly override channel name
+        # NB: Possibly override channel name
         channel_name = channel_config.get("channel_name", channel_name)
         source_configs = channel_config.pop("sources")
         src_workers = self.source_workers.update(channel_name, source_configs, self.global_config["logger"])
@@ -1083,7 +1083,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         return client_queue.send("OK")
 
     def rpc_stop_channel(self, client_queue, channel):
-        with STOP_CHANNEL_HISTOGRAM.labels(channel_name=channel).time():        
+        with STOP_CHANNEL_HISTOGRAM.labels(channel_name=channel).time():
             return self.rpc_rm_channel(client_queue, channel, None)
 
     def rpc_kill_channel(self, client_queue, channel, timeout=None):
