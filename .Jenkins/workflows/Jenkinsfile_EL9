@@ -181,7 +181,7 @@ pipeline {
                         }
                     }
                 }
-                stage('rpmbuild') {
+                stage('build_whl') {
                     agent {
                         node {
                             label 'docker'
@@ -194,7 +194,7 @@ pipeline {
                     steps {
                         script {
                             // DOCKER_IMAGE is defined through Jenkins project
-                            rpmbuildStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                            buildwhlStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
                         }
                         echo "cleanup workspace"
                         sh 'for f in $(ls -A); do rm -rf ${f}; done'
@@ -212,14 +212,14 @@ pipeline {
                             fi
                             cd ..
                         '''
-                        echo "prepare docker image ${rpmbuildStageDockerImage}"
-                        sh "docker build --pull --tag ${rpmbuildStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
+                        echo "prepare docker image ${buildwhlStageDockerImage}"
+                        sh "docker build --pull --tag ${buildwhlStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
                         echo "Run ${STAGE_NAME} tests"
-                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${rpmbuildStageDockerImage} \"setup.py bdist_rpm\" \"rpmbuild.log\""
+                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${buildwhlStageDockerImage} \"setup.py bdist_wheel\" \"build_whl.log\""
                     }
                     post {
                         always {
-                            archiveArtifacts artifacts: "decisionengine/rpmbuild.log,decisionengine/dist/*.rpm"
+                            archiveArtifacts artifacts: "decisionengine/build_whl.log,decisionengine/dist/*.whl"
                             // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
                             // eventually kill the python process that spawn the test to cleanup CI processes left behind
                             sh '''
@@ -231,8 +231,63 @@ pipeline {
                                     docker exec ${DOCKERID} ps -xww  || true
                                 fi
                             '''
-                            echo "cleanup docker image ${rpmbuildStageDockerImage}"
-                            sh "docker rmi ${rpmbuildStageDockerImage}"
+                            echo "cleanup docker image ${buildwhlStageDockerImage}"
+                            sh "docker rmi ${buildwhlStageDockerImage}"
+                        }
+                    }
+                }
+                stage('depsrpmbuild') {
+                    agent {
+                        node {
+                            label 'docker'
+                            customWorkspace "${WORKSPACE}/${STAGE_NAME}"
+                        }
+                    }
+                    options {
+                        timeout(time: "${STAGE_TIMEOUT}", activity: false, unit: 'MINUTES')
+                    }
+                    steps {
+                        script {
+                            // DOCKER_IMAGE is defined through Jenkins project
+                            depsrpmbuildStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                        }
+                        echo "cleanup workspace"
+                        sh 'for f in $(ls -A); do rm -rf ${f}; done'
+                        // DE_REPO is defined through Jenkins project
+                        echo "clone decisionengine code from ${DE_REPO}"
+                        sh '''
+                            git clone ${DE_REPO}
+                            cd decisionengine
+                            echo "checkout ${BRANCH} branch"
+                            git checkout ${BRANCH}
+                            echo GITHUB_PR_NUMBER: ${GITHUB_PR_NUMBER} - GITHUB_PR_STATE: ${GITHUB_PR_STATE}
+                            if [[ -n ${GITHUB_PR_NUMBER} && ${GITHUB_PR_STATE} == OPEN ]]; then
+                                git fetch origin pull/${GITHUB_PR_NUMBER}/merge:merge${GITHUB_PR_NUMBER}
+                                git checkout merge${GITHUB_PR_NUMBER}
+                            fi
+                            cd ..
+                        '''
+                        echo "prepare docker image ${depsrpmbuildStageDockerImage}"
+                        sh "docker build --pull --tag ${depsrpmbuildStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/.github/actions/rpmbuild-command-in-el9-container/Dockerfile decisionengine/.github/actions/rpmbuild-command-in-el9-container/"
+                        echo "Run ${STAGE_NAME} tests"
+                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${depsrpmbuildStageDockerImage} \"--build-in-place -bb package/rpm/decisionengine-deps.spec\" \"depsrpmbuild.log\""
+                    }
+                    post {
+                        always {
+                            archiveArtifacts artifacts: "decisionengine/depsrpmbuild.log,decisionengine/dist/noarch/*.rpm"
+                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // eventually kill the python process that spawn the test to cleanup CI processes left behind
+                            sh '''
+                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${DOCKERID} ]]; then
+                                    docker exec ${DOCKERID} ps -xww && \
+                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
+                                    docker exec ${DOCKERID} ps -xww  || true
+                                fi
+                            '''
+                            echo "cleanup docker image ${depsrpmbuildStageDockerImage}"
+                            sh "docker rmi ${depsrpmbuildStageDockerImage}"
                         }
                     }
                 }
