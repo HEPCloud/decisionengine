@@ -11,6 +11,9 @@ minversion = "6.0"
 # pytest-xdist is not _mandatory_ for the tests to work, but it is recommended
 addopts = "-l -v --durations=30 --durations-min=0.05 --strict-config --strict-markers --showlocals"
 log_level = "debug"
+markers = [
+    "unit: tests that have no external dependencies"
+]
 testpaths = "src/decisionengine"
 required_plugins = ["pytest-timeout>=1.4.2", "pytest-postgresql >= 3.0.0"]
 timeout = 90
