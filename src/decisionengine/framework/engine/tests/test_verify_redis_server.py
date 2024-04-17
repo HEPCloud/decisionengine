@@ -7,20 +7,6 @@ import redis
 from decisionengine.framework.engine.DecisionEngine import _verify_redis_server, _verify_redis_url
 
 
-def _redis_server_running() -> bool:
-    r = redis.Redis("127.0.0.1", socket_timeout=0.1)
-    try:
-        r.ping()
-        return True
-    except Exception:
-        return False
-
-
-skip_if_no_redis = pytest.mark.skipif(
-    not _redis_server_running(), reason="No redis server running at default broker url"
-)
-
-
 @pytest.fixture
 def fake_redis_server(monkeypatch):
     class mockRedis:
@@ -52,7 +38,8 @@ def test_verify_redis_url():
     _verify_redis_url("redis://127.0.0.1:6379/0")
 
 
-@skip_if_no_redis
+@pytest.mark.external
+@pytest.mark.redis
 def test_verify_redis_server_int():
     _verify_redis_server("redis://localhost:6379/0")
 
