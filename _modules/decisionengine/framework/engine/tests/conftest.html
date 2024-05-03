@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.tests.test_Module &mdash; decisionengine 2.0.3.dev44+g0aca4d92 documentation</title>
+  <title>decisionengine.framework.engine.tests.conftest &mdash; decisionengine 2.0.3.dev44+g0aca4d92 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
 
@@ -76,7 +76,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">decisionengine.framework.modules.tests.test_Module</li>
+      <li class="breadcrumb-item active">decisionengine.framework.engine.tests.conftest</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -85,25 +85,32 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for decisionengine.framework.modules.tests.test_Module</h1><div class="highlight"><pre>
+  <h1>Source code for decisionengine.framework.engine.tests.conftest</h1><div class="highlight"><pre>
 <span></span><span class="c1"># SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC</span>
 <span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.Module</span> <span class="kn">import</span> <span class="n">Module</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">redis</span>
 
 
-<div class="viewcode-block" id="test_module_structure">
-<a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_Module.test_module_structure">[docs]</a>
-<span class="k">def</span> <span class="nf">test_module_structure</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The module.Module itself is a bit of a skeleton...</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">}</span>
-    <span class="n">test_module</span> <span class="o">=</span> <span class="n">Module</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">test_module</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;channel_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">}</span>
+<div class="viewcode-block" id="_redis_server_running">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.conftest._redis_server_running">[docs]</a>
+<span class="k">def</span> <span class="nf">_redis_server_running</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">socket_timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">ping</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
-    <span class="n">test_module</span><span class="o">.</span><span class="n">set_data_block</span><span class="p">(</span><span class="s2">&quot;example&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">test_module</span><span class="o">.</span><span class="n">get_data_block</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;example&quot;</span></div>
+
+
+<div class="viewcode-block" id="pytest_runtest_call">
+<a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.conftest.pytest_runtest_call">[docs]</a>
+<span class="k">def</span> <span class="nf">pytest_runtest_call</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">get_closest_marker</span><span class="p">(</span><span class="s2">&quot;redis&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_redis_server_running</span><span class="p">():</span>
+            <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;No redis server running at default broker url&quot;</span><span class="p">)</span></div>
 
 </pre></div>
 
