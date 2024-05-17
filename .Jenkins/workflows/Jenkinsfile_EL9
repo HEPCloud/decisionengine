@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 pipeline {
-    agent { label 'docker' }
+    agent { label 'podman' }
     stages{
         stage('DE tests') {
             parallel {
                 stage('flake8') {
                     agent {
                         node {
-                            label 'docker'
+                            label 'podman'
                             customWorkspace "${WORKSPACE}/${STAGE_NAME}"
                         }
                     }
@@ -19,7 +19,7 @@ pipeline {
                     steps {
                         script {
                             // DOCKER_IMAGE is defined through Jenkins project
-                            flake8StageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                            flake8StageDockerImage="localhost/${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
                             // Set custom Build Name
                             if (params.GITHUB_PR_NUMBER) {
                                 if (params.GITHUB_PR_STATE == 'CLOSED') {
@@ -47,34 +47,34 @@ pipeline {
                             fi
                             cd ..
                         '''
-                        echo "prepare docker image ${flake8StageDockerImage}"
-                        sh "docker build --pull --tag ${flake8StageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
+                        echo "prepare podman image ${flake8StageDockerImage}"
+                        sh "podman build --pull --tag ${flake8StageDockerImage} --build-arg BASEIMAGE=docker.io/hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
                         echo "Run ${STAGE_NAME} tests"
-                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${flake8StageDockerImage} \"-m flake8\" \"flake8.log\""
+                        sh "podman run --userns keep-id:uid=\$(id -u),gid=\$(id -g) --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${flake8StageDockerImage} \"-m flake8\" \"flake8.log\""
                     }
                     post {
                         always {
                             archiveArtifacts artifacts: "decisionengine/flake8.log"
-                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // check if the podman container used for this test suite is still active, if so this is due to an aborted test suite
                             // eventually kill the python process that spawn the test to cleanup CI processes left behind
                             sh '''
-                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
-                                if [[ -n ${DOCKERID} ]]; then
-                                    docker exec ${DOCKERID} ps -xww && \
-                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
-                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
-                                    docker exec ${DOCKERID} ps -xww  || true
+                                PODMANID=$(podman ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${PODMANID} ]]; then
+                                    podman exec ${PODMANID} ps -xww && \
+                                    KPID=$(podman exec ${PODMANID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    podman exec ${PODMANID} kill -9 ${KPID} || true
+                                    podman exec ${PODMANID} ps -xww  || true
                                 fi
                             '''
-                            echo "cleanup docker image ${flake8StageDockerImage}"
-                            sh "docker rmi ${flake8StageDockerImage}"
+                            echo "cleanup podman image ${flake8StageDockerImage}"
+                            sh "podman rmi ${flake8StageDockerImage}"
                         }
                     }
                 }
                 stage('pylint') {
                     agent {
                         node {
-                            label 'docker'
+                            label 'podman'
                             customWorkspace "${WORKSPACE}/${STAGE_NAME}"
                         }
                     }
@@ -84,7 +84,7 @@ pipeline {
                     steps {
                         script {
                             // DOCKER_IMAGE is defined through Jenkins project
-                            pylintStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                            pylintStageDockerImage="localhost/${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
                         }
                         echo "cleanup workspace"
                         sh 'for f in $(ls -A); do rm -rf ${f}; done'
@@ -102,34 +102,34 @@ pipeline {
                             fi
                             cd ..
                         '''
-                        echo "prepare docker image ${pylintStageDockerImage}"
-                        sh "docker build --pull --tag ${pylintStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
+                        echo "prepare podman image ${pylintStageDockerImage}"
+                        sh "podman build --pull --tag ${pylintStageDockerImage} --build-arg BASEIMAGE=docker.io/hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
                         echo "Run ${STAGE_NAME} tests"
-                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${pylintStageDockerImage} \"-m pylint src/decisionengine/ src/tests/\" \"pylint.log\""
+                        sh "podman run --userns keep-id:uid=\$(id -u),gid=\$(id -g) --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${pylintStageDockerImage} \"-m pylint src/decisionengine/ src/tests/\" \"pylint.log\""
                     }
                     post {
                         always {
                             archiveArtifacts artifacts: "decisionengine/pylint.log"
-                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // check if the podman container used for this test suite is still active, if so this is due to an aborted test suite
                             // eventually kill the python process that spawn the test to cleanup CI processes left behind
                             sh '''
-                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
-                                if [[ -n ${DOCKERID} ]]; then
-                                    docker exec ${DOCKERID} ps -xww && \
-                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
-                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
-                                    docker exec ${DOCKERID} ps -xww  || true
+                                PODMANID=$(podman ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${PODMANID} ]]; then
+                                    podman exec ${PODMANID} ps -xww && \
+                                    KPID=$(podman exec ${PODMANID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    podman exec ${PODMANID} kill -9 ${KPID} || true
+                                    podman exec ${PODMANID} ps -xww  || true
                                 fi
                             '''
-                            echo "cleanup docker image ${pylintStageDockerImage}"
-                            sh "docker rmi ${pylintStageDockerImage}"
+                            echo "cleanup podman image ${pylintStageDockerImage}"
+                            sh "podman rmi ${pylintStageDockerImage}"
                         }
                     }
                 }
                 stage('unit_tests') {
                     agent {
                         node {
-                            label 'docker'
+                            label 'podman'
                             customWorkspace "${WORKSPACE}/${STAGE_NAME}"
                         }
                     }
@@ -139,7 +139,7 @@ pipeline {
                     steps {
                         script {
                             // DOCKER_IMAGE is defined through Jenkins project
-                            unit_testsStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                            unit_testsStageDockerImage="localhost/${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
                         }
                         echo "cleanup workspace"
                         sh 'for f in $(ls -A); do rm -rf ${f}; done'
@@ -157,34 +157,34 @@ pipeline {
                             fi
                             cd ..
                         '''
-                        echo "prepare docker image ${unit_testsStageDockerImage}"
-                        sh "docker build --pull --tag ${unit_testsStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
+                        echo "prepare podman image ${unit_testsStageDockerImage}"
+                        sh "podman build --pull --tag ${unit_testsStageDockerImage} --build-arg BASEIMAGE=docker.io/hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
                         echo "Run ${STAGE_NAME} tests"
-                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${unit_testsStageDockerImage} \"-m pytest --cov-report term --cov=decisionengine --no-cov-on-fail\" \"pytest.log\""
+                        sh "podman run --userns keep-id:uid=\$(id -u),gid=\$(id -g) --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${unit_testsStageDockerImage} \"-m pytest --cov-report term --cov=decisionengine --no-cov-on-fail\" \"pytest.log\""
                     }
                     post {
                         always {
                             archiveArtifacts artifacts: "decisionengine/pytest.log"
-                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // check if the podman container used for this test suite is still active, if so this is due to an aborted test suite
                             // eventually kill the python process that spawn the test to cleanup CI processes left behind
                             sh '''
-                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
-                                if [[ -n ${DOCKERID} ]]; then
-                                    docker exec ${DOCKERID} ps -xww && \
-                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
-                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
-                                    docker exec ${DOCKERID} ps -xww  || true
+                                PODMANID=$(podman ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${PODMANID} ]]; then
+                                    podman exec ${PODMANID} ps -xww && \
+                                    KPID=$(podman exec ${PODMANID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    podman exec ${PODMANID} kill -9 ${KPID} || true
+                                    podman exec ${PODMANID} ps -xww  || true
                                 fi
                             '''
-                            echo "cleanup docker image ${unit_testsStageDockerImage}"
-                            sh "docker rmi ${unit_testsStageDockerImage}"
+                            echo "cleanup podman image ${unit_testsStageDockerImage}"
+                            sh "podman rmi ${unit_testsStageDockerImage}"
                         }
                     }
                 }
                 stage('rpmbuild') {
                     agent {
                         node {
-                            label 'docker'
+                            label 'podman'
                             customWorkspace "${WORKSPACE}/${STAGE_NAME}"
                         }
                     }
@@ -194,7 +194,7 @@ pipeline {
                     steps {
                         script {
                             // DOCKER_IMAGE is defined through Jenkins project
-                            rpmbuildStageDockerImage="${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                            rpmbuildStageDockerImage="localhost/${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
                         }
                         echo "cleanup workspace"
                         sh 'for f in $(ls -A); do rm -rf ${f}; done'
@@ -212,27 +212,27 @@ pipeline {
                             fi
                             cd ..
                         '''
-                        echo "prepare docker image ${rpmbuildStageDockerImage}"
-                        sh "docker build --pull --tag ${rpmbuildStageDockerImage} --build-arg BASEIMAGE=hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
+                        echo "prepare podman image ${rpmbuildStageDockerImage}"
+                        sh "podman build --pull --tag ${rpmbuildStageDockerImage} --build-arg BASEIMAGE=docker.io/hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
                         echo "Run ${STAGE_NAME} tests"
-                        sh "docker run --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${rpmbuildStageDockerImage} \"setup.py bdist_rpm\" \"rpmbuild.log\""
+                        sh "podman run --userns keep-id:uid=\$(id -u),gid=\$(id -g) --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${rpmbuildStageDockerImage} \"setup.py bdist_rpm\" \"rpmbuild.log\""
                     }
                     post {
                         always {
                             archiveArtifacts artifacts: "decisionengine/rpmbuild.log,decisionengine/dist/*.rpm"
-                            // check if the docker container used for this test suite is still active, if so this is due to an aborted test suite
+                            // check if the podman container used for this test suite is still active, if so this is due to an aborted test suite
                             // eventually kill the python process that spawn the test to cleanup CI processes left behind
                             sh '''
-                                DOCKERID=$(docker ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
-                                if [[ -n ${DOCKERID} ]]; then
-                                    docker exec ${DOCKERID} ps -xww && \
-                                    KPID=$(docker exec ${DOCKERID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
-                                    docker exec ${DOCKERID} kill -9 ${KPID} || true
-                                    docker exec ${DOCKERID} ps -xww  || true
+                                PODMANID=$(podman ps | grep ${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME} | awk '{print $1}')
+                                if [[ -n ${PODMANID} ]]; then
+                                    podman exec ${PODMANID} ps -xww && \
+                                    KPID=$(podman exec ${PODMANID} ps -xww | grep python3 | head -1 | awk '{print $1}') && \
+                                    podman exec ${PODMANID} kill -9 ${KPID} || true
+                                    podman exec ${PODMANID} ps -xww  || true
                                 fi
                             '''
-                            echo "cleanup docker image ${rpmbuildStageDockerImage}"
-                            sh "docker rmi ${rpmbuildStageDockerImage}"
+                            echo "cleanup podman image ${rpmbuildStageDockerImage}"
+                            sh "podman rmi ${rpmbuildStageDockerImage}"
                         }
                     }
                 }
