@@ -221,6 +221,7 @@ class TaskManager:
             self.state.set(State.ACTIVE)
             self.logger.debug(f"Channel {self.name} is listening for events")
             while not self.state.should_stop():
+                self.logger.setLevel(self.loglevel.value)
                 msgs = messages.consume()
                 if msgs:
                     self.run_cycle(msgs)
