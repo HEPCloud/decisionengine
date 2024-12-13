@@ -175,6 +175,7 @@ class SourceWorker(multiprocessing.Process):
             # If task manager is in offline state, do not keep executing sources.
             while not self.state.should_stop():
                 try:
+                    self.logger.setLevel(self.loglevel.value)
                     self.logger.info(f"Source {self.key} calling acquire")
                     with SOURCE_ACQUIRE_HISTOGRAM.labels(self.key).time():
                         data = self.module_instance.acquire()
