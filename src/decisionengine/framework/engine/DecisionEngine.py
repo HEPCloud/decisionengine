@@ -1332,6 +1332,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
 
     @cherrypy.expose
     def metrics(self):
+        cherrypy.response.headers["Content-Type"] = "text/plain"
         try:
             return display_metrics()
         except Exception as e:  # pragma: no cover
