@@ -2,8 +2,18 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pytest
+import redis
 
 from decisionengine.framework.engine.DecisionEngine import _verify_redis_server, _verify_redis_url
+
+
+@pytest.fixture
+def fake_redis_server(monkeypatch):
+    class mockRedis:
+        def ping(self):
+            return True
+
+    monkeypatch.setattr(redis.Redis, "from_url", lambda x: mockRedis())
 
 
 def test_verify_bad_url():
@@ -28,7 +38,13 @@ def test_verify_redis_url():
     _verify_redis_url("redis://127.0.0.1:6379/0")
 
 
-def test_verify_redis_server():
+@pytest.mark.external
+@pytest.mark.redis
+def test_verify_redis_server_int():
+    _verify_redis_server("redis://localhost:6379/0")
+
+
+def test_verify_redis_server(fake_redis_server):
     _verify_redis_server("redis://localhost:6379/0")
 
 
