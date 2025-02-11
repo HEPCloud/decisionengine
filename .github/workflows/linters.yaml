@@ -19,17 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
           architecture: "x64"
 
       - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -71,17 +71,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
           architecture: "x64"
 
       - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -115,9 +115,24 @@ jobs:
         run: |
           pylint src/decisionengine/
 
+  run_ruff:
+    name: Run Ruff against code tree
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code tree
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          architecture: "x64"
+
+      - name: Run Ruff
+        uses: astral-sh/ruff-action@v3
+
   license-check:
     name: Run REUSE to check license compliance
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: fsfe/reuse-action@v1
+      - uses: actions/checkout@v4
+      - uses: fsfe/reuse-action@v5

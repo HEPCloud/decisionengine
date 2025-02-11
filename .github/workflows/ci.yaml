@@ -31,18 +31,18 @@ jobs:
     name: Python ${{ matrix.python-version }} unit tests
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
 
       - name: Cache pip
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -78,7 +78,7 @@ jobs:
         run: python3 setup.py bdist_wheel
 
       - name: Start Redis Server
-        uses: supercharge/redis-github-action@1.4.0
+        uses: supercharge/redis-github-action@1.8.0
 
       - name: Run Unit Tests on Python ${{ matrix.python-version }}
         timeout-minutes: 35
@@ -92,13 +92,13 @@ jobs:
 
       - name: Archive unit test logs
         if: failure() && !cancelled()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: log_unit_test_Python_${{ matrix.python-version }}
           path: /tmp/*.log
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           flags: python-${{ matrix.python-version }}
 
@@ -108,17 +108,17 @@ jobs:
     needs: pytest
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
           architecture: "x64"
 
       - name: Cache pip
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -180,7 +180,7 @@ jobs:
         run: echo "::set-output name=reftag::${GITHUB_BASE_REF:+PR}"$(awk -F"/" '{print $3}' <<< ${GITHUB_REF})
 
       - name: checkout code tree
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{github.event.inputs.ref}}
@@ -192,7 +192,7 @@ jobs:
           logfile: "rpmbuild.log"
 
       - name: Archive rpm
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: rpms-DE-EL7-${{steps.mkreftag1.outputs.reftag}}${{steps.mkreftag2.outputs.reftag}}-${{steps.mkdatetag.outputs.dtag}}
           path: dist/*.rpm
@@ -219,7 +219,7 @@ jobs:
         run: echo "::set-output name=reftag::${GITHUB_BASE_REF:+PR}"$(awk -F"/" '{print $3}' <<< ${GITHUB_REF})
 
       - name: checkout code tree
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{github.event.inputs.ref}}
@@ -231,7 +231,7 @@ jobs:
           logfile: "rpmbuild.log"
 
       - name: Archive rpm
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: rpms-DE-EL8-${{steps.mkreftag1.outputs.reftag}}${{steps.mkreftag2.outputs.reftag}}-${{steps.mkdatetag.outputs.dtag}}
           path: dist/*.rpm
