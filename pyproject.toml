@@ -1,6 +1,83 @@
 [build-system]
-requires = ["setuptools>=51.2", "wheel>=0.36.2", "setuptools_scm>=6.3.1"]
+requires = ["setuptools>=72.1", "wheel>=0.36.2", "setuptools_scm>=6.3.1"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "decisionengine"
+dynamic = ["version"]
+# version = "1.1.0"
+requires-python = ">=3.9"
+description = "The HEPCloud Decision Engine Framework"
+readme = "README.md"
+license = {text ="Apache-2.0"}
+authors = [
+    { name = "Fermilab" },
+]
+dependencies = [
+    "cherrypy >= 18.6.0",
+    "jsonnet >= 0.20.0",
+    "kombu[redis] >= 5.2.0rc1",
+    "numpy == 1.19.5; python_version <= '3.6'",
+    "numpy >= 1.22, < 2.0.0; python_version >= '3.7'",
+    "pandas == 1.1.5; python_version <= '3.6'",
+    "pandas >= 1.1.5, < 2.0.0; python_version >= '3.7' and platform_python_implementation == 'CPython'",
+    "prometheus-client >= 0.10.0",
+    "psutil >= 5.8.0",
+    "psycopg2-binary >= 2.8.6; platform_python_implementation == 'CPython'",
+    "sqlalchemy >= 1.4.48, < 2.0.0",
+    "structlog >= 21.1.0",
+    "tabulate >= 0.8.7",
+    "toposort >= 1.6",
+    "typing_extensions >= 4.1.1",
+]
+
+[project.optional-dependencies]
+develop = [
+    "coverage >= 6.1.2",
+    "flake8 >= 6.0.0, < 7.0.0",
+    "importlib_resources >= 5.1.2; python_version <= '3.8'",
+    "packaging >= 20.4",
+    "pre-commit >= 2.13.0",
+    "pylint >= 2.7.4",
+    "pytest >= 7.0.0, < 8.0",
+    "pytest-cov >= 2.11.1",
+    "pytest-postgresql >= 5.0.0, < 6.0.0",
+    "pytest-timeout >= 1.4.2",
+    "pytest-xdist[psutil] >= 2.3.0",
+    "reuse >= 1.1.2",
+    "setuptools >= 51.2",
+    "setuptools_scm >= 6.3.1",
+    "sphinx >= 3.5.3",
+    "sphinx_rtd_theme >= 0.5.1",
+    "toml >= 0.10.2",
+    "wheel >= 0.36.2",
+]
+
+[project.scripts]
+de-client = "decisionengine.framework.engine.de_client:console_scripts_main"
+de-logparser = "decisionengine.framework.util.logparser:console_scripts_main"
+de-query-tool = "decisionengine.framework.engine.de_query_tool:console_scripts_main"
+de-reaper = "decisionengine.framework.util.reaper:main"
+decisionengine = "decisionengine.framework.engine.DecisionEngine:main"
+
+[project.urls]
+# https://packaging.python.org/en/latest/specifications/well-known-project-urls/#well-known-project-urls
+homepage = "http://hepcloud.fnal.gov/"
+source = "https://github.com/HEPCloud/decisionengine"
+documentation = "https://hepcloud.github.io/decisionengine/"
+releasenotes = "https://hepcloud.github.io/decisionengine/release_notes.html"
+issues = "https://github.com/HEPCloud/decisionengine/issues"
+
+[tool.setuptools]
+# https://setuptools.pypa.io/en/latest/references/keywords.htm
+#packages = ["myproj", "myproj.algorithms", "myproj.configs", ...]
+#package-dir = { "" = "src" }  # src-layont is found by default
+#[tool.setuptools.package-dir]
+#myproj = "src/myproj"
+#myproj.algorithms = "algorithms"
+#myproj.configs = "configs"
+#[tool.setuptools.package-data]
+#"" = ["*.yml", ...]
 
 [tool.setuptools_scm]
 write_to = "src/decisionengine/framework/version.py"
@@ -21,11 +98,11 @@ timeout = 90
 
 [tool.black]
 line-length = 120
-target-version = ['py36']
+target-version = ['py39']
 
 [tool.isort]
 src_paths = ["doc", "src"]
-py_version = 36
+py_version = 39
 profile = "black"
 line_length = 120
 combine_star = "True"
@@ -35,3 +112,9 @@ dedup_headings = "True"
 known_first_party = ["decisionengine"]
 lines_between_types = 1
 force_alphabetical_sort_within_sections = "True"
+
+[tool.uv]
+environments = [
+    "sys_platform == 'darwin'",
+    "sys_platform == 'linux'",
+]
