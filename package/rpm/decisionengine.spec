@@ -9,10 +9,11 @@
 # python3 == python3.9
 %global python3_pkgversion 3
 
+# Versions use semantic versioning (M.m.p)
 # Release Candidates NVR format
-#%define release 0.1.rc1
+# define release 0.1.rc1
 # Official Release NVR format
-#%define release 2
+# define release 2
 
 %define auto_version %(FULLVER=$(git describe --tag | sed 's/-/_/g');  GVER=$(sed 's/.*_\\\([[:digit:]].*\\\)_/dev\\\1+/g' <<< ${FULLVER}); VER=${FULLVER//_*}; echo ${VER%.*}.$((${VER##*.}+1)).${GVER})
 %define auto_release 1
@@ -21,10 +22,6 @@
 %define release __HCDE_RPM_RELEASE__
 
 %define decisionengine_home %{_sharedstatedir}/decisionengine
-
-#%define frontend_xml frontend.xml
-#%define factory_xml glideinWMS.xml
-%define condor_dir %{_localstatedir}/lib/gwms-factory/condor
 %define systemddir %{_prefix}/lib/systemd/system
 
 Name:           decisionengine
@@ -38,8 +35,8 @@ BuildArch:      noarch
 Prefix:         %{_prefix}
 Vendor:         Fermilab <None>
 
-#Source:         creation/templates/frontend_startup_sl7
-#Source1:        creation/templates/factory_startup_sl7
+Source:         hepcloud.tar.gz
+Source1:        decision_engine.jsonnet
 
 BuildRequires: python%{python3_pkgversion} >= 3.9
 BuildRequires: python%{python3_pkgversion}-devel
@@ -84,6 +81,10 @@ Requires: podman
 Requires: python3-cryptography
 Requires: python3-pip
 Requires: gettext
+# Required to build jsonnet (make, g++, and Python.h) (TODO: put in pip a build for jsonnet)
+Requires: make
+Requires: gcc-c++
+Requires: python3-devel
 %description deps
 This subpackage includes all the RPM dependencied for the HEPCloud Decision Engine Framework.
 
@@ -112,7 +113,8 @@ This subpackage includes all the RPM dependencies for the HEPCloud Decision Engi
 
 
 %prep
-%setup -q -n decisionengine
+# Empty for now
+%setup -q -n hepcloud
 # Apply the patches here if any
 #%patch -P 0 -p1
 
@@ -120,8 +122,6 @@ This subpackage includes all the RPM dependencies for the HEPCloud Decision Engi
 %build
 #cp %{SOURCE7} .
 #chmod 700 chksum.sh
-#./chksum.sh v%{version}-%{release}.osg etc/checksum.frontend "CVS doc .git .gitattributes poolwatcher factory/check* factory/glideFactory* factory/test* factory/manage* factory/stop* factory/tools creation/create_glidein creation/reconfig_glidein creation/info_glidein creation/lib/cgW* creation/web_base/factory*html creation/web_base/collector_setup.sh creation/web_base/condor_platform_select.sh creation/web_base/condor_startup.sh creation/web_base/create_mapfile.sh creation/web_base/singularity_setup.sh creation/web_base/singularity_wrapper.sh creation/web_base/singularity_lib.sh creation/web_base/gconfig.py creation/web_base/glidein_startup.sh creation/web_base/job_submit.sh creation/web_base/local_start.sh creation/web_base/setup_x509.sh creation/web_base/update_proxy.py creation/web_base/validate_node.sh chksum.sh etc/checksum* unittests build"
-#./chksum.sh v%{version}-%{release}.osg etc/checksum.factory "CVS doc .git .gitattributes poolwatcher frontend/* creation/reconfig_glidein creation/clone_glidein creation/lib/cgW* creation/web_base/factory*html creation/web_base/collector_setup.sh creation/web_base/condor_platform_select.sh creation/web_base/condor_startup.sh creation/web_base/create_mapfile.sh creation/web_base/singularity_setup.sh creation/web_base/singularity_wrapper.sh creation/web_base/singularity_lib.sh creation/web_base/gconfig.py creation/web_base/glidein_startup.sh creation/web_base/job_submit.sh creation/web_base/local_start.sh creation/web_base/setup_x509.sh creation/web_base/update_proxy.py creation/web_base/validate_node.sh chksum.sh etc/checksum* unittests build creation/lib/matchPolicy*"
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -137,18 +137,16 @@ rm -rf $RPM_BUILD_ROOT
 # Assuming python3_sitelib and python3_sitearch are defined, not supporting RHEL < 7 or old FC
 # Define python_sitelib
 
-#Change src_dir in reconfig_Frontend
-#sed -i "s/WEB_BASE_DIR *=.*/WEB_BASE_DIR = \"\/var\/lib\/gwms-frontend\/web-base\"/" creation/reconfig_frontend
 
 #Create the RPM startup files (init.d) from the templates
-#creation/create_rpm_startup . frontend_initd_startup_template factory_initd_startup_template %{SOURCE1} %{SOURCE6}
+#creation/create_rpm_startup . decisionengine_initd_startup_template %{SOURCE2}
 
 # Create some directories
 install -d $RPM_BUILD_ROOT%{decisionengine_home}
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine/config.d
 install -d $RPM_BUILD_ROOT%{_localstatedir}/log/decisionengine
-install -d $RPM_BUILD_ROOT%{_localstatedir}/log/decisionengine/config.d
-cp -r config/* %{buildroot}/%{_sysconfdir}/decisionengine/
+cp %{SOURCE1} %{buildroot}/%{_sysconfdir}/decisionengine/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
