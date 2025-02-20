@@ -22,6 +22,17 @@ Persistant storage is not currently required for our usage.
 
 .. note::  You may need to install ``podman`` from your system repositories; it should ship with a lot of `modern Linux distributions <https://podman.io/getting-started/installation>`_.  The ``podman`` package should be compatible with Docker, in most cases either one can be used without issue.  If ``podman`` is not avaliable for your platform, you can review the Docker Desktop terms and conditions to see if you qualify for free usage.
 
+.. note::  You may need to install ``nf-tables`` and remove ``ip-tables`` since Alma9 kernels support the former and not the letter. If you see an error like::
+   Error: netavark: code: 3, msg: modprobe: FATAL: Module ip_tables not found in directory /lib/modules/5.14.0-503.21.1.el9_5.x86_64
+   iptables v1.8.10 (legacy): can't initialize iptables table `nat': Table does not exist (do you need to insmod?)
+   Perhaps iptables or your kernel needs to be upgraded.
+
+ Then Run the commands::
+
+   dnf rm iptables-legacy
+   dnf install iptables-nft
+
+
 Configuring the DE server
 #########################
 

@@ -132,10 +132,9 @@ release_rpm() {
     # Copy sources
     # The empty tar file is a placeholder
     rm -rf "$REL_DIR"/tmp
-    mkdir -p "$REL_DIR"/tmp/hepcloud && pushd "$REL_DIR"/tmp 2> /dev/null && \
-        tar czf "$RPM_ROOT_DIR"/SOURCES/hepcloud.tar.gz hepcloud && popd 2> /dev/null || \
+    mkdir -p "$REL_DIR"/tmp/hepcloud && cp -pr "$DE_DIR" "$REL_DIR"/tmp/hepcloud/ && pushd "$REL_DIR"/tmp 2> /dev/null && \
+        tar --exclude='hepcloud/decisionengine/.git' -czf "$RPM_ROOT_DIR"/SOURCES/hepcloud.tar.gz hepcloud && popd 2> /dev/null || \
         { echo "Failed to create empty source. Aborting."; exit 1; }
-    cp "$DE_DIR"/config/decision_engine.jsonnet "$RPM_ROOT_DIR"/SOURCES/
     # Build SRPM
     [[ -n "$VERBOSE" ]] && echo "Building the source RPM for $DE_VERSION-$DE_RELEASE" || true
     [[ "$CMD_LOGS" = /dev/* ]] || CMD_LOGS="${CMD_LOGS}.srpm.log"
@@ -157,8 +156,9 @@ release_rpm() {
     # Update the YUM repository
     if [[ -n "$YUM_REPO" ]];then
         [[ -n "$VERBOSE" ]] && echo "Deploying RPMs in YUM repository: $YUM_REPO" || true
-        cp "$RPM_ROOT_DIR/RPMS/decisionengine-${DE_VERSION}-${DE_RELEASE}.*rpm" "$YUM_REPO"/
-        if ! createrepo "$YUM_REPO"; then
+        [[ "$CMD_LOGS" = /dev/* ]] || CMD_LOGS="${CMD_LOGS%.mockrpm.log}.yumrepo.log"
+        cp "$RPM_ROOT_DIR/RPMS/decisionengine"-*-"${DE_VERSION}-${DE_RELEASE}".*rpm "$YUM_REPO"/
+        if ! createrepo "$YUM_REPO" >"$CMD_LOGS"; then
             echo "Error updating the YUM repository. Aborting"
             exit 2
         fi
@@ -180,7 +180,7 @@ _main() {
     RPM_ROOT_DIR="$REL_DIR"/rpmbuild
     if [[ "$CMD_LOGS" = de ]]; then
         CMD_LOGS="$REL_DIR/${CMD_LOGS}-${DE_VERSION}-${DE_RELEASE}"
-        [[ -n "$VERBOSE" ]] && echo "Log files will be in $REL_DIR/${CMD_LOGS}-${DE_VERSION}-${DE_RELEASE}\*"
+        [[ -n "$VERBOSE" ]] && echo "Log files will be in $REL_DIR/${CMD_LOGS}-${DE_VERSION}-${DE_RELEASE}\*" || true
     fi
     local src_tmpdir=
     if [[ -z "$DE_DIR" || -z "$DEM_DIR" ]]; then

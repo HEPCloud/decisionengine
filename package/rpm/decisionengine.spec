@@ -22,7 +22,9 @@
 %define release __HCDE_RPM_RELEASE__
 
 %define decisionengine_home %{_sharedstatedir}/decisionengine
-%define systemddir %{_prefix}/lib/systemd/system
+#%define systemddir %{_prefix}/lib/systemd/system
+%define src_de_base decisionengine
+%define src_de_package %{src_de_base}/package
 
 Name:           decisionengine
 Version:        %{version}
@@ -36,10 +38,10 @@ Prefix:         %{_prefix}
 Vendor:         Fermilab <None>
 
 Source:         hepcloud.tar.gz
-Source1:        decision_engine.jsonnet
 
 BuildRequires: python%{python3_pkgversion} >= 3.9
 BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: systemd
 BuildRequires: git
 BuildRequires: make
 BuildRequires: openssl-devel
@@ -77,14 +79,19 @@ Requires: postgresql
 Requires: postgresql-server
 Requires: postgresql-devel
 Requires: httpd
-Requires: podman
 Requires: python3-cryptography
 Requires: python3-pip
+Requires: python3-jsonnet
 Requires: gettext
-# Required to build jsonnet (make, g++, and Python.h) (TODO: put in pip a build for jsonnet)
-Requires: make
-Requires: gcc-c++
-Requires: python3-devel
+# iptables-nft added to avoid podman pulling iptables-legacy (incompatible w/ EL9 kernels)
+Requires: iptables-nft
+Requires: podman
+# For pip install git+https ...
+Requires: git
+# To add back if jsonnet RPM not available - Required to build jsonnet (make, g++, and Python.h) (TODO: put in pip a build for jsonnet)
+#Requires: make
+#Requires: gcc-c++
+#Requires: python3-devel
 %description deps
 This subpackage includes all the RPM dependencied for the HEPCloud Decision Engine Framework.
 
@@ -96,20 +103,27 @@ Requires: decisionengine-deps = %{version}-%{release}
 Requires: glideinwms-vofrontend-libs
 Requires: glideinwms-vofrontend-glidein
 Requires: glideinwms-vofrontend-core
-Requires: glideinwms-vofrontend-httpd
 %description modules-deps
 This subpackage includes all the RPM dependencied for the HEPCloud Decision Engine Modules.
 
 
+%package standalone
+Summary: The HEPCloud Decision Engine Modules dependencies and Web server
+Requires: decisionengine-modules-deps = %{version}-%{release}
+Requires: glideinwms-vofrontend-httpd
+%description standalone
+This package installs the RPM requirements and the Web server.
+
+
 %package onenode
 Summary: The HEPCloud Decision Engine Framework and Modules dependencies, and extra-services.
-Requires: decisionengine-deps = %{version}-%{release}
-Requires: decisionengine-modules-deps = %{version}-%{release}
+Requires: decisionengine-standalone = %{version}-%{release}
 # These may actually be on another host
 Requires: glideinwms-userschedd
 Requires: glideinwms-usercollector
 %description onenode
-This subpackage includes all the RPM dependencies for the HEPCloud Decision Engine Framework and Modules and additional used services.
+This subpackage includes all the RPM dependencies for the HEPCloud Decision Engine Framework and Modules
+the Web server for the staged files, and the HTCondor CM and AP to manage the virtual cluster.
 
 
 %prep
@@ -137,16 +151,24 @@ rm -rf $RPM_BUILD_ROOT
 # Assuming python3_sitelib and python3_sitearch are defined, not supporting RHEL < 7 or old FC
 # Define python_sitelib
 
-
-#Create the RPM startup files (init.d) from the templates
-#creation/create_rpm_startup . decisionengine_initd_startup_template %{SOURCE2}
-
-# Create some directories
+# Create some directories, install config files, systemd and the binary wrapper
 install -d $RPM_BUILD_ROOT%{decisionengine_home}
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine/config.d
 install -d $RPM_BUILD_ROOT%{_localstatedir}/log/decisionengine
-cp %{SOURCE1} %{buildroot}/%{_sysconfdir}/decisionengine/
+install -m 0644 %{src_de_base}/config/decision_engine.jsonnet $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine/
+install -D -m 0644 %{src_de_package}/systemd/decisionengine.service $RPM_BUILD_ROOT%{_unitdir}/decisionengine.service
+install -D -m 0644 %{src_de_package}/systemd/decisionengine_sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/decisionengine
+install -D -m 0755 %{src_de_package}/rpm/decisionengine-wrapper.sh $RPM_BUILD_ROOT%{_bindir}/decisionengine-wrapper.sh
+install -D -m 0755 %{src_de_package}/rpm/decisionengine-install-python.sh $RPM_BUILD_ROOT%{_bindir}/decisionengine-install-python
+# Add links to the wrapper script for all decisionengine binaries
+pushd $RPM_BUILD_ROOT%{_bindir}
+%{__ln_s} -f decisionengine-wrapper.sh decisionengine
+%{__ln_s} -f decisionengine-wrapper.sh de-client
+%{__ln_s} -f decisionengine-wrapper.sh de-logparser
+%{__ln_s} -f decisionengine-wrapper.sh de-query-tool
+%{__ln_s} -f decisionengine-wrapper.sh de-reaper
+popd
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -166,21 +188,20 @@ usermod --append --groups decisionengine decisionengine >/dev/null
 # make sure our home area makes sense since we have a dynamic id
 chown decisionengine:decisionengine %{decisionengine_home}
 chmod 750 %{decisionengine_home}
-
 # If the decisionengine user already exists make sure it is part of
 # the decisionengine group
 usermod --append --groups decisionengine decisionengine >/dev/null
-
 # Change the ownership of log and lock dir if they already exist
 if [ -d %{_localstatedir}/log/decisionengine ]; then
     chown -R decisionengine:decisionengine %{_localstatedir}/log/decisionengine
 fi
-
-systemctl daemon-reload
+# Failsafe for container without systemd
+systemctl daemon-reload || true
 
 
 %postun deps
-systemctl daemon-reload
+# Failsafe for container without systemd
+systemctl daemon-reload || true
 
 
 %files deps
@@ -189,7 +210,21 @@ systemctl daemon-reload
 %dir %{_sysconfdir}/decisionengine
 %dir %{_sysconfdir}/decisionengine/config.d
 %config(noreplace) %{_sysconfdir}/decisionengine/decision_engine.jsonnet
+%attr(-, root, root) %{_unitdir}/decisionengine.service
+%attr(-, root, root) %config(noreplace) %{_sysconfdir}/sysconfig/decisionengine
+%attr(-, root, root) %{_bindir}/decisionengine-wrapper.sh
+%attr(-, root, root) %{_bindir}/decisionengine
+%attr(-, root, root) %{_bindir}/de-client
+%attr(-, root, root) %{_bindir}/de-logparser
+%attr(-, root, root) %{_bindir}/de-query-tool
+%attr(-, root, root) %{_bindir}/de-reaper
+%attr(-, root, root) %{_bindir}/decisionengine-install-python
+
 # add all files in config.d
 %attr(-, decisionengine, decisionengine) %dir %{_localstatedir}/log/decisionengine
 
 %files modules-deps
+
+%files standalone
+
+%files onenode

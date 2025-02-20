@@ -1,5 +1,9 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
 [Unit]
-Description = Decision EngineService
+Description = HEPCloud Decision Engine Service
+Documentation = "https://hepcloud.github.io/decisionengine/"
 Wants = network-online.target
 After = network.target
 
@@ -12,6 +16,7 @@ PrivateTmp = true
 ExecStart = /usr/bin/decisionengine "$DE_OPTS"
 ExecStop = /usr/bin/echo "Running /usr/bin/de-client --stop" >&2
 ExecStop = /usr/bin/de-client --stop
+# ExecReload=/usr/sbin/decsionengine reload  $MAINPID
 
 [Install]
 WantedBy = multi-user.target
