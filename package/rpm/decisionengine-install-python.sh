@@ -21,6 +21,7 @@ help_msg() {
 $0 [options] VERSION [RELEASE]
 Install the Decision Engine (Framework and Modules) Python release via pip. Requires the RPM installation.
 --help                 Print this
+--verbose              Verbose output
 --de-repo-git URI      Decision Engine framework Git repository URI (default: $DE_GIT_DEFAULT)
 --dem-repo-git URI     Decision Engine modules Git repository URI (default: $DEM_GIT_DEFAULT). Keywords:
                        same - relative to the framework repository
@@ -33,11 +34,11 @@ Install the Decision Engine (Framework and Modules) Python release via pip. Requ
 --dem-repo-dir PATH    Decision Engine modules Git repository directory (default: relative to DE directory)
 
 --user USER            User to install and run Decision Engine
---remote               Pip Installation from the DE and DEM Git (GitHub) URIs
+--remote               Pip Installation from the DE and DEM Git (GitHub) URIs (remote)
 --local                Pip Installation from the local DE and DEM directory
+--clone                Make a local clone of the repositories
 Not yet implemented
 --python PYTHON        Python interpreter or venv to use for Decision Engine
---clone                Make a local clone of the repository
 --dev                  Pip development Installation from the local DE and DEM directory
 EOF
 }
@@ -98,6 +99,9 @@ parse_opts() {
             --clone)
                 DO_CLONE=true
                 ;;
+            --verbose)
+                VERBOSE=true
+                ;;
             --remote)
                 INSTALL_TYPE="remote"
                 ;;
@@ -108,12 +112,12 @@ parse_opts() {
                 INSTALL_TYPE="devel"
                 ;;
             --help)
-                help
+                help_msg
                 exit 0
                 ;;
             *)
                 echo "Error. Parameter '$1' is not supported."
-                help
+                help_msg
                 exit 1
         esac
         shift
@@ -144,8 +148,26 @@ get_version() {
 	exit 1
     fi
     retv=${retv#${REQUIRED_RPM}-}
-    $VERBOSE && echo "Decision Engine version $retv" || true
+    $VERBOSE && echo "RPM Decision Engine version: $retv" || true
     echo ${retv%.*.noarch}
+}
+
+do_install_pre() {
+    # Update pip
+    pip install --upgrade pip
+    # setuptools>71 incompatible w/ packaging <22, https://github.com/pypa/setuptools/issues/4483
+    pip install --upgrade setuptools wheel setuptools-scm[toml] packaging
+}
+
+do_install() {
+    retv=0
+    # Install the Python modules via pip
+    $VERBOSE && echo "Installing via pip git+$DE_FROM$DE_GIT_REF" || true
+    pip install "git+$DE_FROM$DE_GIT_REF" || retv=1
+    $VERBOSE && echo "Installing via pip git+$DEM_FROM$DEM_GIT_REF" || true
+    pip install "git+$DEM_FROM$DEM_GIT_REF" || retv=1
+    # Double check that pip added $HOME/.local/bin to the PATH of user decisionengine
+    return $retv
 }
 
 do_install_su() {
@@ -164,21 +186,6 @@ do_install"
     su -s /bin/bash -c "$cmd" -l "$DE_USER"
 }
 
-do_install_pre() {
-    # Update pip
-    pip install --upgrade pip
-    pip install --upgrade setuptools wheel setuptools-scm[toml]
-}
-
-do_install() {
-    retv=0
-    # Install the Python modules via pip
-    pip install "git+$DE_FROM$DE_GIT_REF" || retv=1
-    pip install "git+$DEM_FROM$DEM_GIT_REF" || retv=1
-    # Double check that pip added $HOME/.local/bin to the PATH of user decisionengine
-    return $retv
-}
-
 make_dir() {
     local src_tmpdir=
     if [[ -z "$DE_DIR" || -z "$DEM_DIR" ]]; then
@@ -189,24 +196,48 @@ make_dir() {
     fi
 }
 
+clone_repo() {
+    mkdir -p "$1"
+    pushd "$1"
+    git clone "$2" .
+    [[ -n "$3" ]] && git checkout "${3#@}"
+    popd
+}
+
 _main() {
     local de_rpm_version_release de_git_version
+    # Check RPM requirements and get RPM version
     de_rpm_version_release=$(get_version)
     # Parse options and adjust parameters
     parse_opts "$@"
-
+    # Deriving Git version
     if [[ "$de_rpm_version_release" = *rc* ]]; then
         # Extract the RPM release if RC (Python schema is X.Y.ZrcN, no dot)
         de_git_version="rc${de_rpm_version_release#*rc}"
     fi
-    # Add the RPM version
     de_git_version="${de_rpm_version_release%-*}$de_git_version"
     [[ "$DE_GIT_REF" = "@auto" ]] && DE_GIT_REF="@$de_git_version" || true
     [[ "$DEM_GIT_REF" = "@auto" ]] && DEM_GIT_REF="@$de_git_version" || true
+    $VERBOSE && echo "Corresponding Python version: $de_git_version ($DE_GIT_REF/$DEM_GIT_REF)"
 
+    local src_tmpdir=
+    if $DO_CLONE; then
+        # Clone on disk
+        if [[ -z "$DE_DIR" || -z "$DEM_DIR" ]]; then
+            # mktemp for both Linux and Darwin
+            src_tmpdir=$(mktemp -d 2>/dev/null || mktemp -d -t 'detmpdir')
+            [[ -n "$DE_DIR" ]] || DE_DIR="$src_tmpdir"/decisionengine
+            [[ -n "$DEM_DIR" ]] || DEM_DIR="$src_tmpdir"/decisionengine_modules
+        fi
+        clone_repo "$DE_DIR" "$DE_GIT" "$DE_GIT_REF"
+	clone_repo "$DEM_DIR" "$DEM_GIT" "$DEM_GIT_REF"
+    fi
+
+    # Robust absolute path
     DE_DIR=$(robust_realpath "$DE_DIR")
     DEM_DIR=$(robust_realpath "$DEM_DIR")
 
+    # Do install
     if [[ "$INSTALL_TYPE" = local ]]; then
         # This requires absolute paths
         DE_FROM="file://$DE_DIR"
@@ -218,6 +249,7 @@ _main() {
         $VERBOSE && echo "Preparing for remote install from $DE_FROM$DE_GIT_REF, $DEM_FROM$DEM_GIT_REF" || true
     else
         echo "Error: $INSTALL_TYPE not supported. Aborting"
+	help_msg
         exit 1
     fi
 
@@ -233,6 +265,11 @@ _main() {
         exit 1
     else
         $VERBOSE && echo "Installation successful" || true
+    fi
+
+    # Clean temp dir if created
+    if [[ -n "$src_tmpdir" ]]; then
+        rm -rf "$src_tmpdir"
     fi
 }
 
