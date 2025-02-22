@@ -21,7 +21,7 @@ class ChannelWorker(multiprocessing.Process):
 
     This class' run function is called whenever the process is
     started.  If the process is abruptly terminated--e.g. the run
-    method is pre-empted by a signal or an os._exit(n) call--the
+    method is preempted by a signal or an os._exit(n) call--the
     ChannelWorker object will still exist even if the operating-system
     process no longer does.
 

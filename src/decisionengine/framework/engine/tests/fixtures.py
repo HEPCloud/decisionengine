@@ -155,7 +155,7 @@ def DEServer(
 
         Add datasource objects to DATABASES_TO_TEST once they've got
         our basic schema loaded.  Pytest should take it from there and
-        automatically run it throught all the below tests
+        automatically run it throughout all the below tests
         """
         logger = logging.getLogger()
         if port:

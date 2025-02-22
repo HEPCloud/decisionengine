@@ -51,7 +51,7 @@ commits
 :   Remove unnecessary using declarations.
 
 `00f6d00 <https://github.com/HEPCloud/decisionengine/commit/00f6d00b1c22d02377d97960f6ccf4a47f6e3b2f>`_
-:   Add extra header dependency due to Boost Python ommission.
+:   Add extra header dependency due to Boost Python omission.
 
 `24e0795 <https://github.com/HEPCloud/decisionengine/commit/24e0795c349fddc3276b66c535dffc6d5f97efda>`_
 :   Apply clang-format
@@ -75,7 +75,7 @@ commits
 :   TaskManager: fix calling log_exception with correct number of arguments and minor format changes to reduce PEP8 warnings
 
 `17396da <https://github.com/HEPCloud/decisionengine/commit/17396da81cce534c9f17af5c211649fb733a45de>`_
-:   logicengine: get rid of compuler warnings
+:   logicengine: get rid of compiler warnings
 
 `01dc3d1 <https://github.com/HEPCloud/decisionengine/commit/01dc3d1352065f8986832d03fee6595e362c5056>`_
 :   Only track what we need
@@ -135,7 +135,7 @@ commits
 :   Setup travis to use new cmake var
 
 `74fab2a <https://github.com/HEPCloud/decisionengine/commit/74fab2ae8c779b8dc252de880674de55e39cfff8>`_
-:   Use cmake argumement -DPYVER=3.6 to build python3 library https://fermicloud140.fnal.gov/reviews/r/31/
+:   Use cmake argument -DPYVER=3.6 to build python3 library https://fermicloud140.fnal.gov/reviews/r/31/
 
 `843f30c <https://github.com/HEPCloud/decisionengine/commit/843f30cccc35a5bf73af4a3a460bf33a2820ada6>`_
 :   Minor cleanups per travis-lint
@@ -153,7 +153,7 @@ commits
 :   Find python3 libraries using cmake3 from epel rpm Also need to install python3-devel
 
 `4c79d2c <https://github.com/HEPCloud/decisionengine/commit/4c79d2c4ade0341457556166b591312c5211d46b>`_
-:   Remove unnused GNUmakefiles.
+:   Remove unused GNUmakefiles.
 
 `94342ee <https://github.com/HEPCloud/decisionengine/commit/94342eea07ee2219bc17280b2a3fc2a60e08ea8a>`_
 :   Add unit test as a Github Action

@@ -38,13 +38,13 @@ Full list of commits since version 1.7.1
 Release 1.7.4
 -------------
 
-Same as 1.7.1 release. Dome to mantain the same version number as decisionengine_modules.
+Same as 1.7.1 release. Dome to maintain the same version number as decisionengine_modules.
 
 
 Release 1.7.3
 -------------
 
-Same as 1.7.1 release. Dome to mantain the same version number as decisionengine_modules.
+Same as 1.7.1 release. Dome to maintain the same version number as decisionengine_modules.
 
 Release 1.7.2
 -------------
@@ -109,7 +109,7 @@ This release features:
     Added requirement on prometheus-client.
     Prometheus will be used as optional monitoring component.
 .. note::
-    The "channel_name" key in the Source Proxy config dictionaries needs to be changed to "source_channel". "channel_name" is now being used to describe the name of the channel itself, not the name of the channel the Source Proxy is gettting information from.
+    The "channel_name" key in the Source Proxy config dictionaries needs to be changed to "source_channel". "channel_name" is now being used to describe the name of the channel itself, not the name of the channel the Source Proxy is getting information from.
 
 
 
@@ -224,13 +224,13 @@ Full list of commits since version 1.6.0
 
 `1df400ae <https://github.com/HEPCloud/decisionengine/commit/1df400ae183829c8f0d53f1310af45bfdc63354f>`_:   Fix spaces
 
-`5278fd99 <https://github.com/HEPCloud/decisionengine/commit/5278fd996382965469f002adfb35d5901b585a63>`_:   Raise timout for numpy on pypy
+`5278fd99 <https://github.com/HEPCloud/decisionengine/commit/5278fd996382965469f002adfb35d5901b585a63>`_:   Raise timeout for numpy on pypy
 
 `6d0a1a74 <https://github.com/HEPCloud/decisionengine/commit/6d0a1a7419883495fb44b17ef2b78091df100a1c>`_:   Release notes ready for v1.7.0
 
 `084f74e1 <https://github.com/HEPCloud/decisionengine/commit/084f74e1228f7d174ae89cdb69dcf42eb893ef71>`_:   Initial SQLAlchemy Datasource
 
-`3353aa00 <https://github.com/HEPCloud/decisionengine/commit/3353aa00111a1933ce263fb0e853b5fe87e30794>`_:   Make sure our jsonnet is json synatx valid
+`3353aa00 <https://github.com/HEPCloud/decisionengine/commit/3353aa00111a1933ce263fb0e853b5fe87e30794>`_:   Make sure our jsonnet is json syntax valid
 
 `402b1c26 <https://github.com/HEPCloud/decisionengine/commit/402b1c264c9959f35a5bdef103fb4a827259a5bf>`_:   Fix transform-ordering problem.
 
@@ -308,7 +308,7 @@ Full list of commits since version 1.6.0
 
 `96e5d069 <https://github.com/HEPCloud/decisionengine/commit/96e5d06997e53975d5baff0ab86e19951075c023>`_:   Fix typo
 
-`9f96f418 <https://github.com/HEPCloud/decisionengine/commit/9f96f4181b0301d1a7b0a69e0ca10b5ce0baeeac>`_:   Setup datablock to use our paramaterized fixture
+`9f96f418 <https://github.com/HEPCloud/decisionengine/commit/9f96f4181b0301d1a7b0a69e0ca10b5ce0baeeac>`_:   Setup datablock to use our parameterized fixture
 
 `36ebc66c <https://github.com/HEPCloud/decisionengine/commit/36ebc66c19a8d20c001447c78744d978a9e3bbf2>`_:   Add config for LGTM
 
@@ -334,7 +334,7 @@ Full list of commits since version 1.6.0
 
 `cac2bef3 <https://github.com/HEPCloud/decisionengine/commit/cac2bef32d3b503402b5e25503a63acee18c6921>`_:   Fix missing version requirements
 
-`3be8f84f <https://github.com/HEPCloud/decisionengine/commit/3be8f84f36044e2a289197883b852149c4ae1ae9>`_:   Add line lenght for autoformater
+`3be8f84f <https://github.com/HEPCloud/decisionengine/commit/3be8f84f36044e2a289197883b852149c4ae1ae9>`_:   Add line length for autoformater
 
 `90e2baad <https://github.com/HEPCloud/decisionengine/commit/90e2baadaa3197f2a0bf277273c081b2f442b76d>`_:   Protect against inappropriate wait under error condition.
 
@@ -468,7 +468,7 @@ Full list of commits since version 1.6.0
 
 `410e383d <https://github.com/HEPCloud/decisionengine/commit/410e383de712bdd5fcd5a6cc6e04deca8ce923bb>`_:   Merge pull request #331 from jcpunk/reaper-interval-tests
 
-`719ff0c8 <https://github.com/HEPCloud/decisionengine/commit/719ff0c85a77376c19d7681bdf18c7abfc1f9c5d>`_:   Test datablock expire funtions
+`719ff0c8 <https://github.com/HEPCloud/decisionengine/commit/719ff0c85a77376c19d7681bdf18c7abfc1f9c5d>`_:   Test datablock expire functions
 
 `e14c49d8 <https://github.com/HEPCloud/decisionengine/commit/e14c49d80537b549fea884546378fc5917c1591b>`_:   The 'name' parameter is optional.
 
@@ -542,7 +542,7 @@ Full list of commits since version 1.6.0
 
 `b899fa23 <https://github.com/HEPCloud/decisionengine/commit/b899fa237d20f949f1adf147fa7d6da55381b4b2>`_:   Add SourceProxy module test. (#307)
 
-`7b3df14c <https://github.com/HEPCloud/decisionengine/commit/7b3df14c7a26c9d3ba2b0e56ac4598ed8d3c4d80>`_:   Increae coverage of utils (#304)
+`7b3df14c <https://github.com/HEPCloud/decisionengine/commit/7b3df14c7a26c9d3ba2b0e56ac4598ed8d3c4d80>`_:   Increase coverage of utils (#304)
 
 `ddba2a31 <https://github.com/HEPCloud/decisionengine/commit/ddba2a312884208b80682c7ecf3162234cf434e7>`_:   Fix duplicate entry warning (#311)
 

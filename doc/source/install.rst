@@ -19,7 +19,7 @@ decisionengine will run as the decisionengine user.
 Install PostgreSQL
 ------------------
 
-Install the default postgresql distributed on RHEL9, Postgress 13:
+Install the default postgresql distributed on RHEL9, Postgresql 13:
 
 1. Install postgresql ::
 
@@ -190,7 +190,7 @@ Install via PIP
 ---------------
 
 Skip this if you did the RPM installation. This PIP installation is recommended for development whnen you want to clone the Git repository and change the code.
-There are a few extra steps (dependencies installation ansd setups) that are automated in the RPM installation.
+There are a few extra steps (dependencies installation and setups) that are automated in the RPM installation.
 
 1. GlideinWMS (3.10.x) and HTCondor (aka HTCSS) are needed for Decision Engine. The ``glideinwms`` packages will pull all the other dependencies.
   The complete version of the GlideinWMS installation instructions is available `here<https://opensciencegrid.org/docs/other/install-gwms-frontend/>`.
@@ -363,7 +363,7 @@ Setup pressure-based pilot submission
 | We assume that the Frontend proxy and the VO proxy are already available.
 |
 
-**- Configure the pressure-based submisison**
+**- Configure the pressure-based submission**
 | Write the configuration for the Decision Engine glideinwms module
 | To ease the process you can use the templates available in the `config_template contrib repo <https://github.com/HEPCloud/contrib/tree/master/config_template>`_.
 | Copy the files from the ``EL9`` folder into ``/etc/decisionengine``, and the files in ``EL9/config.d/`` into ``/etc/decisionengine/config.d``.
@@ -476,7 +476,7 @@ Now the ``decisionengine`` user session can be closed to get back to the ``root`
 
 Finally stop Decision Engine service and remove the Redis container::
 
-  # If you istalled via RPMs run
+  # If you installed via RPMs run
   systemctl stop decisionengine.service
   # Run de-client --stop as decisionengine if you installed w/ PIP
   podman stop decisionengine-redis | xargs podman rm

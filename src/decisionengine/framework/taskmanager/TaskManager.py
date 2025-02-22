@@ -195,7 +195,7 @@ class TaskManager:
                     CHANNEL_STATE_GAUGE.labels(self.name).set(self.get_state_value())
         except Exception:  # pragma: no cover
             self.logger.exception("Exception in the task manager main loop")
-            self.logger.error("Error occured. Task manager %s exits with state %s", self.id, self.get_state_name())
+            self.logger.error("Error occurred. Task manager %s exits with state %s", self.id, self.get_state_name())
 
     def run_cycles(self):
         """

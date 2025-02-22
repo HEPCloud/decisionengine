@@ -12,7 +12,7 @@ from decisionengine.framework.util import fs
 
 def test_non_real_directory():
     with pytest.raises(FileNotFoundError):
-        fs.files_with_extensions("/this/dir/isnt/real")
+        fs.files_with_extensions("/this/dir/is/not/real")
 
 
 def test_empty_directory():

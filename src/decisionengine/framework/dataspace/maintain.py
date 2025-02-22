@@ -174,7 +174,7 @@ class Reaper:
 
     def stop(self):
         """
-        Try to stop the reaper, will block if the reaper cannot be interupted.
+        Try to stop the reaper, will block if the reaper cannot be interrupted.
         """
         if isinstance(self.thread, threading.Thread):
             if self.thread.is_alive():

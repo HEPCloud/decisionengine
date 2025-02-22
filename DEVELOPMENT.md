@@ -52,7 +52,7 @@ sudo localedef -v -c -i en_US -f UTF-8 C.UTF-8
 
 ## Licensing compliance
 
-Decison engine is released under the Apache 2.0 license and license compliance is
+Decision engine is released under the Apache 2.0 license and license compliance is
 handled with the [REUSE](http://reuse.software/) tool.
 REUSE is installed as development dependency or you can install it manually
 (`pip install reuse`). All files should have a license notice:

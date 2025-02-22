@@ -77,7 +77,7 @@ class BooleanExpression:
         self.expr = compile(syntax_tree, source, mode)
 
     def evaluate(self, d):
-        """Return the evaluated Boolen value of this expression in the context
+        """Return the evaluated Boolean value of this expression in the context
         of the given data 'd'."""
         logger.debug("calling BooleanExpression::evaluate()")
         try:

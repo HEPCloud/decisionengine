@@ -679,7 +679,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         client_queue = QueueAccess(self.client_requests_queue, self.client_connection)
 
         try:
-            # methods allowed to be executed by rpc have 'rpc_' pre-pended
+            # methods allowed to be executed by rpc have 'rpc_' prepended
             func = getattr(self, "rpc_" + method)
         except AttributeError:
             raise Exception(f'method "{method}" is not supported')
@@ -690,7 +690,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         # offline whenever the client task managers have gone offline.
 
         # We take sources offline only if the channel workers are not
-        # being accesssed by another thread.  This is important
+        # being accessed by another thread.  This is important
         # whenever (e.g.) channels are being brought online and an
         # operator wants to check the DE status via an XMLRPC request.
         if self.channel_workers.accessed_by_another_thread():

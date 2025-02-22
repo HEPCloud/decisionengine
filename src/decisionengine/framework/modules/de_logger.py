@@ -48,7 +48,7 @@ def configure_logging(
     :type  max_file_size: :obj:`int`
     :arg  max_file_size: maximal size of log file. If reached save and start new log.
     :type  max_backup_count: :obj:`int`
-    :arg  max_backup_count: start rotaion after this number is reached
+    :arg  max_backup_count: start rotation after this number is reached
     :rtype: None
     """
     if log_file_name in (None, ""):

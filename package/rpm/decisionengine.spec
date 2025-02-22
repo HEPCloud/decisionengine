@@ -93,7 +93,7 @@ Requires: git
 #Requires: gcc-c++
 #Requires: python3-devel
 %description deps
-This subpackage includes all the RPM dependencied for the HEPCloud Decision Engine Framework.
+This subpackage includes all the RPM dependency for the HEPCloud Decision Engine Framework.
 
 
 %package modules-deps
@@ -104,7 +104,7 @@ Requires: glideinwms-vofrontend-libs
 Requires: glideinwms-vofrontend-glidein
 Requires: glideinwms-vofrontend-core
 %description modules-deps
-This subpackage includes all the RPM dependencied for the HEPCloud Decision Engine Modules.
+This subpackage includes all the RPM dependency for the HEPCloud Decision Engine Modules.
 
 
 %package standalone
