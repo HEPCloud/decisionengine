@@ -76,7 +76,7 @@ class Taskmanager(Base):
         comment="",
     )
 
-    # Indexs, etc
+    # Indexes, etc
     __table_args__ = (
         Index("ix_taskmanager_taskmanager_id", "taskmanager_id", postgresql_using="hash"),
         Index("ix_taskmanager_name", "name", postgresql_using="hash"),
@@ -100,9 +100,9 @@ class Header(Base):
 
     The existing code has a hard expectation on the time
     columns being BIGINT rather than datetime objects
-    burried within the classes.
+    buried within the classes.
 
-    Looks like there was an inital goal of a relationship
+    Looks like there was an initial goal of a relationship
      with the Schema table, but it may not be in use
 
     Existing code appears to depend on column order.
@@ -127,7 +127,7 @@ class Header(Base):
 
     taskmanager = relationship("Taskmanager", back_populates="task_header", passive_deletes=True)
 
-    # Indexs, etc
+    # Indexes, etc
     __table_args__ = (
         Index("ix_header_taskmanager_id", "taskmanager_id", postgresql_using="hash"),
         Index(
@@ -148,7 +148,7 @@ class Metadata(Base):
 
     The existing code has a hard expectation on the time
     columns being BIGINT rather than datetime objects
-    burried within the classes.
+    buried within the classes.
 
     Existing code appears to depend on column order.
     """
@@ -170,7 +170,7 @@ class Metadata(Base):
 
     taskmanager = relationship("Taskmanager", back_populates="task_metadata", passive_deletes=True)
 
-    # Indexs, etc
+    # Indexes, etc
     __table_args__ = (
         Index("ix_metadata_taskmanager_id", "taskmanager_id", postgresql_using="hash"),
         Index(
@@ -205,7 +205,7 @@ class Dataproduct(Base):
 
     taskmanager = relationship("Taskmanager", back_populates="task_dataproduct", passive_deletes=True)
 
-    # Indexs, etc
+    # Indexes, etc
     __table_args__ = (
         Index("ix_dataproduct_taskmanager_id", "taskmanager_id", postgresql_using="hash"),
         Index(

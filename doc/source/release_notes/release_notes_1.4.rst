@@ -108,7 +108,7 @@ Full list of commits since version 1.3
 :   Add timeout support for unit test on Jenkins (#181)
 
 `e3d6e6a <https://github.com/HEPCloud/decisionengine/commit/e3d6e6af290996ae0c499bfb3c120d2f510d0a31>`_
-:   Updated Jenkins documentation to take into account unit tests timeout parametr (#180)
+:   Updated Jenkins documentation to take into account unit tests timeout parameter (#180)
 
 `2586a3e <https://github.com/HEPCloud/decisionengine/commit/2586a3e9b861b9987017e25293bef7cbbde26413>`_
 :   Configuration redesign (#168)

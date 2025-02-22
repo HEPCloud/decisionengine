@@ -15,7 +15,7 @@ class FactLookup:
     """
     Establishes a policy for looking up a fact based on the given name.
 
-    To wit, the first fact with a given name is the one that is used
+    To with, the first fact with a given name is the one that is used
     in the evaluation of all subsequent facts.
 
     As an example, consider the following configuration:

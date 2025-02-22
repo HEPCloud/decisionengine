@@ -584,7 +584,7 @@ class SQLAlchemyDS(ds.DataSource):
         Reset the connection to the database.
         So long as self.engine isn't undef, the engine can still
         make new connections if new db actions happen.
-        It just wont have any open at this time.
+        It just won't have any open at this time.
 
         Returns:
             None

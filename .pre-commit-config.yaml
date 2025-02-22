@@ -53,6 +53,24 @@ repos:
       - id: pyupgrade
         args:
           - "--py36-plus"
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.4
+    hooks:
+      - id: codespell
+        args: [
+            # codespell   --toml pyproject.toml -S ./build/ci/checkbashisms.pl -S ./unittests/cs.fixture  .
+            # Pass skip configuration as command line arguments rather than in the
+            # config file because neither cfg nor TOML support splitting this argument
+            # across multiple lines.
+            # Globs must match the Python `glob` module's format:
+            # https://docs.python.org/3/library/glob.html#module-glob
+            "-S",
+            ".codespell/ignore_words.txt",
+            # Write changes in place
+            "-w",
+          ]
+        additional_dependencies:
+          - tomli
   - repo: "https://github.com/fsfe/reuse-tool"
     rev: v0.14.0
     hooks:

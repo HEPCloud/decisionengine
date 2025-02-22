@@ -51,7 +51,7 @@ class ProcessingState:
     """
     This object tracks the state of a process.
 
-    A number of convience wrappers are provided.
+    A number of convenience wrappers are provided.
 
     Additionally you may use the `.lock` attribute for `with` block
     to lock the state during specific operations.

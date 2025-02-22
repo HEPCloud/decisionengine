@@ -14,4 +14,4 @@ https://hepcloud.github.io/decisionengine/
 
 # Getting Started with development
 
-There is a specfic document on this at https://github.com/HEPCloud/decisionengine/blob/master/DEVELOPMENT.md
+There is a specific document on this at https://github.com/HEPCloud/decisionengine/blob/master/DEVELOPMENT.md
