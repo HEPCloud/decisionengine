@@ -146,7 +146,7 @@ def _create_module_instance(config_dict, base_class, channel_name):
 
 class Worker:
     """
-    Provides interface to loadable modules an events to sycronise
+    Provides interface to loadable modules an events to synchronise
     execution
     """
 

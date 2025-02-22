@@ -56,7 +56,7 @@ SOURCE_ACQUIRE_HISTOGRAM = Histogram(
 
 class SourceWorker(multiprocessing.Process):
     """
-    Provides interface to loadable modules an events to sycronize
+    Provides interface to loadable modules an events to synchronize
     execution
     """
 

@@ -441,7 +441,7 @@ Full list of commits since version 1.7.0
 
 `a71d5b0a <https://github.com/HEPCloud/decisionengine/commit/a71d5b0ab1de5524e67059c187798215c10bbcdb>`_:   Add error for running server as root
 
-`cd345701 <https://github.com/HEPCloud/decisionengine/commit/cd345701539b9444eb09d6fece5b7445696b05f5>`_:   Incrase coverage in LogicEngine
+`cd345701 <https://github.com/HEPCloud/decisionengine/commit/cd345701539b9444eb09d6fece5b7445696b05f5>`_:   Increase coverage in LogicEngine
 
 `6c132924 <https://github.com/HEPCloud/decisionengine/commit/6c1329241181980d4fea546c10d5463987a02b3e>`_:   Fix out of sync devel requirements
 

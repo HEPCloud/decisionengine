@@ -22,7 +22,7 @@ SOURCELOGGERNAME = "source"
 # name suffixes and log levels of the output files from the main logger
 # the base name is given by the "log_file" config parameter in the config file
 # since the channel logger also log to the structlog file, we need to index of
-# that element to correctly identifiy it in the Workers
+# that element to correctly identify it in the Workers
 userformat = "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s"
 
 de_outfile_info = (
