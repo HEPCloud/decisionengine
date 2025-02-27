@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
+name: "Python Action"
+description: "Run python3 action in preconfigured EL9 container image"
+inputs:
+  python-command:
+    description: "What to run"
+    required: true
+    default: "-m pytest"
+  logfile:
+    description: "Where to log output"
+    required: true
+    default: "pytest.log"
+runs:
+  using: "docker"
+  image: "../../../package/ci/EL9/Dockerfile"
+  args:
+    - ${{ inputs.python-command }}
+    - ${{ inputs.logfile }}
