@@ -6,9 +6,9 @@ Installing and running HEPCloud's Decision Engine on EL9
 
 Currently the only version supporting EL9 is the development version, DE 2.0.x, which corresponds to the master branch in Git.
 
-Decision engine uses a PostgreSQL database back-end and Redis as message broker and cache.
+Decision Engine uses a PostgreSQL database back-end and Redis as message broker and cache.
 
-You need to install first PostgreSQL, Redis, and then the Decision engine framework (decisionengine) and install and add the standard channels (decisionengine_modules).
+The first one is installed as RPM requirement, the second is used as container. You need to install the pre-requisites RPM and then the Python packages for Decision Engine framework (decisionengine) and install and add the standard channels (decisionengine_modules).
 
 The following instructions assume Alma Linux 9. You may need to adapt them slightly for other EL9 flavors.
 
@@ -16,25 +16,87 @@ These also assume a system installation, performed as ``root``.
 decisionengine will run as the decisionengine user.
 
 
-Install PostgreSQL
-------------------
+Install Decision Engine and the standard modules
+------------------------------------------------
 
-Install the default postgresql distributed on RHEL9, Postgresql 13:
+RPM installation
 
-1. Install postgresql ::
+1. Prerequisites setup. Make sure that the required yum repositories and some required packages (python3, gcc, ...) are installed and up to date. ::
 
-    dnf install -y postgresql postgresql-server
-    # optional, also: postgresql-devel
+    # Possible OSG versions: 24, 23, 24-upcoming
+    OSG_VERSION=24
+    # YUM repo for Decision Engine
+    GWMS_REPO=osg-development
+    dnf install -y epel-release yum-utils sed
+    dnf config-manager --set-enabled crb
+    /bin/sed -i '/^enabled=1/a priority=99' /etc/yum.repos.d/epel.repo
+    dnf -y install "https://repo.osg-htc.org/osg/$OSG_VERSION-main/osg-$OSG_VERSION-main-el9-release-latest.rpm"
 
-2. Enable postgresql ::
+2. Setup the decision engine yum repositories ::
+
+   wget -O /etc/yum.repos.d/ssi-hepcloud.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud.repo
+   wget -O /etc/yum.repos.d/ssi-hepcloud-dev.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud-dev.repo
+   # Note the above repos are only accessible within Fermilab.  There is an alternative place on github to get the RPMs if you are off-site.
+
+3. Install the decision engine (add `--enablerepo=ssi-hepcloud-dev` for the latest development version) ::
+
+   DE_REPO=ssi-hepcloud-dev
+   dnf install -y --enablerepo="$DE_REPO" decisionengine-onenode
+   # Individual packages are: decisionengine-deps (framework req) decisionengine-modules-deps (modules req) decisionengine-standalone (2 deps+httpd)
+
+4. Install the required Python packages (these are taken from setup.py) ::
+
+   decisionengine-install-python
+   # This shell script (included in decisionengine-deps) installs the Decision Engine Python code.
+   # You can run it as root or as the decisionengine user
+   # To see all the options:  decisionengine-install-python --help
+
+   # Double check that pip added $HOME/.local/bin to the PATH of user decisionengine
+
+5. Start and enable HTCondor::
+
+   systemctl start condor
+   systemctl enable condor
+
+6. Optionally install these extra packages ::
+
+   # htgettoken - if you need it to generate SciTokens
+   dnf -y install htgettoken
+
+
+Fix the GlideinWMS Frontend installation
+----------------------------------------
+
+We will make HEPCloud's Decision Engine using some GlideinWMS libraries but independent from the Frontend.
+The codebases, though, are still intertwined, so there are some adjustments needed to the GlideinWMS installation.
+
+Create the condor password and change to decisionengine the ownership of the frontend directories: ::
+
+    # Create or copy the FRONTEND condor password file
+    # If POOL is not there, do start condor (systemctl start condor)
+    pushd  /etc/condor/passwords.d/
+    cp POOL FRONTEND
+    cp FRONTEND /var/lib/gwms-frontend/passwords.d/
+    popd
+    chown -R decisionengine: /var/lib/gwms-frontend
+    chown -R decisionengine: /etc/gwms-frontend
+    # The permission of /var/lib/gwms-frontend/passwords.d/FRONTEND should be 0600
+
+
+Set up PostgreSQL
+-----------------
+
+PostgreSQL is installed by the requirements RPM, Postgresql 13:
+
+1. Enable postgresql ::
 
     systemctl enable postgresql
 
-3. Init the database ::
+2. Init the database ::
 
-    postgresql-setup --initdb -k
+    postgresql-setup --initdb
 
-4. edit ``/var/lib/pgsql/data/pg_hba.conf`` like the following::
+3. edit ``/var/lib/pgsql/data/pg_hba.conf`` like the following::
 
     [root@fermicloud371 ~]# diff  /var/lib/pgsql/data/pg_hba.conf~ /var/lib/pgsql/data/pg_hba.conf
     80c80
@@ -51,7 +113,14 @@ Install the default postgresql distributed on RHEL9, Postgresql 13:
     > host    all             all             ::1/128                 trust
 
 
+   (difference of the correct file from the default one - `pg_hba.conf~`)
    This is setting the authentication method to `trust`
+
+4. Fix the PostgreSQL installation. Not sure why, but the run directory was missing and causing the startup to fail. ::
+
+   # Without this the systemctl start was failing and the error was in /var/lib/pgsql/data/log/postgresql-*.log
+   mkdir -p /var/run/postgresql
+   chown postgres: /var/run/postgresql
 
 5. start the database ::
 
@@ -61,13 +130,9 @@ Install the default postgresql distributed on RHEL9, Postgresql 13:
 
     createdb -U postgres decisionengine
 
-The schema and the connection will be created and configured during the Decision engine framework installation.
+The schema and the connection will be created and configured during the Decision Engine framework initialization.
 
-To use the database you have to add it to the environment::
-
-    export PG_VERSION=13
-    export PATH="~/.local/bin:$PATH"
-    # you may also add these lines to ~/.bashrc
+RHEL also provides other PostgreSQL versions via streams. These may require changes to environment variables like PG_VERSION and PATH to use the database.
 
 
 Install Redis
@@ -75,156 +140,23 @@ Install Redis
 
 Install and start the message broker (Redis) container on your system. You can find more details on the :doc:`redis document <redis>`
 
-1. Install Padman ::
+1. You may need to fix the firewall used ::
+
+   dnf rm iptables-legacy
+   dnf install iptables-nft
+
+2. Install Padman ::
 
     dnf install -y podman
 
-2. Run the Redis container ::
+3. Run the Redis container ::
 
     podman run --name decisionengine-redis -p 127.0.0.1:6379:6379 -d redis:6 --loglevel warning
     # When prompted to select an image, pick "docker.io/library/redis:6".
 
 
-Install Decision Engine and the standard modules
-------------------------------------------------
-
-
-Install needed RPMs prerequisites
----------------------------------
-
-1. Make sure the correct repositories and priorities are set. ::
-
-    # CRB ("Code Ready Builder" - PowerTools ) is used for swig and other dependencies
-    dnf install -y yum-utils
-    dnf config-manager --set-enabled crb
-    # EPEL is used for OSG dependencies
-    dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-    # OSG is used for GlideinWMS, HTCSS and others
-    dnf install https://repo.opensciencegrid.org/osg/3.6/osg-3.6-el9-release-latest.rpm
-    dnf repolist
-    # Make sure all the above repos are enabled
-    # And change the Epel repository priority to make sure that comes after the OSG repositories, which are 98 by default.
-    # Make sure that epel has:
-    #  priority=99
-    vi /etc/yum.repos.d/epel.repo
-
-2. Install the following prerequisites. Make sure that the required packages are installed and up to date. ::
-
-    # RPMs
-    # gcc, swig and make are needed for dependencies (jsonnet)
-    dnf install -y python3 python3-devel python3-cryptography python3-pip
-    dnf install -y gettext git make openssl-devel gcc gcc-c++ swig
-    # Install also these for RPM building:
-    dnf install -y python3-setuptools python3-wheel rpm-build
-    # Update Python pip
-    python3 -m pip install --upgrade --user pip
-    python3 -m pip install --upgrade --user setuptools wheel setuptools-scm[toml]
-
-
-..
-
-  Use PIP installation below - Install via RPMs - coming soon
-  -----------------------------------------------------------
-
-  You can install using the provided RPMs (recommended for production) or via PIP install (recommended for development whnen you want to clone the Git repository and change the code).
-  This section is for the RPM installation, the next one for the PIP installation. Use one or the other.
-
-  1. The yum repositories are available only within Fermilab. From the outside you will have to download the RPMs from `GitHub<https://github.com/HEPCloud/decisionengine/releases>` or use the PIP installarion (below).
-   Setup the decision engine yum repositories ::
-
-    # You need the development version wget -O /etc/yum.repos.d/ssi-hepcloud.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud.repo
-    wget -O /etc/yum.repos.d/ssi-hepcloud-dev.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud-dev.repo
-    # This is the same as the EL9 development repo: http://ssi-rpm.fnal.gov/hep/hepcloud-el9/ssi-hepcloud-dev.repo (http://ssi-rpm.fnal.gov/hep/hepcloud-el9/development/)
-
-  2. Install the decision engine and add ``--enablerepo=ssi-hepcloud-dev`` for the latest development version ::
-
-    dnf install decisionengine
-    dnf install decisionengine_modules
-
-  3. Not all packages are available as RPM. It is necessary to install directly some Python dependencies.
-   To avoid to pollute the system Python we will install them for the ``decisionengine`` user,
-   the user the service is running as.
-   Install the required Python packages (these are taken from setup.py) ::
-
-    su decisionengine -s /bin/bash
-    python3 -m pip install --upgrade pip setuptools wheel --user
-    python3 /path/to/decisionengine/setup.py develop --user
-    python3 /path/to/decisionengine/setup.py develop --user --uninstall
-    python3 /path/to/decisionengine_modules/setup.py develop --user
-    python3 /path/to/decisionengine_modules/setup.py develop --user --uninstall
-    exit
-
-   The commands above should be sufficient. Anyway, here is an explicit list you can use in alternative::
-
-    su decisionengine -s /bin/bash
-    # from decisionengine setup.py
-    python3 -m pip install --user jsonnet==0.17.0 tabulate toposort structlog
-    python3 -m pip install --user wheel DBUtils sqlalchemy
-    python3 -m pip install --user pandas==2.0.0 numpy==1.24.2
-    python3 -m pip install --user "psycopg2-binary >= 2.9.6; platform_python_implementation == 'CPython'"
-    python3 -m pip install --user "psycopg2cffi >= 2.9.0; platform_python_implementation == 'PyPy'"
-    python3 -m pip install --user "cherrypy>=18.8.0" "kombu[redis]>=5.3.0b3" "prometheus-client>=0.16.0"
-    python3 -m pip install --user "psutil>=5.8.0" "typing_extensions==4.1.1"
-    # from decisionengine_modules setup.py
-    python3 -m pip install --user boto3 google-api-python-client
-    python3 -m pip install --user "google_auth<2dev,>=1.16.0" "urllib3>=1.26.2"
-    python3 -m pip install --user gcs-oauth2-boto-plugin
-    # Condor should be already there from the RPM, if not add: python3 -m pip install htcondor
-    python3 -m pip install --user bill-calculator-hep
-
-    # The following are additional requirements for v1.6 and earlier
-    python3 -m pip install --user boto packaging
-    # This is not in pypi
-    python3 -m pip install --user https://test-files.pythonhosted.org/packages/f4/a5/17a14b4ef85bc412a0ddb771771de3f562430328b0d83da6091a4131bb26/bill_calculator_hep_mapsacosta-0.0.10-py3-none-any.whl
-
-    exit
-
-  Now you can type ``decisionengine --help`` to print the help message.
-  To do more you need first to configure Decision Engine.
-  Skip the PIP installation and go to the configuration section.
-
-..
-
-
-Install via PIP
----------------
-
-Skip this if you did the RPM installation. This PIP installation is recommended for development whnen you want to clone the Git repository and change the code.
-There are a few extra steps (dependencies installation and setups) that are automated in the RPM installation.
-
-1. GlideinWMS (3.10.x) and HTCondor (aka HTCSS) are needed for Decision Engine. The ``glideinwms`` packages will pull all the other dependencies.
-  The complete version of the GlideinWMS installation instructions is available `here<https://opensciencegrid.org/docs/other/install-gwms-frontend/>`.
-  For a minimal installation, you can use the following command: ::
-
-    dnf install glideinwms-vofrontend-libs glideinwms-vofrontend-glidein glideinwms-userschedd glideinwms-usercollector
-    dnf install glideinwms-vofrontend-core glideinwms-vofrontend-httpd
-
-2. Setup the decision engine user and git repositories ::
-
-    useradd decisionengine
-    sudo -u decisionengine git clone https://github.com/HEPCloud/decisionengine.git ~decisionengine/decisionengine
-    sudo -u decisionengine git clone https://github.com/HEPCloud/decisionengine_modules.git ~decisionengine/decisionengine_modules
-
-3. Install the decision engine from the git repositories ::
-
-    # Install the decisionengine framework and modules using setuptools
-    su - decisionengine -s /bin/bash
-    # Now you should be the decisionengine user in its home directory
-    pushd decisionengine
-    python3 setup.py develop --user
-    popd
-    pushd decisionengine_modules
-    python3 setup.py develop --user
-    popd
-    exit
-
-    # Create the required system files and directories (as root)
-    mkdir /etc/decisionengine
-    mkdir /var/log/decisionengine/
-    cp ~decisionengine/decisionengine/config/decision_engine.jsonnet /etc/decisionengine
-    cp -r ~decisionengine/decisionengine/src/decisionengine/framework/tests/etc/decisionengine/config.d /etc/decisionengine
-    chown -R decisionengine:decisionengine /etc/decisionengine
-    chown -R decisionengine:decisionengine /var/log/decisionengine
+Test
+----
 
 Now you can type ``decisionengine --help`` while logged in as decisionengine to print the help message.
 To do more you need first to configure Decision Engine.

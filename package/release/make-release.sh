@@ -16,18 +16,24 @@ robust_realpath() {
 help_msg() {
     cat << EOF
 $0 [options] VERSION [RELEASE]
-Build the Decision Engine (Framework and Modules) release (RPM for now, will build also PIP release).
+Build the Decision Engine (Framework and Modules) release (RPM and Python sdist and wheel).
 VERSION RPM version string, e.g. 2.0.3
 RELEASE RPM release string (default: 1), e.g. 1 or 0.1.rc1 or rc1 (equal to 0.1.rc1)
   -h       print this message
   -v       verbose mode
-  -l       write RPM building logs in work directory
-  -e       write RPM building logs to stderr
+  -l       write package (RPM and Python) building logs in work directory
+  -e       write package (RPM and Python) building logs to stderr
   -s TAG   source tag or reference to checkout when cloning the Git repository (default: current REF, or master for new clones)
            This is used only together with -c. It is ignored otherwise
            a - means that the tag is automatically evaluated from the RELEASE and VERSION
                for main releases it is the same as the version string
-               for release candidates it is VERSIONrcN where N is the RC number
+	       for release candidates it is VERSIONrcN (no dot between version and rc) where N is the RC number
+  -t PYTAG version to force for the Python Release (default: use the setting in the source code)
+           WARNING: this option will overwrite pyproject.toml in the repositories to force the PYTAG version
+           PYTAG must follow PEP 440, e.g. 2.0.3 or 2.0.4rc1
+           a - means that the tag is automatically evaluated from the RELEASE and VERSION
+               for main releases it is the same as the version string
+	       for release candidates it is VERSIONrcN (no dot between version and rc) where N is the RC number
   -c URI   HTTPS URI of the decisionengine Git repository to clone to use to build the release
            The decisionengine_modules repository is derived replacing decisionengine.git with decisionengine_modules.git
   -p PLATFORM architecture or platform of the RPM package (default: alma+epel-9-x86_64)
@@ -37,6 +43,16 @@ RELEASE RPM release string (default: 1), e.g. 1 or 0.1.rc1 or rc1 (equal to 0.1.
   -m DEM_DIR directory of the decisionengine_modules Git repository (default: ../../../decisionengine_modules from this script)
   -d REL_DIR directory where to build the release (default: $PWD)
   -w YUM_REPO publish the RPMs to the YUM repository in YUM_REPO
+  -x WHAT   comma separated list of targets to build (default: rpm,py). Keywords:
+            rpm - build the DE and DEM RPMs
+            py  - build the DE and DEM Python (wheel and sdist) packages
+Examples:
+- Make version 2.0.4 and copy the RPMs to the YUM repository:
+/Path/To/decisionengine/package/release/make-release.sh -v -d /opt/osg/distro/de2_0_4 -w /opt/repo/main/ 2.0.4
+- Make only the Python packages of RC1 for version 2.0.4, forcing the package version:
+/Path/To/decisionengine/package/release/make-release.sh -ve -x py -d /opt/osg/distro/de2_0_4 -t a  2.0.4 rc1
+- Here the DE/DEM repos are in a different directory from make-release.sh:
+make-release.sh -v -r /Path/To/decisionengine -d /opt/osg/distro/de2_0_4 2.0.4 0.3.rc3
 EOF
 }
 
@@ -53,7 +69,9 @@ parse_opts() {
     RPM_PLATFORM="alma+epel-9-x86_64"
     PY_VER=python39
     YUM_REPO=
-    while getopts "vlecs:p:y:r:m:d:w:h" option
+    BUILD_TARGET=rpm,py
+    PYTAG=
+    while getopts "vlecs:t:p:y:r:m:d:w:x:h" option
     do
       case "${option}"
         in
@@ -63,12 +81,14 @@ parse_opts() {
         e) CMD_LOGS="/dev/stderr";;
         c) CLONE_URI="$OPTARG";;
         s) SRC_TAG="$OPTARG";;
+        t) PYTAG="$OPTARG";;
         p) RPM_PLATFORM="$OPTARG";;
         y) PY_VER="$OPTARG";;
         r) DE_DIR="${OPTARG%/}";;
         m) DEM_DIR="${OPTARG%/}";;
         d) REL_DIR="${OPTARG%/}";;
         w) YUM_REPO="${OPTARG%/}";;
+        x) BUILD_TARGET="$OPTARG";;
         *) echo "ERROR: Invalid option"; help_msg; exit 1;;
       esac
     done
@@ -91,10 +111,10 @@ _binary_filedigest_algorithm md5
 EOF
 }
 
-get_rc_number() {
+get_rc_and_number() {
     # Return the RC number, empty for main releases
     # 1 - release string
-    [[ "$1" = *rc* ]] && echo "${1#*rc}"
+    [[ "$1" = *rc* ]] && echo "rc${1#*rc}"
 }
 
 get_srpm_file() {
@@ -165,6 +185,37 @@ release_rpm() {
     fi
 }
 
+release_py() {
+    # Make the Python wheel (bdist) and sdist
+    # python -m build -o DIST_DIR [-C] SRC_DIR
+    mkdir -p "$REL_DIR"/dist
+    if [[ -n "$PYTAG" ]];then
+        # This is forcing a change in pyproject.toml
+        [[ -n "$VERBOSE" ]] && echo "Overwriting pyproject.toml to force version $PYTAG" || true
+        # Very rough search, it is looking in the whole file
+        # match static version
+        sed  -i "s;^version = \"[^\"]*\";version = \"$PYTAG\";" "$DE_DIR"/pyproject.toml
+        sed  -i "s;^version = \"[^\"]*\";version = \"$PYTAG\";" "$DEM_DIR"/pyproject.toml
+        # match dynamic version
+        sed  -i "s;^dynamic = \[\"version\"\];version = \"$PYTAG\";" "$DE_DIR"/pyproject.toml
+        sed  -i "s;^dynamic = \[\"version\"\];version = \"$PYTAG\";" "$DEM_DIR"/pyproject.toml
+    fi
+    [[ -n "$VERBOSE" ]] && echo "Building the Python wheel and sdist via build" || true
+    [[ "$CMD_LOGS" = /dev/* ]] || { CMD_LOGS="${CMD_LOGS%.mockrpm.log}"; CMD_LOGS="${CMD_LOGS%.yumrepo.log}.depy.log"; }
+    if ! python3 -m build -v -o "$REL_DIR"/dist "$DE_DIR" >"$CMD_LOGS" 2>&1; then
+        echo "Error building DE Python packages. Aborting"
+        exit 2
+    fi
+    [[ "$CMD_LOGS" = /dev/* ]] || CMD_LOGS="${CMD_LOGS%.depy.log}.dempy.log"
+    if ! python3 -m build -v -o "$REL_DIR"/dist "$DEM_DIR" >"$CMD_LOGS" 2>&1; then
+        echo "Error building DEM Python packages. Aborting"
+        exit 2
+    fi
+    [[ -n "$VERBOSE" ]] && echo "Python wheel and sdist are in $REL_DIR/dist" || true
+    # Clean up log file name
+    [[ "$CMD_LOGS" = /dev/* ]] || CMD_LOGS="${CMD_LOGS%.dempy.log}"
+}
+
 _main() {
     # Parse options and adjust parameters
     parse_opts "$@"
@@ -175,7 +226,8 @@ _main() {
     DE_RELEASE=${2:-1}
     DE_RELEASE=${DE_RELEASE,,}
     [[ "$DE_RELEASE" = rc* ]] && DE_RELEASE="0.${DE_RELEASE#rc}.$DE_RELEASE"
-    [[ "$SRC_TAG" = a ]] && SRC_TAG="$DE_VERSION$(get_rc_number "$DE_RELEASE")" || true
+    [[ "$SRC_TAG" = a ]] && SRC_TAG="$DE_VERSION$(get_rc_and_number "$DE_RELEASE")" || true
+    [[ "$PYTAG" = a ]] && PYTAG="$DE_VERSION$(get_rc_and_number "$DE_RELEASE")" || true
     REL_DIR=$(robust_realpath "$REL_DIR")
     RPM_ROOT_DIR="$REL_DIR"/rpmbuild
     if [[ "$CMD_LOGS" = de ]]; then
@@ -207,8 +259,15 @@ _main() {
         fi
     fi
 
-    # Make the RPM release
-    release_rpm
+    if [[ ",$BUILD_TARGET," = ",rpm," ]]; then
+        # Make the RPM release
+        release_rpm
+    fi
+
+    if [[ ",$BUILD_TARGET," = ",py," ]]; then
+        # Make the Python release
+        release_py
+    fi
 
     # Removing temp dir if any
     [[ -z "$src_tmpdir" ]] || rm -rf "$src_tmpdir"
