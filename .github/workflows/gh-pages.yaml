@@ -16,17 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
           architecture: "x64"
 
       - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -65,7 +65,7 @@ jobs:
         run: rm -rf /tmp/${{ github.sha }}
 
       - name: Ensure version.py exists
-        run: python3 setup.py bdist_wheel
+        run: python3 -m build
 
       - name: Run sphinx to make docs
         run: |
