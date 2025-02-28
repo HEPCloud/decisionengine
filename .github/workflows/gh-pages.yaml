@@ -53,8 +53,9 @@ jobs:
         run: |
           sudo apt-get update || true
           sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
-          sudo python3 -m pip install -U pip
-          sudo python3 -m pip install sphinx
+          # Installing sphinx as user, not root. Protecting from pip upgrade failure.
+          python3 -m pip install -U pip || true
+          python3 -m pip install sphinx
 
       - name: Install required modules for AST to parse the codebase
         run: |
