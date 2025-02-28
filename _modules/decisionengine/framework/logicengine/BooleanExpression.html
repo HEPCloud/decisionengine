@@ -1,22 +1,20 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.BooleanExpression &mdash; decisionengine 2.0.3.dev45+g30fb83dc documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+  <title>decisionengine.framework.logicengine.BooleanExpression &mdash; decisionengine 2.0.5.dev4+g4add0238 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../../_static/documentation_options.js?v=5a3150d4"></script>
-        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=c725c3d3"></script>
+      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -43,7 +41,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes.html">Release Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html">Release 2.0.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html">Release 2.0.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-3">Release 2.0.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-2">Release 2.0.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-1">Release 2.0.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-0">Release 2.0.0</a></li>
 </ul>
@@ -56,8 +56,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Code documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
 </ul>
 
@@ -100,12 +99,12 @@
 <span class="c1">#   &quot;vals.sum() &gt; 40&quot;   # OK, vals can be a numpy.ndarray</span>
 <span class="c1">#   &quot;np.sum(vals) &gt; 40&quot; # WRONG, illegal call to np.sum</span>
 
-<span class="kn">import</span> <span class="nn">ast</span>
-<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
-<span class="kn">import</span> <span class="nn">structlog</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.modules.logging_configDict</span><span class="w"> </span><span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
 
 <span class="c1"># If support for direct use of numpy and pandas functions is desired,</span>
 <span class="c1"># import the numpy and pandas modules and adjust the facts_globals:</span>
@@ -121,7 +120,7 @@
 
 <div class="viewcode-block" id="maybe_fail_on_error">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.BooleanExpression.maybe_fail_on_error">[docs]</a>
-<span class="k">def</span> <span class="nf">maybe_fail_on_error</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">maybe_fail_on_error</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
     <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="n">_re</span><span class="p">,</span> <span class="n">expr</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">expr</span><span class="p">,</span> <span class="kc">False</span>
@@ -131,14 +130,14 @@
 
 <div class="viewcode-block" id="LogicError">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.BooleanExpression.LogicError">[docs]</a>
-<span class="k">class</span> <span class="nc">LogicError</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LogicError</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
 
 <div class="viewcode-block" id="function_name_from_call">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.BooleanExpression.function_name_from_call">[docs]</a>
-<span class="k">def</span> <span class="nf">function_name_from_call</span><span class="p">(</span><span class="n">callnode</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">function_name_from_call</span><span class="p">(</span><span class="n">callnode</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callnode</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">LogicError</span><span class="p">(</span><span class="s2">&quot;not a call node&quot;</span><span class="p">)</span>
@@ -158,8 +157,8 @@
 
 <div class="viewcode-block" id="BooleanExpression">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.BooleanExpression.BooleanExpression">[docs]</a>
-<span class="k">class</span> <span class="nc">BooleanExpression</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BooleanExpression</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">expr_str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fail_on_error</span> <span class="o">=</span> <span class="n">maybe_fail_on_error</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="n">expr</span><span class="p">))</span>
         <span class="n">source</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
         <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;eval&quot;</span>
@@ -177,8 +176,8 @@
 
 <div class="viewcode-block" id="BooleanExpression.evaluate">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.BooleanExpression.BooleanExpression.evaluate">[docs]</a>
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the evaluated Boolen value of this expression in the context</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the evaluated Boolean value of this expression in the context</span>
 <span class="sd">        of the given data &#39;d&#39;.&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;calling BooleanExpression::evaluate()&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -192,7 +191,7 @@
             <span class="k">raise</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expr_str</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 </pre></div>
@@ -204,7 +203,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Fermilab.</p>
+    <p>&#169; Copyright 2025, Fermilab.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

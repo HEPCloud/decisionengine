@@ -7,7 +7,7 @@ Release 1.2.0
 In this release:
 
 
-* Swithed to python3
+* Switched to python3
 * Improved coverage
 * Database data retention : added reaper to remove data older than configurable number of days
 * Improved logging
@@ -80,7 +80,7 @@ decisionengine
 :   Add reaper to the RPC (#83)
 
 `0ba2c51 <https://github.com/HEPCloud/decisionengine/commit/0ba2c51c1d911baaee20fd2e36a5f99448d39939>`_
-:   remove astpp module and depedencies it pulls in (#81)
+:   remove astpp module and dependencies it pulls in (#81)
 
 `6b8eab9 <https://github.com/HEPCloud/decisionengine/commit/6b8eab9aaa1b4e2cd0ee4538bc6844cdd6b56517>`_
 :   don't track test coverage of tests (#80)
@@ -101,7 +101,7 @@ decisionengine
 :   Fix warnings caught by PEP-8 Speaks.
 
 `d16359b <https://github.com/HEPCloud/decisionengine/commit/d16359bf5f00046edce4814f8326199903bd3e64>`_
-:   Python 3 (and other) simplications.
+:   Python 3 (and other) simplifications.
 
 `3c7b6b7 <https://github.com/HEPCloud/decisionengine/commit/3c7b6b7bd22a3c1e7af5971ee6892542006a9ac5>`_
 :   Only run Github Actions for python3.6 (#68)
@@ -110,7 +110,7 @@ decisionengine
 :   Update README.md
 
 `b27ed53 <https://github.com/HEPCloud/decisionengine/commit/b27ed5320c962dd3c7f90e673181eae5e5cb8e5d>`_
-:   remove unnecessary (and atually harmful) python shebang (#66)
+:   remove unnecessary (and actually harmful) python shebang (#66)
 
 decisionengine_modules
 ~~~~~~~~~~~~~~~~~~~~~~

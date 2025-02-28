@@ -1,22 +1,20 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.SourceProductCache &mdash; decisionengine 2.0.3.dev45+g30fb83dc documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+  <title>decisionengine.framework.taskmanager.SourceProductCache &mdash; decisionengine 2.0.5.dev4+g4add0238 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../../_static/documentation_options.js?v=5a3150d4"></script>
-        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=c725c3d3"></script>
+      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -43,7 +41,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes.html">Release Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html">Release 2.0.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html">Release 2.0.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-3">Release 2.0.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-2">Release 2.0.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-1">Release 2.0.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-0">Release 2.0.0</a></li>
 </ul>
@@ -56,8 +56,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Code documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
 </ul>
 
@@ -92,8 +91,8 @@
 
 <div class="viewcode-block" id="SourceProductCache">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.SourceProductCache.SourceProductCache">[docs]</a>
-<span class="k">class</span> <span class="nc">SourceProductCache</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_products</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SourceProductCache</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_products</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">expected_source_products</span> <span class="o">=</span> <span class="n">expected_products</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources_have_run_once</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
@@ -102,7 +101,7 @@
 
 <div class="viewcode-block" id="SourceProductCache.update">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.SourceProductCache.SourceProductCache.update">[docs]</a>
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_data</span><span class="p">):</span>
         <span class="c1"># FIXME: Should we update the cache every time we call update? Probably.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sources_have_run_once</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">new_data</span>
@@ -128,7 +127,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Fermilab.</p>
+    <p>&#169; Copyright 2025, Fermilab.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -1,22 +1,20 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.3.dev45+g30fb83dc documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.5.dev4+g4add0238 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../../_static/documentation_options.js?v=5a3150d4"></script>
-        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=c725c3d3"></script>
+      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -43,7 +41,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes.html">Release Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html">Release 2.0.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html">Release 2.0.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-3">Release 2.0.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-2">Release 2.0.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-1">Release 2.0.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../release_notes/release_notes_2.0.html#release-2-0-0">Release 2.0.0</a></li>
 </ul>
@@ -56,8 +56,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Welcome to decisionengine’s documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/index.html">Code documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../code/decisionengine.html">decisionengine package</a></li>
 </ul>
 
@@ -98,46 +97,46 @@
 <span class="sd">if this environment variable is not defined the ``DE-Config.py`` file from the ``../tests/etc/` directory will be used.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">contextlib</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">enum</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">socketserver</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">xmlrpc.server</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">socketserver</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xmlrpc.server</span>
 
-<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Event</span><span class="p">,</span> <span class="n">Thread</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">Event</span><span class="p">,</span> <span class="n">Thread</span>
 
-<span class="kn">import</span> <span class="nn">cherrypy</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">psutil</span>
-<span class="kn">import</span> <span class="nn">redis</span>
-<span class="kn">import</span> <span class="nn">structlog</span>
-<span class="kn">import</span> <span class="nn">tabulate</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cherrypy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">psutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">redis</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tabulate</span>
 
-<span class="kn">from</span> <span class="nn">kombu</span> <span class="kn">import</span> <span class="n">Connection</span><span class="p">,</span> <span class="n">Exchange</span><span class="p">,</span> <span class="n">Queue</span>
-<span class="kn">from</span> <span class="nn">kombu.transport.redis</span> <span class="kn">import</span> <span class="n">Channel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">kombu</span><span class="w"> </span><span class="kn">import</span> <span class="n">Connection</span><span class="p">,</span> <span class="n">Exchange</span><span class="p">,</span> <span class="n">Queue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">kombu.transport.redis</span><span class="w"> </span><span class="kn">import</span> <span class="n">Channel</span>
 
-<span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.datablock</span> <span class="k">as</span> <span class="nn">datablock</span>
-<span class="kn">import</span> <span class="nn">decisionengine.framework.dataspace.dataspace</span> <span class="k">as</span> <span class="nn">dataspace</span>
-<span class="kn">import</span> <span class="nn">decisionengine.framework.modules.de_logger</span> <span class="k">as</span> <span class="nn">de_logger</span>
-<span class="kn">import</span> <span class="nn">decisionengine.framework.taskmanager.ProcessingState</span> <span class="k">as</span> <span class="nn">ProcessingState</span>
-<span class="kn">import</span> <span class="nn">decisionengine.framework.taskmanager.TaskManager</span> <span class="k">as</span> <span class="nn">TaskManager</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">decisionengine.framework.dataspace.datablock</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">datablock</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">decisionengine.framework.dataspace.dataspace</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dataspace</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">decisionengine.framework.modules.de_logger</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">de_logger</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">decisionengine.framework.taskmanager.ProcessingState</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ProcessingState</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">decisionengine.framework.taskmanager.TaskManager</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">TaskManager</span>
 
-<span class="kn">from</span> <span class="nn">decisionengine.framework.config</span> <span class="kn">import</span> <span class="n">ChannelConfigHandler</span><span class="p">,</span> <span class="n">policies</span><span class="p">,</span> <span class="n">ValidConfig</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.dataspace.maintain</span> <span class="kn">import</span> <span class="n">Reaper</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.ChannelWorkers</span> <span class="kn">import</span> <span class="n">ChannelWorker</span><span class="p">,</span> <span class="n">ChannelWorkers</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.engine.SourceWorkers</span> <span class="kn">import</span> <span class="n">SourceWorkers</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.modules.logging_configDict</span> <span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.taskmanager.module_graph</span> <span class="kn">import</span> <span class="n">source_products</span><span class="p">,</span> <span class="n">validated_workflow</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.util.countdown</span> <span class="kn">import</span> <span class="n">Countdown</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.util.metrics</span> <span class="kn">import</span> <span class="n">display_metrics</span><span class="p">,</span> <span class="n">Gauge</span><span class="p">,</span> <span class="n">Histogram</span>
-<span class="kn">from</span> <span class="nn">decisionengine.framework.util.redis_stats</span> <span class="kn">import</span> <span class="n">redis_stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChannelConfigHandler</span><span class="p">,</span> <span class="n">policies</span><span class="p">,</span> <span class="n">ValidConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.dataspace.maintain</span><span class="w"> </span><span class="kn">import</span> <span class="n">Reaper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.engine.ChannelWorkers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChannelWorker</span><span class="p">,</span> <span class="n">ChannelWorkers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.engine.SourceWorkers</span><span class="w"> </span><span class="kn">import</span> <span class="n">SourceWorkers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.modules.logging_configDict</span><span class="w"> </span><span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.taskmanager.module_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">source_products</span><span class="p">,</span> <span class="n">validated_workflow</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.util.countdown</span><span class="w"> </span><span class="kn">import</span> <span class="n">Countdown</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.util.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">display_metrics</span><span class="p">,</span> <span class="n">Gauge</span><span class="p">,</span> <span class="n">Histogram</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.util.redis_stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">redis_stats</span>
 
 <span class="n">DEFAULT_WEBSERVER_PORT</span> <span class="o">=</span> <span class="mi">8000</span>
 
@@ -661,7 +660,7 @@
 
 <div class="viewcode-block" id="StopState">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.StopState">[docs]</a>
-<span class="k">class</span> <span class="nc">StopState</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StopState</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">NotFound</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">Clean</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">Terminated</span> <span class="o">=</span> <span class="mi">3</span></div>
@@ -670,7 +669,7 @@
 
 <div class="viewcode-block" id="_channel_preamble">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._channel_preamble">[docs]</a>
-<span class="k">def</span> <span class="nf">_channel_preamble</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_channel_preamble</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Channel: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">rule</span> <span class="o">=</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">rule</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">header</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">rule</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span></div>
@@ -679,7 +678,7 @@
 
 <div class="viewcode-block" id="_verify_redis_url">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._verify_redis_url">[docs]</a>
-<span class="k">def</span> <span class="nf">_verify_redis_url</span><span class="p">(</span><span class="n">broker_url</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_verify_redis_url</span><span class="p">(</span><span class="n">broker_url</span><span class="p">):</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?P&lt;backend&gt;\w+)://.*&quot;</span><span class="p">,</span> <span class="n">broker_url</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
@@ -694,7 +693,7 @@
 
 <div class="viewcode-block" id="_verify_redis_server">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._verify_redis_server">[docs]</a>
-<span class="k">def</span> <span class="nf">_verify_redis_server</span><span class="p">(</span><span class="n">broker_url</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_verify_redis_server</span><span class="p">(</span><span class="n">broker_url</span><span class="p">):</span>
     <span class="n">_verify_redis_url</span><span class="p">(</span><span class="n">broker_url</span><span class="p">)</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span><span class="n">broker_url</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -706,15 +705,15 @@
 
 <div class="viewcode-block" id="RequestHandler">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.RequestHandler">[docs]</a>
-<span class="k">class</span> <span class="nc">RequestHandler</span><span class="p">(</span><span class="n">xmlrpc</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">SimpleXMLRPCRequestHandler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequestHandler</span><span class="p">(</span><span class="n">xmlrpc</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">SimpleXMLRPCRequestHandler</span><span class="p">):</span>
     <span class="n">rpc_paths</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;/RPC2&quot;</span><span class="p">,)</span></div>
 
 
 
 <div class="viewcode-block" id="DecisionEngine">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine">[docs]</a>
-<span class="k">class</span> <span class="nc">DecisionEngine</span><span class="p">(</span><span class="n">socketserver</span><span class="o">.</span><span class="n">ThreadingMixIn</span><span class="p">,</span> <span class="n">xmlrpc</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">SimpleXMLRPCServer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">,</span> <span class="n">server_address</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DecisionEngine</span><span class="p">(</span><span class="n">socketserver</span><span class="o">.</span><span class="n">ThreadingMixIn</span><span class="p">,</span> <span class="n">xmlrpc</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">SimpleXMLRPCServer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">,</span> <span class="n">server_address</span><span class="p">):</span>
         <span class="n">xmlrpc</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">SimpleXMLRPCServer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">server_address</span><span class="p">,</span>
@@ -757,27 +756,27 @@
 
 <div class="viewcode-block" id="DecisionEngine.get_logger">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.get_logger">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine._dispatch">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dispatch">[docs]</a>
-    <span class="k">def</span> <span class="nf">_dispatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dispatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;kombu_info&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span><span class="p">)</span>
 
-        <span class="k">class</span> <span class="nc">QueueAccess</span><span class="p">:</span>
-            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">QueueAccess</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">connection</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">producer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Producer</span><span class="p">()</span>
 
-            <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">routing_key_suffix</span><span class="o">=</span><span class="s2">&quot;de_client&quot;</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">routing_key_suffix</span><span class="o">=</span><span class="s2">&quot;de_client&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">routing_key_suffix</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">routing_key_suffix</span><span class="p">)</span>
 
-            <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">routing_key_suffix</span><span class="o">=</span><span class="s2">&quot;de_client&quot;</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">routing_key_suffix</span><span class="o">=</span><span class="s2">&quot;de_client&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">producer</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
                     <span class="n">arg</span><span class="p">,</span>
                     <span class="n">routing_key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;client.requests.</span><span class="si">{</span><span class="n">routing_key_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -789,7 +788,7 @@
         <span class="n">client_queue</span> <span class="o">=</span> <span class="n">QueueAccess</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client_requests_queue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_connection</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># methods allowed to be executed by rpc have &#39;rpc_&#39; pre-pended</span>
+            <span class="c1"># methods allowed to be executed by rpc have &#39;rpc_&#39; prepended</span>
             <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;rpc_&quot;</span> <span class="o">+</span> <span class="n">method</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;method &quot;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s1">&quot; is not supported&#39;</span><span class="p">)</span>
@@ -798,12 +797,12 @@
 
 <div class="viewcode-block" id="DecisionEngine.service_actions">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.service_actions">[docs]</a>
-    <span class="k">def</span> <span class="nf">service_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">service_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Overrides the base class service_actions, taking sources</span>
         <span class="c1"># offline whenever the client task managers have gone offline.</span>
 
         <span class="c1"># We take sources offline only if the channel workers are not</span>
-        <span class="c1"># being accesssed by another thread.  This is important</span>
+        <span class="c1"># being accessed by another thread.  This is important</span>
         <span class="c1"># whenever (e.g.) channels are being brought online and an</span>
         <span class="c1"># operator wants to check the DE status via an XMLRPC request.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">accessed_by_another_thread</span><span class="p">():</span>
@@ -820,7 +819,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.block_while">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.block_while">[docs]</a>
-    <span class="k">def</span> <span class="nf">block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> or timeout=</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> on channel_workers.&quot;</span><span class="p">)</span>
         <span class="n">workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">get_unguarded</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">workers</span><span class="p">:</span>
@@ -854,13 +853,13 @@
 
 <div class="viewcode-block" id="DecisionEngine._dataframe_to_table">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dataframe_to_table">[docs]</a>
-    <span class="k">def</span> <span class="nf">_dataframe_to_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dataframe_to_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tabulate</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="w"> </span><span class="n">headers</span><span class="o">=</span><span class="s1">&#39;keys&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">tablefmt</span><span class="o">=</span><span class="s1">&#39;psql&#39;</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine._dataframe_to_vertical_tables">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dataframe_to_vertical_tables">[docs]</a>
-    <span class="k">def</span> <span class="nf">_dataframe_to_vertical_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dataframe_to_vertical_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
         <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)):</span>
             <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Row </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -870,33 +869,33 @@
 
 <div class="viewcode-block" id="DecisionEngine._dataframe_to_column_names">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dataframe_to_column_names">[docs]</a>
-    <span class="k">def</span> <span class="nf">_dataframe_to_column_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dataframe_to_column_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
         <span class="n">columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="mi">1</span><span class="p">])</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tabulate</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span><span class="w"> </span><span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;columns&#39;</span><span class="p">],</span><span class="w"> </span><span class="n">tablefmt</span><span class="o">=</span><span class="s1">&#39;psql&#39;</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine._dataframe_to_json">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dataframe_to_json">[docs]</a>
-    <span class="k">def</span> <span class="nf">_dataframe_to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dataframe_to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_json</span><span class="p">()),</span><span class="w"> </span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine._dataframe_to_csv">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine._dataframe_to_csv">[docs]</a>
-    <span class="k">def</span> <span class="nf">_dataframe_to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dataframe_to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_ping">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_ping">[docs]</a>
     <span class="nd">@PING_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;pong&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_block_while">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_block_while">[docs]</a>
-    <span class="k">def</span> <span class="nf">rpc_block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">state_str</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">state_str</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">BLOCK_WHILE_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state_str</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="n">allowed_state</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">try</span><span class="p">:</span>
@@ -910,7 +909,7 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_show_config">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_show_config">[docs]</a>
     <span class="nd">@SHOW_CONFIG_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_show_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show the configuration for a channel.</span>
 
@@ -935,14 +934,14 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_show_de_config">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_show_de_config">[docs]</a>
     <span class="nd">@SHOW_DE_CONFIG_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_show_de_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_show_de_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">dump</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_print_product">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_print_product">[docs]</a>
     <span class="nd">@PRINT_PRODUCT_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_print_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_print_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested product should be a string not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">product</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1011,7 +1010,7 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_print_products">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_print_products">[docs]</a>
     <span class="nd">@PRINT_PRODUCTS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_print_products</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_print_products</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
             <span class="n">channel_keys</span> <span class="o">=</span> <span class="n">workers</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">channel_keys</span><span class="p">:</span>
@@ -1051,7 +1050,7 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_status">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_status">[docs]</a>
     <span class="nd">@STATUS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">get_unguarded</span><span class="p">()</span>
         <span class="n">source_keys</span> <span class="o">=</span> <span class="n">workers</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">source_keys</span><span class="p">:</span>
@@ -1082,7 +1081,7 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_queue_status">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_queue_status">[docs]</a>
     <span class="nd">@QUEUE_STATUS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_queue_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_queue_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">status</span> <span class="o">=</span> <span class="n">redis_stats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">status</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;client.requests&quot;</span><span class="p">):</span>
@@ -1095,7 +1094,7 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_product_dependencies">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_product_dependencies">[docs]</a>
     <span class="nd">@PRODUCT_DEPENDENCIES_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_product_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_product_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">get_unguarded</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">workers</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;No sources or channels are currently active.&quot;</span><span class="p">)</span>
@@ -1136,7 +1135,7 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_stop">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop">[docs]</a>
     <span class="nd">@STOP_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reaper_stop</span><span class="p">()</span>
@@ -1155,7 +1154,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.create_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.create_channel">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
         <span class="n">channel_config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">channel_config</span><span class="p">)</span>
         <span class="c1"># NB: Possibly override channel name</span>
         <span class="n">channel_name</span> <span class="o">=</span> <span class="n">channel_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;channel_name&quot;</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
@@ -1185,7 +1184,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.start_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channel">[docs]</a>
-    <span class="k">def</span> <span class="nf">start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">src_workers</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">src_workers</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
             <span class="n">worker</span> <span class="o">=</span> <span class="n">workers</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span>
             <span class="c1"># The channel must be started first so it can listen for the messages from the sources.</span>
@@ -1206,7 +1205,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.start_channels">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channels">[docs]</a>
-    <span class="k">def</span> <span class="nf">start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">load_all_channels</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">get_channels</span><span class="p">():</span>
@@ -1238,7 +1237,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_start_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channel">[docs]</a>
-    <span class="k">def</span> <span class="nf">rpc_start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">START_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="n">channel_name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">channel_name</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
@@ -1254,21 +1253,21 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_start_channels">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channels">[docs]</a>
     <span class="nd">@START_CHANNELS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_stop_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop_channel">[docs]</a>
-    <span class="k">def</span> <span class="nf">rpc_stop_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_stop_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">STOP_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rpc_rm_channel</span><span class="p">(</span><span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_kill_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_kill_channel">[docs]</a>
-    <span class="k">def</span> <span class="nf">rpc_kill_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_kill_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">KILL_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shutdown_timeout&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
@@ -1277,7 +1276,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_rm_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_rm_channel">[docs]</a>
-    <span class="k">def</span> <span class="nf">rpc_rm_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">maybe_timeout</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_rm_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">maybe_timeout</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">RM_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">maybe_timeout</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">rc</span> <span class="o">==</span> <span class="n">StopState</span><span class="o">.</span><span class="n">NotFound</span><span class="p">:</span>
@@ -1299,7 +1298,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rm_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rm_channel">[docs]</a>
-    <span class="k">def</span> <span class="nf">rm_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">maybe_timeout</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rm_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">maybe_timeout</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">RM_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="n">rc</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
@@ -1317,7 +1316,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.stop_worker">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.stop_worker">[docs]</a>
-    <span class="k">def</span> <span class="nf">stop_worker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worker</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_worker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worker</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Trying to take worker offline&quot;</span><span class="p">)</span>
             <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span><span class="o">.</span><span class="n">take_offline</span><span class="p">()</span>
@@ -1334,7 +1333,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.stop_channels">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.stop_channels">[docs]</a>
-    <span class="k">def</span> <span class="nf">stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shutdown_timeout&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
             <span class="n">countdown</span> <span class="o">=</span> <span class="n">Countdown</span><span class="p">(</span><span class="n">wait_up_to</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
@@ -1348,7 +1347,7 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_stop_channels">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop_channels">[docs]</a>
     <span class="nd">@STOP_CHANNELS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;All channels stopped.&quot;</span><span class="p">)</span></div>
 
@@ -1356,14 +1355,14 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_get_log_level">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_get_log_level">[docs]</a>
     <span class="nd">@GET_LOG_LEVEL_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_get_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_get_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">engineloglevel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">engineloglevel</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_get_channel_log_level">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_get_channel_log_level">[docs]</a>
-    <span class="k">def</span> <span class="nf">rpc_get_channel_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_get_channel_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">GET_CHANNEL_LOG_LEVEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
                 <span class="n">worker</span> <span class="o">=</span> <span class="n">workers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
@@ -1377,7 +1376,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_set_channel_log_level">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_set_channel_log_level">[docs]</a>
-    <span class="k">def</span> <span class="nf">rpc_set_channel_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_set_channel_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Assumes log_level is a string corresponding to the supported logging-module levels.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">SET_CHANNEL_LOG_LEVEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
@@ -1397,7 +1396,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_get_source_log_level">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_get_source_log_level">[docs]</a>
-    <span class="k">def</span> <span class="nf">rpc_get_source_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_get_source_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">GET_SOURCE_LOG_LEVEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">source_name</span><span class="o">=</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
                 <span class="n">worker</span> <span class="o">=</span> <span class="n">workers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
@@ -1412,7 +1411,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_set_source_log_level">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_set_source_log_level">[docs]</a>
-    <span class="k">def</span> <span class="nf">rpc_set_source_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_set_source_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">log_level</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Assumes log_level is a string corresponding to the supported logging-module levels.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">SET_SOURCE_LOG_LEVEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">source_name</span><span class="o">=</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
@@ -1433,7 +1432,7 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_reaper_start">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_reaper_start">[docs]</a>
     <span class="nd">@REAPER_START_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_reaper_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_reaper_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the reaper process after &#39;delay&#39; seconds.</span>
 <span class="sd">        Default 0 seconds delay.</span>
@@ -1445,13 +1444,13 @@
 
 <div class="viewcode-block" id="DecisionEngine.reaper_start">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.reaper_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">reaper_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reaper_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_reaper_stop">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_reaper_stop">[docs]</a>
-    <span class="k">def</span> <span class="nf">rpc_reaper_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_reaper_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reaper_stop</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">)</span></div>
 
@@ -1459,14 +1458,14 @@
 <div class="viewcode-block" id="DecisionEngine.reaper_stop">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.reaper_stop">[docs]</a>
     <span class="nd">@REAPER_STOP_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">reaper_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reaper_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_reaper_status">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_reaper_status">[docs]</a>
     <span class="nd">@REAPER_STATUS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_reaper_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_reaper_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">retention_interval</span>
         <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reaper:</span><span class="se">\n\t</span><span class="s2">state: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="se">\n\t</span><span class="s2">retention_interval: </span><span class="si">{</span><span class="n">interval</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
@@ -1474,14 +1473,14 @@
 
 <div class="viewcode-block" id="DecisionEngine.reaper_status">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.reaper_status">[docs]</a>
-    <span class="k">def</span> <span class="nf">reaper_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reaper_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">reaper: state = </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_query_tool">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_query_tool">[docs]</a>
-    <span class="k">def</span> <span class="nf">rpc_query_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_query_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">QUERY_TOOL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">product</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
             <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
@@ -1535,7 +1534,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.start_webserver">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_webserver">[docs]</a>
-    <span class="k">def</span> <span class="nf">start_webserver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_webserver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start CherryPy webserver using configured port.  If port is not configured</span>
 <span class="sd">        use default webserver port.</span>
@@ -1570,7 +1569,8 @@
 <div class="viewcode-block" id="DecisionEngine.metrics">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.metrics">[docs]</a>
     <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
-    <span class="k">def</span> <span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;text/plain&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">display_metrics</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
@@ -1580,7 +1580,7 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_metrics">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_metrics">[docs]</a>
     <span class="nd">@METRICS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">rpc_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rpc_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display collected metrics</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1594,7 +1594,7 @@
 
 <div class="viewcode-block" id="parse_program_options">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.parse_program_options">[docs]</a>
-<span class="k">def</span> <span class="nf">parse_program_options</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_program_options</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If args is a list, it will be used instead of sys.argv&quot;&quot;&quot;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -1624,7 +1624,7 @@
 
 <div class="viewcode-block" id="_check_metrics_env">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._check_metrics_env">[docs]</a>
-<span class="k">def</span> <span class="nf">_check_metrics_env</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_metrics_env</span><span class="p">(</span><span class="n">options</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">no_webserver</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="k">try</span><span class="p">:</span>
@@ -1642,7 +1642,7 @@
 
 <div class="viewcode-block" id="_get_global_config">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._get_global_config">[docs]</a>
-<span class="k">def</span> <span class="nf">_get_global_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_global_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
     <span class="n">global_config</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">global_config</span> <span class="o">=</span> <span class="n">ValidConfig</span><span class="o">.</span><span class="n">ValidConfig</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
@@ -1663,7 +1663,7 @@
 
 <div class="viewcode-block" id="_get_de_conf_manager">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._get_de_conf_manager">[docs]</a>
-<span class="k">def</span> <span class="nf">_get_de_conf_manager</span><span class="p">(</span><span class="n">global_config_dir</span><span class="p">,</span> <span class="n">channel_config_dir</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_de_conf_manager</span><span class="p">(</span><span class="n">global_config_dir</span><span class="p">,</span> <span class="n">channel_config_dir</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
     <span class="n">config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">global_config_dir</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config file &#39;</span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
@@ -1677,7 +1677,7 @@
 
 <div class="viewcode-block" id="_create_de_server">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._create_de_server">[docs]</a>
-<span class="k">def</span> <span class="nf">_create_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_de_server</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the DE server with the passed global configuration and config manager&quot;&quot;&quot;</span>
     <span class="n">server_address</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;server_address&quot;</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">DecisionEngine</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="n">channel_config_loader</span><span class="p">,</span> <span class="n">server_address</span><span class="p">)</span></div>
@@ -1686,7 +1686,7 @@
 
 <div class="viewcode-block" id="_initial_start_channels">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._initial_start_channels">[docs]</a>
-<span class="k">def</span> <span class="nf">_initial_start_channels</span><span class="p">(</span><span class="n">server</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_initial_start_channels</span><span class="p">(</span><span class="n">server</span><span class="p">):</span>
     <span class="n">server</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _start_de_server: step start_channels&quot;</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
 
@@ -1697,7 +1697,7 @@
 
 <div class="viewcode-block" id="_queue_name_and_type">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._queue_name_and_type">[docs]</a>
-<span class="k">def</span> <span class="nf">_queue_name_and_type</span><span class="p">(</span><span class="n">redis_obj</span><span class="p">,</span> <span class="n">redis_member</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_queue_name_and_type</span><span class="p">(</span><span class="n">redis_obj</span><span class="p">,</span> <span class="n">redis_member</span><span class="p">):</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;^(.*?)</span><span class="se">\x06</span><span class="s2">.*</span><span class="se">\x16</span><span class="s2">(.*)$&quot;</span><span class="p">,</span> <span class="n">redis_member</span><span class="p">)</span>
     <span class="n">queue_name</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
     <span class="n">queue_type</span> <span class="o">=</span> <span class="n">redis_obj</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">queue_name</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
@@ -1707,7 +1707,7 @@
 
 <div class="viewcode-block" id="_requests_in_flight">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._requests_in_flight">[docs]</a>
-<span class="k">def</span> <span class="nf">_requests_in_flight</span><span class="p">(</span><span class="n">redis_obj</span><span class="p">,</span> <span class="n">exchange_name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_requests_in_flight</span><span class="p">(</span><span class="n">redis_obj</span><span class="p">,</span> <span class="n">exchange_name</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">redis_obj</span><span class="o">.</span><span class="n">smembers</span><span class="p">(</span><span class="n">Channel</span><span class="o">.</span><span class="n">keyprefix_queue</span> <span class="o">%</span> <span class="n">exchange_name</span><span class="p">):</span>
         <span class="n">queue_name</span><span class="p">,</span> <span class="n">queue_type</span> <span class="o">=</span> <span class="n">_queue_name_and_type</span><span class="p">(</span><span class="n">redis_obj</span><span class="p">,</span> <span class="n">member</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">queue_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;client.requests&quot;</span><span class="p">):</span>
@@ -1722,7 +1722,7 @@
 
 <div class="viewcode-block" id="_start_de_server">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine._start_de_server">[docs]</a>
-<span class="k">def</span> <span class="nf">_start_de_server</span><span class="p">(</span><span class="n">server</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_start_de_server</span><span class="p">(</span><span class="n">server</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Start the DE server and listen forever&quot;&quot;&quot;</span>
     <span class="n">start_channels_thread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_initial_start_channels</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">server</span><span class="p">,))</span>
     <span class="k">try</span><span class="p">:</span>
@@ -1768,7 +1768,7 @@
 
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.main">[docs]</a>
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    If args is None, sys.argv will be used instead</span>
 <span class="sd">    If args is a list, it will be used instead of sys.argv (for unit testing)</span>
@@ -1804,7 +1804,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Fermilab.</p>
+    <p>&#169; Copyright 2025, Fermilab.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

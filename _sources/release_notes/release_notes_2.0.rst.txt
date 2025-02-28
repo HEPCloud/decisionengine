@@ -1,6 +1,163 @@
 .. SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 .. SPDX-License-Identifier: Apache-2.0
 
+Release 2.0.4
+-------------
+
+This release brings a new packaging with RPM packages for dependencies and system files, and a Python wheel for the Python code.
+There are also new Prometheus metrics and a few bug fixes like the source logging set incorrectly.
+
+Issues fixed in this release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Bugs fixed
+-`DE 670 <https://github.com/HEPCloud/decisionengine/pull/670>`_: changes to fix source logging  (@goodenou)
+-`DE 674 <https://github.com/HEPCloud/decisionengine/pull/674>`_: Upgrading isort version to fix pre-config install error w/ poetry  (@mambelli)
+-`DE 683 <https://github.com/HEPCloud/decisionengine/pull/683>`_: Fix unit tests  (@vitodb)
+-`DE 696 <https://github.com/HEPCloud/decisionengine/pull/696>`_: Re-enable flake8 linter  (@vitodb)
+-`DE 701 <https://github.com/HEPCloud/decisionengine/pull/701>`_: Fixed bugs in metrics with labels  (@IlyaBaburashvili)
+-`DE 700 <https://github.com/HEPCloud/decisionengine/pull/700>`_: For flake8 skip build folder  (@vitodb)
+-`DE 713 <https://github.com/HEPCloud/decisionengine/pull/713>`_: Set /metrics Content-type header to text/plain  (@shreyb)
+-`DE 710 <https://github.com/HEPCloud/decisionengine/pull/710>`_: add invocation in the child processes for sources/channels logging  (@namrathaurs)
+
+Enhancements:
+-`DE 668 <https://github.com/HEPCloud/decisionengine/pull/668>`_: Introduce publisher status data product  (@knoepfel)
+-`DE 671 <https://github.com/HEPCloud/decisionengine/pull/671>`_: explicitly select a container with all our required python versions  (@jcpunk)
+-`DE 676 <https://github.com/HEPCloud/decisionengine/pull/676>`_: Added EL9 instructions  (@mambelli)
+-`DE 678 <https://github.com/HEPCloud/decisionengine/pull/678>`_: Updated and tested instructions, PIP installation working  (@mambelli)
+-`DE 679 <https://github.com/HEPCloud/decisionengine/pull/679>`_: Disabling unit tests for python 3.6  (@vitodb)
+-`DE 680 <https://github.com/HEPCloud/decisionengine/pull/680>`_: Make default database init use stronger data protections  (@jcpunk)
+-`DE 681 <https://github.com/HEPCloud/decisionengine/pull/681>`_: Update to pytest 7 with pytest-postgresql 5  (@jcpunk)
+-`DE 682 <https://github.com/HEPCloud/decisionengine/pull/682>`_: Updated EL9 instruction: PIP installation and GWMS config tested  (@mambelli)
+-`DE 685 <https://github.com/HEPCloud/decisionengine/pull/685>`_: Enable some tests only on DE 1.7 branch  (@vitodb)
+-`DE 687 <https://github.com/HEPCloud/decisionengine/pull/687>`_: Update GH actions  (@vitodb)
+-`DE 688 <https://github.com/HEPCloud/decisionengine/pull/688>`_: Added two metrics on the Source - de_source_status and de_source_acquire_seconds  (@skylerfoster67)
+-`DE 690 <https://github.com/HEPCloud/decisionengine/pull/690>`_: Adding DE EL9 containers based on AlmaLinux9  (@vitodb)
+-`DE 691 <https://github.com/HEPCloud/decisionengine/pull/691>`_: Adding Jenkinsfile for EL9  (@vitodb)
+-`DE 689 <https://github.com/HEPCloud/decisionengine/pull/689>`_: Added new de-client metrics for duration  (@IlyaBaburashvili)
+-`DE 694 <https://github.com/HEPCloud/decisionengine/pull/694>`_: Decision Engine Components Data  (@skylerfoster67)
+-`DE 697 <https://github.com/HEPCloud/decisionengine/pull/697>`_: Redis Exporter Data  (@skylerfoster67)
+-`DE 703 <https://github.com/HEPCloud/decisionengine/pull/703>`_: Create Redis mock for unit tests  (@shreyb)
+-`DE 706 <https://github.com/HEPCloud/decisionengine/pull/706>`_: In Jenkins pipeline config use podman instead of docker  (@vitodb)
+-`DE 712 <https://github.com/HEPCloud/decisionengine/pull/712>`_: Rpm pip packaging with uv and pyproject.toml  (@mambelli)
+-`DE 714 <https://github.com/HEPCloud/decisionengine/pull/714>`_: Fixed spec file and added release script  (@mambelli)
+-`DE 715 <https://github.com/HEPCloud/decisionengine/pull/715>`_: Added wrapper to run the decisionengine commands also as root. Fixed installation glitches.  (@mambelli)
+-`DE 716 <https://github.com/HEPCloud/decisionengine/pull/716>`_: Added a check for the Python code being installed and improved Python code install  (@mambelli)
+-`DE 717 <https://github.com/HEPCloud/decisionengine/pull/717>`_: Added codespell in pre-commit and fixed files to compliance  (@mambelli)
+
+Full list of commits since version 2.0.2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`34ae84f15 <https://github.com/HEPCloud/decisionengine/commit/34ae84f153cd54f6e3d68062a8b645b3877cfdb1>`_:   Added ability to build Python (wheel and sdist) packages to make-release.sh
+
+`8192524ba <https://github.com/HEPCloud/decisionengine/commit/8192524ba4bb61b772746fc768765d3f2e0d7411>`_:   Added codespell in pre-commit and fixed files to compliance
+
+`e045cb960 <https://github.com/HEPCloud/decisionengine/commit/e045cb960700095f29731b75a878d29110869cde>`_:   Added a check for the Python code being installed. Improved the Python install script, adding the ability to clone the repo
+
+`7093d5b12 <https://github.com/HEPCloud/decisionengine/commit/7093d5b1271c09ffcf7045ce3a72f5f0b69f60af>`_:   Added wrapper to run the decisionengine commands also as root. Fixed installation glitches.
+
+`59cd65825 <https://github.com/HEPCloud/decisionengine/commit/59cd65825654c7cc797916f8b930570b9f58c626>`_:   Fixed spec file and added release script
+
+`8174106dd <https://github.com/HEPCloud/decisionengine/commit/8174106ddb08d5090b0391c82dfbdc280d855d87>`_:   Adding dependencies RPM package and packaging with uv and pyproject.toml
+
+`22951dc58 <https://github.com/HEPCloud/decisionengine/commit/22951dc58cc1262ddd7da4ec46c105e8ab8f67a6>`_:   Set /metrics Content-type header to text/plain
+
+`aea4fd7ad <https://github.com/HEPCloud/decisionengine/commit/aea4fd7ad436d347671f80ec8faa0522239a600f>`_:   logging fix for sources and channels
+
+`30fb83dc5 <https://github.com/HEPCloud/decisionengine/commit/30fb83dc50b509f49b1c8b37659966e8a3c11698>`_:   In Jenkins pipeline config use podman instead of docker
+
+`0aca4d926 <https://github.com/HEPCloud/decisionengine/commit/0aca4d926ec8c792bc2ff959269d7736d5e61f8e>`_:   Added .vscode/ to .gitignore
+
+`489d45abf <https://github.com/HEPCloud/decisionengine/commit/489d45abf4e309c16309b01130cb0a27bf27fedc>`_:   Dynamically check for redis server availability when a test is marked as redis
+
+`ff674229e <https://github.com/HEPCloud/decisionengine/commit/ff674229ebebaa42a2562427937ba56203797fbe>`_:   Remove unit test marker
+
+`6b1799f1b <https://github.com/HEPCloud/decisionengine/commit/6b1799f1bbc482be01d0e6ae09deb5440c1e0e82>`_:   Check if redis server is running.  If not, skip integration test.  Also marked applicable unit tests in this file
+
+`6879f72c5 <https://github.com/HEPCloud/decisionengine/commit/6879f72c5f4dd3456734a5f1a4b630408b30bff1>`_:   Added unit marker for pytest
+
+`22488d720 <https://github.com/HEPCloud/decisionengine/commit/22488d7204bcf5ad238a787e6bc3fe67481fc51c>`_:   For flake8 skip build folder
+
+`19a163a14 <https://github.com/HEPCloud/decisionengine/commit/19a163a1404d85457d3addeb2097d0829f5d09f4>`_:   Fixed bugs in metrics with labels (#701)
+
+`0a38b170b <https://github.com/HEPCloud/decisionengine/commit/0a38b170be381b3a69e533bd6cb7cc360ae166a9>`_:   Update test to be compliant with flake8 linter
+
+`22162226c <https://github.com/HEPCloud/decisionengine/commit/22162226c29b3a11225f2cb81c5b4c150343c041>`_:   Add licence info to flake8 config file
+
+`1da6bd8df <https://github.com/HEPCloud/decisionengine/commit/1da6bd8dfa6d09b879e7af613ba67ba899aee29d>`_:   Re-enable flak8 linter
+
+`65d5ccd9a <https://github.com/HEPCloud/decisionengine/commit/65d5ccd9aa20a5692e5e8a0410cfd730c82b703c>`_:   Dashboard on Redis Exporter information
+
+`daaac113c <https://github.com/HEPCloud/decisionengine/commit/daaac113ca7a4051a72cc0c1356a8c866d38e56c>`_:   Added json files containing the dashboards for Source and Channel Data in decisionengine/dashboards
+
+`d21728923 <https://github.com/HEPCloud/decisionengine/commit/d217289234b36f104376bf0ea6edcbfa5763ee36>`_:   Added license compliance for json files
+
+`ba29da2af <https://github.com/HEPCloud/decisionengine/commit/ba29da2af5127842fc4d1d846d22c5b87ef48e03>`_:   [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+`d79908778 <https://github.com/HEPCloud/decisionengine/commit/d7990877896fa624b76331c57bd520f01e9527d4>`_:   Configure buckets for de-client metrics
+
+`14826e839 <https://github.com/HEPCloud/decisionengine/commit/14826e8394aeccd9ebfa57b8917db52c3d539fb8>`_:   [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+`87457a1e0 <https://github.com/HEPCloud/decisionengine/commit/87457a1e0a3481440b64722b50f7e1805908e4e3>`_:   Fix de-client --metrics description
+
+`2cc376a60 <https://github.com/HEPCloud/decisionengine/commit/2cc376a60a0809ab8ddac8989deb79f272047765>`_:   Added decorators for all rpc_ methods
+
+`7fe99a642 <https://github.com/HEPCloud/decisionengine/commit/7fe99a64270c410ca7b0b1ad0bf12b41f4832db0>`_:   Added directory for Grafana dashboards
+
+`a9d1590c3 <https://github.com/HEPCloud/decisionengine/commit/a9d1590c3b0ad71481fdd26e928f80d9419fc4bb>`_:   Adding Jenkinsfile for EL9
+
+`018c8ab47 <https://github.com/HEPCloud/decisionengine/commit/018c8ab47bf8bb25e84bdc767b42ddaefdd0742f>`_:   Updated documentation for 1.7.5 release
+
+`ebfd6d4a0 <https://github.com/HEPCloud/decisionengine/commit/ebfd6d4a0a9eafbe7324e41523656e75ba23287e>`_:   Numpy security update requires >= 1.22 (not available for Python 3.6)
+
+`aa474a9d8 <https://github.com/HEPCloud/decisionengine/commit/aa474a9d8b16bd038ea95d9801727c5afe98052e>`_:   Fixed misspelling
+
+`9e9088418 <https://github.com/HEPCloud/decisionengine/commit/9e908841827a1051439644e6c4fbb9a74eee56e5>`_:   Adding DE EL9 containers based on AlmaLinux9
+
+`438621a0a <https://github.com/HEPCloud/decisionengine/commit/438621a0ae3a9d2da9f234e6a800e148ddda6a64>`_:   Added two metrics on the Source - de_source_status and de_source_acquire_seconds
+
+`f54b92a59 <https://github.com/HEPCloud/decisionengine/commit/f54b92a5966b81aeb9aea25b61f26007b7ae32d7>`_:   Update GH actions
+
+`f842996df <https://github.com/HEPCloud/decisionengine/commit/f842996df2fe5a49f4e51bf59630bcd11631f28c>`_:   enable rpmbuild_el7, run_flake8 and pytest_el7 tests only on DE branch 1.7
+
+`97915e0be <https://github.com/HEPCloud/decisionengine/commit/97915e0be225cccd5affeec5a21ca769b12b0f3c>`_:   Note of possible future change
+
+`1c23be195 <https://github.com/HEPCloud/decisionengine/commit/1c23be1951538f73fb8c1045892f5d9d1840e881>`_:   update regexp in _expected_circularity
+
+`aa12938f9 <https://github.com/HEPCloud/decisionengine/commit/aa12938f984200545d7322730f650dd917672c20>`_:   Updated instruction after testing PIP installation and pressure-based condifuraition on EL9
+
+`d302e74bf <https://github.com/HEPCloud/decisionengine/commit/d302e74bf98480578cad41f2877baf0a481f30e8>`_:   Update to pytest 7 with pytest-postgresql 5
+
+`e9372585e <https://github.com/HEPCloud/decisionengine/commit/e9372585eae4feabc309f8085f56e93bbc9f1dba>`_:   Make default database init use stronger data protections
+
+`aed2d7666 <https://github.com/HEPCloud/decisionengine/commit/aed2d7666c11ed070cc55169401e2020a937a3c6>`_:   Disabling unit tests for python 3.6
+
+`87b3f6e92 <https://github.com/HEPCloud/decisionengine/commit/87b3f6e9280e06a4cb7afc7453929d647f95d6d4>`_:   Updated and tested instructions, PIP installation working
+
+`84ebaa528 <https://github.com/HEPCloud/decisionengine/commit/84ebaa528bae3aae9aa31b07d2777f14dd0e3068>`_:   Fixed setup for EL9
+
+`0053e5963 <https://github.com/HEPCloud/decisionengine/commit/0053e5963c7bbe1d4030aae4ad5c3f6efba4e788>`_:   Added EL9 instructions
+
+`d23db48f2 <https://github.com/HEPCloud/decisionengine/commit/d23db48f2d49d4f56600aedf290acbc3099ae624>`_:   Upgrading isort version to fix install error w/ poetry
+
+`fd3c5bda7 <https://github.com/HEPCloud/decisionengine/commit/fd3c5bda703fe168d5b72c52e428ae3ba72e85cc>`_:   explicitly select a container with all our required python versions
+
+`85617b14d <https://github.com/HEPCloud/decisionengine/commit/85617b14dc0639a4d98503633bda3a3b9dc5296f>`_:   fix source logging by defining logger in Sources correctly
+
+`669555cc7 <https://github.com/HEPCloud/decisionengine/commit/669555cc7144b18a0ffb4076412e5c9f9f67c98f>`_:   Add docstrings.
+
+`1681f211d <https://github.com/HEPCloud/decisionengine/commit/1681f211d999e9a3d8e9fa4fd39a7aefd6aa62e4>`_:   Add timing information for when publisher was disabled.
+
+`33e4f699e <https://github.com/HEPCloud/decisionengine/commit/33e4f699e810863ab7304531d4018a6d631712ea>`_:   Test publisher status w/in publisher.
+
+`4d3d9100b <https://github.com/HEPCloud/decisionengine/commit/4d3d9100b6bbf491dccf932cbeeace90b656be66>`_:   Some renaming.
+
+
+Release 2.0.3
+-------------
+
+Skipping this tag
+
 Release 2.0.2
 -------------
 
@@ -441,7 +598,7 @@ Full list of commits since version 1.7.0
 
 `a71d5b0a <https://github.com/HEPCloud/decisionengine/commit/a71d5b0ab1de5524e67059c187798215c10bbcdb>`_:   Add error for running server as root
 
-`cd345701 <https://github.com/HEPCloud/decisionengine/commit/cd345701539b9444eb09d6fece5b7445696b05f5>`_:   Incrase coverage in LogicEngine
+`cd345701 <https://github.com/HEPCloud/decisionengine/commit/cd345701539b9444eb09d6fece5b7445696b05f5>`_:   Increase coverage in LogicEngine
 
 `6c132924 <https://github.com/HEPCloud/decisionengine/commit/6c1329241181980d4fea546c10d5463987a02b3e>`_:   Fix out of sync devel requirements
 

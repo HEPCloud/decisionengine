@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Decisionengine Redis broker &mdash; decisionengine 2.0.3.dev45+g30fb83dc documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+  <title>Decisionengine Redis broker &mdash; decisionengine 2.0.5.dev4+g4add0238 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5a3150d4"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c725c3d3"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -44,7 +42,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release_notes/release_notes_2.0.html">Release 2.0.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes/release_notes_2.0.html">Release 2.0.4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes/release_notes_2.0.html#release-2-0-3">Release 2.0.3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes/release_notes_2.0.html#release-2-0-2">Release 2.0.2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes/release_notes_2.0.html#release-2-0-1">Release 2.0.1</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes/release_notes_2.0.html#release-2-0-0">Release 2.0.0</a></li>
 </ul>
@@ -57,8 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="jenkins.html">Decisionengine CI with Jenkins pipeline</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="code/index.html">Welcome to decisionengine’s documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code/index.html#indices-and-tables">Indices and tables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code/index.html">Code documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code/decisionengine.html">decisionengine package</a></li>
 </ul>
 
@@ -97,11 +96,25 @@ instructions for setting passwords.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">podman</span> <span class="n">run</span> <span class="o">--</span><span class="n">name</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">redis</span> <span class="o">-</span><span class="n">p</span> <span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="p">:</span><span class="mi">6379</span> <span class="o">-</span><span class="n">d</span> <span class="n">redis</span><span class="p">:</span><span class="mi">6</span> <span class="o">--</span><span class="n">loglevel</span> <span class="n">warning</span>
 </pre></div>
 </div>
-<p>It should now be avaliable at redis://127.0.0.1:6379/</p>
-<p>Persistant storage is not currently required for our usage.</p>
+<p>It should now be available at redis://127.0.0.1:6379/</p>
+<p>Persistent storage is not currently required for our usage.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You may need to install <code class="docutils literal notranslate"><span class="pre">podman</span></code> from your system repositories; it should ship with a lot of <a class="reference external" href="https://podman.io/getting-started/installation">modern Linux distributions</a>.  The <code class="docutils literal notranslate"><span class="pre">podman</span></code> package should be compatible with Docker, in most cases either one can be used without issue.  If <code class="docutils literal notranslate"><span class="pre">podman</span></code> is not avaliable for your platform, you can review the Docker Desktop terms and conditions to see if you qualify for free usage.</p>
+<p>You may need to install <code class="docutils literal notranslate"><span class="pre">podman</span></code> from your system repositories; it should ship with a lot of <a class="reference external" href="https://podman.io/getting-started/installation">modern Linux distributions</a>.  The <code class="docutils literal notranslate"><span class="pre">podman</span></code> package should be compatible with Docker, in most cases either one can be used without issue.  If <code class="docutils literal notranslate"><span class="pre">podman</span></code> is not available for your platform, you can review the Docker Desktop terms and conditions to see if you qualify for free usage.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>You may need to install <code class="docutils literal notranslate"><span class="pre">nf-tables</span></code> and remove <code class="docutils literal notranslate"><span class="pre">ip-tables</span></code> since Alma9 kernels support the former and not the letter. If you see an error like::</dt><dd><p>Error: netavark: code: 3, msg: modprobe: FATAL: Module ip_tables not found in directory /lib/modules/5.14.0-503.21.1.el9_5.x86_64
+iptables v1.8.10 (legacy): can’t initialize iptables table <a href="#id1"><span class="problematic" id="id2">`</span></a>nat’: Table does not exist (do you need to insmod?)
+Perhaps iptables or your kernel needs to be upgraded.</p>
+</dd>
+</dl>
+<p>Then Run the commands:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dnf</span> <span class="n">rm</span> <span class="n">iptables</span><span class="o">-</span><span class="n">legacy</span>
+<span class="n">dnf</span> <span class="n">install</span> <span class="n">iptables</span><span class="o">-</span><span class="n">nft</span>
+</pre></div>
+</div>
 </div>
 <section id="configuring-the-de-server">
 <h2>Configuring the DE server<a class="headerlink" href="#configuring-the-de-server" title="Link to this heading"></a></h2>
@@ -132,7 +145,7 @@ tool for looking at the content of a Redis data store.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Fermilab.</p>
+    <p>&#169; Copyright 2025, Fermilab.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
