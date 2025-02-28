@@ -5,6 +5,7 @@
 
 DE_GIT_DEFAULT="https://github.com/HEPCloud/decisionengine.git"
 DEM_GIT_DEFAULT="https://github.com/HEPCloud/decisionengine_modules.git"
+DE_USER_DEFAULT=decisionengine
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 robust_realpath() {
@@ -18,7 +19,7 @@ REQUIRED_RPM=decisionengine-modules-deps
 # https://packaging.python.org/en/latest/specifications/version-specifiers/
 help_msg() {
     cat << EOF
-$0 [options] VERSION [RELEASE]
+$0 [options]
 Install the Decision Engine (Framework and Modules) Python release via pip. Requires the RPM installation.
 --help                 Print this
 --verbose              Verbose output
@@ -26,20 +27,23 @@ Install the Decision Engine (Framework and Modules) Python release via pip. Requ
 --dem-repo-git URI     Decision Engine modules Git repository URI (default: $DEM_GIT_DEFAULT). Keywords:
                        same - relative to the framework repository
                        default - $DEM_GIT_DEFAULT
---de-git-ref REF       Decision Engine framework Git repository reference (default: "" - master)
---dem-git-ref REF      Decision Engine modules Git repository reference (default: same as DE). Keywords:
+--de-git-ref REF       Decision Engine framework Git repository reference (default: "" - master). Keywords:
                        auto - Get the reference form the RPM installation version and release
                               Release is considered only for RCs (e.g. 2.0.4-N -> 2.0.4, 2.1.0-0.4.rc4 -> 2.1.0.rc4)
+--dem-git-ref REF      Decision Engine modules Git repository reference (default: same as DE). Same keywords as --de-git-ref
 --de-repo-dir PATH     Decision Engine framework Git repository directory
 --dem-repo-dir PATH    Decision Engine modules Git repository directory (default: relative to DE directory)
 
---user USER            User to install and run Decision Engine
---remote               Pip Installation from the DE and DEM Git (GitHub) URIs (remote)
+--user USER            User to install and run Decision Engine (default: $DE_USER_DEFAULT)
+--remote               Pip Installation from the DE and DEM Git (GitHub) URIs (default)
 --local                Pip Installation from the local DE and DEM directory
 --clone                Make a local clone of the repositories
 Not yet implemented
 --python PYTHON        Python interpreter or venv to use for Decision Engine
 --dev                  Pip development Installation from the local DE and DEM directory
+Examples:
+To install the latest DE from GitHub ($DE_GIT_DEFAULT): $0
+To install 2.1.0.rc2 from your GitHub repo: $0 --de-repo-git "https://github.com/YOUR_USER/decisionengine.git" --de-git-ref 2.1.0.rc2
 EOF
 }
 
@@ -47,7 +51,7 @@ parse_opts() {
     # Parse options. Uses SCRIPT_DIR
     # Sets VERBOSE, DO_CLONE, DE_GIT, REL_TAG, DE_DIR, DEM_GIT, DEM_DIR
     VERBOSE=false
-    DE_USER=decisionengine
+    DE_USER="$DE_USER_DEFAULT"
     DE_PYTHON=python3
     DE_GIT="$DE_GIT_DEFAULT"
     DE_GIT_REF=
@@ -238,12 +242,12 @@ _main() {
     DEM_DIR=$(robust_realpath "$DEM_DIR")
 
     # Do install
-    if [[ "$INSTALL_TYPE" = local ]]; then
+    if [[ "$INSTALL_TYPE" = "local" ]]; then
         # This requires absolute paths
         DE_FROM="file://$DE_DIR"
         DEM_FROM="file://$DEM_DIR"
         $VERBOSE && echo "Preparing for local install from $DE_FROM, $DEM_FROM" || true
-    elif [[ "$INSTALL_TYPE" = remote ]]; then
+    elif [[ "$INSTALL_TYPE" = "remote" ]]; then
         DE_FROM="$DE_GIT"
         DEM_FROM="$DEM_GIT"
         $VERBOSE && echo "Preparing for remote install from $DE_FROM$DE_GIT_REF, $DEM_FROM$DEM_GIT_REF" || true
