@@ -259,12 +259,12 @@ _main() {
         fi
     fi
 
-    if [[ ",$BUILD_TARGET," = ",rpm," ]]; then
+    if [[ ",$BUILD_TARGET," = *",rpm,"* ]]; then
         # Make the RPM release
         release_rpm
     fi
 
-    if [[ ",$BUILD_TARGET," = ",py," ]]; then
+    if [[ ",$BUILD_TARGET," = *",py,"* ]]; then
         # Make the Python release
         release_py
     fi

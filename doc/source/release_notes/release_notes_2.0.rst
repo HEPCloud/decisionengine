@@ -10,40 +10,42 @@ There are also new Prometheus metrics and a few bug fixes like the source loggin
 Issues fixed in this release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Bugs fixed
--`DE 670 <https://github.com/HEPCloud/decisionengine/pull/670>`_: changes to fix source logging  (@goodenou)
--`DE 674 <https://github.com/HEPCloud/decisionengine/pull/674>`_: Upgrading isort version to fix pre-config install error w/ poetry  (@mambelli)
--`DE 683 <https://github.com/HEPCloud/decisionengine/pull/683>`_: Fix unit tests  (@vitodb)
--`DE 696 <https://github.com/HEPCloud/decisionengine/pull/696>`_: Re-enable flake8 linter  (@vitodb)
--`DE 701 <https://github.com/HEPCloud/decisionengine/pull/701>`_: Fixed bugs in metrics with labels  (@IlyaBaburashvili)
--`DE 700 <https://github.com/HEPCloud/decisionengine/pull/700>`_: For flake8 skip build folder  (@vitodb)
--`DE 713 <https://github.com/HEPCloud/decisionengine/pull/713>`_: Set /metrics Content-type header to text/plain  (@shreyb)
--`DE 710 <https://github.com/HEPCloud/decisionengine/pull/710>`_: add invocation in the child processes for sources/channels logging  (@namrathaurs)
+Bugs fixed:
+
+- `DE 670 <https://github.com/HEPCloud/decisionengine/pull/670>`_: changes to fix source logging  (@goodenou)
+- `DE 674 <https://github.com/HEPCloud/decisionengine/pull/674>`_: Upgrading isort version to fix pre-config install error w/ poetry  (@mambelli)
+- `DE 683 <https://github.com/HEPCloud/decisionengine/pull/683>`_: Fix unit tests  (@vitodb)
+- `DE 696 <https://github.com/HEPCloud/decisionengine/pull/696>`_: Re-enable flake8 linter  (@vitodb)
+- `DE 701 <https://github.com/HEPCloud/decisionengine/pull/701>`_: Fixed bugs in metrics with labels  (@IlyaBaburashvili)
+- `DE 700 <https://github.com/HEPCloud/decisionengine/pull/700>`_: For flake8 skip build folder  (@vitodb)
+- `DE 713 <https://github.com/HEPCloud/decisionengine/pull/713>`_: Set /metrics Content-type header to text/plain  (@shreyb)
+- `DE 710 <https://github.com/HEPCloud/decisionengine/pull/710>`_: add invocation in the child processes for sources/channels logging  (@namrathaurs)
 
 Enhancements:
--`DE 668 <https://github.com/HEPCloud/decisionengine/pull/668>`_: Introduce publisher status data product  (@knoepfel)
--`DE 671 <https://github.com/HEPCloud/decisionengine/pull/671>`_: explicitly select a container with all our required python versions  (@jcpunk)
--`DE 676 <https://github.com/HEPCloud/decisionengine/pull/676>`_: Added EL9 instructions  (@mambelli)
--`DE 678 <https://github.com/HEPCloud/decisionengine/pull/678>`_: Updated and tested instructions, PIP installation working  (@mambelli)
--`DE 679 <https://github.com/HEPCloud/decisionengine/pull/679>`_: Disabling unit tests for python 3.6  (@vitodb)
--`DE 680 <https://github.com/HEPCloud/decisionengine/pull/680>`_: Make default database init use stronger data protections  (@jcpunk)
--`DE 681 <https://github.com/HEPCloud/decisionengine/pull/681>`_: Update to pytest 7 with pytest-postgresql 5  (@jcpunk)
--`DE 682 <https://github.com/HEPCloud/decisionengine/pull/682>`_: Updated EL9 instruction: PIP installation and GWMS config tested  (@mambelli)
--`DE 685 <https://github.com/HEPCloud/decisionengine/pull/685>`_: Enable some tests only on DE 1.7 branch  (@vitodb)
--`DE 687 <https://github.com/HEPCloud/decisionengine/pull/687>`_: Update GH actions  (@vitodb)
--`DE 688 <https://github.com/HEPCloud/decisionengine/pull/688>`_: Added two metrics on the Source - de_source_status and de_source_acquire_seconds  (@skylerfoster67)
--`DE 690 <https://github.com/HEPCloud/decisionengine/pull/690>`_: Adding DE EL9 containers based on AlmaLinux9  (@vitodb)
--`DE 691 <https://github.com/HEPCloud/decisionengine/pull/691>`_: Adding Jenkinsfile for EL9  (@vitodb)
--`DE 689 <https://github.com/HEPCloud/decisionengine/pull/689>`_: Added new de-client metrics for duration  (@IlyaBaburashvili)
--`DE 694 <https://github.com/HEPCloud/decisionengine/pull/694>`_: Decision Engine Components Data  (@skylerfoster67)
--`DE 697 <https://github.com/HEPCloud/decisionengine/pull/697>`_: Redis Exporter Data  (@skylerfoster67)
--`DE 703 <https://github.com/HEPCloud/decisionengine/pull/703>`_: Create Redis mock for unit tests  (@shreyb)
--`DE 706 <https://github.com/HEPCloud/decisionengine/pull/706>`_: In Jenkins pipeline config use podman instead of docker  (@vitodb)
--`DE 712 <https://github.com/HEPCloud/decisionengine/pull/712>`_: Rpm pip packaging with uv and pyproject.toml  (@mambelli)
--`DE 714 <https://github.com/HEPCloud/decisionengine/pull/714>`_: Fixed spec file and added release script  (@mambelli)
--`DE 715 <https://github.com/HEPCloud/decisionengine/pull/715>`_: Added wrapper to run the decisionengine commands also as root. Fixed installation glitches.  (@mambelli)
--`DE 716 <https://github.com/HEPCloud/decisionengine/pull/716>`_: Added a check for the Python code being installed and improved Python code install  (@mambelli)
--`DE 717 <https://github.com/HEPCloud/decisionengine/pull/717>`_: Added codespell in pre-commit and fixed files to compliance  (@mambelli)
+
+- `DE 668 <https://github.com/HEPCloud/decisionengine/pull/668>`_: Introduce publisher status data product  (@knoepfel)
+- `DE 671 <https://github.com/HEPCloud/decisionengine/pull/671>`_: explicitly select a container with all our required python versions  (@jcpunk)
+- `DE 676 <https://github.com/HEPCloud/decisionengine/pull/676>`_: Added EL9 instructions  (@mambelli)
+- `DE 678 <https://github.com/HEPCloud/decisionengine/pull/678>`_: Updated and tested instructions, PIP installation working  (@mambelli)
+- `DE 679 <https://github.com/HEPCloud/decisionengine/pull/679>`_: Disabling unit tests for python 3.6  (@vitodb)
+- `DE 680 <https://github.com/HEPCloud/decisionengine/pull/680>`_: Make default database init use stronger data protections  (@jcpunk)
+- `DE 681 <https://github.com/HEPCloud/decisionengine/pull/681>`_: Update to pytest 7 with pytest-postgresql 5  (@jcpunk)
+- `DE 682 <https://github.com/HEPCloud/decisionengine/pull/682>`_: Updated EL9 instruction: PIP installation and GWMS config tested  (@mambelli)
+- `DE 685 <https://github.com/HEPCloud/decisionengine/pull/685>`_: Enable some tests only on DE 1.7 branch  (@vitodb)
+- `DE 687 <https://github.com/HEPCloud/decisionengine/pull/687>`_: Update GH actions  (@vitodb)
+- `DE 688 <https://github.com/HEPCloud/decisionengine/pull/688>`_: Added two metrics on the Source - de_source_status and de_source_acquire_seconds  (@skylerfoster67)
+- `DE 690 <https://github.com/HEPCloud/decisionengine/pull/690>`_: Adding DE EL9 containers based on AlmaLinux9  (@vitodb)
+- `DE 691 <https://github.com/HEPCloud/decisionengine/pull/691>`_: Adding Jenkinsfile for EL9  (@vitodb)
+- `DE 689 <https://github.com/HEPCloud/decisionengine/pull/689>`_: Added new de-client metrics for duration  (@IlyaBaburashvili)
+- `DE 694 <https://github.com/HEPCloud/decisionengine/pull/694>`_: Decision Engine Components Data  (@skylerfoster67)
+- `DE 697 <https://github.com/HEPCloud/decisionengine/pull/697>`_: Redis Exporter Data  (@skylerfoster67)
+- `DE 703 <https://github.com/HEPCloud/decisionengine/pull/703>`_: Create Redis mock for unit tests  (@shreyb)
+- `DE 706 <https://github.com/HEPCloud/decisionengine/pull/706>`_: In Jenkins pipeline config use podman instead of docker  (@vitodb)
+- `DE 712 <https://github.com/HEPCloud/decisionengine/pull/712>`_: Rpm pip packaging with uv and pyproject.toml  (@mambelli)
+- `DE 714 <https://github.com/HEPCloud/decisionengine/pull/714>`_: Fixed spec file and added release script  (@mambelli)
+- `DE 715 <https://github.com/HEPCloud/decisionengine/pull/715>`_: Added wrapper to run the decisionengine commands also as root. Fixed installation glitches.  (@mambelli)
+- `DE 716 <https://github.com/HEPCloud/decisionengine/pull/716>`_: Added a check for the Python code being installed and improved Python code install  (@mambelli)
+- `DE 717 <https://github.com/HEPCloud/decisionengine/pull/717>`_: Added codespell in pre-commit and fixed files to compliance  (@mambelli)
 
 Full list of commits since version 2.0.2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -207,7 +209,7 @@ Patch level (bug fix) release.
 Issues fixed in this release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Bugs fixed
+Bugs fixed:
 
 - `DE 639 <https://github.com/HEPCloud/decisionengine/issues/639>`_: de-client --status stalls whenever channels are not yet in STEADY state
 - `DE 638 <https://github.com/HEPCloud/decisionengine/issues/638>`_: Sources should go offline if the client channel offline
