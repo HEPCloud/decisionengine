@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.5.dev4+g4add0238 documentation</title>
+  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.5.dev5+g3f4fa209 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=c725c3d3"></script>
+      <script src="_static/documentation_options.js?v=00fe36d4"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -128,31 +128,39 @@ decisionengine will run as the decisionengine user.</p>
 </div>
 </li>
 <li><p>Setup the decision engine yum repositories</p>
-<p>wget -O /etc/yum.repos.d/ssi-hepcloud.repo <a class="reference external" href="http://ssi-rpm.fnal.gov/hep/ssi-hepcloud.repo">http://ssi-rpm.fnal.gov/hep/ssi-hepcloud.repo</a>
-wget -O /etc/yum.repos.d/ssi-hepcloud-dev.repo <a class="reference external" href="http://ssi-rpm.fnal.gov/hep/ssi-hepcloud-dev.repo">http://ssi-rpm.fnal.gov/hep/ssi-hepcloud-dev.repo</a>
-# Note the above repos are only accessible within Fermilab.  There is an alternative place on github to get the RPMs if you are off-site.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="o">-</span><span class="n">O</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">.</span><span class="n">repo</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">ssi</span><span class="o">-</span><span class="n">rpm</span><span class="o">.</span><span class="n">fnal</span><span class="o">.</span><span class="n">gov</span><span class="o">/</span><span class="n">hep</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">.</span><span class="n">repo</span>
+<span class="n">wget</span> <span class="o">-</span><span class="n">O</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">-</span><span class="n">dev</span><span class="o">.</span><span class="n">repo</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">ssi</span><span class="o">-</span><span class="n">rpm</span><span class="o">.</span><span class="n">fnal</span><span class="o">.</span><span class="n">gov</span><span class="o">/</span><span class="n">hep</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">-</span><span class="n">dev</span><span class="o">.</span><span class="n">repo</span>
+<span class="c1"># Note the above repos are only accessible within Fermilab.  There is an alternative place on github to get the RPMs if you are off-site.</span>
+</pre></div>
+</div>
 </li>
 <li><p>Install the decision engine (add <cite>–enablerepo=ssi-hepcloud-dev</cite> for the latest development version)</p>
-<p>DE_REPO=ssi-hepcloud-dev
-dnf install -y –enablerepo=”$DE_REPO” decisionengine-onenode
-# Individual packages are: decisionengine-deps (framework req) decisionengine-modules-deps (modules req) decisionengine-standalone (2 deps+httpd)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DE_REPO</span><span class="o">=</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">-</span><span class="n">dev</span>
+<span class="n">dnf</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="o">--</span><span class="n">enablerepo</span><span class="o">=</span><span class="s2">&quot;$DE_REPO&quot;</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">onenode</span>
+<span class="c1"># Individual packages are: decisionengine-deps (framework req) decisionengine-modules-deps (modules req) decisionengine-standalone (2 deps+httpd)</span>
+</pre></div>
+</div>
 </li>
 <li><p>Install the required Python packages (these are taken from setup.py)</p>
-<p>decisionengine-install-python
-# This shell script (included in decisionengine-deps) installs the Decision Engine Python code.
-# You can run it as root or as the decisionengine user
-# To see all the options:  decisionengine-install-python –help</p>
-<p># Double check that pip added $HOME/.local/bin to the PATH of user decisionengine</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">decisionengine</span><span class="o">-</span><span class="n">install</span><span class="o">-</span><span class="n">python</span> <span class="o">--</span><span class="n">de</span><span class="o">-</span><span class="n">git</span><span class="o">-</span><span class="n">ref</span> <span class="mf">2.0.4</span>
+<span class="c1"># This shell script (included in decisionengine-deps) installs the Decision Engine Python code.</span>
+<span class="c1"># You can run it as root or as the decisionengine user</span>
+<span class="c1"># To see all the options:  decisionengine-install-python --help</span>
+<span class="c1"># Double check that pip added $HOME/.local/bin to the PATH of user decisionengine</span>
+</pre></div>
+</div>
 </li>
 <li><p>Start and enable HTCondor:</p>
-<p>systemctl start condor
-systemctl enable condor</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">start</span> <span class="n">condor</span>
+<span class="n">systemctl</span> <span class="n">enable</span> <span class="n">condor</span>
+</pre></div>
+</div>
 </li>
 <li><p>Optionally install these extra packages</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># htgettoken - if you need it to generate SciTokens</span>
+<span class="n">dnf</span> <span class="o">-</span><span class="n">y</span> <span class="n">install</span> <span class="n">htgettoken</span>
 </pre></div>
 </div>
-<p>dnf -y install htgettoken</p>
 </li>
 </ol>
 </section>

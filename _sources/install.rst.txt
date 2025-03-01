@@ -34,34 +34,33 @@ RPM installation
 
 2. Setup the decision engine yum repositories ::
 
-   wget -O /etc/yum.repos.d/ssi-hepcloud.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud.repo
-   wget -O /etc/yum.repos.d/ssi-hepcloud-dev.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud-dev.repo
-   # Note the above repos are only accessible within Fermilab.  There is an alternative place on github to get the RPMs if you are off-site.
+    wget -O /etc/yum.repos.d/ssi-hepcloud.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud.repo
+    wget -O /etc/yum.repos.d/ssi-hepcloud-dev.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud-dev.repo
+    # Note the above repos are only accessible within Fermilab.  There is an alternative place on github to get the RPMs if you are off-site.
 
 3. Install the decision engine (add `--enablerepo=ssi-hepcloud-dev` for the latest development version) ::
 
-   DE_REPO=ssi-hepcloud-dev
-   dnf install -y --enablerepo="$DE_REPO" decisionengine-onenode
-   # Individual packages are: decisionengine-deps (framework req) decisionengine-modules-deps (modules req) decisionengine-standalone (2 deps+httpd)
+    DE_REPO=ssi-hepcloud-dev
+    dnf install -y --enablerepo="$DE_REPO" decisionengine-onenode
+    # Individual packages are: decisionengine-deps (framework req) decisionengine-modules-deps (modules req) decisionengine-standalone (2 deps+httpd)
 
 4. Install the required Python packages (these are taken from setup.py) ::
 
-   decisionengine-install-python
-   # This shell script (included in decisionengine-deps) installs the Decision Engine Python code.
-   # You can run it as root or as the decisionengine user
-   # To see all the options:  decisionengine-install-python --help
-
-   # Double check that pip added $HOME/.local/bin to the PATH of user decisionengine
+    decisionengine-install-python --de-git-ref 2.0.4
+    # This shell script (included in decisionengine-deps) installs the Decision Engine Python code.
+    # You can run it as root or as the decisionengine user
+    # To see all the options:  decisionengine-install-python --help
+    # Double check that pip added $HOME/.local/bin to the PATH of user decisionengine
 
 5. Start and enable HTCondor::
 
-   systemctl start condor
-   systemctl enable condor
+    systemctl start condor
+    systemctl enable condor
 
 6. Optionally install these extra packages ::
 
-   # htgettoken - if you need it to generate SciTokens
-   dnf -y install htgettoken
+    # htgettoken - if you need it to generate SciTokens
+    dnf -y install htgettoken
 
 
 Fix the GlideinWMS Frontend installation
