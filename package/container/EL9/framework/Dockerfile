@@ -40,7 +40,7 @@ RUN dnf -y install --enablerepo crb \
     python3 python3-rpm-macros python3-pip python3-setuptools python3-wheel \
     gcc gcc-c++ make python3-devel swig openssl-devel \
     git \
-    rpm-build \
+    rpm-build mock \
  && dnf -y clean all
 
 # Install redis server and tools
@@ -50,7 +50,7 @@ RUN dnf install -y redis \
 # Ensure pip/setuptools are up to date
 #  rpm-build requires libraries in /usr
 RUN python3 -m pip install --upgrade --prefix=/usr pip ; \
-    python3 -m pip install --upgrade --prefix=/usr setuptools wheel setuptools-scm[toml]
+    python3 -m pip install --upgrade --prefix=/usr setuptools wheel setuptools-scm[toml] build
 
 # Install decisionengine requirements (runtime and testing)
 #  do as one layer to simplify merges

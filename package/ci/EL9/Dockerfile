@@ -15,6 +15,7 @@ ARG HOMEDIR=/home/decisionengine
 # Make user and place for logs/configs
 RUN groupadd -g $GID $GROUPNAME ; \
     useradd -u $UID -g $GID -d $HOMEDIR -m $USERNAME ; \
+    usermod -a -G mock $USERNAME ; \
     chown $USERNAME:$GROUPNAME /var/log/decisionengine /etc/decisionengine
 
 # Become container user
