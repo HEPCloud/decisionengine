@@ -181,7 +181,7 @@ pipeline {
                         }
                     }
                 }
-                stage('rpmbuild') {
+                stage('DEbuild') {
                     agent {
                         node {
                             label 'podman'
@@ -194,7 +194,7 @@ pipeline {
                     steps {
                         script {
                             // DOCKER_IMAGE is defined through Jenkins project
-                            rpmbuildStageDockerImage="localhost/${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
+                            DEbuildStageDockerImage="localhost/${DOCKER_IMAGE}_${BUILD_NUMBER}_${STAGE_NAME}"
                         }
                         echo "cleanup workspace"
                         sh 'for f in $(ls -A); do rm -rf ${f}; done'
@@ -212,14 +212,27 @@ pipeline {
                             fi
                             cd ..
                         '''
-                        echo "prepare podman image ${rpmbuildStageDockerImage}"
-                        sh "podman build --pull --tag ${rpmbuildStageDockerImage} --build-arg BASEIMAGE=docker.io/hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
+                        echo "clone decisionengine_modules code from ${DEM_REPO}"
+                        sh '''
+                            git clone ${DEM_REPO}
+                            cd decisionengine_modules
+                            echo "checkout ${BRANCH} branch"
+                            git checkout ${BRANCH}
+                            echo GITHUB_PR_NUMBER: ${GITHUB_PR_NUMBER} - GITHUB_PR_STATE: ${GITHUB_PR_STATE}
+                            if [[ -n ${GITHUB_PR_NUMBER} && ${GITHUB_PR_STATE} == OPEN ]]; then
+                                git fetch origin pull/${GITHUB_PR_NUMBER}/merge:merge${GITHUB_PR_NUMBER}
+                                git checkout merge${GITHUB_PR_NUMBER}
+                            fi
+                            cd ..
+                        '''
+                        echo "prepare podman image ${DEbuildStageDockerImage}"
+                        sh "podman build --pull --tag ${DEbuildStageDockerImage} --build-arg BASEIMAGE=docker.io/hepcloud/decision-engine-ci-el9:${BRANCH} --build-arg UID=\$(id -u) --build-arg GID=\$(id -g) -f decisionengine/package/ci/EL9/Dockerfile decisionengine/package/ci/EL9/"
                         echo "Run ${STAGE_NAME} tests"
-                        sh "podman run --userns keep-id:uid=\$(id -u),gid=\$(id -g) --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}/decisionengine:${WORKSPACE}/decisionengine -w ${WORKSPACE}/decisionengine ${rpmbuildStageDockerImage} \"setup.py bdist_rpm\" \"rpmbuild.log\""
+                        sh "podman run --privileged --userns keep-id:uid=\$(id -u),gid=\$(id -g) --rm --env PYTEST_TIMEOUT=${PYTEST_TIMEOUT} -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE} --entrypoint /bin/bash ${DEbuildStageDockerImage} \"decisionengine/package/release/make-release.sh\" \"-v\" \"-e\" \"${BRANCH}\""
                     }
                     post {
                         always {
-                            archiveArtifacts artifacts: "decisionengine/rpmbuild.log,decisionengine/dist/*.rpm"
+                            archiveArtifacts artifacts: "dist/decisionengine*,rpmbuild/RPMS/decisionengine*"
                             // check if the podman container used for this test suite is still active, if so this is due to an aborted test suite
                             // eventually kill the python process that spawn the test to cleanup CI processes left behind
                             sh '''
@@ -231,8 +244,8 @@ pipeline {
                                     podman exec ${PODMANID} ps -xww  || true
                                 fi
                             '''
-                            echo "cleanup podman image ${rpmbuildStageDockerImage}"
-                            sh "podman rmi ${rpmbuildStageDockerImage}"
+                            echo "cleanup podman image ${DEbuildStageDockerImage}"
+                            sh "podman rmi ${DEbuildStageDockerImage}"
                         }
                     }
                 }
