@@ -228,3 +228,7 @@ systemctl daemon-reload || true
 %files standalone
 
 %files onenode
+
+%changelog
+* Wed Mar 12 2025 Marco Mambelli <marcom@fnal.gov> - 2.0.5
+- Decision Engine 2.0.5
