@@ -11,8 +11,8 @@ Developers updated changelog. For curated release notes see doc/source/release_n
 
 ### New features / functionalities
 
-- item one of the list
-- item N
+- Added make_release.sh script to build RPMs, Python packages and prepare for OSG release (PR #714, PR #716, PR #720)
+- Set up RPM packaging of DE and DEM dependencies and system files (PR #715)
 
 ### Changed defaults / behaviours
 

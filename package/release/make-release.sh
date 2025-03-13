@@ -3,7 +3,8 @@
 # SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 # SPDX-License-Identifier: Apache-2.0
 
-#
+OSG_BUILDMACHINE="osg-sw-submit.chtc.wisc.edu"
+OSG_UPLOADDIR="/p/vdt/public/html/upstream/decisionengine"
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 robust_realpath() {
@@ -16,7 +17,7 @@ robust_realpath() {
 help_msg() {
     cat << EOF
 $0 [options] VERSION [RELEASE]
-Build the Decision Engine (Framework and Modules) release (RPM and Python sdist and wheel).
+Build the Decision Engine (Framework and Modules) release (RPM, OSG sources, and Python sdist and wheel).
 VERSION RPM version string, e.g. 2.0.3
 RELEASE RPM release string (default: 1), e.g. 1 or 0.1.rc1 or rc1 (equal to 0.1.rc1)
   -h       print this message
@@ -43,12 +44,17 @@ RELEASE RPM release string (default: 1), e.g. 1 or 0.1.rc1 or rc1 (equal to 0.1.
   -m DEM_DIR directory of the decisionengine_modules Git repository (default: ../../../decisionengine_modules from this script)
   -d REL_DIR directory where to build the release (default: $PWD)
   -w YUM_REPO publish the RPMs to the YUM repository in YUM_REPO
-  -x WHAT   comma separated list of targets to build (default: rpm,py). Keywords:
-            rpm - build the DE and DEM RPMs
-            py  - build the DE and DEM Python (wheel and sdist) packages
+  -x WHAT  comma separated list of targets to build (default: rpm,py). Keywords:
+           rpm - build the DE and DEM RPMs
+           py  - build the DE and DEM Python (wheel and sdist) packages
+  -o USER:PRINC prepare for OSG release and upload sources to the OSG library
+           USER  - username on the OSG build machine
+           PRINC - Kerberos principal for the OSG AFS (If only the user is given CS.WISC.EDU is assumed as domain).
+                   Krb user may differ form the build machine user name
+
 Examples:
-- Make version 2.0.4 and copy the RPMs to the YUM repository:
-/Path/To/decisionengine/package/release/make-release.sh -v -d /opt/osg/distro/de2_0_4 -w /opt/repo/main/ 2.0.4
+- Make version 2.0.4, upload to OSG, and copy the RPMs to the YUM repository:
+/Path/To/decisionengine/package/release/make-release.sh -v -d /opt/osg/distro/de2_0_4 -o first.last:uname -w /opt/repo/main/ 2.0.4
 - Make only the Python packages of RC1 for version 2.0.4, forcing the package version:
 /Path/To/decisionengine/package/release/make-release.sh -ve -x py -d /opt/osg/distro/de2_0_4 -t a  2.0.4 rc1
 - Here the DE/DEM repos are in a different directory from make-release.sh:
@@ -71,7 +77,8 @@ parse_opts() {
     YUM_REPO=
     BUILD_TARGET=rpm,py
     PYTAG=
-    while getopts "vlecs:t:p:y:r:m:d:w:x:h" option
+    OSG_NAMES=
+    while getopts "vlecs:t:p:y:r:m:d:w:x:o:h" option
     do
       case "${option}"
         in
@@ -89,6 +96,7 @@ parse_opts() {
         d) REL_DIR="${OPTARG%/}";;
         w) YUM_REPO="${OPTARG%/}";;
         x) BUILD_TARGET="$OPTARG";;
+        o) OSG_NAMES="$OPTARG";;
         *) echo "ERROR: Invalid option"; help_msg; exit 1;;
       esac
     done
@@ -144,17 +152,32 @@ clone_repositories() {
     return $ec
 }
 
+prepare_rpm() {
+    # Prepare for local/OSG RPM release.
+    # 1 - directory to use for the RPM prep files
+    # Uses DE_VERSION, DE_RELEASE, VERBOSE
+    local dst_dir="$1"
+    [[ -n "$VERBOSE" ]] && echo "Preparing RPM spec file and source tar file for $DE_VERSION-$DE_RELEASE" || true
+    rm -rf "$dst_dir"
+    mkdir -p "$dst_dir"
+    # Prepare spec file
+    sed -e "s/__HCDE_RPM_VERSION__/${DE_VERSION}/" -e "s/__HCDE_RPM_RELEASE__/${DE_RELEASE}/" "$DE_DIR"/package/rpm/decisionengine.spec > "$dst_dir"/decisionengine.spec
+    # Copy sources
+    # The tar file contains only decisionengine (in the future decisionengine_modules may be included)
+    mkdir -p "$dst_dir"/hepcloud && cp -pr "$DE_DIR" "$dst_dir"/hepcloud/ && pushd "$dst_dir" 2> /dev/null && \
+        tar --exclude='hepcloud/decisionengine/.git' -czf "$dst_dir"/hepcloud.tar.gz hepcloud && popd 2> /dev/null || \
+        { echo "Failed to create source tar file. Aborting."; exit 1; }
+    [[ -n "$VERBOSE" ]] && echo "Spec file and source tar are in $dst_dir" || true
+}
+
 release_rpm() {
     # Make the RPM release.
+    # 1 - directory to use for the RPM prep files
     # Uses DE_VERSION, DE_RELEASE, RPM_ROOT_DIR, REL_DIR, CMD_LOGS, VERBOSE, RPM_PLATFORM, PY_VER, YUM_REPO
-    # Prepare spec file
-    sed -e "s/__HCDE_RPM_VERSION__/${DE_VERSION}/" -e "s/__HCDE_RPM_RELEASE__/${DE_RELEASE}/" "$DE_DIR"/package/rpm/decisionengine.spec > "$RPM_ROOT_DIR"/SPECS/decisionengine.spec
-    # Copy sources
-    # The empty tar file is a placeholder
-    rm -rf "$REL_DIR"/tmp
-    mkdir -p "$REL_DIR"/tmp/hepcloud && cp -pr "$DE_DIR" "$REL_DIR"/tmp/hepcloud/ && pushd "$REL_DIR"/tmp 2> /dev/null && \
-        tar --exclude='hepcloud/decisionengine/.git' -czf "$RPM_ROOT_DIR"/SOURCES/hepcloud.tar.gz hepcloud && popd 2> /dev/null || \
-        { echo "Failed to create empty source. Aborting."; exit 1; }
+    # Copy spec and source tar file
+    cp -f "$1"/decisionengine.spec "$RPM_ROOT_DIR"/SPECS/decisionengine.spec &&  \
+        cp -f "$1"/hepcloud.tar.gz "$RPM_ROOT_DIR"/SOURCES/hepcloud.tar.gz || \
+        { echo "Unable to find spec and source tar files in $1. Aborting."; exit 1; }
     # Build SRPM
     [[ -n "$VERBOSE" ]] && echo "Building the source RPM for $DE_VERSION-$DE_RELEASE" || true
     [[ "$CMD_LOGS" = /dev/* ]] || CMD_LOGS="${CMD_LOGS}.srpm.log"
@@ -185,13 +208,44 @@ release_rpm() {
     fi
 }
 
+release_osg() {
+    # Prepare for OSG release: make spec file, upload file, and upload source tar file
+    # 1 - directory to use for the RPM prep files
+    # Uses DE_VERSION, DE_RELEASE, OSG_BUILDMACHINE, OSG_NAMES, OSG_UPLOADDIR, VERBOSE
+    local dst_dir="$1"
+    local osg_user="${OSG_NAMES%:*}"
+    local osg_krb_user="${OSG_NAMES#*:}"
+    echo "$osg_krb_user" | grep -q "@" || osg_krb_user="$osg_krb_user@CS.WISC.EDU"
+    local de_tag
+    de_tag="$DE_VERSION$(get_rc_and_number "$DE_RELEASE")"
+    local versioned_uploaddir="$OSG_UPLOADDIR/$de_tag"
+    # Print the checksum for the source file
+    echo "Tarball checksummed for $de_tag (sha1sum, file): $(sha1sum "$dst_dir"/hepcloud.tar.gz)"
+    echo "Use the following to update the upstream file:"
+    echo "echo 'decisionengine/$de_tag/hepcloud.tar.gz sha1sum=$(sha1sum "$dst_dir"/hepcloud.tar.gz | cut -f 1 -d ' ')' > upstream/developer.tarball.source"
+    # Upload the tarball
+    if ssh "$osg_user@$OSG_BUILDMACHINE" "kinit $osg_krb_user; aklog; mkdir -p $versioned_uploaddir"; then
+        if scp "$dst_dir"/hepcloud.tar.gz "$osg_user@$OSG_BUILDMACHINE:$versioned_uploaddir/"; then
+            [[ -n "$VERBOSE" ]] && echo "Tarball Uploaded to $OSG_BUILDMACHINE: $versioned_uploaddir" || true
+        else
+            echo "ERROR: failed to upload the tarball to $OSG_BUILDMACHINE: $versioned_uploaddir. Aborting"
+            exit 1
+        fi
+    else
+        echo "ERROR: Failed to create directory '$versioned_uploaddir' on the OSG build machine. Aborting"
+        exit 1
+    fi
+}
+
 release_py() {
     # Make the Python wheel (bdist) and sdist
     # python -m build -o DIST_DIR [-C] SRC_DIR
     mkdir -p "$REL_DIR"/dist
-    if [[ -n "$PYTAG" ]];then
+    if [[ -n "$PYTAG" ]]; then
         # This is forcing a change in pyproject.toml
-        [[ -n "$VERBOSE" ]] && echo "Overwriting pyproject.toml to force version $PYTAG" || true
+        [[ -n "$VERBOSE" ]] && echo "Overwriting pyproject.toml to force version $PYTAG (bck to .makereleasebck)" || true
+        cp -f "$DE_DIR"/pyproject.toml "$DE_DIR"/pyproject.toml.makereleasebck
+        cp -f "$DEM_DIR"/pyproject.toml "$DEM_DIR"/pyproject.toml.makereleasebck
         # Very rough search, it is looking in the whole file
         # match static version
         sed  -i "s;^version = \"[^\"]*\";version = \"$PYTAG\";" "$DE_DIR"/pyproject.toml
@@ -214,6 +268,11 @@ release_py() {
     [[ -n "$VERBOSE" ]] && echo "Python wheel and sdist are in $REL_DIR/dist" || true
     # Clean up log file name
     [[ "$CMD_LOGS" = /dev/* ]] || CMD_LOGS="${CMD_LOGS%.dempy.log}"
+    # Restore pyproject.toml bck
+    if [[ -n "$PYTAG" ]]; then
+        mv -f "$DE_DIR"/pyproject.toml.makereleasebck "$DE_DIR"/pyproject.toml
+        mv -f "$DEM_DIR"/pyproject.toml.makereleasebck "$DEM_DIR"/pyproject.toml
+    fi
 }
 
 _main() {
@@ -259,9 +318,19 @@ _main() {
         fi
     fi
 
+    if [[ ",$BUILD_TARGET," = *",rpm,"* || -n "$OSG_NAMES" ]]; then
+        # Make the RPM release
+        prepare_rpm "$REL_DIR"/tmp
+    fi
+
     if [[ ",$BUILD_TARGET," = *",rpm,"* ]]; then
         # Make the RPM release
-        release_rpm
+        release_rpm "$REL_DIR"/tmp
+    fi
+
+    if [[ -n "$OSG_NAMES" ]]; then
+        # Upload sources for the OSG release
+        release_osg "$REL_DIR"/tmp
     fi
 
     if [[ ",$BUILD_TARGET," = *",py,"* ]]; then
