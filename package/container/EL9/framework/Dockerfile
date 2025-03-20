@@ -47,20 +47,20 @@ RUN dnf -y install --enablerepo crb \
 RUN dnf install -y redis \
  && dnf -y clean all
 
-# Ensure pip/setuptools are up to date
-#  rpm-build requires libraries in /usr
-RUN python3 -m pip install --upgrade --prefix=/usr pip ; \
-    python3 -m pip install --upgrade --prefix=/usr setuptools wheel setuptools-scm[toml] build
+# Prepare a venv and ensure we have up to date pip/setuptools/build modules
+RUN su - adm -s /bin/bash -c "python3 -m venv /var/tmp/de_venv ; \
+    source /var/tmp/de_venv/bin/activate ; \
+    python3 -m pip install --upgrade pip ; \
+    python3 -m pip install --upgrade setuptools wheel setuptools-scm[toml] build"
 
-# Install decisionengine requirements (runtime and testing)
-#  do as one layer to simplify merges
-#  rpm-build requires libraries in /usr
-RUN su - adm -s /bin/bash -c "git clone https://github.com/HEPCloud/decisionengine.git /tmp/decisionengine.git"; \
+# Install decisionengine requirements (runtime and testing) in the venv
+RUN su - adm -s /bin/bash -c "source /var/tmp/de_venv/bin/activate ; \
+    git clone https://github.com/HEPCloud/decisionengine.git /tmp/decisionengine.git ; \
     cd /tmp/decisionengine.git ; \
-    su adm -s /bin/bash -c "cd /tmp/decisionengine.git ; python3 setup.py bdist_wheel" ; \
-    python3 -m pip install --prefix=/usr dist/*.whl ; \
-    python3 -m pip install --prefix=/usr decisionengine[develop] ; \
+    python3 setup.py bdist_wheel ; \
+    python3 -m pip install dist/*.whl ; \
+    python3 -m pip install decisionengine[develop] ; \
     python3 -m pip uninstall -y decisionengine ; \
-    rm -rf /tmp/decisionengine.git
+    rm -rf /tmp/decisionengine.git"
 
 ENTRYPOINT ["/bin/bash"]
