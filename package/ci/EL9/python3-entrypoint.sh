@@ -21,16 +21,23 @@ echo ''
 sleep 1
 echo ''
 
+python3 -m venv ~/de_venv
+source ~/de_venv/bin/activate
+python3 -m pip install virtualenvwrapper
+export VIRTUALENVWRAPPER_PYTHON=~/de_venv/bin/python3
+source ~/de_venv/bin/virtualenvwrapper.sh
+add2virtualenv /var/tmp/de_venv/lib64/python3.9/site-packages/
+
 # Useful info
 python3 -m site
 echo ''
 
 python3 setup.py bdist_wheel
-python3 -m pip install -e . --user
-python3 -m pip install -e .[develop] --user
+python3 -m pip install -e .
+python3 -m pip install -e .[develop]
 
 echo''
-python3 -m pip list
+python3 -m pip list -v
 
 # make sure the pipe doesn't eat failures
 set -o pipefail
@@ -43,5 +50,16 @@ echo "PYTHONPATH: ${PYTHONPATH}"
 # so we unset this variable
 unset PROMETHEUS_MULTIPROC_DIR
 
-# run the python "module/command"
-python3 ${CMD} 2>&1 | tee ${LOGFILE}
+if [[ ${CMD} =~ "make-release" ]]; then
+    # run make-release
+    cur_revision=$(git describe --tags| sed -r 's/-([0-9]*)-/.dev\1+/g')
+    echo "cur_revision: ${cur_revision}"
+    # podman runs this python script from decisionengine folder, we need to move in the parent folder to run make-release.sh
+    cd ..
+    decisionengine/package/release/make-release.sh -v -e -s ${cur_revision} -t ${cur_revision} ${cur_revision} 2>&1 | tee ${LOGFILE}
+
+else
+    # run the python "module/command"
+    python3 ${CMD} 2>&1 | tee ${LOGFILE}
+
+fi
