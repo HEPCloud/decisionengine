@@ -92,6 +92,7 @@ Requires: git
 #Requires: make
 #Requires: gcc-c++
 #Requires: python3-devel
+Requires(post): /usr/sbin/useradd
 %description deps
 This subpackage includes all the RPM dependency for the HEPCloud Decision Engine Framework.
 
@@ -103,6 +104,7 @@ Requires: decisionengine-deps = %{version}-%{release}
 Requires: glideinwms-vofrontend-libs
 Requires: glideinwms-vofrontend-glidein
 Requires: glideinwms-vofrontend-core
+Requires(post): /usr/sbin/usermod
 %description modules-deps
 This subpackage includes all the RPM dependency for the HEPCloud Decision Engine Modules.
 
@@ -153,6 +155,8 @@ rm -rf $RPM_BUILD_ROOT
 
 # Create some directories, install config files, systemd and the binary wrapper
 install -d $RPM_BUILD_ROOT%{decisionengine_home}
+install -d $RPM_BUILD_ROOT%{decisionengine_home}/passwords.d
+install -d $RPM_BUILD_ROOT%{decisionengine_home}/tokens.d
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine/config.d
 install -d $RPM_BUILD_ROOT%{_localstatedir}/log/decisionengine
@@ -183,6 +187,10 @@ getent passwd decisionengine >/dev/null || \
 # If the decisionengine user already exists make sure it is part of decisionengine group
 usermod --append --groups decisionengine decisionengine >/dev/null
 
+%pre modules-deps
+# make sure decisionengine is part of glidein group
+# glidein defined in glideinwms-vofrontend-glidein requirement
+usermod --append --groups glidein decisionengine >/dev/null
 
 %post deps
 # make sure our home area makes sense since we have a dynamic id
@@ -207,6 +215,8 @@ systemctl daemon-reload || true
 %files deps
 %defattr(-,decisionengine,decisionengine,-)
 %dir %{decisionengine_home}
+%dir %attr(700, decisionengine, decisionengine) %{decisionengine_home}/passwords.d
+%dir %attr(700, decisionengine, decisionengine) %{decisionengine_home}/tokens.d
 %dir %{_sysconfdir}/decisionengine
 %dir %{_sysconfdir}/decisionengine/config.d
 %config(noreplace) %{_sysconfdir}/decisionengine/decision_engine.jsonnet
