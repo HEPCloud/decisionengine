@@ -3,16 +3,15 @@ SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# GlideinWMS Changelog
+# Decision Engine v2.0.6 \[2025-05-07\]
 
-Developers updated changelog. For curated release notes see doc/source/release_notes
+Improved compatibility and separation with GlideinWMS Frontend
 
 ## Changes Since Last Release
 
 ### New features / functionalities
 
-- Added make_release.sh script to build RPMs, Python packages and prepare for OSG release (PR #714, PR #716, PR #720)
-- Set up RPM packaging of DE and DEM dependencies and system files (PR #715)
+- Improved compatibility and separation with GlideinWMS Frontend
 
 ### Changed defaults / behaviours
 
