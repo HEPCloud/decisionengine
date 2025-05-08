@@ -1,6 +1,50 @@
 .. SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 .. SPDX-License-Identifier: Apache-2.0
 
+Release 2.0.6
+-------------
+
+This improves separation and compatibility with the GlideinWMS Frontend package.
+
+Issues fixed in this release
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Enhancements:
+
+- `DE 721 <https://github.com/HEPCloud/decisionengine/pull/721>`_: Update Dockerfile and entrypoint to be able to build RPMs and wheels on Jenkins (@vitodb)
+- `DE 720 <https://github.com/HEPCloud/decisionengine/pull/720>`_: Added option to prepare for OSG release to make_release (@mambelli)
+- `DE 719 <https://github.com/HEPCloud/decisionengine/pull/719>`_: Update CI related Dockerfile and Jenkins pipeline (@vitodb)
+- `DE 718 <https://github.com/HEPCloud/decisionengine/pull/718>`_: Release 2.0.4  (@mambelli)
+
+
+
+Full list of commits since version 2.0.4
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+`3b183afb2 <https://github.com/HEPCloud/decisionengine/commit/3b183afb2e2c7e14ffd7992c4deb95413bcf94f8>`_:   Added glidein group to coordinate with GWMS Frontend installation
+
+`765f66059 <https://github.com/HEPCloud/decisionengine/commit/765f660599625b5d491c9379f26cabdc5d71b551>`_:   Update EL9/python3-entrypoint.sh to use python venv from framework container. Add the option to call make-release script to build RPMs and wheels. Update Jenkinsfile_EL9 to fit these updates.
+
+`13d03d7df <https://github.com/HEPCloud/decisionengine/commit/13d03d7dfac59a988b8ae40a1507df17d6bdaad6>`_:   Update EL9/framework/Dockerfile container to use a python venv to handle python modules
+
+`dc4c2cbbd <https://github.com/HEPCloud/decisionengine/commit/dc4c2cbbdb05aad787f209577ada18bf7b352104>`_:   Added option to prepare for OSG release (make specfile, checksummed source tar ball and upload to OSG library)
+
+`c24b74ed5 <https://github.com/HEPCloud/decisionengine/commit/c24b74ed540e67411fb64e56f46cf8631cef1542>`_:   Merge pull request #719 from vitodb/feature/vito_update_ci_build
+
+`b4951eeea <https://github.com/HEPCloud/decisionengine/commit/b4951eeea07a8e0ec735e4f0274f5df31d26acf7>`_:   In Jenkinsfile_EL9 pipeline replace rpmbuild stage with DEbuild and use make-release.sh script to build DE/DEM RPMs/wheels
+
+`ac9e23823 <https://github.com/HEPCloud/decisionengine/commit/ac9e2382324e476ec548c588e4c227804b6c45d1>`_:   In Dockerfile add dependencies and requirements to use mock
+
+`3f4fa209b <https://github.com/HEPCloud/decisionengine/commit/3f4fa209bdd4ae14f12cf987f2e7f8ba27a300f6>`_:   Fixed release notes and typo in make-release.sh
+
+`4add02381 <https://github.com/HEPCloud/decisionengine/commit/4add023813b6a1d354a55bfc24450be5a7097a6f>`_:   Remove use of build, not installed
+
+`f48a31839 <https://github.com/HEPCloud/decisionengine/commit/f48a31839d1388dfe5cf742d9572971578c77aa2>`_:   Install sphinx as user, not as root
+
+`ce1f28584 <https://github.com/HEPCloud/decisionengine/commit/ce1f28584320bd10c6d264703885bfbec6f921c2>`_:   Updated actions in gh-pages workflow
+
+
 Release 2.0.4
 -------------
 
