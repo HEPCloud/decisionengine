@@ -29,20 +29,22 @@ Install the Decision Engine (Framework and Modules) Python release via pip. Requ
                        default - $DEM_GIT_DEFAULT
 --de-git-ref REF       Decision Engine framework Git repository reference (default: "" - master). Keywords:
                        auto - Get the reference form the RPM installation version and release
-                              Release is considered only for RCs (e.g. 2.0.4-N -> 2.0.4, 2.1.0-0.4.rc4 -> 2.1.0.rc4)
+                              Release is considered only for RCs (e.g. 2.0.4-N -> 2.0.4, 2.1.0-0.4.rc4 -> 2.1.0rc4)
 --dem-git-ref REF      Decision Engine modules Git repository reference (default: same as DE). Same keywords as --de-git-ref
 --de-repo-dir PATH     Decision Engine framework Git repository directory
 --dem-repo-dir PATH    Decision Engine modules Git repository directory (default: relative to DE directory)
 
 --user USER            User to install and run Decision Engine (default: $DE_USER_DEFAULT)
---remote               Pip Installation from the DE and DEM Git (GitHub) URIs (default)
+--pypi                 Pip Installation from PyPI (https://pypi.org/) (default)
+--remote               Pip Installation from the DE and DEM Git (GitHub) URIs
 --local                Pip Installation from the local DE and DEM directory
 --clone                Make a local clone of the repositories
 Not yet implemented
 --python PYTHON        Python interpreter or venv to use for Decision Engine
 --dev                  Pip development Installation from the local DE and DEM directory
 Examples:
-To install the latest DE from GitHub ($DE_GIT_DEFAULT): $0
+To install the latest DE from PyPI: $0
+To install the latest DE from GitHub ($DE_GIT_DEFAULT): $0 --remote
 To install 2.1.0.rc2 from your GitHub repo: $0 --de-repo-git "https://github.com/YOUR_USER/decisionengine.git" --de-git-ref 2.1.0.rc2
 EOF
 }
@@ -61,7 +63,7 @@ parse_opts() {
     DEM_GIT_REF=
     DEM_DIR=
     DO_CLONE=false
-    INSTALL_TYPE="remote"
+    INSTALL_TYPE="pypi"
     while [ -n "$1" ];do
         case "$1" in
             --de-repo-git)
@@ -105,6 +107,9 @@ parse_opts() {
                 ;;
             --verbose)
                 VERBOSE=true
+                ;;
+            --pypi)
+                INSTALL_TYPE="pypi"
                 ;;
             --remote)
                 INSTALL_TYPE="remote"
@@ -165,6 +170,16 @@ do_install_pre() {
 
 do_install() {
     retv=0
+    if [[ "$INSTALL_TYPE" = "pypi" ]]; then
+        local pip_de_ref pip_dem_ref
+	[[ -z "$DE_GIT_REF" ]] || pip_de_ref="==${DE_GIT_REF#@}"
+	[[ -z "$DEM_GIT_REF" ]] || pip_dem_ref="==${DEM_GIT_REF#@}"
+        $VERBOSE && echo "Installing via pip hepcloud-de ${DE_GIT_REF#@}" || true
+        pip install hepcloud-de${pip_de_ref} || retv=1
+        $VERBOSE && echo "Installing via pip hepcloud-de-modules ${DEM_GIT_REF#@}" || true
+	pip install hepcloud-de-modules${pip_dem_ref} || retv=1
+        return $retv
+    fi
     # Install the Python modules via pip
     $VERBOSE && echo "Installing via pip git+$DE_FROM$DE_GIT_REF" || true
     pip install "git+$DE_FROM$DE_GIT_REF" || retv=1
@@ -251,6 +266,10 @@ _main() {
         DE_FROM="$DE_GIT"
         DEM_FROM="$DEM_GIT"
         $VERBOSE && echo "Preparing for remote install from $DE_FROM$DE_GIT_REF, $DEM_FROM$DEM_GIT_REF" || true
+    elif [[ "$INSTALL_TYPE" = "pypi" ]]; then
+        DE_FROM="$DE_GIT"
+        DEM_FROM="$DEM_GIT"
+        $VERBOSE && echo "Preparing for remote install from PyPI" || true
     else
         echo "Error: $INSTALL_TYPE not supported. Aborting"
 	help_msg

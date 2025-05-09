@@ -44,9 +44,12 @@ RPM installation
     dnf install -y --enablerepo="$DE_REPO" decisionengine-onenode
     # Individual packages are: decisionengine-deps (framework req) decisionengine-modules-deps (modules req) decisionengine-standalone (2 deps+httpd)
 
-4. Install the required Python packages (these are taken from setup.py) ::
+4. Install the required Python packages ::
 
-    decisionengine-install-python --de-git-ref 2.0.4
+    decisionengine-install-python
+    # This will install the latest version in PyPI (hepcloud-de, hepcloud-de-modules, and all requirements)
+    # To install an arbitrary version from GitHub you can use the desired tag:
+    decisionengine-install-python --remote --de-git-ref 2.0.4
     # This shell script (included in decisionengine-deps) installs the Decision Engine Python code.
     # You can run it as root or as the decisionengine user
     # To see all the options:  decisionengine-install-python --help
@@ -71,6 +74,10 @@ The codebases, though, are still intertwined, so there are some adjustments need
 
 Create the condor password and change to decisionengine the ownership of the frontend directories: ::
 
+    chown -R decisionengine: /etc/gwms-frontend
+
+If you are installing versions older than 2.0.6 you'll need some extra stepos: ::
+
     # Create or copy the FRONTEND condor password file
     # If POOL is not there, do start condor (systemctl start condor)
     pushd  /etc/condor/passwords.d/
@@ -78,7 +85,6 @@ Create the condor password and change to decisionengine the ownership of the fro
     cp FRONTEND /var/lib/gwms-frontend/passwords.d/
     popd
     chown -R decisionengine: /var/lib/gwms-frontend
-    chown -R decisionengine: /etc/gwms-frontend
     # The permission of /var/lib/gwms-frontend/passwords.d/FRONTEND should be 0600
 
 

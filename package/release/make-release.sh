@@ -37,13 +37,15 @@ RELEASE RPM release string (default: 1), e.g. 1 or 0.1.rc1 or rc1 (equal to 0.1.
 	       for release candidates it is VERSIONrcN (no dot between version and rc) where N is the RC number
   -c URI   HTTPS URI of the decisionengine Git repository to clone to use to build the release
            The decisionengine_modules repository is derived replacing decisionengine.git with decisionengine_modules.git
-  -p PLATFORM architecture or platform of the RPM package (default: alma+epel-9-x86_64)
+  -a PLATFORM architecture or platform of the RPM package (default: alma+epel-9-x86_64)
               If you specify only an architecture (e.g. x86_64 or aarch64) alma+epel-9 is assumed
   -y PY_VER Python version e.g. 311 or python311 (default: python39)
   -r DE_DIR directory of the decisionengine Git repository (default: ../../ from this script)
   -m DEM_DIR directory of the decisionengine_modules Git repository (default: ../../../decisionengine_modules from this script)
   -d REL_DIR directory where to build the release (default: $PWD)
-  -w YUM_REPO publish the RPMs to the YUM repository in YUM_REPO
+  -w YUM_REPO publish the RPMs to the YUM repository in YUM_REPO. Ignored if not RPMs are built.
+  -p PYREPO publish to the PYREPO PyPI repository URL. Ignored if no Python package is built. Keywords
+	    a - is the default PyPI repo in twine, pypi.org (or whatever you configured)
   -x WHAT  comma separated list of targets to build (default: rpm,py). Keywords:
            rpm - build the DE and DEM RPMs
            py  - build the DE and DEM Python (wheel and sdist) packages
@@ -75,10 +77,11 @@ parse_opts() {
     RPM_PLATFORM="alma+epel-9-x86_64"
     PY_VER=python39
     YUM_REPO=
+    PY_REPO=
     BUILD_TARGET=rpm,py
     PYTAG=
     OSG_NAMES=
-    while getopts "vlecs:t:p:y:r:m:d:w:x:o:h" option
+    while getopts "vlecs:t:a:p:y:r:m:d:w:x:o:h" option
     do
       case "${option}"
         in
@@ -89,12 +92,13 @@ parse_opts() {
         c) CLONE_URI="$OPTARG";;
         s) SRC_TAG="$OPTARG";;
         t) PYTAG="$OPTARG";;
-        p) RPM_PLATFORM="$OPTARG";;
+        a) RPM_PLATFORM="$OPTARG";;
         y) PY_VER="$OPTARG";;
         r) DE_DIR="${OPTARG%/}";;
         m) DEM_DIR="${OPTARG%/}";;
         d) REL_DIR="${OPTARG%/}";;
         w) YUM_REPO="${OPTARG%/}";;
+	p) PY_REPO="${OPTARG%/}";;
         x) BUILD_TARGET="$OPTARG";;
         o) OSG_NAMES="$OPTARG";;
         *) echo "ERROR: Invalid option"; help_msg; exit 1;;
@@ -266,8 +270,30 @@ release_py() {
         exit 2
     fi
     [[ -n "$VERBOSE" ]] && echo "Python wheel and sdist are in $REL_DIR/dist" || true
+    [[ "$CMD_LOGS" = /dev/* ]] || CMD_LOGS="${CMD_LOGS%.dempy.log}.pypi.log"
+    if [[ -n "$PY_REPO" ]]; then
+        # Counting on $REL_DIR/dist/ not having sub-directories (** may be here if no PYTAG)
+        # Skipping the check
+	if ! twine check "$REL_DIR/dist/"*"$PYTAG"* >"$CMD_LOGS" 2>&1; then
+            echo "Error checking Python packages with twine. Aborting"
+            exit 3
+        fi
+        if [[ "$PY_REPO" = "a" ]]; then
+	    # default repo
+	    twine upload -r testpypi "$REL_DIR/dist/"*"$PYTAG"* >"$CMD_LOGS" 2>&1
+	    ec=$?
+        else
+	    twine upload -r "$PY_REPO" "$REL_DIR/dist/"*"$PYTAG"* >"$CMD_LOGS" 2>&1
+	    ec=$?
+	fi
+	if [[ "$ec" -ne 0 ]]; then
+	    echo "Error uploading package to PyPI ($PY_REPO). Aborting"
+	    exit 3
+	fi
+        [[ -n "$VERBOSE" ]] && echo "Python packages uploaded to PyPI (repo:$PY_REPO, version:$PYTAG)" || true
+    fi
     # Clean up log file name
-    [[ "$CMD_LOGS" = /dev/* ]] || CMD_LOGS="${CMD_LOGS%.dempy.log}"
+    [[ "$CMD_LOGS" = /dev/* ]] || CMD_LOGS="${CMD_LOGS%.pypi.log}"
     # Restore pyproject.toml bck
     if [[ -n "$PYTAG" ]]; then
         mv -f "$DE_DIR"/pyproject.toml.makereleasebck "$DE_DIR"/pyproject.toml
