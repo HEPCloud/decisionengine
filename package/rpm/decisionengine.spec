@@ -6,8 +6,13 @@
 # Disable shebang mangling (see GHI#436)
 %undefine __brp_mangle_shebangs
 
-# python3 == python3.9
+%if 0%{?rhel} == 8
+# In EL8: python39 is python3.9 (python3 is 3.6)
+%global python3_pkgversion 39
+%else
+# In EL9: python3 == python3.9
 %global python3_pkgversion 3
+%endif
 
 # Versions use semantic versioning (M.m.p)
 # Release Candidates NVR format
@@ -79,9 +84,9 @@ Requires: postgresql
 Requires: postgresql-server
 Requires: postgresql-devel
 Requires: httpd
-Requires: python3-cryptography
-Requires: python3-pip
-Requires: python3-jsonnet
+Requires: python%{python3_pkgversion}-cryptography
+Requires: python%{python3_pkgversion}-pip
+Requires: python%{python3_pkgversion}-jsonnet
 Requires: gettext
 # iptables-nft added to avoid podman pulling iptables-legacy (incompatible w/ EL9 kernels)
 Requires: iptables-nft
@@ -240,5 +245,8 @@ systemctl daemon-reload || true
 %files onenode
 
 %changelog
+* Thu May 8 2025 Marco Mambelli <marcom@fnal.gov> - 2.0.6
+- Decision Engine 2.0.6-rc1
+
 * Wed Mar 12 2025 Marco Mambelli <marcom@fnal.gov> - 2.0.5
 - Decision Engine 2.0.5
