@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.6 documentation</title>
+  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.6rc2.dev1+g774f2254a documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=3e466467"></script>
+      <script src="_static/documentation_options.js?v=592c0e94"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -142,8 +142,11 @@ decisionengine will run as the decisionengine user.</p>
 </pre></div>
 </div>
 </li>
-<li><p>Install the required Python packages (these are taken from setup.py)</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">decisionengine</span><span class="o">-</span><span class="n">install</span><span class="o">-</span><span class="n">python</span> <span class="o">--</span><span class="n">de</span><span class="o">-</span><span class="n">git</span><span class="o">-</span><span class="n">ref</span> <span class="mf">2.0.4</span>
+<li><p>Install the required Python packages</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">decisionengine</span><span class="o">-</span><span class="n">install</span><span class="o">-</span><span class="n">python</span>
+<span class="c1"># This will install the latest version in PyPI (hepcloud-de, hepcloud-de-modules, and all requirements)</span>
+<span class="c1"># To install an arbitrary version from GitHub you can use the desired tag:</span>
+<span class="n">decisionengine</span><span class="o">-</span><span class="n">install</span><span class="o">-</span><span class="n">python</span> <span class="o">--</span><span class="n">remote</span> <span class="o">--</span><span class="n">de</span><span class="o">-</span><span class="n">git</span><span class="o">-</span><span class="n">ref</span> <span class="mf">2.0.4</span>
 <span class="c1"># This shell script (included in decisionengine-deps) installs the Decision Engine Python code.</span>
 <span class="c1"># You can run it as root or as the decisionengine user</span>
 <span class="c1"># To see all the options:  decisionengine-install-python --help</span>
@@ -170,6 +173,10 @@ decisionengine will run as the decisionengine user.</p>
 <p>We will make HEPCloud’s Decision Engine using some GlideinWMS libraries but independent from the Frontend.
 The codebases, though, are still intertwined, so there are some adjustments needed to the GlideinWMS installation.</p>
 <p>Create the condor password and change to decisionengine the ownership of the frontend directories:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chown</span> <span class="o">-</span><span class="n">R</span> <span class="n">decisionengine</span><span class="p">:</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">gwms</span><span class="o">-</span><span class="n">frontend</span>
+</pre></div>
+</div>
+<p>If you are installing versions older than 2.0.6 you’ll need some extra stepos:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create or copy the FRONTEND condor password file</span>
 <span class="c1"># If POOL is not there, do start condor (systemctl start condor)</span>
 <span class="n">pushd</span>  <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">condor</span><span class="o">/</span><span class="n">passwords</span><span class="o">.</span><span class="n">d</span><span class="o">/</span>
@@ -177,7 +184,6 @@ The codebases, though, are still intertwined, so there are some adjustments need
 <span class="n">cp</span> <span class="n">FRONTEND</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">gwms</span><span class="o">-</span><span class="n">frontend</span><span class="o">/</span><span class="n">passwords</span><span class="o">.</span><span class="n">d</span><span class="o">/</span>
 <span class="n">popd</span>
 <span class="n">chown</span> <span class="o">-</span><span class="n">R</span> <span class="n">decisionengine</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">gwms</span><span class="o">-</span><span class="n">frontend</span>
-<span class="n">chown</span> <span class="o">-</span><span class="n">R</span> <span class="n">decisionengine</span><span class="p">:</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">gwms</span><span class="o">-</span><span class="n">frontend</span>
 <span class="c1"># The permission of /var/lib/gwms-frontend/passwords.d/FRONTEND should be 0600</span>
 </pre></div>
 </div>
