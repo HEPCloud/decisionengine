@@ -227,7 +227,7 @@ pipeline {
                     }
                     post {
                         always {
-                            archiveArtifacts artifacts: "dist/decisionengine*,rpmbuild/RPMS/decisionengine*"
+                            archiveArtifacts artifacts: "dist/hepcloud*,rpmbuild/RPMS/decisionengine*"
                             // check if the podman container used for this test suite is still active, if so this is due to an aborted test suite
                             // eventually kill the python process that spawn the test to cleanup CI processes left behind
                             sh '''
