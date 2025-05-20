@@ -76,7 +76,7 @@ Create the condor password and change to decisionengine the ownership of the fro
 
     chown -R decisionengine: /etc/gwms-frontend
 
-If you are installing versions older than 2.0.6 you'll need some extra stepos: ::
+If you are installing versions older than 2.0.6 you'll need some extra steps: ::
 
     # Create or copy the FRONTEND condor password file
     # If POOL is not there, do start condor (systemctl start condor)
