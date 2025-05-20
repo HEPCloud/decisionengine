@@ -10,10 +10,11 @@
 
 DE_USER=decisionengine
 DE_CMD=$(basename "$0")
+DE_HOME=$(getent passwd "$DE_USER" | cut -d: -f6 )
 
 # Check if decisionengine Python code is installed
 # Library ~$DE_USER/.local/lib/python3.9/site-packages/decisionengine
-DE_EXPECTED="~$DE_USER/.local/bin/decisionengine"
+DE_EXPECTED="$DE_HOME/.local/bin/decisionengine"
 if [ ! -f "$DE_EXPECTED" ]; then
     # Looks it is missing. Print a warning and continue
     echo "WARNING. decisionengine command not found in $DE_EXPECTED."
