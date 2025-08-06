@@ -55,10 +55,13 @@ RPM installation
     # To see all the options:  decisionengine-install-python --help
     # Double check that pip added $HOME/.local/bin to the PATH of user decisionengine
 
-5. Start and enable HTCondor::
+5. Start and enable HTCondor and httpd::
 
     systemctl start condor
     systemctl enable condor
+
+    systemctl start httpd
+    systemctl enable httpd
 
 6. Optionally install these extra packages ::
 
@@ -75,8 +78,6 @@ The codebases, though, are still intertwined, so there are some adjustments need
 Create the condor password and change to decisionengine the ownership of the frontend directories: ::
 
     chown -R decisionengine: /etc/gwms-frontend
-
-If you are installing versions older than 2.0.6 you'll need some extra steps: ::
 
     # Create or copy the FRONTEND condor password file
     # If POOL is not there, do start condor (systemctl start condor)
@@ -323,7 +324,7 @@ For this step you need first to restart the Decision Engine and then to run a co
   # as root (fix the ownership of the frontend library files)
   chown -R decisionengine: /var/lib/gwms-frontend
   # for RPM installation as root
-  systemctl staop decisionengine
+  systemctl stop decisionengine
   systemctl start decisionengine
   ksu decisionengine -e /usr/bin/python3 /usr/lib/python3.9/site-packages/decisionengine_modules/glideinwms/configure_gwms_frontend.py
   # for PIP installation as decisionengine
