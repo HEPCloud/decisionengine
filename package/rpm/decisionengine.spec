@@ -164,10 +164,13 @@ install -d $RPM_BUILD_ROOT%{decisionengine_home}/passwords.d
 install -d $RPM_BUILD_ROOT%{decisionengine_home}/tokens.d
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine/config.d
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine/init.d
 install -d $RPM_BUILD_ROOT%{_localstatedir}/log/decisionengine
 install -m 0644 %{src_de_base}/config/decision_engine.jsonnet $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine/
 install -D -m 0644 %{src_de_package}/systemd/decisionengine.service $RPM_BUILD_ROOT%{_unitdir}/decisionengine.service
 install -D -m 0644 %{src_de_package}/systemd/decisionengine_sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/decisionengine
+install -D -m 0755 %{src_de_package}/rpm/decisionengine-init.sh $RPM_BUILD_ROOT%{_bindir}/decisionengine-init.sh
+install -D -m 0755 %{src_de_package}/rpm/dem_glideinwms.sh $RPM_BUILD_ROOT%{_sysconfdir}/init.d/dem_glideinwms.sh
 install -D -m 0755 %{src_de_package}/rpm/decisionengine-wrapper.sh $RPM_BUILD_ROOT%{_bindir}/decisionengine-wrapper.sh
 install -D -m 0755 %{src_de_package}/rpm/decisionengine-install-python.sh $RPM_BUILD_ROOT%{_bindir}/decisionengine-install-python
 # Add links to the wrapper script for all decisionengine binaries
@@ -224,6 +227,7 @@ systemctl daemon-reload || true
 %dir %attr(700, decisionengine, decisionengine) %{decisionengine_home}/tokens.d
 %dir %{_sysconfdir}/decisionengine
 %dir %{_sysconfdir}/decisionengine/config.d
+%dir %{_sysconfdir}/decisionengine/init.d
 %config(noreplace) %{_sysconfdir}/decisionengine/decision_engine.jsonnet
 %attr(-, root, root) %{_unitdir}/decisionengine.service
 %attr(-, root, root) %config(noreplace) %{_sysconfdir}/sysconfig/decisionengine
@@ -239,6 +243,7 @@ systemctl daemon-reload || true
 %attr(-, decisionengine, decisionengine) %dir %{_localstatedir}/log/decisionengine
 
 %files modules-deps
+%config(noreplace) %{_sysconfdir}/decisionengine/init.d/dem_glideinwms.sh
 
 %files standalone
 
