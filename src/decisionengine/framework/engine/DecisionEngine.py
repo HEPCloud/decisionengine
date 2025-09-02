@@ -705,35 +705,36 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 self.source_workers.detach(tm.name, tm.routing_keys)
 
     def block_while(self, state, timeout=None):
-        self.logger.debug(f"Waiting for {state} or timeout={timeout} on channel_workers.")
-        workers = self.channel_workers.get_unguarded()
-        if not workers:
-            self.logger.info("No active channels to wait on.")
-            return "No active channels."
-        countdown = Countdown(wait_up_to=timeout)
+        with BLOCK_WHILE_HISTOGRAM.labels(state=state).time():
+            self.logger.debug(f"Waiting for {state} or timeout={timeout} on channel_workers.")
+            workers = self.channel_workers.get_unguarded()
+            if not workers:
+                self.logger.info("No active channels to wait on.")
+                return "No active channels."
+            countdown = Countdown(wait_up_to=timeout)
 
-        channels_still_in_state = []
-        for worker in workers.values():
-            if not worker.is_alive():
-                continue
+            channels_still_in_state = []
+            for worker in workers.values():
+                if not worker.is_alive():
+                    continue
 
-            tm = worker.task_manager
-            self.logger.debug(f"Waiting for {tm.name} to exit {state} state.")
-            with countdown:
-                worker.wait_while(state, countdown.time_left)
-            if tm.state.has_value(state):
-                channels_still_in_state.append(tm.name)
+                tm = worker.task_manager
+                self.logger.debug(f"Waiting for {tm.name} to exit {state} state.")
+                with countdown:
+                    worker.wait_while(state, countdown.time_left)
+                if tm.state.has_value(state):
+                    channels_still_in_state.append(tm.name)
 
-        if not channels_still_in_state:
-            return f"No channels in {state.name} state."
+            if not channels_still_in_state:
+                return f"No channels in {state.name} state."
 
-        # If timeout is None, we will never get here as the above will block
-        # indefinitely until all channels have left the specified state.
-        assert timeout is not None
-        txt = f"The following channels are still in {state.name} state due to exceeding the specified timeout of {timeout} seconds:\n\n"
-        for name in channels_still_in_state:
-            txt += f" - {name}\n"
-        return txt
+            # If timeout is None, we will never get here as the above will block
+            # indefinitely until all channels have left the specified state.
+            assert timeout is not None
+            txt = f"The following channels are still in {state.name} state due to exceeding the specified timeout of {timeout} seconds:\n\n"
+            for name in channels_still_in_state:
+                txt += f" - {name}\n"
+            return txt
 
     def _dataframe_to_table(self, df):
         return f"{tabulate.tabulate(df, headers='keys', tablefmt='psql')}\n"
@@ -760,14 +761,13 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         client_queue.send("pong")
 
     def rpc_block_while(self, client_queue, state_str, timeout=None):
-        with BLOCK_WHILE_HISTOGRAM.labels(state=state_str).time():
-            allowed_state = None
-            try:
-                allowed_state = ProcessingState.State[state_str]
-            except Exception:
-                return client_queue.send(f"{state_str} is not a valid channel state.")
-            res = self.block_while(allowed_state, timeout)
-            return client_queue.send(res)
+        allowed_state = None
+        try:
+            allowed_state = ProcessingState.State[state_str]
+        except Exception:
+            return client_queue.send(f"{state_str} is not a valid channel state.")
+        res = self.block_while(allowed_state, timeout)
+        return client_queue.send(res)
 
     @SHOW_CONFIG_HISTOGRAM.time()
     def rpc_show_config(self, client_queue, channel):
@@ -992,50 +992,53 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.shutdown_complete.set()
 
     def create_channel(self, channel_name, channel_config):
-        channel_config = copy.deepcopy(channel_config)
-        # NB: Possibly override channel name
-        channel_name = channel_config.get("channel_name", channel_name)
-        source_configs = channel_config.pop("sources")
-        src_workers = self.source_workers.update(channel_name, source_configs, self.global_config["logger"])
-        module_workers = validated_workflow(channel_name, src_workers, channel_config, self.logger)
+        with CREATE_CHANNEL_HISTOGRAM.labels(channel_name=channel_name).time():
+            channel_config = copy.deepcopy(channel_config)
+            # NB: Possibly override channel name
+            channel_name = channel_config.get("channel_name", channel_name)
+            source_configs = channel_config.pop("sources")
+            src_workers = self.source_workers.update(channel_name, source_configs, self.global_config["logger"])
+            module_workers = validated_workflow(channel_name, src_workers, channel_config, self.logger)
 
-        routing_keys = [worker.key for worker in src_workers.values()]
-        self.logger.debug(f"Building TaskManger for {channel_name}")
-        task_manager = TaskManager.TaskManager(
-            channel_name,
-            module_workers,
-            dataspace.DataSpace(self.global_config),
-            source_products(src_workers),
-            self.exchange,
-            self.broker_url,
-            routing_keys,
-        )
-        self.logger.debug(f"Building Worker for {channel_name}")
-        worker = ChannelWorker(task_manager, self.global_config["logger"])
-        WORKERS_COUNT.inc()
-        with self.channel_workers.access() as workers:
-            workers[channel_name] = worker
+            routing_keys = [worker.key for worker in src_workers.values()]
+            self.logger.debug(f"Building TaskManger for {channel_name}")
+            task_manager = TaskManager.TaskManager(
+                channel_name,
+                module_workers,
+                dataspace.DataSpace(self.global_config),
+                source_products(src_workers),
+                self.exchange,
+                self.broker_url,
+                routing_keys,
+            )
+            self.logger.debug(f"Building Worker for {channel_name}")
+            worker = ChannelWorker(task_manager, self.global_config["logger"])
+            WORKERS_COUNT.inc()
+            with self.channel_workers.access() as workers:
+                workers[channel_name] = worker
 
-        return src_workers
+            return src_workers
 
     def start_channel(self, channel_name, src_workers):
-        with self.channel_workers.access() as workers:
-            worker = workers[channel_name]
-            # The channel must be started first so it can listen for the messages from the sources.
-            self.logger.debug(f"Trying to start {channel_name}")
-            worker.start()
-            self.logger.info(f"Channel {channel_name} started")
+        with START_CHANNEL_HISTOGRAM.labels(channel_name=channel_name).time():
+            with self.channel_workers.access() as workers:
+                worker = workers[channel_name]
+                # The channel must be started first so it can listen for the messages from the sources.
+                self.logger.debug(f"Trying to start {channel_name}")
+                worker.start()
+                self.logger.info(f"Channel {channel_name} started")
 
-            worker.wait_while(ProcessingState.State.BOOT)
+                worker.wait_while(ProcessingState.State.BOOT)
 
-            # Start any sources that are in BOOT state.
-            for key, src_worker in src_workers.items():
-                if src_worker.state.has_value(ProcessingState.State.BOOT):
-                    src_worker.start()
-                    self.logger.debug(f"Started process {src_worker.pid} for source {key}")
+                # Start any sources that are in BOOT state.
+                for key, src_worker in src_workers.items():
+                    if src_worker.state.has_value(ProcessingState.State.BOOT):
+                        src_worker.start()
+                        self.logger.debug(f"Started process {src_worker.pid} for source {key}")
 
-            worker.wait_while(ProcessingState.State.ACTIVE)
+                worker.wait_while(ProcessingState.State.ACTIVE)
 
+    @START_CHANNELS_HISTOGRAM.time()
     def start_channels(self):
         self.channel_config_loader.load_all_channels()
 
@@ -1066,18 +1069,16 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 self.logger.exception(f"Channel {name} failed to start: {e}")
 
     def rpc_start_channel(self, client_queue, channel_name):
-        with START_CHANNEL_HISTOGRAM.labels(channel_name=channel_name).time():
-            with self.channel_workers.access() as workers:
-                if channel_name in workers:
-                    return client_queue.send(f"ERROR, channel {channel_name} is running")
-            success, result = self.channel_config_loader.load_channel(channel_name)
-            if not success:
-                return client_queue.send(result)
-            src_workers = self.create_channel(channel_name, result)
-            self.start_channel(channel_name, src_workers)
-            return client_queue.send("OK")
+        with self.channel_workers.access() as workers:
+            if channel_name in workers:
+                return client_queue.send(f"ERROR, channel {channel_name} is running")
+        success, result = self.channel_config_loader.load_channel(channel_name)
+        if not success:
+            return client_queue.send(result)
+        src_workers = self.create_channel(channel_name, result)
+        self.start_channel(channel_name, src_workers)
+        return client_queue.send("OK")
 
-    @START_CHANNELS_HISTOGRAM.time()
     def rpc_start_channels(self, client_queue):
         self.start_channels()
         return client_queue.send("OK")
@@ -1093,23 +1094,22 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             return self.rpc_rm_channel(client_queue, channel, timeout)
 
     def rpc_rm_channel(self, client_queue, channel, maybe_timeout):
-        with RM_CHANNEL_HISTOGRAM.labels(channel_name=channel).time():
-            rc = self.rm_channel(channel, maybe_timeout)
-            if rc == StopState.NotFound:
-                return client_queue.send(f"No channel found with the name {channel}.")
-            elif rc == StopState.Terminated:
-                if maybe_timeout == 0:
-                    client_queue.send(f"Channel {channel} has been killed.")
-                    return
-                # Would be better to use something like the inflect
-                # module, but that introduces another dependency.
-                suffix = "s" if maybe_timeout > 1 else ""
-                return client_queue.send(
-                    f"Channel {channel} has been killed due to shutdown timeout ({maybe_timeout} second{suffix})."
-                )
-            assert rc == StopState.Clean
-            WORKERS_COUNT.dec()
-            return client_queue.send(f"Channel {channel} stopped cleanly.")
+        rc = self.rm_channel(channel, maybe_timeout)
+        if rc == StopState.NotFound:
+            return client_queue.send(f"No channel found with the name {channel}.")
+        elif rc == StopState.Terminated:
+            if maybe_timeout == 0:
+                client_queue.send(f"Channel {channel} has been killed.")
+                return
+            # Would be better to use something like the inflect
+            # module, but that introduces another dependency.
+            suffix = "s" if maybe_timeout > 1 else ""
+            return client_queue.send(
+                f"Channel {channel} has been killed due to shutdown timeout ({maybe_timeout} second{suffix})."
+            )
+        assert rc == StopState.Clean
+        WORKERS_COUNT.dec()
+        return client_queue.send(f"Channel {channel} stopped cleanly.")
 
     def rm_channel(self, channel, maybe_timeout):
         with RM_CHANNEL_HISTOGRAM.labels(channel).time():
@@ -1140,6 +1140,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         else:
             return StopState.Clean
 
+    @STOP_CHANNELS_HISTOGRAM.time()
     def stop_channels(self):
         timeout = self.global_config.get("shutdown_timeout", 10)
         with self.channel_workers.access() as workers:
@@ -1150,7 +1151,6 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
             workers.clear()
         self.source_workers.remove_all(countdown.time_left)
 
-    @STOP_CHANNELS_HISTOGRAM.time()
     def rpc_stop_channels(self, client_queue):
         self.stop_channels()
         return client_queue.send("All channels stopped.")
@@ -1217,7 +1217,6 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                 worker.set_loglevel_value(log_level)
             return client_queue.send(f"Log level changed to : {log_level}")
 
-    @REAPER_START_HISTOGRAM.time()
     def rpc_reaper_start(self, client_queue, delay=0):
         """
         Start the reaper process after 'delay' seconds.
@@ -1227,6 +1226,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.reaper_start(delay)
         return client_queue.send("OK")
 
+    @REAPER_START_HISTOGRAM.time()
     def reaper_start(self, delay):
         self.reaper.start(delay)
 
@@ -1238,12 +1238,12 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def reaper_stop(self):
         self.reaper.stop()
 
-    @REAPER_STATUS_HISTOGRAM.time()
     def rpc_reaper_status(self, client_queue):
         interval = self.reaper.retention_interval
         state = self.reaper.state.get()
         return client_queue.send(f"reaper:\n\tstate: {state}\n\tretention_interval: {interval}")
 
+    @REAPER_STATUS_HISTOGRAM.time()
     def reaper_status(self):
         state = self.reaper.state.get()
         return f"\nreaper: state = {state.name}\n"
@@ -1331,6 +1331,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         self.logger.debug("Started CherryPy server")
 
     @cherrypy.expose
+    @METRICS_HISTOGRAM.time()
     def metrics(self):
         cherrypy.response.headers["Content-Type"] = "text/plain"
         try:
@@ -1338,7 +1339,6 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
         except Exception as e:  # pragma: no cover
             self.logger.error(e)
 
-    @METRICS_HISTOGRAM.time()
     def rpc_metrics(self, client_queue):
         """
         Display collected metrics
