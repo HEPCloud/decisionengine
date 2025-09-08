@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.6rc2.dev5+gbe4e807b0 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.6rc2.dev6+g266169a7b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=39acaf61"></script>
+      <script src="../../../../_static/documentation_options.js?v=e7f90821"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -821,35 +821,36 @@
 <div class="viewcode-block" id="DecisionEngine.block_while">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.block_while">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> or timeout=</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> on channel_workers.&quot;</span><span class="p">)</span>
-        <span class="n">workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">get_unguarded</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">workers</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No active channels to wait on.&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="s2">&quot;No active channels.&quot;</span>
-        <span class="n">countdown</span> <span class="o">=</span> <span class="n">Countdown</span><span class="p">(</span><span class="n">wait_up_to</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">BLOCK_WHILE_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> or timeout=</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> on channel_workers.&quot;</span><span class="p">)</span>
+            <span class="n">workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">get_unguarded</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">workers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No active channels to wait on.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">&quot;No active channels.&quot;</span>
+            <span class="n">countdown</span> <span class="o">=</span> <span class="n">Countdown</span><span class="p">(</span><span class="n">wait_up_to</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
 
-        <span class="n">channels_still_in_state</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                <span class="k">continue</span>
+            <span class="n">channels_still_in_state</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">workers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                    <span class="k">continue</span>
 
-            <span class="n">tm</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for </span><span class="si">{</span><span class="n">tm</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> to exit </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> state.&quot;</span><span class="p">)</span>
-            <span class="k">with</span> <span class="n">countdown</span><span class="p">:</span>
-                <span class="n">worker</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">countdown</span><span class="o">.</span><span class="n">time_left</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">tm</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
-                <span class="n">channels_still_in_state</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tm</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">tm</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">task_manager</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for </span><span class="si">{</span><span class="n">tm</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> to exit </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> state.&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">countdown</span><span class="p">:</span>
+                    <span class="n">worker</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">countdown</span><span class="o">.</span><span class="n">time_left</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">tm</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+                    <span class="n">channels_still_in_state</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tm</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">channels_still_in_state</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;No channels in </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> state.&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">channels_still_in_state</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;No channels in </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> state.&quot;</span>
 
-        <span class="c1"># If timeout is None, we will never get here as the above will block</span>
-        <span class="c1"># indefinitely until all channels have left the specified state.</span>
-        <span class="k">assert</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="n">txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The following channels are still in </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> state due to exceeding the specified timeout of </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> seconds:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">channels_still_in_state</span><span class="p">:</span>
-            <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="k">return</span> <span class="n">txt</span></div>
+            <span class="c1"># If timeout is None, we will never get here as the above will block</span>
+            <span class="c1"># indefinitely until all channels have left the specified state.</span>
+            <span class="k">assert</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The following channels are still in </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> state due to exceeding the specified timeout of </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s2"> seconds:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">channels_still_in_state</span><span class="p">:</span>
+                <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="n">txt</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine._dataframe_to_table">
@@ -897,14 +898,13 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_block_while">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_block_while">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rpc_block_while</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">state_str</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">BLOCK_WHILE_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state_str</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
-            <span class="n">allowed_state</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">allowed_state</span> <span class="o">=</span> <span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="p">[</span><span class="n">state_str</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">state_str</span><span class="si">}</span><span class="s2"> is not a valid channel state.&quot;</span><span class="p">)</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">allowed_state</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
+        <span class="n">allowed_state</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">allowed_state</span> <span class="o">=</span> <span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="p">[</span><span class="n">state_str</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">state_str</span><span class="si">}</span><span class="s2"> is not a valid channel state.&quot;</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_while</span><span class="p">(</span><span class="n">allowed_state</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_show_config">
@@ -1156,56 +1156,59 @@
 <div class="viewcode-block" id="DecisionEngine.create_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.create_channel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">):</span>
-        <span class="n">channel_config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">channel_config</span><span class="p">)</span>
-        <span class="c1"># NB: Possibly override channel name</span>
-        <span class="n">channel_name</span> <span class="o">=</span> <span class="n">channel_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;channel_name&quot;</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
-        <span class="n">source_configs</span> <span class="o">=</span> <span class="n">channel_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sources&quot;</span><span class="p">)</span>
-        <span class="n">src_workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">source_configs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">])</span>
-        <span class="n">module_workers</span> <span class="o">=</span> <span class="n">validated_workflow</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">src_workers</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">CREATE_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="n">channel_name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+            <span class="n">channel_config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">channel_config</span><span class="p">)</span>
+            <span class="c1"># NB: Possibly override channel name</span>
+            <span class="n">channel_name</span> <span class="o">=</span> <span class="n">channel_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;channel_name&quot;</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">)</span>
+            <span class="n">source_configs</span> <span class="o">=</span> <span class="n">channel_config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sources&quot;</span><span class="p">)</span>
+            <span class="n">src_workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_workers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">source_configs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">])</span>
+            <span class="n">module_workers</span> <span class="o">=</span> <span class="n">validated_workflow</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">src_workers</span><span class="p">,</span> <span class="n">channel_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
 
-        <span class="n">routing_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">worker</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">src_workers</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Building TaskManger for </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">task_manager</span> <span class="o">=</span> <span class="n">TaskManager</span><span class="o">.</span><span class="n">TaskManager</span><span class="p">(</span>
-            <span class="n">channel_name</span><span class="p">,</span>
-            <span class="n">module_workers</span><span class="p">,</span>
-            <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">),</span>
-            <span class="n">source_products</span><span class="p">(</span><span class="n">src_workers</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span><span class="p">,</span>
-            <span class="n">routing_keys</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Building Worker for </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">worker</span> <span class="o">=</span> <span class="n">ChannelWorker</span><span class="p">(</span><span class="n">task_manager</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">])</span>
-        <span class="n">WORKERS_COUNT</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
-            <span class="n">workers</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">worker</span>
+            <span class="n">routing_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">worker</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">src_workers</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Building TaskManger for </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">task_manager</span> <span class="o">=</span> <span class="n">TaskManager</span><span class="o">.</span><span class="n">TaskManager</span><span class="p">(</span>
+                <span class="n">channel_name</span><span class="p">,</span>
+                <span class="n">module_workers</span><span class="p">,</span>
+                <span class="n">dataspace</span><span class="o">.</span><span class="n">DataSpace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">),</span>
+                <span class="n">source_products</span><span class="p">(</span><span class="n">src_workers</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span><span class="p">,</span>
+                <span class="n">routing_keys</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Building Worker for </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">worker</span> <span class="o">=</span> <span class="n">ChannelWorker</span><span class="p">(</span><span class="n">task_manager</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;logger&quot;</span><span class="p">])</span>
+            <span class="n">WORKERS_COUNT</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
+                <span class="n">workers</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">worker</span>
 
-        <span class="k">return</span> <span class="n">src_workers</span></div>
+            <span class="k">return</span> <span class="n">src_workers</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.start_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">src_workers</span><span class="p">):</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
-            <span class="n">worker</span> <span class="o">=</span> <span class="n">workers</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span>
-            <span class="c1"># The channel must be started first so it can listen for the messages from the sources.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to start </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2"> started&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">START_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="n">channel_name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
+                <span class="n">worker</span> <span class="o">=</span> <span class="n">workers</span><span class="p">[</span><span class="n">channel_name</span><span class="p">]</span>
+                <span class="c1"># The channel must be started first so it can listen for the messages from the sources.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to start </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2"> started&quot;</span><span class="p">)</span>
 
-            <span class="n">worker</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
+                <span class="n">worker</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">)</span>
 
-            <span class="c1"># Start any sources that are in BOOT state.</span>
-            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">src_worker</span> <span class="ow">in</span> <span class="n">src_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">src_worker</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">):</span>
-                    <span class="n">src_worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Started process </span><span class="si">{</span><span class="n">src_worker</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2"> for source </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># Start any sources that are in BOOT state.</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">src_worker</span> <span class="ow">in</span> <span class="n">src_workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">src_worker</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">BOOT</span><span class="p">):</span>
+                        <span class="n">src_worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Started process </span><span class="si">{</span><span class="n">src_worker</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2"> for source </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="n">worker</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span></div>
+                <span class="n">worker</span><span class="o">.</span><span class="n">wait_while</span><span class="p">(</span><span class="n">ProcessingState</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.start_channels">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.start_channels">[docs]</a>
+    <span class="nd">@START_CHANNELS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">load_all_channels</span><span class="p">()</span>
 
@@ -1239,21 +1242,19 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_start_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rpc_start_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel_name</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">START_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="n">channel_name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">channel_name</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR, channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2"> is running&quot;</span><span class="p">)</span>
-            <span class="n">success</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">load_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-            <span class="n">src_workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">start_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">src_workers</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">channel_name</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR, channel </span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2"> is running&quot;</span><span class="p">)</span>
+        <span class="n">success</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="o">.</span><span class="n">load_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">src_workers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_channel</span><span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">src_workers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_start_channels">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_start_channels">[docs]</a>
-    <span class="nd">@START_CHANNELS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rpc_start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">)</span></div>
@@ -1278,23 +1279,22 @@
 <div class="viewcode-block" id="DecisionEngine.rpc_rm_channel">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_rm_channel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rpc_rm_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">maybe_timeout</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">RM_CHANNEL_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">channel_name</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
-            <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">maybe_timeout</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">rc</span> <span class="o">==</span> <span class="n">StopState</span><span class="o">.</span><span class="n">NotFound</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No channel found with the name </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">rc</span> <span class="o">==</span> <span class="n">StopState</span><span class="o">.</span><span class="n">Terminated</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">maybe_timeout</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> has been killed.&quot;</span><span class="p">)</span>
-                    <span class="k">return</span>
-                <span class="c1"># Would be better to use something like the inflect</span>
-                <span class="c1"># module, but that introduces another dependency.</span>
-                <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span> <span class="k">if</span> <span class="n">maybe_timeout</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-                <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> has been killed due to shutdown timeout (</span><span class="si">{</span><span class="n">maybe_timeout</span><span class="si">}</span><span class="s2"> second</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">).&quot;</span>
-                <span class="p">)</span>
-            <span class="k">assert</span> <span class="n">rc</span> <span class="o">==</span> <span class="n">StopState</span><span class="o">.</span><span class="n">Clean</span>
-            <span class="n">WORKERS_COUNT</span><span class="o">.</span><span class="n">dec</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> stopped cleanly.&quot;</span><span class="p">)</span></div>
+        <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm_channel</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">maybe_timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rc</span> <span class="o">==</span> <span class="n">StopState</span><span class="o">.</span><span class="n">NotFound</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No channel found with the name </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">rc</span> <span class="o">==</span> <span class="n">StopState</span><span class="o">.</span><span class="n">Terminated</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">maybe_timeout</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> has been killed.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="c1"># Would be better to use something like the inflect</span>
+            <span class="c1"># module, but that introduces another dependency.</span>
+            <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span> <span class="k">if</span> <span class="n">maybe_timeout</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> has been killed due to shutdown timeout (</span><span class="si">{</span><span class="n">maybe_timeout</span><span class="si">}</span><span class="s2"> second</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">rc</span> <span class="o">==</span> <span class="n">StopState</span><span class="o">.</span><span class="n">Clean</span>
+        <span class="n">WORKERS_COUNT</span><span class="o">.</span><span class="n">dec</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2"> stopped cleanly.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rm_channel">
@@ -1334,6 +1334,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.stop_channels">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.stop_channels">[docs]</a>
+    <span class="nd">@STOP_CHANNELS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shutdown_timeout&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
@@ -1347,7 +1348,6 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_stop_channels">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_stop_channels">[docs]</a>
-    <span class="nd">@STOP_CHANNELS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rpc_stop_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;All channels stopped.&quot;</span><span class="p">)</span></div>
@@ -1432,7 +1432,6 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_reaper_start">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_reaper_start">[docs]</a>
-    <span class="nd">@REAPER_START_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rpc_reaper_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the reaper process after &#39;delay&#39; seconds.</span>
@@ -1445,6 +1444,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.reaper_start">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.reaper_start">[docs]</a>
+    <span class="nd">@REAPER_START_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">reaper_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span></div>
 
@@ -1465,7 +1465,6 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_reaper_status">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_reaper_status">[docs]</a>
-    <span class="nd">@REAPER_STATUS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rpc_reaper_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
         <span class="n">interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">retention_interval</span>
         <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
@@ -1474,6 +1473,7 @@
 
 <div class="viewcode-block" id="DecisionEngine.reaper_status">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.reaper_status">[docs]</a>
+    <span class="nd">@REAPER_STATUS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">reaper_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reaper</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">reaper: state = </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span></div>
@@ -1570,6 +1570,7 @@
 <div class="viewcode-block" id="DecisionEngine.metrics">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.metrics">[docs]</a>
     <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="nd">@METRICS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">cherrypy</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;text/plain&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1580,7 +1581,6 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_metrics">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_metrics">[docs]</a>
-    <span class="nd">@METRICS_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rpc_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display collected metrics</span>
