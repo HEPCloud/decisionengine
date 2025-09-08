@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """
-    Code not written by us
+Code not written by us
 """
 import os
 
