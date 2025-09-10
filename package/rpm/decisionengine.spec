@@ -170,7 +170,7 @@ install -m 0644 %{src_de_base}/config/decision_engine.jsonnet $RPM_BUILD_ROOT%{_
 install -D -m 0644 %{src_de_package}/systemd/decisionengine.service $RPM_BUILD_ROOT%{_unitdir}/decisionengine.service
 install -D -m 0644 %{src_de_package}/systemd/decisionengine_sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/decisionengine
 install -D -m 0755 %{src_de_package}/rpm/decisionengine-init.sh $RPM_BUILD_ROOT%{_bindir}/decisionengine-init.sh
-install -D -m 0755 %{src_de_package}/rpm/dem_glideinwms.sh $RPM_BUILD_ROOT%{_sysconfdir}/init.d/dem_glideinwms.sh
+install -D -m 0755 %{src_de_package}/rpm/dem_glideinwms.sh $RPM_BUILD_ROOT%{_sysconfdir}/decisionengine/init.d/dem_glideinwms.sh
 install -D -m 0755 %{src_de_package}/rpm/decisionengine-wrapper.sh $RPM_BUILD_ROOT%{_bindir}/decisionengine-wrapper.sh
 install -D -m 0755 %{src_de_package}/rpm/decisionengine-install-python.sh $RPM_BUILD_ROOT%{_bindir}/decisionengine-install-python
 # Add links to the wrapper script for all decisionengine binaries
