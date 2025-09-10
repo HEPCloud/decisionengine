@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.6rc2.dev8+gc1fabaf10 documentation</title>
+  <title>decisionengine.framework.engine.DecisionEngine &mdash; decisionengine 2.0.6rc2.dev9+g5138bef79 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=6bbe7bbc"></script>
+      <script src="../../../../_static/documentation_options.js?v=f91386e9"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -150,6 +150,7 @@
 <span class="n">PRINT_PRODUCT_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
     <span class="s2">&quot;de_client_print_product_duration_seconds&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Time to run de-client --print-product&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;product&quot;</span><span class="p">],</span>
     <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
         <span class="mf">0.01</span><span class="p">,</span>
         <span class="mf">0.015</span><span class="p">,</span>
@@ -364,6 +365,7 @@
 <span class="n">CREATE_CHANNEL_HISTOGRAM</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
     <span class="s2">&quot;de_client_create_channel_duration_seconds&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Time to run de-client --create-channel&quot;</span><span class="p">,</span>
+    <span class="p">[</span><span class="s2">&quot;channel_name&quot;</span><span class="p">],</span>
     <span class="n">buckets</span><span class="o">=</span><span class="p">(</span>
         <span class="mf">0.01</span><span class="p">,</span>
         <span class="mf">0.015</span><span class="p">,</span>
@@ -941,71 +943,71 @@
 
 <div class="viewcode-block" id="DecisionEngine.rpc_print_product">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.DecisionEngine.DecisionEngine.rpc_print_product">[docs]</a>
-    <span class="nd">@PRINT_PRODUCT_HISTOGRAM</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rpc_print_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_queue</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requested product should be a string not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">product</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Product </span><span class="si">{</span><span class="n">product</span><span class="si">}</span><span class="s2">: &quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">ch</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                    <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> is in not active</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel:</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> is in not active when running rpc_print_product&quot;</span><span class="p">)</span>
-                    <span class="k">continue</span>
+        <span class="k">with</span> <span class="n">PRINT_PRODUCT_HISTOGRAM</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Product </span><span class="si">{</span><span class="n">product</span><span class="si">}</span><span class="s2">: &quot;</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_workers</span><span class="o">.</span><span class="n">access</span><span class="p">()</span> <span class="k">as</span> <span class="n">workers</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ch</span><span class="p">,</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">workers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                        <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> is in not active</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel:</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> is in not active when running rpc_print_product&quot;</span><span class="p">)</span>
+                        <span class="k">continue</span>
 
-                <span class="n">produces</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">get_produces</span><span class="p">()</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">produces</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="k">if</span> <span class="n">product</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
-                    <span class="k">continue</span>
-                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Found in channel </span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found channel:</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> active when running rpc_print_product&quot;</span><span class="p">)</span>
-                <span class="n">tm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rpc_print_product - channel:</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> taskmanager:</span><span class="si">{</span><span class="n">tm</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">data_block</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">ch</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="n">tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span> <span class="n">sequence_id</span><span class="o">=</span><span class="n">tm</span><span class="p">[</span><span class="s2">&quot;sequence_id&quot;</span><span class="p">]</span>
-                    <span class="p">)</span>
-                    <span class="n">data_block</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">-=</span> <span class="mi">1</span>
-                    <span class="n">df</span> <span class="o">=</span> <span class="n">data_block</span><span class="p">[</span><span class="n">product</span><span class="p">]</span>
-                    <span class="n">dfj</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rpc_print_product - channel:</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> task manager:</span><span class="si">{</span><span class="n">tm</span><span class="si">}</span><span class="s2"> datablock:</span><span class="si">{</span><span class="n">dfj</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">dfj</span><span class="p">)</span>
-                    <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_table</span>
-                    <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;vertical&quot;</span><span class="p">:</span>
-                        <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_vertical_tables</span>
-                    <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;column-names&quot;</span><span class="p">:</span>
-                        <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_column_names</span>
-                    <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
-                        <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_json</span>
-                    <span class="k">if</span> <span class="n">types</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-                            <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
-                                <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">column</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">.type&quot;</span><span class="p">,</span>
-                                <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
-                            <span class="p">)</span>
-                    <span class="n">column_names</span> <span class="o">=</span> <span class="p">[]</span>
-                    <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
-                        <span class="n">column_names</span> <span class="o">=</span> <span class="n">columns</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">query</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">column_names</span><span class="p">:</span>
-                            <span class="n">txt</span> <span class="o">+=</span> <span class="n">dataframe_formatter</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">column_names</span><span class="p">]</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">txt</span> <span class="o">+=</span> <span class="n">dataframe_formatter</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+                    <span class="n">produces</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">get_produces</span><span class="p">()</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">produces</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="k">if</span> <span class="n">product</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Found in channel </span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found channel:</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> active when running rpc_print_product&quot;</span><span class="p">)</span>
+                    <span class="n">tm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rpc_print_product - channel:</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> taskmanager:</span><span class="si">{</span><span class="n">tm</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">data_block</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">ch</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="n">tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span> <span class="n">sequence_id</span><span class="o">=</span><span class="n">tm</span><span class="p">[</span><span class="s2">&quot;sequence_id&quot;</span><span class="p">]</span>
+                        <span class="p">)</span>
+                        <span class="n">data_block</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">-=</span> <span class="mi">1</span>
+                        <span class="n">df</span> <span class="o">=</span> <span class="n">data_block</span><span class="p">[</span><span class="n">product</span><span class="p">]</span>
+                        <span class="n">dfj</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rpc_print_product - channel:</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2"> task manager:</span><span class="si">{</span><span class="n">tm</span><span class="si">}</span><span class="s2"> datablock:</span><span class="si">{</span><span class="n">dfj</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">dfj</span><span class="p">)</span>
+                        <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_table</span>
+                        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;vertical&quot;</span><span class="p">:</span>
+                            <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_vertical_tables</span>
+                        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;column-names&quot;</span><span class="p">:</span>
+                            <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_column_names</span>
+                        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+                            <span class="n">dataframe_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_to_json</span>
+                        <span class="k">if</span> <span class="n">types</span><span class="p">:</span>
+                            <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                                <span class="n">df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                                    <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">column</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">.type&quot;</span><span class="p">,</span>
+                                    <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                                <span class="p">)</span>
+                        <span class="n">column_names</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
+                            <span class="n">column_names</span> <span class="o">=</span> <span class="n">columns</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">query</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">column_names</span><span class="p">:</span>
+                                <span class="n">txt</span> <span class="o">+=</span> <span class="n">dataframe_formatter</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">column_names</span><span class="p">]</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">txt</span> <span class="o">+=</span> <span class="n">dataframe_formatter</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
 
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">column_names</span><span class="p">:</span>
-                            <span class="n">txt</span> <span class="o">+=</span> <span class="n">dataframe_formatter</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">column_names</span><span class="p">])</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="n">txt</span> <span class="o">+=</span> <span class="n">dataframe_formatter</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-                    <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
-            <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;Not produced by any module</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">txt</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+                            <span class="k">if</span> <span class="n">column_names</span><span class="p">:</span>
+                                <span class="n">txt</span> <span class="o">+=</span> <span class="n">dataframe_formatter</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">column_names</span><span class="p">])</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">txt</span> <span class="o">+=</span> <span class="n">dataframe_formatter</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+                        <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+                <span class="n">txt</span> <span class="o">+=</span> <span class="s2">&quot;Not produced by any module</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="n">client_queue</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">txt</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="DecisionEngine.rpc_print_products">
