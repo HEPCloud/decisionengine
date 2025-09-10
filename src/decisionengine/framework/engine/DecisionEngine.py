@@ -62,6 +62,7 @@ STATUS_HISTOGRAM = Histogram(
 PRINT_PRODUCT_HISTOGRAM = Histogram(
     "de_client_print_product_duration_seconds",
     "Time to run de-client --print-product",
+    ["product"],
     buckets=(
         0.01,
         0.015,
@@ -276,6 +277,7 @@ STOP_HISTOGRAM = Histogram(
 CREATE_CHANNEL_HISTOGRAM = Histogram(
     "de_client_create_channel_duration_seconds",
     "Time to run de-client --create-channel",
+    ["channel_name"],
     buckets=(
         0.01,
         0.015,
@@ -795,71 +797,71 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
     def rpc_show_de_config(self, client_queue):
         client_queue.send(self.global_config.dump())
 
-    @PRINT_PRODUCT_HISTOGRAM.time()
     def rpc_print_product(self, client_queue, product, columns=None, query=None, types=False, format=None):
         if not isinstance(product, str):
             raise ValueError(f"Requested product should be a string not {type(product)}")
 
-        found = False
-        txt = f"Product {product}: "
-        with self.channel_workers.access() as workers:
-            for ch, worker in workers.items():
-                if not worker.is_alive():
-                    txt += f"Channel {ch} is in not active\n"
-                    self.logger.debug(f"Channel:{ch} is in not active when running rpc_print_product")
-                    continue
+        with PRINT_PRODUCT_HISTOGRAM.labels(product=product).time():
+            found = False
+            txt = f"Product {product}: "
+            with self.channel_workers.access() as workers:
+                for ch, worker in workers.items():
+                    if not worker.is_alive():
+                        txt += f"Channel {ch} is in not active\n"
+                        self.logger.debug(f"Channel:{ch} is in not active when running rpc_print_product")
+                        continue
 
-                produces = worker.get_produces()
-                r = [x for x in list(produces.items()) if product in x[1]]
-                if not r:
-                    continue
-                found = True
-                txt += f" Found in channel {ch}\n"
-                self.logger.debug(f"Found channel:{ch} active when running rpc_print_product")
-                tm = self.dataspace.get_taskmanager(ch)
-                self.logger.debug(f"rpc_print_product - channel:{ch} taskmanager:{tm}")
-                try:
-                    data_block = datablock.DataBlock(
-                        self.dataspace, ch, taskmanager_id=tm["taskmanager_id"], sequence_id=tm["sequence_id"]
-                    )
-                    data_block.generation_id -= 1
-                    df = data_block[product]
-                    dfj = df.to_json()
-                    self.logger.debug(f"rpc_print_product - channel:{ch} task manager:{tm} datablock:{dfj}")
-                    df = pd.read_json(dfj)
-                    dataframe_formatter = self._dataframe_to_table
-                    if format == "vertical":
-                        dataframe_formatter = self._dataframe_to_vertical_tables
-                    if format == "column-names":
-                        dataframe_formatter = self._dataframe_to_column_names
-                    if format == "json":
-                        dataframe_formatter = self._dataframe_to_json
-                    if types:
-                        for column in df.columns:
-                            df.insert(
-                                df.columns.get_loc(column) + 1,
-                                f"{column}.type",
-                                df[column].transform(lambda x: type(x).__name__),
-                            )
-                    column_names = []
-                    if columns:
-                        column_names = columns.split(",")
-                    if query:
-                        if column_names:
-                            txt += dataframe_formatter(df.loc[:, column_names].query(query))
-                        else:
-                            txt += dataframe_formatter(df.query(query))
+                    produces = worker.get_produces()
+                    r = [x for x in list(produces.items()) if product in x[1]]
+                    if not r:
+                        continue
+                    found = True
+                    txt += f" Found in channel {ch}\n"
+                    self.logger.debug(f"Found channel:{ch} active when running rpc_print_product")
+                    tm = self.dataspace.get_taskmanager(ch)
+                    self.logger.debug(f"rpc_print_product - channel:{ch} taskmanager:{tm}")
+                    try:
+                        data_block = datablock.DataBlock(
+                            self.dataspace, ch, taskmanager_id=tm["taskmanager_id"], sequence_id=tm["sequence_id"]
+                        )
+                        data_block.generation_id -= 1
+                        df = data_block[product]
+                        dfj = df.to_json()
+                        self.logger.debug(f"rpc_print_product - channel:{ch} task manager:{tm} datablock:{dfj}")
+                        df = pd.read_json(dfj)
+                        dataframe_formatter = self._dataframe_to_table
+                        if format == "vertical":
+                            dataframe_formatter = self._dataframe_to_vertical_tables
+                        if format == "column-names":
+                            dataframe_formatter = self._dataframe_to_column_names
+                        if format == "json":
+                            dataframe_formatter = self._dataframe_to_json
+                        if types:
+                            for column in df.columns:
+                                df.insert(
+                                    df.columns.get_loc(column) + 1,
+                                    f"{column}.type",
+                                    df[column].transform(lambda x: type(x).__name__),
+                                )
+                        column_names = []
+                        if columns:
+                            column_names = columns.split(",")
+                        if query:
+                            if column_names:
+                                txt += dataframe_formatter(df.loc[:, column_names].query(query))
+                            else:
+                                txt += dataframe_formatter(df.query(query))
 
-                    else:
-                        if column_names:
-                            txt += dataframe_formatter(df.loc[:, column_names])
                         else:
-                            txt += dataframe_formatter(df)
-                except Exception as e:  # pragma: no cover
-                    txt += f"\t\t{e}\n"
-        if not found:
-            txt += "Not produced by any module\n"
-        return client_queue.send(txt[:-1])
+                            if column_names:
+                                txt += dataframe_formatter(df.loc[:, column_names])
+                            else:
+                                txt += dataframe_formatter(df)
+                    except Exception as e:  # pragma: no cover
+                        txt += f"\t\t{e}\n"
+            if not found:
+                txt += "Not produced by any module\n"
+            return client_queue.send(txt[:-1])
 
     @PRINT_PRODUCTS_HISTOGRAM.time()
     def rpc_print_products(self, client_queue):
