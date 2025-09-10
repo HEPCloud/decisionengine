@@ -238,6 +238,8 @@ systemctl daemon-reload || true
 %attr(-, root, root) %{_bindir}/de-query-tool
 %attr(-, root, root) %{_bindir}/de-reaper
 %attr(-, root, root) %{_bindir}/decisionengine-install-python
+%attr(-, root, root) %{_bindir}/decisionengine-init.sh
+
 
 # add all files in config.d
 %attr(-, decisionengine, decisionengine) %dir %{_localstatedir}/log/decisionengine
