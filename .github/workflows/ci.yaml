@@ -31,12 +31,12 @@ jobs:
     name: Python ${{ matrix.python-version }} unit tests
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
@@ -108,11 +108,11 @@ jobs:
     needs: pytest
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.9"
           architecture: "x64"
@@ -180,7 +180,7 @@ jobs:
         run: echo "::set-output name=reftag::${GITHUB_BASE_REF:+PR}"$(awk -F"/" '{print $3}' <<< ${GITHUB_REF})
 
       - name: checkout code tree
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: ${{github.event.inputs.ref}}
@@ -219,7 +219,7 @@ jobs:
         run: echo "::set-output name=reftag::${GITHUB_BASE_REF:+PR}"$(awk -F"/" '{print $3}' <<< ${GITHUB_REF})
 
       - name: checkout code tree
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: ${{github.event.inputs.ref}}

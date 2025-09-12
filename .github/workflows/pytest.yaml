@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -30,7 +30,7 @@ jobs:
         uses: ./.github/actions/python-command-in-sl7-container
 
       - name: Archive logs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: test-log
           path: pytest.log
@@ -44,7 +44,7 @@ jobs:
 
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -52,7 +52,7 @@ jobs:
         uses: ./.github/actions/python-command-in-el8-container
 
       - name: Archive logs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: test-log
           path: pytest.log
