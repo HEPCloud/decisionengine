@@ -13,7 +13,7 @@ DE_CMD=$(basename "$0")
 DE_HOME=$(getent passwd "$DE_USER" | cut -d: -f6 )
 
 # DECISIONENGINE_DEBUG - debug enabled if not empty (debug flags possible in the future)
-if echo "$*" | grep "--debug"; then
+if echo "$*" | grep -- "--debug"; then
   DECISIONENGINE_DEBUG=true
   export DECISIONENGINE_DEBUG
 fi
