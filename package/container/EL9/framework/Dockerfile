@@ -23,16 +23,14 @@ RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.n
  && dnf -y clean all
 
 # set PATH for build and runtime
-ENV PATH="/usr/pgsql-${PG_VERSION}/bin:~/.local/bin:$PATH"
-ARG PATH="/usr/pgsql-${PG_VERSION}/bin:~/.local/bin:$PATH"
+ENV PATH="~/.local/bin:$PATH"
+ARG PATH="~/.local/bin:$PATH"
 
-# Install postgresql-${PG_VERSION}
-RUN dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm \
- && dnf -y clean all
+# Install postgresql version ${PG_VERSION}
 RUN dnf -y install --enablerepo crb \
-            postgresql${PG_VERSION}-server \
-            postgresql${PG_VERSION}-devel \
-            postgresql${PG_VERSION} \
+            postgresql-server-${PG_VERSION}\* \
+            postgresql-${PG_VERSION}\* \
+            postgresql-devel \
  && dnf -y clean all
 
 # Install utils
