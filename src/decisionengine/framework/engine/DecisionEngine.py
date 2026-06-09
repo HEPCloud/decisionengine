@@ -1285,7 +1285,7 @@ class DecisionEngine(socketserver.ThreadingMixIn, xmlrpc.server.SimpleXMLRPCServ
                                     df["channel"] = [tm["name"]] * df.shape[0]
                                     df["taskmanager_id"] = [p["taskmanager_id"]] * df.shape[0]
                                     df["generation_id"] = [p["generation_id"]] * df.shape[0]
-                                    result = result.append(df)
+                                    result = pd.concat([result, df])
                         except Exception as e:  # pragma: no cover
                             txt += f"\t\t{e}\n"
 

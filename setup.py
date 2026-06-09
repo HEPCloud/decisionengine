@@ -96,7 +96,7 @@ site.ENABLE_USER_SITE = "--user" in sys.argv[1:]
 #
 # Much of it comes out of decisionengine.framework.about.py
 setup(
-    setup_requires=["setuptools >= 51.2", "wheel >= 0.36.2", "setuptools_scm >= 6.3.1"],
+    # setup_requires=["setuptools >= 51.2", "wheel >= 0.36.2", "setuptools_scm >= 6.3.1"],
     name=about.__title__,
     description=about.__description__,
     long_description=long_description,
