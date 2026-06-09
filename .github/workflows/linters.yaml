@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -29,7 +29,7 @@ jobs:
           architecture: "x64"
 
       - name: Cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -71,17 +71,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.9"
           architecture: "x64"
 
       - name: Cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -120,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout code tree
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: actions/setup-python@v6
         with:
@@ -128,11 +128,12 @@ jobs:
           architecture: "x64"
 
       - name: Run Ruff
+        # OK w/ 3.9 uses: astral-sh/ruff-action@v3
         uses: astral-sh/ruff-action@v3
 
   license-check:
     name: Run REUSE to check license compliance
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: fsfe/reuse-action@v5
