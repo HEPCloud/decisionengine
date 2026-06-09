@@ -5,6 +5,8 @@
 Description = HEPCloud Decision Engine Service
 Documentation = "https://hepcloud.github.io/decisionengine/"
 Wants = network-online.target
+# Requires = decisionengine-init.service
+# After = network.target decisionengine-init.service
 After = network.target
 
 [Service]
@@ -12,12 +14,13 @@ Type = simple
 EnvironmentFile = -/etc/sysconfig/decisionengine
 PrivateTmp = true
 
-# + in ExecStartPre/ExecStart should allow o run as root (process is executed with full privileges)
-# But it seems not to work, at least in the systemctl emulation, so running as root and switching in the script wrapper
-# User = decisionengine
-# Group = decisionengine
-# ExecStartPre = +/usr/bin/decisionengine-init.sh
-ExecStart = /usr/bin/decisionengine "$DE_OPTS"
+## + in ExecStartPre/ExecStart should allow o run as root (process is executed with full privileges)
+## But it seems not to work, at least in the systemctl emulation, so running as root and switching in the script wrapper
+# Systemctl emulation updated to support +
+User = decisionengine
+Group = decisionengine
+ExecStartPre = +/usr/bin/decisionengine-init.sh
+ExecStart = /usr/bin/decisionengine $DE_OPTS
 # The specified command should be a synchronous operation, not an asynchronous one
 # Only one command allowed: ExecStop = /usr/bin/echo "Running /usr/bin/de-client --stop" >&2
 ExecStop = /usr/bin/de-client --stop
