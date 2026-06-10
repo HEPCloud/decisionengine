@@ -33,10 +33,12 @@ if [ ! -f "$DE_EXPECTED" ]; then
 fi
 # Run the command, with su if needed. NOTE that decisionengine-init can run only as root
 # Including '-m' in the su command to preserve the environment. Systemd sets some variables for Prometheus and config
+# Anyway we need a login shell and -m is incompatible with -l. We want to preserve the sysconfig variables DE_OPTS,PROMETHEUS_MULTIPROC_DIR
 if [ "$(id -u)" -eq 0 ]; then
     decisionengine-init.sh
     # su -s /bin/bash -m -l $DE_USER -c "export PATH=\"\$HOME/.local/bin:\$PATH\"; echo \$PATH; command -v \"$DE_CMD\"; \"$DE_CMD\" $(for i in "$@"; do echo -n "\"$i\" "; done;); echo \"Test END\""
-    su -s /bin/bash -m -l -c "export PATH=\"\$DE_HOME/.local/bin:\$PATH\"; \"$DE_CMD\" $(for i in "$@"; do printf "%s" "\"$i\" "; done;)" $DE_USER
+    # If a variable is added to sysconfig/decisionengine, it should be added also to the -w option
+    su -s /bin/bash -w DE_OPTS,PROMETHEUS_MULTIPROC_DIR -l -c "export PATH=\"\$DE_HOME/.local/bin:\$PATH\"; \"$DE_CMD\" $(for i in "$@"; do printf "%s" "\"$i\" "; done;)" $DE_USER
 elif [ "$(whoami)" = "$DE_USER" ]; then
     export PATH="$DE_HOME/.local/bin:$PATH"
     "$DE_CMD" "$@"
