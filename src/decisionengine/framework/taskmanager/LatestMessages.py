@@ -70,8 +70,9 @@ class LatestMessages:
                 message.ack()
 
         _cl = Connection(self.broker_url)
-        with connections[_cl].acquire(block=True) as conn, conn.Consumer(
-            self.queues, accept=["pickle"], callbacks=[receive]
+        with (
+            connections[_cl].acquire(block=True) as conn,
+            conn.Consumer(self.queues, accept=["pickle"], callbacks=[receive]),
         ):
             self._listening.set()
             while not self._stop.is_set():
