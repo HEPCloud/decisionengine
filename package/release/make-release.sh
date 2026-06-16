@@ -3,8 +3,8 @@
 # SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 # SPDX-License-Identifier: Apache-2.0
 
-OSG_BUILDMACHINE="osg-sw-submit.chtc.wisc.edu"
-OSG_UPLOADDIR="/p/vdt/public/html/upstream/decisionengine"
+OSG_BUILDMACHINE="osgsw-ap.chtc.wisc.edu"
+OSG_UPLOADDIR="/osgsw/upstream/decisionengine"
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 robust_realpath() {
@@ -46,13 +46,11 @@ RELEASE RPM release string (default: 1), e.g. 1 or 0.1.rc1 or rc1 (equal to 0.1.
   -w YUM_REPO publish the RPMs to the YUM repository in YUM_REPO. Ignored if not RPMs are built.
   -p PYREPO publish to the PYREPO PyPI repository URL. Ignored if no Python package is built. Keywords
 	    a - is the default PyPI repo in twine, pypi.org (or whatever you configured)
-  -x WHAT  comma separated list of targets to build (default: rpm,py). Keywords:
+  -x WHAT comma separated list of targets to build (default: rpm,py). Keywords:
            rpm - build the DE and DEM RPMs
            py  - build the DE and DEM Python (wheel and sdist) packages
-  -o USER:PRINC prepare for OSG release and upload sources to the OSG library
+  -o USER prepare for OSG release and upload sources to the OSG library
            USER  - username on the OSG build machine
-           PRINC - Kerberos principal for the OSG AFS (If only the user is given CS.WISC.EDU is assumed as domain).
-                   Krb user may differ form the build machine user name
 
 Examples:
 - Make version 2.0.4, upload to OSG, and copy the RPMs to the YUM repository:
@@ -63,6 +61,10 @@ Examples:
 make-release.sh -v -r /Path/To/decisionengine -d /opt/osg/distro/de2_0_4 2.0.4 0.3.rc3
 EOF
 }
+#  -o USER:PRINC prepare for OSG release and upload sources to the OSG library
+#           USER  - username on the OSG build machine
+#           PRINC - Kerberos principal for the OSG AFS (If only the user is given CS.WISC.EDU is assumed as domain).
+#                   Krb user may differ form the build machine user name
 
 parse_opts() {
     # Parse options. Uses SCRIPT_DIR
@@ -98,7 +100,7 @@ parse_opts() {
         m) DEM_DIR="${OPTARG%/}";;
         d) REL_DIR="${OPTARG%/}";;
         w) YUM_REPO="${OPTARG%/}";;
-	p) PY_REPO="${OPTARG%/}";;
+	      p) PY_REPO="${OPTARG%/}";;
         x) BUILD_TARGET="$OPTARG";;
         o) OSG_NAMES="$OPTARG";;
         *) echo "ERROR: Invalid option"; help_msg; exit 1;;
@@ -218,8 +220,8 @@ release_osg() {
     # Uses DE_VERSION, DE_RELEASE, OSG_BUILDMACHINE, OSG_NAMES, OSG_UPLOADDIR, VERBOSE
     local dst_dir="$1"
     local osg_user="${OSG_NAMES%:*}"
-    local osg_krb_user="${OSG_NAMES#*:}"
-    echo "$osg_krb_user" | grep -q "@" || osg_krb_user="$osg_krb_user@CS.WISC.EDU"
+    #local osg_krb_user="${OSG_NAMES#*:}"
+    #echo "$osg_krb_user" | grep -q "@" || osg_krb_user="$osg_krb_user@CS.WISC.EDU"
     local de_tag
     de_tag="$DE_VERSION$(get_rc_and_number "$DE_RELEASE")"
     local versioned_uploaddir="$OSG_UPLOADDIR/$de_tag"
@@ -228,7 +230,8 @@ release_osg() {
     echo "Use the following to update the upstream file:"
     echo "echo 'decisionengine/$de_tag/hepcloud.tar.gz sha1sum=$(sha1sum "$dst_dir"/hepcloud.tar.gz | cut -f 1 -d ' ')' > upstream/developer.tarball.source"
     # Upload the tarball
-    if ssh "$osg_user@$OSG_BUILDMACHINE" "kinit $osg_krb_user; aklog; mkdir -p $versioned_uploaddir"; then
+    # if ssh "$osg_user@$OSG_BUILDMACHINE" "kinit $osg_krb_user; aklog; mkdir -p $versioned_uploaddir"; then
+    if ssh "$osg_user@$OSG_BUILDMACHINE" "mkdir -p $versioned_uploaddir"; then
         if scp "$dst_dir"/hepcloud.tar.gz "$osg_user@$OSG_BUILDMACHINE:$versioned_uploaddir/"; then
             [[ -n "$VERBOSE" ]] && echo "Tarball Uploaded to $OSG_BUILDMACHINE: $versioned_uploaddir" || true
         else
