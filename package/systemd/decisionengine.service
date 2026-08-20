@@ -6,8 +6,9 @@ Description = HEPCloud Decision Engine Service
 Documentation = "https://hepcloud.github.io/decisionengine/"
 Wants = network-online.target
 # Requires = decisionengine-init.service
+Requires = httpd.service postgresql.service condor.service
 # After = network.target decisionengine-init.service
-After = network.target
+After = network.target httpd.service postgresql.service condor.service
 
 [Service]
 Type = simple
