@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_reaper &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.tests.test_reaper &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -89,7 +89,7 @@
 <span></span><span class="c1"># SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC</span>
 <span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
 
-<span class="sd">&quot;&quot;&quot;Fixture based DE Server for the reaper tests&quot;&quot;&quot;</span>
+<span class="sd">"""Fixture based DE Server for the reaper tests"""</span>
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.tests.fixtures</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
@@ -110,49 +110,49 @@
 <div class="viewcode-block" id="test_client_can_get_de_server_reaper_status">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_reaper.test_client_can_get_de_server_reaper_status">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_client_can_get_de_server_reaper_status</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify reaper status&quot;&quot;&quot;</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--reaper-status&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Verify reaper status"""</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">"--reaper-status"</span><span class="p">)</span>
 
     <span class="c1"># find reaper section</span>
-    <span class="k">assert</span> <span class="s2">&quot;reaper:&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">"reaper:"</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="c1"># find reaper state section</span>
-    <span class="k">assert</span> <span class="s2">&quot;state:&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">"state:"</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="c1"># find reaper interval</span>
-    <span class="k">assert</span> <span class="s2">&quot;retention_interval:&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">"retention_interval:"</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="c1"># Verify reaper can stop</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--reaper-stop&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">"--reaper-stop"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">"OK"</span>
 
     <span class="c1"># get status to be sure</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--reaper-status&quot;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">"--reaper-status"</span><span class="p">)</span>
 
     <span class="c1"># find reaper section</span>
-    <span class="k">assert</span> <span class="s2">&quot;reaper:&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">"reaper:"</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="c1"># find reaper state section</span>
-    <span class="k">assert</span> <span class="s2">&quot;state:&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">"state:"</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="c1"># find reaper state value</span>
-    <span class="k">assert</span> <span class="s2">&quot;State.SHUTDOWN&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">"State.SHUTDOWN"</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="c1"># Verify reaper can start with delay</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--reaper-start&quot;</span><span class="p">,</span> <span class="s2">&quot;--reaper-start-delay-secs=90&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;OK&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">"--reaper-start"</span><span class="p">,</span> <span class="s2">"--reaper-start-delay-secs=90"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">"OK"</span>
 
     <span class="c1"># get status to be sure</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--reaper-status&quot;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">"--reaper-status"</span><span class="p">)</span>
 
     <span class="c1"># find reaper section</span>
-    <span class="k">assert</span> <span class="s2">&quot;reaper:&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">"reaper:"</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="c1"># find reaper state section</span>
-    <span class="k">assert</span> <span class="s2">&quot;state:&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="k">assert</span> <span class="s2">"state:"</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="c1"># find reaper state value</span>
-    <span class="k">assert</span> <span class="s2">&quot;State.IDLE&quot;</span> <span class="ow">in</span> <span class="n">output</span></div>
+    <span class="k">assert</span> <span class="s2">"State.IDLE"</span> <span class="ow">in</span> <span class="n">output</span></div>
 
 </pre></div>
 

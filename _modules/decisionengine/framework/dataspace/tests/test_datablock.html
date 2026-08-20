@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.tests.test_datablock &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_datablock &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
@@ -109,16 +109,16 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">test_DataBlock_constructor</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
 
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">])</span>
     <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="mi">1</span>
 
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
     <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="mi">1</span>
 
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">generation_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">generation_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="mi">1</span>
 
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">sequence_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">sequence_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">==</span> <span class="mi">1</span></div>
 
 
@@ -129,17 +129,17 @@
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
 
     <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">:</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;generation_id&quot;</span><span class="p">:</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]),</span>
-        <span class="s2">&quot;sequence_id&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_dataproducts</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;sequence_id&quot;</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s2">&quot;keys&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,),</span>
-        <span class="s2">&quot;dataproducts&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">:</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">},</span>
+        <span class="s2">"taskmanager_id"</span><span class="p">:</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">],</span>
+        <span class="s2">"generation_id"</span><span class="p">:</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]),</span>
+        <span class="s2">"sequence_id"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_dataproducts</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"sequence_id"</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"keys"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,),</span>
+        <span class="s2">"dataproducts"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"example_test_key"</span><span class="p">:</span> <span class="s2">"example_test_value"</span><span class="p">},</span>
     <span class="p">}</span>
 
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dblock</span><span class="p">))</span>
     <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="n">expected</span></div>
@@ -150,31 +150,31 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_key_management">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_DataBlock_key_management</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
     <span class="n">metadata</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
-        <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span>
-        <span class="n">generation_id</span><span class="o">=</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]),</span>
+        <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">],</span>
+        <span class="n">generation_id</span><span class="o">=</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]),</span>
     <span class="p">)</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
     <span class="c1"># test with automatic metadata and string value</span>
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
     <span class="c1"># verify __contains__ matches .keys()</span>
-    <span class="k">assert</span> <span class="s2">&quot;example_test_key&quot;</span> <span class="ow">in</span> <span class="n">dblock</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>  <span class="c1"># noqa: SIM118</span>
-    <span class="k">assert</span> <span class="s2">&quot;example_test_key&quot;</span> <span class="ow">in</span> <span class="n">dblock</span>
+    <span class="k">assert</span> <span class="s2">"example_test_key"</span> <span class="ow">in</span> <span class="n">dblock</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>  <span class="c1"># noqa: SIM118</span>
+    <span class="k">assert</span> <span class="s2">"example_test_key"</span> <span class="ow">in</span> <span class="n">dblock</span>
 
-    <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;example_test_value&quot;</span>
+    <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"example_test_value"</span>
 
     <span class="c1"># Test product-retriever interface</span>
-    <span class="n">retriever</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">ProductRetriever</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">retriever</span><span class="p">(</span><span class="n">dblock</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;example_test_value&quot;</span>
-    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">retriever</span><span class="p">)</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">&quot;Product retriever for {&#39;name&#39;: &#39;example_test_key&#39;, &#39;type&#39;: None, &#39;creator&#39;: None}&quot;</span>
+    <span class="n">retriever</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">ProductRetriever</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">retriever</span><span class="p">(</span><span class="n">dblock</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"example_test_value"</span>
+    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">retriever</span><span class="p">)</span> <span class="o">==</span> <span class="sa">r</span><span class="s2">"Product retriever for {'name': 'example_test_key', 'type': None, 'creator': None}"</span>
 
     <span class="c1"># test new key with manual metadata and dict value</span>
-    <span class="n">newDict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;subKey&quot;</span><span class="p">:</span> <span class="s2">&quot;newValue&quot;</span><span class="p">}</span>
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;new_example_test_key&quot;</span><span class="p">,</span> <span class="n">newDict</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">dblock</span><span class="p">[</span><span class="s2">&quot;new_example_test_key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">newDict</span></div>
+    <span class="n">newDict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"subKey"</span><span class="p">:</span> <span class="s2">"newValue"</span><span class="p">}</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"new_example_test_key"</span><span class="p">,</span> <span class="n">newDict</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">dblock</span><span class="p">[</span><span class="s2">"new_example_test_key"</span><span class="p">]</span> <span class="o">==</span> <span class="n">newDict</span></div>
 
 
 
@@ -182,17 +182,17 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_key_management_change_name">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_DataBlock_key_management_change_name</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
     <span class="c1"># FIXME: The following behavior should be disallowed for data-integrity reasons!</span>
     <span class="c1">#        i.e. replacing a product name from datablock.ProductRetriever with a</span>
     <span class="c1">#             different value.</span>
-    <span class="n">newDict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;subKey&quot;</span><span class="p">:</span> <span class="s2">&quot;newValue&quot;</span><span class="p">}</span>
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="n">newDict</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">dblock</span><span class="p">[</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">newDict</span></div>
+    <span class="n">newDict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"subKey"</span><span class="p">:</span> <span class="s2">"newValue"</span><span class="p">}</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="n">newDict</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">dblock</span><span class="p">[</span><span class="s2">"example_test_key"</span><span class="p">]</span> <span class="o">==</span> <span class="n">newDict</span></div>
 
 
 
@@ -200,13 +200,13 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_no_key_by_name">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_DataBlock_no_key_by_name</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">):</span>
-        <span class="n">dblock</span><span class="p">[</span><span class="s2">&quot;no_such_key_exists&quot;</span><span class="p">]</span></div>
+        <span class="n">dblock</span><span class="p">[</span><span class="s2">"no_such_key_exists"</span><span class="p">]</span></div>
 
 
 
@@ -214,12 +214,12 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_header">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_DataBlock_get_header</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
-    <span class="k">assert</span> <span class="n">header</span> <span class="o">==</span> <span class="n">dblock</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">)</span></div>
+    <span class="k">assert</span> <span class="n">header</span> <span class="o">==</span> <span class="n">dblock</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">)</span></div>
 
 
 
@@ -227,16 +227,16 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_metadata">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_DataBlock_get_metadata</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
     <span class="n">metadata</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
-        <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span>
-        <span class="n">generation_id</span><span class="o">=</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]),</span>
+        <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">],</span>
+        <span class="n">generation_id</span><span class="o">=</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]),</span>
     <span class="p">)</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
 
-    <span class="k">assert</span> <span class="n">metadata</span> <span class="o">==</span> <span class="n">dblock</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">)</span></div>
+    <span class="k">assert</span> <span class="n">metadata</span> <span class="o">==</span> <span class="n">dblock</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">)</span></div>
 
 
 
@@ -244,28 +244,28 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_taskmanager">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_DataBlock_get_taskmanager</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
-    <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span></div>
+    <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">])[</span><span class="s2">"taskmanager_id"</span><span class="p">]</span> <span class="o">==</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]</span></div>
 
 
 
 <div class="viewcode-block" id="test_DataBlock_is_expired">
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_is_expired">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_DataBlock_is_expired</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This test just validates the method/function exists.</span>
+<span class="w">    </span><span class="sd">"""This test just validates the method/function exists.</span>
 <span class="sd">    The stub within our default code should be replaced</span>
 <span class="sd">    by a class inheriting from it.</span>
 <span class="sd">    That class should have more rational return types.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">is_expired</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span></div>
 
@@ -274,18 +274,18 @@
 <div class="viewcode-block" id="test_DataBlock_is_expired_with_key">
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_is_expired_with_key">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_DataBlock_is_expired_with_key</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This test just validates the method/function exists.</span>
+<span class="w">    </span><span class="sd">"""This test just validates the method/function exists.</span>
 <span class="sd">    The stub within our default code should be replaced</span>
 <span class="sd">    by a class inheriting from it.</span>
 <span class="sd">    That class should have more rational return types.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
-    <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">is_expired</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span></div>
+    <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">is_expired</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">"example_test_key"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span></div>
 
 
 
@@ -295,10 +295,10 @@
     <span class="c1"># mark_expired is just a stub in this case</span>
     <span class="c1"># failure in a real implementation should raise an exception</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">dblock</span><span class="o">.</span><span class="n">mark_expired</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span></div>
 
@@ -308,15 +308,15 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_get_dataproducts">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_DataBlock_get_dataproducts</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
     <span class="n">products</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">get_dataproducts</span><span class="p">()</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">products</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-    <span class="k">assert</span> <span class="n">products</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;key&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;example_test_key&quot;</span>
-    <span class="k">assert</span> <span class="n">products</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;example_test_value&quot;</span></div>
+    <span class="k">assert</span> <span class="n">products</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"key"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"example_test_key"</span>
+    <span class="k">assert</span> <span class="n">products</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"value"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"example_test_value"</span></div>
 
 
 
@@ -324,10 +324,10 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_DataBlock_duplicate">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_DataBlock_duplicate</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
-    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
+    <span class="n">dblock</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">DataBlock</span><span class="p">(</span><span class="n">dataspace</span><span class="p">,</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;example_test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;example_test_value&quot;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+    <span class="n">dblock</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">"example_test_key"</span><span class="p">,</span> <span class="s2">"example_test_value"</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
 
     <span class="n">dblock_2</span> <span class="o">=</span> <span class="n">dblock</span><span class="o">.</span><span class="n">duplicate</span><span class="p">()</span>
 
@@ -345,33 +345,33 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_Metadata_constructor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_Metadata_constructor</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">metadata</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]</span> <span class="o">==</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]</span>
 
     <span class="n">genTime</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="n">missCount</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;START_BACKUP&quot;</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="s2">"START_BACKUP"</span>
 
     <span class="n">metadata</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
-        <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span>
+        <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">],</span>
         <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
-        <span class="n">generation_id</span><span class="o">=</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]),</span>
+        <span class="n">generation_id</span><span class="o">=</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]),</span>
         <span class="n">generation_time</span><span class="o">=</span><span class="n">genTime</span><span class="p">,</span>
         <span class="n">missed_update_count</span><span class="o">=</span><span class="n">missCount</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">state</span>
-    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;generation_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
-    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;generation_time&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">genTime</span>
-    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;missed_update_count&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">missCount</span>
+    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]</span> <span class="o">==</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span> <span class="o">==</span> <span class="n">state</span>
+    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"generation_id"</span><span class="p">]</span> <span class="o">==</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"generation_time"</span><span class="p">]</span> <span class="o">==</span> <span class="n">genTime</span>
+    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"missed_update_count"</span><span class="p">]</span> <span class="o">==</span> <span class="n">missCount</span>
 
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">datablock</span><span class="o">.</span><span class="n">InvalidMetadataError</span><span class="p">):</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
-            <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span>
-            <span class="n">state</span><span class="o">=</span><span class="s2">&quot;NO SUCH STATE EXISTS&quot;</span><span class="p">,</span>
-            <span class="n">generation_id</span><span class="o">=</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]),</span>
+            <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">],</span>
+            <span class="n">state</span><span class="o">=</span><span class="s2">"NO SUCH STATE EXISTS"</span><span class="p">,</span>
+            <span class="n">generation_id</span><span class="o">=</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_last_generation_id</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]),</span>
             <span class="n">generation_time</span><span class="o">=</span><span class="n">genTime</span><span class="p">,</span>
             <span class="n">missed_update_count</span><span class="o">=</span><span class="n">missCount</span><span class="p">,</span>
         <span class="p">)</span></div>
@@ -382,15 +382,15 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_Metadata_set_state">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_Metadata_set_state</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">metadata</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;START_BACKUP&quot;</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="s2">"START_BACKUP"</span>
     <span class="n">metadata</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 
-    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">state</span>
+    <span class="k">assert</span> <span class="n">metadata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span> <span class="o">==</span> <span class="n">state</span>
 
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">datablock</span><span class="o">.</span><span class="n">InvalidMetadataError</span><span class="p">):</span>
-        <span class="n">metadata</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;INVALID_STATE&quot;</span><span class="p">)</span></div>
+        <span class="n">metadata</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">"INVALID_STATE"</span><span class="p">)</span></div>
 
 
 
@@ -398,29 +398,29 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_Header_constructor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_Header_constructor</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
-    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]</span> <span class="o">==</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]</span>
 
     <span class="n">createTime</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="n">expirationTime</span> <span class="o">=</span> <span class="mf">3.0</span>
     <span class="n">scheduleTime</span> <span class="o">=</span> <span class="mf">5.0</span>
-    <span class="n">creator</span> <span class="o">=</span> <span class="s2">&quot;creator&quot;</span>
+    <span class="n">creator</span> <span class="o">=</span> <span class="s2">"creator"</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span>
-        <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span>
+        <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">],</span>
         <span class="n">create_time</span><span class="o">=</span><span class="n">createTime</span><span class="p">,</span>
         <span class="n">expiration_time</span><span class="o">=</span><span class="n">expirationTime</span><span class="p">,</span>
         <span class="n">scheduled_create_time</span><span class="o">=</span><span class="n">scheduleTime</span><span class="p">,</span>
         <span class="n">creator</span><span class="o">=</span><span class="n">creator</span><span class="p">,</span>
         <span class="n">schema_id</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;create_time&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">createTime</span>
-    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;expiration_time&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">expirationTime</span>
-    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;scheduled_create_time&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">scheduleTime</span>
-    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;creator&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">creator</span>
-    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;schema_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">schema</span></div>
+    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]</span> <span class="o">==</span> <span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"create_time"</span><span class="p">]</span> <span class="o">==</span> <span class="n">createTime</span>
+    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"expiration_time"</span><span class="p">]</span> <span class="o">==</span> <span class="n">expirationTime</span>
+    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"scheduled_create_time"</span><span class="p">]</span> <span class="o">==</span> <span class="n">scheduleTime</span>
+    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"creator"</span><span class="p">]</span> <span class="o">==</span> <span class="n">creator</span>
+    <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"schema_id"</span><span class="p">]</span> <span class="o">==</span> <span class="n">schema</span></div>
 
 
 
@@ -428,7 +428,7 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock.test_Header_is_valid">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_Header_is_valid</span><span class="p">(</span><span class="n">dataspace</span><span class="p">):</span>  <span class="c1"># noqa: F811</span>
     <span class="n">my_tm</span> <span class="o">=</span> <span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanagers</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># fetch one of our loaded examples</span>
-    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">])</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">Header</span><span class="p">(</span><span class="n">my_tm</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">])</span>
 
     <span class="k">assert</span> <span class="n">header</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span></div>
 

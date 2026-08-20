@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.Rule &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.logicengine.Rule &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -95,37 +95,37 @@
 <div class="viewcode-block" id="Rule">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.Rule.Rule">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Rule</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    In-memory representation of logic-engine rule, relying on parsing utilities in BooleanExpression.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule_name</span><span class="p">,</span> <span class="n">rule_cfg</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">rule_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">expr</span> <span class="o">=</span> <span class="n">BooleanExpression</span><span class="p">(</span><span class="n">rule_cfg</span><span class="p">[</span><span class="s2">&quot;expression&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="n">rule_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;actions&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">false_actions</span> <span class="o">=</span> <span class="n">rule_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;false_actions&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">new_facts</span> <span class="o">=</span> <span class="n">rule_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;facts&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expr</span> <span class="o">=</span> <span class="n">BooleanExpression</span><span class="p">(</span><span class="n">rule_cfg</span><span class="p">[</span><span class="s2">"expression"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="n">rule_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"actions"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">false_actions</span> <span class="o">=</span> <span class="n">rule_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"false_actions"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_facts</span> <span class="o">=</span> <span class="n">rule_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"facts"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Rule.evaluate">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.Rule.Rule.evaluate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evaluated_facts</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Evaluates a compiled expression given the supplied facts.</span>
 
 <span class="sd">        :type evaluated_facts: dict</span>
 <span class="sd">        :arg evaluated_facts: Initial fact values (e.g. True or False) for each fact name.</span>
 <span class="sd">        :rtype: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">evaluated_facts</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;expression: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;actions: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;false_actions: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">false_actions</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;facts: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">new_facts</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"expression: '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expr</span><span class="si">}</span><span class="s2">'</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"actions: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">actions</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"false_actions: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">false_actions</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"facts: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">new_facts</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span></div>
 
 </pre></div>

@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.tests.test_QueueLogger &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.modules.tests.test_QueueLogger &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
@@ -111,7 +111,7 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_QueueLogger.log_setup">[docs]</a>
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">log_setup</span><span class="p">():</span>
-    <span class="n">test_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;test_logger&quot;</span><span class="p">)</span>
+    <span class="n">test_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"test_logger"</span><span class="p">)</span>
     <span class="k">yield</span> <span class="n">test_log</span>
 
     <span class="k">del</span> <span class="n">test_log</span></div>
@@ -122,7 +122,7 @@
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_QueueLogger.handler_setup">[docs]</a>
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">()</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handler_setup</span><span class="p">():</span>
-    <span class="n">test_handler</span> <span class="o">=</span> <span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;/tmp/decisionengine.log&quot;</span><span class="p">)]</span>
+    <span class="n">test_handler</span> <span class="o">=</span> <span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">"/tmp/decisionengine.log"</span><span class="p">)]</span>
     <span class="k">yield</span> <span class="n">test_handler</span>
 
     <span class="k">del</span> <span class="n">test_handler</span></div>
@@ -147,7 +147,7 @@
 
     <span class="k">assert</span> <span class="n">queue_logger_setup</span><span class="o">.</span><span class="n">structlog_q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">queue_logger_setup</span><span class="o">.</span><span class="n">structlog_q_handler</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">QueueHandler</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s2">&quot;QueueHandler&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">log_setup</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s2">"QueueHandler"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">log_setup</span><span class="o">.</span><span class="n">handlers</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">queue_logger_setup</span><span class="o">.</span><span class="n">structlog_listener</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">QueueListener</span><span class="p">)</span></div>
 
 

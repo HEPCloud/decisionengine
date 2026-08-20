@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_defaults &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.tests.test_defaults &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -89,7 +89,7 @@
 <span></span><span class="c1"># SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC</span>
 <span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
 
-<span class="sd">&quot;&quot;&quot;Fixture based DE Server tests of the sample config&quot;&quot;&quot;</span>
+<span class="sd">"""Fixture based DE Server tests of the sample config"""</span>
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
@@ -113,16 +113,16 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_defaults.test_defaults">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_defaults</span><span class="p">(</span><span class="n">deserver</span><span class="p">):</span>
     <span class="c1"># Verify DE does not attempt to get log level for unknown channel.</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-channel-loglevel=UNITTEST&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;No channel found with the name UNITTEST.&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">"--get-channel-loglevel=UNITTEST"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">"No channel found with the name UNITTEST."</span>
 
     <span class="c1"># Verify DE does not attempt to get log level for unknown source.</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--get-source-loglevel=UNITTEST&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;No source found with the name UNITTEST.&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">"--get-source-loglevel=UNITTEST"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">"No source found with the name UNITTEST."</span>
 
     <span class="c1"># Verify global_channel_log_level setting exists</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--show-de-config&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s2">&quot;global_channel_log_level&quot;</span> <span class="ow">in</span> <span class="n">output</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">"--show-de-config"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="s2">"global_channel_log_level"</span> <span class="ow">in</span> <span class="n">output</span>
 
     <span class="c1"># Verify config is JSON-formatted</span>
     <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>

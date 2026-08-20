@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.taskmanager.LatestMessages &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.taskmanager.LatestMessages &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -89,7 +89,7 @@
 <span></span><span class="c1"># SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC</span>
 <span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
 
-<span class="sd">&quot;&quot;&quot;The LatestMessages class listens for messages from a set of queues and</span>
+<span class="sd">"""The LatestMessages class listens for messages from a set of queues and</span>
 <span class="sd">retains only the last unconsumed message from each queue.</span>
 
 <span class="sd">The latest messages are consumed by calling the consume() instance</span>
@@ -112,7 +112,7 @@
 
 <span class="sd">Upon exiting the the context, a LatestMessage object will no longer</span>
 <span class="sd">listen for any messages.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
@@ -137,7 +137,7 @@
 <div class="viewcode-block" id="LatestMessages.consume">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.taskmanager.html#decisionengine.framework.taskmanager.LatestMessages.LatestMessages.consume">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Return dictionary of latest messages, keyed by message routing key.&quot;</span>
+        <span class="s2">"Return dictionary of latest messages, keyed by message routing key."</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msglock</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">:</span>
                 <span class="n">msgs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">)</span>
@@ -160,21 +160,21 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_listen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">receive</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msglock</span><span class="p">:</span>
-                <span class="n">routing_key</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">delivery_info</span><span class="p">[</span><span class="s2">&quot;routing_key&quot;</span><span class="p">]</span>
+                <span class="n">routing_key</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">delivery_info</span><span class="p">[</span><span class="s2">"routing_key"</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_messages</span><span class="p">[</span><span class="n">routing_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">body</span>
                 <span class="n">message</span><span class="o">.</span><span class="n">ack</span><span class="p">()</span>
 
         <span class="n">_cl</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">broker_url</span><span class="p">)</span>
         <span class="k">with</span> <span class="p">(</span>
             <span class="n">connections</span><span class="p">[</span><span class="n">_cl</span><span class="p">]</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">,</span>
-            <span class="n">conn</span><span class="o">.</span><span class="n">Consumer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queues</span><span class="p">,</span> <span class="n">accept</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pickle&quot;</span><span class="p">],</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">receive</span><span class="p">]),</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">Consumer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queues</span><span class="p">,</span> <span class="n">accept</span><span class="o">=</span><span class="p">[</span><span class="s2">"pickle"</span><span class="p">],</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">receive</span><span class="p">]),</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_listening</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
             <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="c1"># If source has been brought offline while the drain_events method is</span>
                     <span class="c1"># executing, it will stall.  We therefore impose an arbitrary 5-second</span>
-                    <span class="c1"># timeout so that the &#39;should_stop()&#39; method called in the while condition</span>
+                    <span class="c1"># timeout so that the 'should_stop()' method called in the while condition</span>
                     <span class="c1"># will yield false and thus terminate the loop.</span>
                     <span class="n">conn</span><span class="o">.</span><span class="n">drain_events</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">):</span>

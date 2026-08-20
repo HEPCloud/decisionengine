@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.LogicEngine &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.logicengine.LogicEngine &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -101,15 +101,15 @@
 <div class="viewcode-block" id="passthrough_configuration">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.passthrough_configuration">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">passthrough_configuration</span><span class="p">(</span><span class="n">publisher_names</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assembles logic-engine configuration to unconditionally execute all publishers.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Assembles logic-engine configuration to unconditionally execute all publishers."""</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">publisher_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;logic_engine&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.logicengine.LogicEngine&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="p">{},</span>
-                <span class="s2">&quot;rules&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;expression&quot;</span><span class="p">:</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;actions&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">publisher_names</span><span class="p">)}},</span>
+        <span class="s2">"logic_engine"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"module"</span><span class="p">:</span> <span class="s2">"decisionengine.framework.logicengine.LogicEngine"</span><span class="p">,</span>
+            <span class="s2">"parameters"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"facts"</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="s2">"rules"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"r1"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"expression"</span><span class="p">:</span> <span class="s2">"True"</span><span class="p">,</span> <span class="s2">"actions"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">publisher_names</span><span class="p">)}},</span>
             <span class="p">},</span>
         <span class="p">}</span>
     <span class="p">}</span></div>
@@ -121,23 +121,23 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">LogicEngine</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">BooleanExpression</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">expr</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;facts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rule_engine</span> <span class="o">=</span> <span class="n">RuleEngine</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;facts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;rules&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">BooleanExpression</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">expr</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"facts"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rule_engine</span> <span class="o">=</span> <span class="n">RuleEngine</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s2">"facts"</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">cfg</span><span class="p">[</span><span class="s2">"rules"</span><span class="p">])</span>
 
 <div class="viewcode-block" id="LogicEngine.produces">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine.produces">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">produces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;in LE::produces()&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">,</span> <span class="s2">&quot;newfacts&quot;</span><span class="p">]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"in LE::produces()"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">"actions"</span><span class="p">,</span> <span class="s2">"newfacts"</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="LogicEngine.consumes">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine.consumes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">consumes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the names of all the items that must be in the DataBlock for</span>
+<span class="w">        </span><span class="sd">"""Return the names of all the items that must be in the DataBlock for</span>
 <span class="sd">        the rules to be evaluated.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;in LE::consumes()&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"in LE::consumes()"</span><span class="p">)</span>
         <span class="n">list_of_lists</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">required_names</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">list_of_lists</span><span class="p">)))</span></div>
 
@@ -145,47 +145,47 @@
 <div class="viewcode-block" id="LogicEngine.evaluate_facts">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine.evaluate_facts">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_facts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :type db: :obj:`DataBlock`</span>
 <span class="sd">        :arg db: Products used to evaluate facts.</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        :returns: Evaluated fact values (e.g. True or False) for each fact name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;The following error was encountered: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"The following error was encountered: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;No fact names are available.&quot;</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">"No fact names are available."</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;Allowed fact names are:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">"Allowed fact names are:</span><span class="se">\n</span><span class="s2">"</span>
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">db</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;  &#39;&quot;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s2">&quot;&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="n">msg</span> <span class="o">+=</span> <span class="s2">"  '"</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s2">"'</span><span class="se">\n</span><span class="s2">"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">e</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected exception while evaluating facts.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">"Unexpected exception while evaluating facts."</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">e</span></div>
 
 
 <div class="viewcode-block" id="LogicEngine.evaluate">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine.evaluate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Evaluate our facts and rules, in the context of the given data.</span>
 <span class="sd">        db can be any mappable, in particular a DataBlock or dictionary.</span>
 
 <span class="sd">        :type db: :obj:`DataBlock`</span>
 <span class="sd">        :arg db: Products used to evaluate facts.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;LE: calling evaluate_facts&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"LE: calling evaluate_facts"</span><span class="p">)</span>
 
         <span class="n">evaluated_facts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_facts</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">evaluated_facts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluated Fact: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> -&gt; Value: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2"> -&gt; TypeOf(Value): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Evaluated Fact: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> -&gt; Value: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2"> -&gt; TypeOf(Value): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="c1"># Process rules</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;LE: calling execute&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"LE: calling execute"</span><span class="p">)</span>
         <span class="n">actions</span><span class="p">,</span> <span class="n">newfacts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rule_engine</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">evaluated_facts</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_facts_dataframe</span><span class="p">(</span><span class="n">newfacts</span><span class="p">))</span></div>
 
@@ -193,27 +193,27 @@
 <div class="viewcode-block" id="LogicEngine._create_facts_dataframe">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.LogicEngine.LogicEngine._create_facts_dataframe">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_facts_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newfacts</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Convert newfacts dict in format below to dataframe with columns</span>
-<span class="sd">        [&#39;rule_name&#39;, &#39;fact_name&#39;, fact_value&#39;]</span>
+<span class="sd">        ['rule_name', 'fact_name', fact_value']</span>
 
 <span class="sd">        facts dict format:</span>
 
 <span class="sd">        .. code-block:: json</span>
 
 <span class="sd">            {</span>
-<span class="sd">                &quot;newfacts&quot;: {</span>
-<span class="sd">                    &quot;publish_glidein_requests&quot;: {</span>
-<span class="sd">                        &quot;allow_hpc_new&quot;: true,</span>
-<span class="sd">                        &quot;allow_foo&quot;: true</span>
+<span class="sd">                "newfacts": {</span>
+<span class="sd">                    "publish_glidein_requests": {</span>
+<span class="sd">                        "allow_hpc_new": true,</span>
+<span class="sd">                        "allow_foo": true</span>
 <span class="sd">                    },</span>
-<span class="sd">                    &quot;dummy_rule&quot;: {</span>
-<span class="sd">                        &quot;dummy_new_fact&quot;: true</span>
+<span class="sd">                    "dummy_rule": {</span>
+<span class="sd">                        "dummy_new_fact": true</span>
 <span class="sd">                    }</span>
 <span class="sd">                }</span>
 <span class="sd">            }</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;in LE::_create_facts_dataframe&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"in LE::_create_facts_dataframe"</span><span class="p">)</span>
         <span class="c1"># Extract new facts from le_result</span>
         <span class="c1"># Dataframe column values for Facts</span>
         <span class="n">rule_name</span> <span class="o">=</span> <span class="p">[]</span>
@@ -225,7 +225,7 @@
             <span class="n">rule_name</span> <span class="o">+=</span> <span class="p">[</span><span class="n">rule</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">facts</span><span class="p">)</span>
             <span class="n">fact_name</span> <span class="o">+=</span> <span class="n">facts</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
             <span class="n">fact_value</span> <span class="o">+=</span> <span class="n">facts</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-        <span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;rule_name&quot;</span><span class="p">:</span> <span class="n">rule_name</span><span class="p">,</span> <span class="s2">&quot;fact_name&quot;</span><span class="p">:</span> <span class="n">fact_name</span><span class="p">,</span> <span class="s2">&quot;fact_value&quot;</span><span class="p">:</span> <span class="n">fact_value</span><span class="p">}</span>
+        <span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"rule_name"</span><span class="p">:</span> <span class="n">rule_name</span><span class="p">,</span> <span class="s2">"fact_name"</span><span class="p">:</span> <span class="n">fact_name</span><span class="p">,</span> <span class="s2">"fact_value"</span><span class="p">:</span> <span class="n">fact_value</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">facts</span><span class="p">)</span></div>
 </div>
 

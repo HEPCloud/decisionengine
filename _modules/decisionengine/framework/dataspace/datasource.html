@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datasource &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.dataspace.datasource &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -101,76 +101,76 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">DataSource</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
 
     <span class="c1">#: Name of the taskmanager table</span>
-    <span class="n">taskmanager_table</span> <span class="o">=</span> <span class="s2">&quot;taskmanager&quot;</span>
+    <span class="n">taskmanager_table</span> <span class="o">=</span> <span class="s2">"taskmanager"</span>
 
     <span class="c1">#: Name of the dataproduct table</span>
-    <span class="n">dataproduct_table</span> <span class="o">=</span> <span class="s2">&quot;dataproduct&quot;</span>
+    <span class="n">dataproduct_table</span> <span class="o">=</span> <span class="s2">"dataproduct"</span>
 
     <span class="c1">#: Name of the header table</span>
-    <span class="n">header_table</span> <span class="o">=</span> <span class="s2">&quot;header&quot;</span>
+    <span class="n">header_table</span> <span class="o">=</span> <span class="s2">"header"</span>
 
     <span class="c1">#: Name of the metadata table</span>
-    <span class="n">metadata_table</span> <span class="o">=</span> <span class="s2">&quot;metadata&quot;</span>
+    <span class="n">metadata_table</span> <span class="o">=</span> <span class="s2">"metadata"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :type config: :obj:`dict`</span>
 <span class="sd">        :arg config: Configuration dictionary</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing a datasource&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Initializing a datasource"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
 
 <div class="viewcode-block" id="DataSource.get_schema">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.get_schema">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Given the table name return it&#39;s schema</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Given the table name return it's schema</span>
 
 <span class="sd">        :type table: :obj:`string`</span>
 <span class="sd">        :arg table: Name of the table</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;getting the datasource schema&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"getting the datasource schema"</span><span class="p">)</span>
 
         <span class="n">schemas</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;taskmanager&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">&quot;sequence_id INT&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;taskmanager_id TEXT&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;name TEXT&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;datestamp timestamp with timezone&quot;</span><span class="p">,</span>
+            <span class="s2">"taskmanager"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">"sequence_id INT"</span><span class="p">,</span>
+                <span class="s2">"taskmanager_id TEXT"</span><span class="p">,</span>
+                <span class="s2">"name TEXT"</span><span class="p">,</span>
+                <span class="s2">"datestamp timestamp with timezone"</span><span class="p">,</span>
             <span class="p">],</span>
-            <span class="s2">&quot;header&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">&quot;taskmanager_id INT&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;generation_id INT&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;key TEXT&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;create_time REAL&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;expiration_time REAL&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;scheduled_create_time REAL&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;creator TEXT&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;schema_id INT&quot;</span><span class="p">,</span>
+            <span class="s2">"header"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">"taskmanager_id INT"</span><span class="p">,</span>
+                <span class="s2">"generation_id INT"</span><span class="p">,</span>
+                <span class="s2">"key TEXT"</span><span class="p">,</span>
+                <span class="s2">"create_time REAL"</span><span class="p">,</span>
+                <span class="s2">"expiration_time REAL"</span><span class="p">,</span>
+                <span class="s2">"scheduled_create_time REAL"</span><span class="p">,</span>
+                <span class="s2">"creator TEXT"</span><span class="p">,</span>
+                <span class="s2">"schema_id INT"</span><span class="p">,</span>
             <span class="p">],</span>
-            <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">&quot;schema_id INT&quot;</span><span class="p">,</span>  <span class="c1"># Auto generated</span>
-                <span class="s2">&quot;schema BLOB&quot;</span><span class="p">,</span>  <span class="c1"># keys in the value dict of the dataproduct table</span>
+            <span class="s2">"schema"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">"schema_id INT"</span><span class="p">,</span>  <span class="c1"># Auto generated</span>
+                <span class="s2">"schema BLOB"</span><span class="p">,</span>  <span class="c1"># keys in the value dict of the dataproduct table</span>
             <span class="p">],</span>
-            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">&quot;taskmanager_id INT&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;generation_id INT&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;key TEXT&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;state TEXT&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;generation_time REAL&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;missed_update_count INT&quot;</span><span class="p">,</span>
+            <span class="s2">"metadata"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">"taskmanager_id INT"</span><span class="p">,</span>
+                <span class="s2">"generation_id INT"</span><span class="p">,</span>
+                <span class="s2">"key TEXT"</span><span class="p">,</span>
+                <span class="s2">"state TEXT"</span><span class="p">,</span>
+                <span class="s2">"generation_time REAL"</span><span class="p">,</span>
+                <span class="s2">"missed_update_count INT"</span><span class="p">,</span>
             <span class="p">],</span>
-            <span class="s2">&quot;dataproduct&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;taskmanager_id INT&quot;</span><span class="p">,</span> <span class="s2">&quot;generation_id INT&quot;</span><span class="p">,</span> <span class="s2">&quot;key TEXT&quot;</span><span class="p">,</span> <span class="s2">&quot;value BLOB&quot;</span><span class="p">],</span>
+            <span class="s2">"dataproduct"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"taskmanager_id INT"</span><span class="p">,</span> <span class="s2">"generation_id INT"</span><span class="p">,</span> <span class="s2">"key TEXT"</span><span class="p">,</span> <span class="s2">"value BLOB"</span><span class="p">],</span>
         <span class="p">}</span>
 
         <span class="k">if</span> <span class="n">table</span><span class="p">:</span>
@@ -182,10 +182,10 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.connect">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a pool of database connections</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is creating the database connections&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is creating the database connections"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -193,10 +193,10 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.reset_connections">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Drop any cached connections and reconnect to the database</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is resetting database the connections&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is resetting database the connections"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -204,10 +204,10 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.create_tables">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create database tables</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is creating the database tables&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is creating the database tables"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -215,7 +215,7 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.insert">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Insert data into respective tables for the given</span>
 <span class="sd">        taskmanager_id, generation_id, key</span>
 
@@ -231,8 +231,8 @@
 <span class="sd">        :arg header: Header for the value</span>
 <span class="sd">        :type metadata: :obj:`~datablock.Metadata`</span>
 <span class="sd">        :arg header: Metadata for the value</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is inserting data into the database tables&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is inserting data into the database tables"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -240,7 +240,7 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.update">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Update the data in respective tables for the given</span>
 <span class="sd">        taskmanager_id, generation_id, key</span>
 
@@ -256,8 +256,8 @@
 <span class="sd">        :arg header: Header for the value</span>
 <span class="sd">        :type metadata: :obj:`~datablock.Metadata`</span>
 <span class="sd">        :arg header: Metadata for the value</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is updating data in the database tables&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is updating data in the database tables"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -265,7 +265,7 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.get_dataproduct">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_dataproduct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the data from the dataproduct table for the given</span>
 <span class="sd">        taskmanager_id, generation_id, key</span>
 
@@ -275,8 +275,8 @@
 <span class="sd">        :arg generation_id: generation_id of the data</span>
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :arg key: key for the value</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is getting a dataproduct for a taskmanger&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is getting a dataproduct for a taskmanger"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -284,15 +284,15 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.get_dataproducts">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_dataproducts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return list of all data products associated with</span>
 <span class="sd">        with taskmanager_id</span>
 
 <span class="sd">        :type taskmanager_id: :obj:`string`</span>
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :arg key: data product key</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is getting all dataproducts for a taskmanger&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is getting all dataproducts for a taskmanger"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -300,7 +300,7 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.get_header">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the header from the header table for the given</span>
 <span class="sd">        taskmanager_id, generation_id, key</span>
 
@@ -310,8 +310,8 @@
 <span class="sd">        :arg generation_id: generation_id of the data</span>
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :arg key: key for the value</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is getting the header for a taskmanger&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is getting the header for a taskmanger"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -319,7 +319,7 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.get_metadata">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the metadata from the metadata table for the given</span>
 <span class="sd">        taskmanager_id, generation_id, key</span>
 
@@ -329,8 +329,8 @@
 <span class="sd">        :arg generation_id: generation_id of the data</span>
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :arg key: key for the value</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is getting the metadata for a taskmanger&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is getting the metadata for a taskmanger"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -338,7 +338,7 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.get_datablock">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_datablock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the entire datablock from the dataproduct table for the given</span>
 <span class="sd">        taskmanager_id, generation_id</span>
 
@@ -346,8 +346,8 @@
 <span class="sd">        :arg taskmanager_id: taskmanager_id for generation to be retrieved</span>
 <span class="sd">        :type generation_id: :obj:`int`</span>
 <span class="sd">        :arg generation_id: generation_id of the data</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is getting the datablock for a taskmanger&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is getting the datablock for a taskmanger"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -355,7 +355,7 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.duplicate_datablock">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">duplicate_datablock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">generation_id</span><span class="p">,</span> <span class="n">new_generation_id</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        For the given taskmanager_id, make a copy of the datablock with given</span>
 <span class="sd">        generation_id, set the generation_id for the datablock copy</span>
 
@@ -365,8 +365,8 @@
 <span class="sd">        :arg generation_id: generation_id of the data</span>
 <span class="sd">        :type new_generation_id: :obj:`int`</span>
 <span class="sd">        :arg new_generation_id: generation_id of the new datablock created</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is duplicating a datablock for a taskmanger&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is duplicating a datablock for a taskmanger"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -374,7 +374,7 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.get_last_generation_id">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_last_generation_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return last generation id for current task manager</span>
 <span class="sd">        or taskmanager w/ task_manager_id.</span>
 
@@ -382,8 +382,8 @@
 <span class="sd">        :arg taskmanager_name: task manager name</span>
 <span class="sd">        :type taskmanager_id: :obj:`string`</span>
 <span class="sd">        :arg taskmanager_id: task manager id</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is getting the last generation id for a taskmanager&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is getting the last generation id for a taskmanager"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -391,10 +391,10 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.close">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Close all connections to the database</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is closing database connections&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is closing database connections"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -402,16 +402,16 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.store_taskmanager">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">store_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">datestamp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Store TaskManager</span>
 <span class="sd">        :type taskmanager_name: :obj:`string`</span>
 <span class="sd">        :arg taskmanager_name: name of taskmanager to retrieve</span>
 <span class="sd">        :type taskmanager_id: :obj:`string`</span>
 <span class="sd">        :arg taskmanager_id: id of taskmanager to retrieve</span>
 <span class="sd">        :type datestamp: :obj:`datetime`</span>
-<span class="sd">        :arg datestamp: datetime of created object, defaults to &#39;now&#39;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is storing a taskmanager&quot;</span><span class="p">)</span>
+<span class="sd">        :arg datestamp: datetime of created object, defaults to 'now'</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is storing a taskmanager"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -419,14 +419,14 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.get_taskmanagers">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_taskmanagers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieve TaskManagers</span>
 <span class="sd">        :type taskmanager_name: :obj:`string`</span>
 <span class="sd">        :arg taskmanager_name: name of taskmanager to retrieve</span>
 <span class="sd">        :type taskmanager_id: :obj:`string`</span>
 <span class="sd">        :arg taskmanager_id: id of taskmanager to retrieve</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is getting all taskmanagers&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is getting all taskmanagers"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -434,14 +434,14 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.get_taskmanager">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieve TaskManager</span>
 <span class="sd">        :type taskmanager_name: :obj:`string`</span>
 <span class="sd">        :arg taskmanager_name: name of taskmanager to retrieve</span>
 <span class="sd">        :type taskmanager_id: :obj:`string`</span>
 <span class="sd">        :arg taskmanager_id: id of taskmanager to retrieve</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is getting a taskmanager&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is getting a taskmanager"</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
@@ -449,12 +449,12 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datasource.DataSource.delete_data_older_than">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">delete_data_older_than</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">days</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Delete data older that interval</span>
 <span class="sd">        :type days: :obj:`long`</span>
 <span class="sd">        :arg days: remove data older than interval</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datasource is deleting data&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datasource is deleting data"</span><span class="p">)</span>
         <span class="k">return</span></div>
 </div>
 

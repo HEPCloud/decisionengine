@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.engine.tests.fixtures &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
@@ -89,7 +89,7 @@
 <span></span><span class="c1"># SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC</span>
 <span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
 
-<span class="sd">&quot;&quot;&quot;pytest defaults&quot;&quot;&quot;</span>
+<span class="sd">"""pytest defaults"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -119,22 +119,22 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.util.sockets</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_random_port</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;DATABASES_TO_TEST&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PG_DE_DB_WITHOUT_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SQLALCHEMY_PG_WITH_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SQLALCHEMY_TEMPFILE_SQLITE&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PG_PROG&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DEServer&quot;</span><span class="p">,</span>
+    <span class="s2">"DATABASES_TO_TEST"</span><span class="p">,</span>
+    <span class="s2">"PG_DE_DB_WITHOUT_SCHEMA"</span><span class="p">,</span>
+    <span class="s2">"SQLALCHEMY_PG_WITH_SCHEMA"</span><span class="p">,</span>
+    <span class="s2">"SQLALCHEMY_TEMPFILE_SQLITE"</span><span class="p">,</span>
+    <span class="s2">"PG_PROG"</span><span class="p">,</span>
+    <span class="s2">"DEServer"</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="c1"># Not all test hosts are IPv6, generally IPv4 works fine some test</span>
 <span class="c1"># hosts use IPv6 for localhost by default, even when not configured!</span>
 <span class="c1"># Python XML RPC Socket server is IPv4 only right now.</span>
-<span class="n">DE_HOST</span> <span class="o">=</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+<span class="n">DE_HOST</span> <span class="o">=</span> <span class="s2">"127.0.0.1"</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DETestWorker</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A DE Server process with our test config&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A DE Server process with our test config"""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -145,8 +145,8 @@
         <span class="n">conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">channel_conf_override</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;format of args should match what you set in conf_mamanger&quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;DETestWorker&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""format of args should match what you set in conf_mamanger"""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"DETestWorker"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span> <span class="o">=</span> <span class="n">server_address</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conf_path</span> <span class="o">=</span> <span class="n">conf_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_conf_path</span> <span class="o">=</span> <span class="n">channel_conf_path</span>
@@ -165,21 +165,21 @@
         <span class="c1"># the database ID.  Otherwise, we assign a random number</span>
         <span class="c1"># between 0 and 15 (inclusive).</span>
         <span class="n">db_number</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">xdist_worker_count</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;PYTEST_XDIST_WORKER_COUNT&quot;</span><span class="p">)</span>
+        <span class="n">xdist_worker_count</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"PYTEST_XDIST_WORKER_COUNT"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">xdist_worker_count</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">xdist_worker_count</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">16</span><span class="p">:</span>
-            <span class="n">worker_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PYTEST_XDIST_WORKER&quot;</span><span class="p">]</span>
-            <span class="n">db_number</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^gw(\d{1,2})&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1&quot;</span><span class="p">,</span> <span class="n">worker_id</span><span class="p">)</span>  <span class="c1"># Remove the gw prefix</span>
+            <span class="n">worker_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PYTEST_XDIST_WORKER"</span><span class="p">]</span>
+            <span class="n">db_number</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^gw(\d{1,2})"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"\1"</span><span class="p">,</span> <span class="n">worker_id</span><span class="p">)</span>  <span class="c1"># Remove the gw prefix</span>
             <span class="k">assert</span> <span class="nb">int</span><span class="p">(</span><span class="n">db_number</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">16</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">db_number</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
         <span class="c1"># Override global configuration for testing</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;broker_url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;redis://localhost:6379/</span><span class="si">{</span><span class="n">db_number</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;shutdown_timeout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;server_address&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;dataspace&quot;</span><span class="p">][</span><span class="s2">&quot;datasource&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datasource</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;no_webserver&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;webserver&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">&quot;webserver&quot;</span><span class="p">][</span><span class="s2">&quot;port&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_random_port</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">"broker_url"</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"redis://localhost:6379/</span><span class="si">{</span><span class="n">db_number</span><span class="si">}</span><span class="s2">"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">"shutdown_timeout"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">"server_address"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">"dataspace"</span><span class="p">][</span><span class="s2">"datasource"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datasource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">"no_webserver"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">"webserver"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">[</span><span class="s2">"webserver"</span><span class="p">][</span><span class="s2">"port"</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_random_port</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">de_server</span> <span class="o">=</span> <span class="n">_create_de_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_config_loader</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stdout_at_setup</span> <span class="o">=</span> <span class="kc">None</span>
@@ -188,15 +188,15 @@
         <span class="n">_start_de_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">de_server</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">de_client_run_cli</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Run the DE Client CLI with these args</span>
 <span class="sd">        The DE Server host/port are automatically set for you</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">de_client</span><span class="o">.</span><span class="n">main</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="s2">&quot;--host&quot;</span><span class="p">,</span>
+                <span class="s2">"--host"</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="s2">&quot;--port&quot;</span><span class="p">,</span>
+                <span class="s2">"--port"</span><span class="p">,</span>
                 <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
                 <span class="o">*</span><span class="n">args</span><span class="p">,</span>
             <span class="p">],</span>
@@ -204,18 +204,18 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">de_query_tool_run_cli</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Run the DE Query Tool CLI with these args.</span>
 <span class="sd">        The DE Server host/port are automatically set for you.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: Query result</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">de_query_tool</span><span class="o">.</span><span class="n">main</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="s2">&quot;--host&quot;</span><span class="p">,</span>
+                <span class="s2">"--host"</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="s2">&quot;--port&quot;</span><span class="p">,</span>
+                <span class="s2">"--port"</span><span class="p">,</span>
                 <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server_address</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
                 <span class="o">*</span><span class="n">args</span><span class="p">,</span>
             <span class="p">],</span>
@@ -236,17 +236,17 @@
     <span class="n">make_conf_dirs_if_missing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">block_until_startup_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A DE Server using a private database&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A DE Server using a private database"""</span>
 
     <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">DATABASES_TO_TEST</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">de_server_factory</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">capsys</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This parameterized fixture will mock up various datasources.</span>
 
-<span class="sd">        Add datasource objects to DATABASES_TO_TEST once they&#39;ve got</span>
+<span class="sd">        Add datasource objects to DATABASES_TO_TEST once they've got</span>
 <span class="sd">        our basic schema loaded.  Pytest should take it from there and</span>
 <span class="sd">        automatically run it throughout all the below tests</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">port</span><span class="p">:</span>
             <span class="n">host_port</span> <span class="o">=</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
@@ -258,13 +258,13 @@
         <span class="n">datasource</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># SQL Alchemy</span>
-        <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;module&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.sqlalchemy_ds&quot;</span>
-        <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;SQLAlchemyDS&quot;</span>
-        <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">][</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
-        <span class="n">datasource</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">][</span><span class="s2">&quot;echo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">datasource</span><span class="p">[</span><span class="s2">"config"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">datasource</span><span class="p">[</span><span class="s2">"module"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"decisionengine.framework.dataspace.datasources.sqlalchemy_ds"</span>
+        <span class="n">datasource</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"SQLAlchemyDS"</span>
+        <span class="n">datasource</span><span class="p">[</span><span class="s2">"config"</span><span class="p">][</span><span class="s2">"url"</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_fixture</span><span class="p">[</span><span class="s2">"url"</span><span class="p">]</span>
+        <span class="n">datasource</span><span class="p">[</span><span class="s2">"config"</span><span class="p">][</span><span class="s2">"echo"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture has datasource config: </span><span class="si">{</span><span class="n">datasource</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"DE Fixture has datasource config: </span><span class="si">{</span><span class="n">datasource</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="c1"># make it easy to give each fixture a unique private config path</span>
         <span class="c1"># for more flexible startup options</span>
@@ -272,22 +272,22 @@
             <span class="k">nonlocal</span> <span class="n">conf_path</span>
             <span class="k">nonlocal</span> <span class="n">channel_conf_path</span>
             <span class="k">if</span> <span class="n">conf_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">conf_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span> <span class="s2">&quot;conf.d&quot;</span><span class="p">)</span>
+                <span class="n">conf_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span> <span class="s2">"conf.d"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">channel_conf_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">channel_conf_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span> <span class="s2">&quot;channel.conf.d&quot;</span><span class="p">)</span>
-            <span class="n">prometheus_multiproc_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span> <span class="s2">&quot;PROMETHEUS_MULTIPROC_DIR&quot;</span><span class="p">))</span>
+                <span class="n">channel_conf_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span> <span class="s2">"channel.conf.d"</span><span class="p">)</span>
+            <span class="n">prometheus_multiproc_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmppath</span><span class="p">,</span> <span class="s2">"PROMETHEUS_MULTIPROC_DIR"</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="n">make_conf_dirs_if_missing</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">conf_path</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture making </span><span class="si">{</span><span class="n">conf_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"DE Fixture making </span><span class="si">{</span><span class="n">conf_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">conf_path</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">make_conf_dirs_if_missing</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">channel_conf_path</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture making </span><span class="si">{</span><span class="n">channel_conf_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"DE Fixture making </span><span class="si">{</span><span class="n">channel_conf_path</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">channel_conf_path</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">prometheus_multiproc_dir</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DE Fixture making </span><span class="si">{</span><span class="n">prometheus_multiproc_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"DE Fixture making </span><span class="si">{</span><span class="n">prometheus_multiproc_dir</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">prometheus_multiproc_dir</span><span class="p">)</span>
 
-            <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setenv</span><span class="p">(</span><span class="s2">&quot;PROMETHEUS_MULTIPROC_DIR&quot;</span><span class="p">,</span> <span class="n">prometheus_multiproc_dir</span><span class="p">)</span>
+            <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setenv</span><span class="p">(</span><span class="s2">"PROMETHEUS_MULTIPROC_DIR"</span><span class="p">,</span> <span class="n">prometheus_multiproc_dir</span><span class="p">)</span>
             <span class="n">server_proc</span> <span class="o">=</span> <span class="n">DETestWorker</span><span class="p">(</span>
                 <span class="n">conf_path</span><span class="p">,</span>
                 <span class="n">channel_conf_path</span><span class="p">,</span>
@@ -296,36 +296,36 @@
                 <span class="n">conf_override</span><span class="p">,</span>
                 <span class="n">channel_conf_override</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting DE Fixture&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Starting DE Fixture"</span><span class="p">)</span>
             <span class="n">server_proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">block_until_startup_complete</span><span class="p">:</span>
                 <span class="c1"># Ensure the channels have started</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;DE Fixture: Wait on startup state: is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"DE Fixture: Wait on startup state: is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
                 <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
                 <span class="n">server_proc</span><span class="o">.</span><span class="n">stdout_at_setup</span> <span class="o">=</span> <span class="n">capsys</span><span class="o">.</span><span class="n">readouterr</span><span class="p">()</span><span class="o">.</span><span class="n">out</span>
 
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;DE Fixture: Done waiting for startup state: is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"DE Fixture: Done waiting for startup state: is_set=</span><span class="si">{</span><span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">startup_complete</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">server_proc</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Could not start PrivateDEServer fixture&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Could not start PrivateDEServer fixture"</span><span class="p">)</span>
 
             <span class="k">yield</span> <span class="n">server_proc</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DE Fixture: beginning cleanup&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"DE Fixture: beginning cleanup"</span><span class="p">)</span>
 
-        <span class="n">monkeypatch</span><span class="o">.</span><span class="n">delenv</span><span class="p">(</span><span class="s2">&quot;PROMETHEUS_MULTIPROC_DIR&quot;</span><span class="p">)</span>
+        <span class="n">monkeypatch</span><span class="o">.</span><span class="n">delenv</span><span class="p">(</span><span class="s2">"PROMETHEUS_MULTIPROC_DIR"</span><span class="p">)</span>
 
         <span class="c1"># does not error out even if the server is stopped</span>
         <span class="c1"># so this should be safe to call under all conditions</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DE Fixture: running rpc_stop()&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"DE Fixture: running rpc_stop()"</span><span class="p">)</span>
         <span class="n">server_proc</span><span class="o">.</span><span class="n">de_server</span><span class="o">.</span><span class="n">rpc_stop</span><span class="p">()</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DE Fixture: waiting for server_proc.join()&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"DE Fixture: waiting for server_proc.join()"</span><span class="p">)</span>
         <span class="n">server_proc</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
         <span class="k">del</span> <span class="n">server_proc</span>

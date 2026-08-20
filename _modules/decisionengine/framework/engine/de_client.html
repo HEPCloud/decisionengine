@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.de_client &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.engine.de_client &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -103,93 +103,93 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.de_client.create_parser">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_parser</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
-    <span class="n">optional</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;optional arguments&quot;</span><span class="p">)</span>
-    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--port&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;port number&gt;&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;8888&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Default port is 8888&quot;</span><span class="p">)</span>
-    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--host&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;hostname&gt;&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Default hostname is &#39;localhost&#39;&quot;</span><span class="p">)</span>
+    <span class="n">optional</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">"optional arguments"</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--port"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;port number&gt;"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"8888"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Default port is 8888"</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--host"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;hostname&gt;"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"localhost"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Default hostname is 'localhost'"</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Include exception message in printout if server is inaccessible&quot;</span>
+        <span class="s2">"-v"</span><span class="p">,</span> <span class="s2">"--verbose"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Include exception message in printout if server is inaccessible"</span>
     <span class="p">)</span>
 
-    <span class="n">server</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Decision Engine server options&quot;</span><span class="p">)</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--ping&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;perform a minimal connection&quot;</span><span class="p">)</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--stop&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;stop server&quot;</span><span class="p">)</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print server status&quot;</span><span class="p">)</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">"Decision Engine server options"</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--ping"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"perform a minimal connection"</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--stop"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"stop server"</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--status"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print server status"</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--queue-status&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print status of Redis queues used to transport data products&quot;</span>
+        <span class="s2">"--queue-status"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print status of Redis queues used to transport data products"</span>
     <span class="p">)</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--show-de-config&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print server configuration&quot;</span><span class="p">)</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--print-engine-loglevel&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print engine log level&quot;</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--show-de-config"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print server configuration"</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--print-engine-loglevel"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print engine log level"</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--product-dependencies&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print which products are consumed or produced for each module&quot;</span><span class="p">,</span>
+        <span class="s2">"--product-dependencies"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"print which products are consumed or produced for each module"</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--block-while&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;state&gt;&quot;</span><span class="p">)</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--metrics&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print metrics&quot;</span><span class="p">)</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--list-rpc-methods&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print all rpc methods&quot;</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--block-while"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;state&gt;"</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--metrics"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print metrics"</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--list-rpc-methods"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print all rpc methods"</span><span class="p">)</span>
 
-    <span class="n">channels</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Channel-specific options&quot;</span><span class="p">)</span>
-    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--start-channels&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;start all channels&quot;</span><span class="p">)</span>
-    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--stop-channels&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;stop all channels&quot;</span><span class="p">)</span>
-    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--start-channel&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;channel name&gt;&quot;</span><span class="p">)</span>
-    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--stop-channel&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;channel name&gt;&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Attempt clean shutdown of channel.&quot;</span><span class="p">)</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">"Channel-specific options"</span><span class="p">)</span>
+    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--start-channels"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"start all channels"</span><span class="p">)</span>
+    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--stop-channels"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"stop all channels"</span><span class="p">)</span>
+    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--start-channel"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;channel name&gt;"</span><span class="p">)</span>
+    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--stop-channel"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;channel name&gt;"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Attempt clean shutdown of channel."</span><span class="p">)</span>
     <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--kill-channel&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;channel name&gt;&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Same as --stop-channel, except the channel process will be killed &quot;</span>
-        <span class="s2">&quot;once the server&#39;s configured shutdown timeout window is exceeded&quot;</span><span class="p">,</span>
+        <span class="s2">"--kill-channel"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;channel name&gt;"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Same as --stop-channel, except the channel process will be killed "</span>
+        <span class="s2">"once the server's configured shutdown timeout window is exceeded"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">kill_options</span> <span class="o">=</span> <span class="n">channels</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
     <span class="n">kill_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--force&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;May be used with --kill-channel to immediately kill the channel process&quot;</span><span class="p">,</span>
+        <span class="s2">"-f"</span><span class="p">,</span>
+        <span class="s2">"--force"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"May be used with --kill-channel to immediately kill the channel process"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">kill_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--timeout&quot;</span><span class="p">,</span>
+        <span class="s2">"--timeout"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;seconds&gt;&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;May be specified with --kill-channel to override the DE server&#39;s configured timeout window or max time to wait for --block-while.&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;seconds&gt;"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"May be specified with --kill-channel to override the DE server's configured timeout window or max time to wait for --block-while."</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--show-config&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print configuration&quot;</span><span class="p">)</span>
-    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--show-channel-config&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;channel name&gt;&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print channel configuration&quot;</span><span class="p">)</span>
-    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--get-channel-loglevel&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;channel name&gt;&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print channel log level&quot;</span><span class="p">)</span>
+    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--show-config"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print configuration"</span><span class="p">)</span>
+    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--show-channel-config"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;channel name&gt;"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print channel configuration"</span><span class="p">)</span>
+    <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--get-channel-loglevel"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;channel name&gt;"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print channel log level"</span><span class="p">)</span>
     <span class="n">channels</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--set-channel-loglevel&quot;</span><span class="p">,</span>
+        <span class="s2">"--set-channel-loglevel"</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&lt;channel name&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;log level&gt;&quot;</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="p">(</span><span class="s2">"&lt;channel name&gt;"</span><span class="p">,</span> <span class="s2">"&lt;log level&gt;"</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL"</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">sources</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Source-specific options&quot;</span><span class="p">)</span>
-    <span class="n">sources</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--get-source-loglevel&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;source name&gt;&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print source log level&quot;</span><span class="p">)</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">"Source-specific options"</span><span class="p">)</span>
+    <span class="n">sources</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--get-source-loglevel"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;source name&gt;"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print source log level"</span><span class="p">)</span>
     <span class="n">sources</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--set-source-loglevel&quot;</span><span class="p">,</span>
+        <span class="s2">"--set-source-loglevel"</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&lt;source name&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;log level&gt;&quot;</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="p">(</span><span class="s2">"&lt;source name&gt;"</span><span class="p">,</span> <span class="s2">"&lt;log level&gt;"</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Possible levels are NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL"</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">products</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Product-specific options&quot;</span><span class="p">)</span>
-    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--print-product&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;product name&gt;&quot;</span><span class="p">)</span>
-    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--print-products&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print products&quot;</span><span class="p">)</span>
-    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--columns&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;comma separated list of columns&quot;</span><span class="p">)</span>
-    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--query&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;panda query, e.g. &quot;FigureOfMerit != infs&quot;&#39;</span><span class="p">)</span>
-    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--types&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print columns types&quot;</span><span class="p">)</span>
-    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--format&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Possible formats are &#39;vertical&#39;, &#39;column-names&#39;, &#39;json&#39;&quot;</span><span class="p">)</span>
+    <span class="n">products</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">"Product-specific options"</span><span class="p">)</span>
+    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--print-product"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;product name&gt;"</span><span class="p">)</span>
+    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--print-products"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print products"</span><span class="p">)</span>
+    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--columns"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"comma separated list of columns"</span><span class="p">)</span>
+    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--query"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">'panda query, e.g. "FigureOfMerit != infs"'</span><span class="p">)</span>
+    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--types"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print columns types"</span><span class="p">)</span>
+    <span class="n">products</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--format"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Possible formats are 'vertical', 'column-names', 'json'"</span><span class="p">)</span>
 
-    <span class="n">reaper</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">&quot;Database reaper options&quot;</span><span class="p">)</span>
-    <span class="n">reaper</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--reaper-start&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;start the database cleanup process&quot;</span><span class="p">)</span>
+    <span class="n">reaper</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s2">"Database reaper options"</span><span class="p">)</span>
+    <span class="n">reaper</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--reaper-start"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"start the database cleanup process"</span><span class="p">)</span>
     <span class="n">reaper</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--reaper-start-delay-secs&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;&lt;number of seconds&gt;&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+        <span class="s2">"--reaper-start-delay-secs"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"&lt;number of seconds&gt;"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"0"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Delay the database cleanup process start time by the specified number of seconds.&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Delay the database cleanup process start time by the specified number of seconds."</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">reaper</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--reaper-stop&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;stop the database cleanup process&quot;</span><span class="p">)</span>
-    <span class="n">reaper</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--reaper-status&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;show the database cleanup process status&quot;</span><span class="p">)</span>
+    <span class="n">reaper</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--reaper-stop"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"stop the database cleanup process"</span><span class="p">)</span>
+    <span class="n">reaper</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--reaper-status"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"show the database cleanup process status"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parser</span></div>
 
@@ -198,7 +198,7 @@
 <div class="viewcode-block" id="command_for_args">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.de_client.command_for_args">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">command_for_args</span><span class="p">(</span><span class="n">argsparsed</span><span class="p">,</span> <span class="n">de_socket</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;argsparsed should be from create_parser in this file&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""argsparsed should be from create_parser in this file"""</span>
 
     <span class="c1"># Server-specific options</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">ping</span><span class="p">:</span>
@@ -227,9 +227,9 @@
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">stop_channel</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">force</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">kill_channel</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;The --force (-f) option may be used only with --kill-channel.&quot;</span>
+        <span class="k">return</span> <span class="s2">"The --force (-f) option may be used only with --kill-channel."</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">timeout</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">kill_channel</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">block_while</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;The --timeout option may be used only with --kill-channel or --block-while.&quot;</span>
+        <span class="k">return</span> <span class="s2">"The --timeout option may be used only with --kill-channel or --block-while."</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">kill_channel</span><span class="p">:</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Use server-configured timeout</span>
         <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">force</span><span class="p">:</span>
@@ -250,7 +250,7 @@
             <span class="n">de_socket</span><span class="o">.</span><span class="n">set_channel_log_level</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">set_channel_loglevel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_config</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">show_config</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">show_config</span><span class="p">,</span> <span class="s2">"all"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_channel_config</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">show_config</span><span class="p">,</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">show_channel_config</span><span class="p">)</span>
 
@@ -283,37 +283,37 @@
     <span class="k">if</span> <span class="n">argsparsed</span><span class="o">.</span><span class="n">reaper_status</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">de_socket</span><span class="o">.</span><span class="n">reaper_status</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="s2">&quot;No command specified, try --help&quot;</span></div>
+    <span class="k">return</span> <span class="s2">"No command specified, try --help"</span></div>
 
 
 
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.de_client.main">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger_name</span><span class="o">=</span><span class="s2">&quot;de_client&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;If you pass a list of args, they will be used instead of sys.argv&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger_name</span><span class="o">=</span><span class="s2">"de_client"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""If you pass a list of args, they will be used instead of sys.argv"""</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">create_parser</span><span class="p">()</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args_to_parse</span><span class="p">)</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"http://</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">"</span>
     <span class="n">de_socket</span> <span class="o">=</span> <span class="n">xmlrpc</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">command_for_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">de_socket</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">res</span>
-        <span class="n">receiver</span> <span class="o">=</span> <span class="n">ClientMessageReceiver</span><span class="p">(</span><span class="o">*</span><span class="n">de_socket</span><span class="o">.</span><span class="n">kombu_info</span><span class="p">(),</span> <span class="s2">&quot;de_client&quot;</span><span class="p">,</span> <span class="n">logger_name</span><span class="p">)</span>
+        <span class="n">receiver</span> <span class="o">=</span> <span class="n">ClientMessageReceiver</span><span class="p">(</span><span class="o">*</span><span class="n">de_socket</span><span class="o">.</span><span class="n">kombu_info</span><span class="p">(),</span> <span class="s2">"de_client"</span><span class="p">,</span> <span class="n">logger_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">receiver</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;An error occurred while trying to access a DE server at &#39;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="o">+</span> <span class="s2">&quot;Please ensure that the host and port names correspond to a running DE instance.&quot;</span>
+            <span class="sa">f</span><span class="s2">"An error occurred while trying to access a DE server at '</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">'</span><span class="se">\n</span><span class="s2">"</span>
+            <span class="o">+</span> <span class="s2">"Please ensure that the host and port names correspond to a running DE instance."</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">return</span> <span class="n">msg</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;An error occurred while trying to access a DE server at &#39;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"An error occurred while trying to access a DE server at '</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">'."</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">return</span> <span class="n">msg</span></div>
 
 
@@ -321,20 +321,20 @@
 <div class="viewcode-block" id="console_scripts_main">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.engine.html#decisionengine.framework.engine.de_client.console_scripts_main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">console_scripts_main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This is the entry point for the setuptools auto generated scripts.</span>
 <span class="sd">    Setuptools thinks a return from this function is an error message.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="n">main</span><span class="p">(</span><span class="n">args_to_parse</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">msg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">msg</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;An error occurred while trying to access a DE server at&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"An error occurred while trying to access a DE server at"</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">msg</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">console_scripts_main</span><span class="p">()</span>
 </pre></div>
 

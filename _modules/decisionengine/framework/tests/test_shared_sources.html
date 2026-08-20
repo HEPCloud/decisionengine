@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_shared_sources &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.tests.test_shared_sources &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -101,7 +101,7 @@
     <span class="n">TEST_CONFIG_PATH</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">_channel_config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="s2">&quot;test-shared-sources-conflicting&quot;</span><span class="p">)</span>  <span class="c1"># noqa: F405</span>
+<span class="n">_channel_config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="s2">"test-shared-sources-conflicting"</span><span class="p">)</span>  <span class="c1"># noqa: F405</span>
 <span class="n">deserver_conflicting</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span>
     <span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">_channel_config_dir</span>
 <span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
@@ -118,12 +118,12 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_shared_sources.test_conflicting_source_configurations">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_conflicting_source_configurations</span><span class="p">(</span><span class="n">deserver_conflicting</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">record_that_matches</span><span class="p">(</span>
-        <span class="s2">&quot;Mismatched configurations for source with name source&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">when</span><span class="o">=</span><span class="s2">&quot;setup&quot;</span><span class="p">)</span>
+        <span class="s2">"Mismatched configurations for source with name source"</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">when</span><span class="o">=</span><span class="s2">"setup"</span><span class="p">)</span>
     <span class="p">)</span></div>
 
 
 
-<span class="n">_channel_config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="s2">&quot;test-shared-sources&quot;</span><span class="p">)</span>  <span class="c1"># noqa: F405</span>
+<span class="n">_channel_config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="s2">"test-shared-sources"</span><span class="p">)</span>  <span class="c1"># noqa: F405</span>
 <span class="n">deserver_shared</span> <span class="o">=</span> <span class="n">DEServer</span><span class="p">(</span>
     <span class="n">conf_path</span><span class="o">=</span><span class="n">TEST_CONFIG_PATH</span><span class="p">,</span> <span class="n">channel_conf_path</span><span class="o">=</span><span class="n">_channel_config_dir</span>
 <span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
@@ -132,16 +132,16 @@
 <div class="viewcode-block" id="test_shared_source">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_shared_sources.test_shared_source">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_shared_source</span><span class="p">(</span><span class="n">deserver_shared</span><span class="p">,</span> <span class="n">caplog</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="n">record_that_matches</span><span class="p">(</span><span class="s2">&quot;Using existing source source for channel D&quot;</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">when</span><span class="o">=</span><span class="s2">&quot;setup&quot;</span><span class="p">))</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_shared</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;channel: C.*state = STEADY&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;channel: D.*state = STEADY&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">record_that_matches</span><span class="p">(</span><span class="s2">"Using existing source source for channel D"</span><span class="p">,</span> <span class="n">caplog</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">when</span><span class="o">=</span><span class="s2">"setup"</span><span class="p">))</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_shared</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">"--status"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">"channel: C.*state = STEADY"</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">"channel: D.*state = STEADY"</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
     <span class="c1"># Take channel C offline and test that the shared source continues to execute</span>
-    <span class="n">deserver_shared</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--stop-channel&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_shared</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">&quot;--status&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;channel: C&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;channel: D.*state = STEADY&quot;</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span></div>
+    <span class="n">deserver_shared</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">"--stop-channel"</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">deserver_shared</span><span class="o">.</span><span class="n">de_client_run_cli</span><span class="p">(</span><span class="s2">"--status"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">"channel: C"</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">"channel: D.*state = STEADY"</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span></div>
 
 </pre></div>
 

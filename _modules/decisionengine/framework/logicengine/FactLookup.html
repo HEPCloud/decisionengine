@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.FactLookup &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.logicengine.FactLookup &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -96,13 +96,13 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.logicengine.Rule</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rule</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">decisionengine.framework.modules.logging_configDict</span><span class="w"> </span><span class="kn">import</span> <span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">,</span> <span class="n">LOGGERNAME</span>
 
-<span class="n">_TOP_LEVEL</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># Indicates facts not contained by rules</span>
+<span class="n">_TOP_LEVEL</span> <span class="o">=</span> <span class="s2">""</span>  <span class="c1"># Indicates facts not contained by rules</span>
 
 
 <div class="viewcode-block" id="FactLookup">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FactLookup</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Establishes a policy for looking up a fact based on the given name.</span>
 
 <span class="sd">    To with, the first fact with a given name is the one that is used</span>
@@ -113,64 +113,64 @@
 <span class="sd">    .. code-block:: json</span>
 
 <span class="sd">        {</span>
-<span class="sd">            &quot;facts&quot;: {</span>
-<span class="sd">                &quot;should_publish&quot;: &quot;(True)&quot;</span>
+<span class="sd">            "facts": {</span>
+<span class="sd">                "should_publish": "(True)"</span>
 <span class="sd">            },</span>
-<span class="sd">            &quot;rules&quot;: {</span>
-<span class="sd">                &quot;publish_1&quot;: {</span>
-<span class="sd">                    &quot;expression&quot;: &quot;should_publish&quot;,</span>
-<span class="sd">                    &quot;facts&quot;: [&quot;should_publish&quot;]</span>
+<span class="sd">            "rules": {</span>
+<span class="sd">                "publish_1": {</span>
+<span class="sd">                    "expression": "should_publish",</span>
+<span class="sd">                    "facts": ["should_publish"]</span>
 <span class="sd">                },</span>
-<span class="sd">                &quot;publish_2&quot;: {</span>
-<span class="sd">                    &quot;expression&quot;: &quot;should_publish&quot;,</span>
-<span class="sd">                    &quot;actions&quot;: [&quot;go_to_press&quot;],</span>
-<span class="sd">                    &quot;facts&quot;: [&quot;should_publish&quot;]</span>
+<span class="sd">                "publish_2": {</span>
+<span class="sd">                    "expression": "should_publish",</span>
+<span class="sd">                    "actions": ["go_to_press"],</span>
+<span class="sd">                    "facts": ["should_publish"]</span>
 <span class="sd">                },</span>
-<span class="sd">                &quot;retract&quot;: {</span>
-<span class="sd">                    &quot;expression&quot;: &quot;not should_publish&quot;,</span>
-<span class="sd">                    &quot;facts&quot;: [&quot;should_retract&quot;]</span>
+<span class="sd">                "retract": {</span>
+<span class="sd">                    "expression": "not should_publish",</span>
+<span class="sd">                    "facts": ["should_retract"]</span>
 <span class="sd">                }</span>
 <span class="sd">            }</span>
 <span class="sd">        }</span>
 
 <span class="sd">    In the above, the first fact to be evaluated will always be the</span>
-<span class="sd">    top-level facts (i.e. those not encapsulated by the &#39;rules&#39; table).</span>
-<span class="sd">    The rules labeled &#39;publish_1&#39; and &#39;publish_2&#39; both rely on the</span>
-<span class="sd">    &#39;should_publish&#39; fact in their expressions, and they in turn create</span>
+<span class="sd">    top-level facts (i.e. those not encapsulated by the 'rules' table).</span>
+<span class="sd">    The rules labeled 'publish_1' and 'publish_2' both rely on the</span>
+<span class="sd">    'should_publish' fact in their expressions, and they in turn create</span>
 <span class="sd">    their own facts with the same name.  FactLookup ensures that</span>
-<span class="sd">    &#39;publish_1&#39; and &#39;publish_2&#39; will both use the evaluated fact from</span>
-<span class="sd">    the top-level &#39;facts&#39; table.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    'publish_1' and 'publish_2' will both use the evaluated fact from</span>
+<span class="sd">    the top-level 'facts' table.</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fact_names</span><span class="p">,</span> <span class="n">rules_cfg</span><span class="p">):</span>
-        <span class="c1"># For the above configuration, the &#39;self.facts&#39; attribute is a dictionary of the form:</span>
+        <span class="c1"># For the above configuration, the 'self.facts' attribute is a dictionary of the form:</span>
         <span class="c1"># {</span>
-        <span class="c1">#   &#39;should_publish&#39;: [&#39;&#39;, &#39;publish_1&#39;, &#39;publish_2&#39;],</span>
-        <span class="c1">#   &#39;should_retract&#39;: [&#39;retract&#39;]</span>
+        <span class="c1">#   'should_publish': ['', 'publish_1', 'publish_2'],</span>
+        <span class="c1">#   'should_retract': ['retract']</span>
         <span class="c1"># }</span>
         <span class="c1"># We therefore seed the dictionary entries to contain a [_TOP_LEVEL] list for all initial facts.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">facts</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">fact_names</span><span class="p">,</span> <span class="p">[</span><span class="n">_TOP_LEVEL</span><span class="p">])</span>
 
         <span class="c1"># Add new facts from rules</span>
         <span class="k">for</span> <span class="n">rule_name</span><span class="p">,</span> <span class="n">rule_cfg</span> <span class="ow">in</span> <span class="n">rules_cfg</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">fact_name</span> <span class="ow">in</span> <span class="n">rule_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;facts&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="k">for</span> <span class="n">fact_name</span> <span class="ow">in</span> <span class="n">rule_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"facts"</span><span class="p">,</span> <span class="p">[]):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">fact_name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule_name</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registered the following facts:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Registered the following facts:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FactLookup.sorted_rules">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup.sorted_rules">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sorted_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rules_cfg</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Rules sorted according to rule dependencies.</span>
 
 <span class="sd">        :type rules_cfg: dict</span>
 <span class="sd">        :arg rules_cfg: rules as specified in logic-engine configuration</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        :return: Rules to be evaluated by the rule engine.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">initial_rules</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">Rule</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cfg</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">cfg</span> <span class="ow">in</span> <span class="n">rules_cfg</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="n">dependencies</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -185,24 +185,24 @@
 
             <span class="n">ordered_dependencies</span> <span class="o">=</span> <span class="n">toposort_flatten</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">"Unexpected error!"</span><span class="p">)</span>
             <span class="k">raise</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calculated the following order for evaluating rules:</span><span class="se">\n</span><span class="si">{</span><span class="n">ordered_dependencies</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Calculated the following order for evaluating rules:</span><span class="se">\n</span><span class="si">{</span><span class="n">ordered_dependencies</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">initial_rules</span><span class="p">[</span><span class="n">rule</span><span class="p">]</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">ordered_dependencies</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="FactLookup.rule_for">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.FactLookup.FactLookup.rule_for">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">rule_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fact_name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Selects rule required to evaluate fact with the supplied name.</span>
 
 <span class="sd">        :type fact_name: str</span>
 <span class="sd">        :arg fact_name: Name of fact for which rule will be selected.</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        :returns: Rule name</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">facts</span><span class="p">[</span><span class="n">fact_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div>
 </div>
 

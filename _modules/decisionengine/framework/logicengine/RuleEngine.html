@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.logicengine.RuleEngine &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.logicengine.RuleEngine &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -98,31 +98,31 @@
 <div class="viewcode-block" id="RuleEngine">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.RuleEngine.RuleEngine">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RuleEngine</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Engine responsible for evaluating logic-engine rules.</span>
 
 <span class="sd">    This class is responsible for (a) forming a sorted set of rules</span>
 <span class="sd">    that supports dependencies between them, and (b) evaluating the</span>
 <span class="sd">    rules according to a specified fact-lookup policy.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fact_names</span><span class="p">,</span> <span class="n">rules_cfg</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fact_lookup</span> <span class="o">=</span> <span class="n">FactLookup</span><span class="p">(</span><span class="n">fact_names</span><span class="p">,</span> <span class="n">rules_cfg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fact_lookup</span><span class="o">.</span><span class="n">sorted_rules</span><span class="p">(</span><span class="n">rules_cfg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RuleEngine.execute">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.logicengine.html#decisionengine.framework.logicengine.RuleEngine.RuleEngine.execute">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evaluated_facts</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Evaluates all rules given the supplied facts.</span>
 
 <span class="sd">        :type evaluated_facts: dict</span>
 <span class="sd">        :arg evaluated_facts: Initial fact values (e.g. True or False) for each fact name.</span>
 <span class="sd">        :rtype: tuple</span>
 <span class="sd">        :returns: Actions to be taken based on rule evaluation; new facts produced during that evaluation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">facts</span> <span class="o">=</span> <span class="n">evaluated_facts</span>
         <span class="n">actions</span> <span class="o">=</span> <span class="p">{</span><span class="n">rule</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">}</span>
         <span class="n">new_facts</span> <span class="o">=</span> <span class="p">{}</span>
@@ -140,7 +140,7 @@
                     <span class="c1"># First instance of a fact with a given name receives precedence</span>
                     <span class="n">facts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">new_facts_for_rule</span><span class="p">,</span> <span class="o">**</span><span class="n">facts</span><span class="p">}</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">"Unexpected error!"</span><span class="p">)</span>
             <span class="k">raise</span>
         <span class="k">return</span> <span class="n">actions</span><span class="p">,</span> <span class="n">new_facts</span></div>
 </div>

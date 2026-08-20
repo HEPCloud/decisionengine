@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.tests.test_datablock_zlib &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.dataspace.tests.test_datablock_zlib &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
@@ -99,27 +99,27 @@
 <div class="viewcode-block" id="test_zdumps">
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock_zlib.test_zdumps">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_zdumps</span><span class="p">():</span>
-    <span class="n">zbytes</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">zdumps</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}})</span>
+    <span class="n">zbytes</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">zdumps</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}})</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">zbytes</span><span class="p">))</span>
 
-    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}}</span></div>
+    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}}</span></div>
 
 
 
 <div class="viewcode-block" id="test_zloads">
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.dataspace.tests.html#decisionengine.framework.dataspace.tests.test_datablock_zlib.test_zloads">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_zloads</span><span class="p">():</span>
-    <span class="n">zbytes</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}}))</span>
+    <span class="n">zbytes</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}}))</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">zloads</span><span class="p">(</span><span class="n">zbytes</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}}</span>
+    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}}</span>
 
-    <span class="n">zbytes</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}})</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">zloads</span><span class="p">(</span><span class="n">zbytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;latin1&quot;</span><span class="p">))</span>
-    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}}</span>
+    <span class="n">zbytes</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}})</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">zloads</span><span class="p">(</span><span class="n">zbytes</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"latin1"</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}}</span>
 
-    <span class="n">zbytes</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}})</span>
+    <span class="n">zbytes</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}})</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">zloads</span><span class="p">(</span><span class="n">zbytes</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}}</span></div>
+    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}}</span></div>
 
 
 
@@ -128,27 +128,27 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">test_compress</span><span class="p">():</span>
     <span class="n">zbytes</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;pickled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}},</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">),</span>
+            <span class="s2">"pickled"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">"value"</span><span class="p">:</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}},</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">),</span>
         <span class="p">}</span>
     <span class="p">)</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">datablock</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">zbytes</span><span class="p">))</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">zloads</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">))</span>
-    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}}</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">zloads</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value"</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}}</span>
 
     <span class="n">zbytes</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;pickled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}},</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">),</span> <span class="mi">9</span><span class="p">),</span>
+            <span class="s2">"pickled"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">"value"</span><span class="p">:</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}},</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">),</span> <span class="mi">9</span><span class="p">),</span>
         <span class="p">}</span>
     <span class="p">)</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">datablock</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">zbytes</span><span class="p">))</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">zloads</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">))</span>
-    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}}</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">datablock</span><span class="o">.</span><span class="n">zloads</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value"</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}}</span>
 
-    <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}})</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;latin1&quot;</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">({</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}})</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"latin1"</span><span class="p">)</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">datablock</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
-    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">}}</span></div>
+    <span class="k">assert</span> <span class="n">value</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"a"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"b"</span><span class="p">:</span> <span class="s2">"c"</span><span class="p">}}</span></div>
 
 </pre></div>
 

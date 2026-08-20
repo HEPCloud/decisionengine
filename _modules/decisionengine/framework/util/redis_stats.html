@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.util.redis_stats &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.util.redis_stats &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -103,18 +103,18 @@
     <span class="n">queue_to_routing_key</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1"># The exchange name is prefixed by a Kombu-provided pattern</span>
     <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">smembers</span><span class="p">(</span><span class="n">Channel</span><span class="o">.</span><span class="n">keyprefix_queue</span> <span class="o">%</span> <span class="n">exchange</span><span class="p">):</span>
-        <span class="n">matches</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;^(.*?)</span><span class="se">\x06</span><span class="s2">.*</span><span class="se">\x16</span><span class="s2">(.*)$&quot;</span><span class="p">,</span> <span class="n">member</span><span class="p">)</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">b</span><span class="s2">"^(.*?)</span><span class="se">\x06</span><span class="s2">.*</span><span class="se">\x16</span><span class="s2">(.*)$"</span><span class="p">,</span> <span class="n">member</span><span class="p">)</span>
         <span class="n">queue_to_routing_key</span><span class="p">[</span><span class="n">matches</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()]</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">queue_name</span><span class="p">,</span> <span class="n">routing_key</span> <span class="ow">in</span> <span class="n">queue_to_routing_key</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">rtype</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">queue_name</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">rtype</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">routing_key</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">,</span> <span class="s2">&quot;None&quot;</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">rtype</span> <span class="o">!=</span> <span class="s2">&quot;list&quot;</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">routing_key</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">,</span> <span class="s2">&quot;Unsupported&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">rtype</span> <span class="o">==</span> <span class="s2">"none"</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">routing_key</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">,</span> <span class="s2">"None"</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">rtype</span> <span class="o">!=</span> <span class="s2">"list"</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">routing_key</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">,</span> <span class="s2">"Unsupported"</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">routing_key</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">llen</span><span class="p">(</span><span class="n">queue_name</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">routing_key</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">llen</span><span class="p">(</span><span class="n">queue_name</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">])</span>
 
     <span class="n">result</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>  <span class="c1"># Sort in alphabetical order according to routing key</span>
     <span class="k">return</span> <span class="n">result</span></div>

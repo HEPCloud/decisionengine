@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.Module &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.modules.Module &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -101,14 +101,14 @@
 <div class="viewcode-block" id="Module">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Module.Module">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Module</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A skeleton of a module</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_of_parameters</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">set_of_parameters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span> <span class="o">=</span> <span class="n">set_of_parameters</span><span class="p">[</span><span class="s2">&quot;channel_name&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span> <span class="o">=</span> <span class="n">set_of_parameters</span><span class="p">[</span><span class="s2">"channel_name"</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">CHANNELLOGGERNAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">class_name</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_name</span><span class="p">)</span>
@@ -142,7 +142,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">produces</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">decorator_produces</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_produces</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@produces has already been called for </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"@produces has already been called for </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_produces</span> <span class="o">=</span> <span class="n">kwargs</span>
         <span class="k">return</span> <span class="bp">cls</span>
 
@@ -155,14 +155,14 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">consumes</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">decorator_consumes</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_consumes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@consumes has already been called for </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"@consumes has already been called for </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_consumes</span> <span class="o">=</span> <span class="n">kwargs</span>
         <span class="c1"># Now add product retrievers to class instance</span>
         <span class="n">user_provided_new</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">new_and_add_members</span><span class="p">(</span><span class="n">class_type</span><span class="p">,</span> <span class="n">module_parameters</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">consumer</span> <span class="o">=</span> <span class="n">user_provided_new</span><span class="p">(</span><span class="n">class_type</span><span class="p">)</span>
-            <span class="n">product_specifications</span> <span class="o">=</span> <span class="n">module_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;product_creators&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">product_specifications</span> <span class="o">=</span> <span class="n">module_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"product_creators"</span><span class="p">,</span> <span class="p">{})</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">product_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_consumes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="c1"># FIXME: Need to adjust configuration usage in next line!</span>
                 <span class="nb">setattr</span><span class="p">(</span>
@@ -191,15 +191,15 @@
     <span class="n">actual_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">actual</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="n">missing_keys</span> <span class="o">=</span> <span class="n">expected_keys</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">actual_keys</span><span class="p">)</span>
     <span class="n">extra_keys</span> <span class="o">=</span> <span class="n">actual_keys</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">expected_keys</span><span class="p">)</span>
-    <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="k">if</span> <span class="n">missing_keys</span><span class="p">:</span>
-        <span class="n">err_msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The following products were not produced:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">err_msg</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">The following products were not produced:</span><span class="se">\n</span><span class="s2">"</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">missing_keys</span><span class="p">:</span>
-            <span class="n">err_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; - &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; of type &#39;</span><span class="si">{</span><span class="n">expected</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">err_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" - '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' of type '</span><span class="si">{</span><span class="n">expected</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'</span><span class="se">\n</span><span class="s2">"</span>
     <span class="k">if</span> <span class="n">extra_keys</span><span class="p">:</span>
-        <span class="n">err_msg</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The following products were not declared:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">err_msg</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">The following products were not declared:</span><span class="se">\n</span><span class="s2">"</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">extra_keys</span><span class="p">:</span>
-            <span class="n">err_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; - &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; of type &#39;</span><span class="si">{</span><span class="n">actual</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">err_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" - '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' of type '</span><span class="si">{</span><span class="n">actual</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'</span><span class="se">\n</span><span class="s2">"</span>
     <span class="k">if</span> <span class="n">err_msg</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 
@@ -208,16 +208,16 @@
         <span class="k">if</span> <span class="n">Any</span> <span class="ow">in</span> <span class="p">(</span><span class="n">a_type</span><span class="p">,</span> <span class="n">b_type</span><span class="p">):</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="n">a_type</span> <span class="o">!=</span> <span class="n">b_type</span><span class="p">:</span>
-            <span class="n">a_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">a_type</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="n">b_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">b_type</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">a_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">a_type</span><span class="p">,</span> <span class="s2">"__name__"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">b_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">b_type</span><span class="p">,</span> <span class="s2">"__name__"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="n">mismatched_types</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">a_name</span><span class="p">,</span> <span class="n">b_name</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">mismatched_types</span><span class="p">:</span>
         <span class="k">return</span>
 
-    <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The following products have the wrong types:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">The following products have the wrong types:</span><span class="se">\n</span><span class="s2">"</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">a_type</span><span class="p">,</span> <span class="n">b_type</span> <span class="ow">in</span> <span class="n">mismatched_types</span><span class="p">:</span>
-        <span class="n">err_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; - &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; (expected &#39;</span><span class="si">{</span><span class="n">a_type</span><span class="si">}</span><span class="s2">&#39;, got &#39;</span><span class="si">{</span><span class="n">b_type</span><span class="si">}</span><span class="s2">&#39;)</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">err_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" - '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' (expected '</span><span class="si">{</span><span class="n">a_type</span><span class="si">}</span><span class="s2">', got '</span><span class="si">{</span><span class="n">b_type</span><span class="si">}</span><span class="s2">')</span><span class="se">\n</span><span class="s2">"</span>
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span></div>
 
 </pre></div>

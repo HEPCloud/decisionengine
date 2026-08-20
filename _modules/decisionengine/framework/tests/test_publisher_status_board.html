@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.test_publisher_status_board &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.tests.test_publisher_status_board &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -98,24 +98,24 @@
 <div class="viewcode-block" id="test_publisher_status_board">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.test_publisher_status_board.test_publisher_status_board">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_publisher_status_board</span><span class="p">():</span>
-    <span class="n">board</span> <span class="o">=</span> <span class="n">PublisherStatusBoard</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">])</span>
+    <span class="n">board</span> <span class="o">=</span> <span class="n">PublisherStatusBoard</span><span class="p">([</span><span class="s2">"a"</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">])</span>
     <span class="n">snapshot</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">snapshot</span><span class="p">()</span>
-    <span class="n">a1_enabled</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">a1_since</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">state</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
-    <span class="n">b1_enabled</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">b1_since</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">state</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
+    <span class="n">a1_enabled</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">a1_since</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">state</span><span class="p">(</span><span class="s2">"a"</span><span class="p">)</span>
+    <span class="n">b1_enabled</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">b1_since</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">state</span><span class="p">(</span><span class="s2">"b"</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">a1_enabled</span> <span class="ow">and</span> <span class="n">b1_enabled</span>
 
-    <span class="n">board</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">board</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">"a"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">a2_enabled</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">a2_since</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">state</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
-    <span class="n">b2_enabled</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">b2_since</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">state</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
+    <span class="n">a2_enabled</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">a2_since</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">state</span><span class="p">(</span><span class="s2">"a"</span><span class="p">)</span>
+    <span class="n">b2_enabled</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">b2_since</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">state</span><span class="p">(</span><span class="s2">"b"</span><span class="p">)</span>
     <span class="k">assert</span> <span class="ow">not</span> <span class="n">a2_enabled</span> <span class="ow">and</span> <span class="n">b2_enabled</span>
     <span class="k">assert</span> <span class="n">a2_since</span> <span class="o">&gt;</span> <span class="n">a1_since</span>
     <span class="k">assert</span> <span class="n">b2_since</span> <span class="o">==</span> <span class="n">b1_since</span>
 
-    <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;a\s+False.*b\s+True&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">snapshot</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"a\s+False.*b\s+True"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">snapshot</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
 
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">board</span><span class="o">.</span><span class="n">snapshot</span><span class="p">()</span><span class="o">.</span><span class="n">state</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">seconds</span> <span class="o">&gt;=</span> <span class="mi">2</span></div>
+    <span class="k">assert</span> <span class="n">board</span><span class="o">.</span><span class="n">snapshot</span><span class="p">()</span><span class="o">.</span><span class="n">state</span><span class="p">(</span><span class="s2">"a"</span><span class="p">)</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">seconds</span> <span class="o">&gt;=</span> <span class="mi">2</span></div>
 
 </pre></div>
 

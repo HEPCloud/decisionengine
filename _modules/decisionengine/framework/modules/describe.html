@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.describe &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.modules.describe &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -105,7 +105,7 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.Publisher._par_type">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">_par_type</span><span class="p">(</span><span class="n">par_type</span><span class="p">,</span> <span class="n">default_value</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">par_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># Take type of &#39;default&#39; argument if type is not provided.</span>
+        <span class="c1"># Take type of 'default' argument if type is not provided.</span>
         <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">default_value</span><span class="o">.</span><span class="vm">__class__</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -136,9 +136,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">_par_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_type</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;An error occurred while processing the parameter &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;The specified type &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">my_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; conflicts with the type &quot;</span>
-                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;of the default value &#39;</span><span class="si">{</span><span class="n">default</span><span class="si">}</span><span class="s2">&#39; (type &#39;</span><span class="si">{</span><span class="n">default</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+                <span class="sa">f</span><span class="s2">"An error occurred while processing the parameter '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">':</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">"The specified type '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">my_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">' conflicts with the type "</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">"of the default value '</span><span class="si">{</span><span class="n">default</span><span class="si">}</span><span class="s2">' (type '</span><span class="si">{</span><span class="n">default</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">')"</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span></div>
 
@@ -153,7 +153,7 @@
         <span class="c1"># @supports_config may be called from the base class and any</span>
         <span class="c1"># subclasses--hence why we update the the dictionary and not</span>
         <span class="c1"># create it afresh for each call.</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_supported_config&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">"_supported_config"</span><span class="p">,</span> <span class="p">{})</span>
         <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">supported_config</span><span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_supported_config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="k">return</span> <span class="bp">cls</span>
@@ -170,12 +170,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cls</span> <span class="o">=</span> <span class="bp">cls</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s2">&quot;--describe&quot;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print config. template along with produces and consumes information&quot;</span><span class="p">,</span>
+            <span class="s2">"--describe"</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">"print config. template along with produces and consumes information"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s2">&quot;--config-template&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;print the expected module configuration&quot;</span>
+            <span class="s2">"--config-template"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"print the expected module configuration"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">invoked</span> <span class="o">=</span> <span class="kc">False</span>
 

@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.engine.tests.conftest &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.engine.tests.conftest &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
@@ -96,7 +96,7 @@
 <div class="viewcode-block" id="_redis_server_running">
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.conftest._redis_server_running">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">_redis_server_running</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">socket_timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="s2">"127.0.0.1"</span><span class="p">,</span> <span class="n">socket_timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">r</span><span class="o">.</span><span class="n">ping</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -108,9 +108,9 @@
 <div class="viewcode-block" id="pytest_runtest_call">
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.engine.tests.html#decisionengine.framework.engine.tests.conftest.pytest_runtest_call">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">pytest_runtest_call</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">get_closest_marker</span><span class="p">(</span><span class="s2">&quot;redis&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">get_closest_marker</span><span class="p">(</span><span class="s2">"redis"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_redis_server_running</span><span class="p">():</span>
-            <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;No redis server running at default broker url&quot;</span><span class="p">)</span></div>
+            <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">"No redis server running at default broker url"</span><span class="p">)</span></div>
 
 </pre></div>
 

@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.util.subclasses &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.util.subclasses &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -95,9 +95,9 @@
 <div class="viewcode-block" id="_derived_class">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.subclasses._derived_class">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">_derived_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">base_class</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Only matches subclasses that are not equal to the base class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">base_class</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">base_class</span><span class="p">)</span></div>
 
 
@@ -105,9 +105,9 @@
 <div class="viewcode-block" id="all_subclasses">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.subclasses.all_subclasses">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">all_subclasses</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">base_class</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return all of a module&#39;s subclasses of the given base class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Return all of a module's subclasses of the given base class.</span>
+<span class="sd">    """</span>
     <span class="n">class_members</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">class_members</span> <span class="k">if</span> <span class="n">_derived_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">base_class</span><span class="p">)]</span></div>
 

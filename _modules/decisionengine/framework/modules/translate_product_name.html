@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.translate_product_name &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.modules.translate_product_name &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -90,20 +90,20 @@
 <span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
 
 <span class="c1"># The functionality provided here supports the translation of one</span>
-<span class="c1"># string to another using the syntax &#39;old -&gt; new&#39;, subject to the</span>
+<span class="c1"># string to another using the syntax 'old -&gt; new', subject to the</span>
 <span class="c1"># following constraints:</span>
 <span class="c1">#</span>
-<span class="c1">#   - The &#39;old&#39; and &#39;new&#39; strings may contain the following</span>
+<span class="c1">#   - The 'old' and 'new' strings may contain the following</span>
 <span class="c1">#     characters: a-z, A-Z, 0-9, and _ (underscore).</span>
 <span class="c1">#</span>
-<span class="c1">#   - If &#39;-&gt;&#39; is provided, it must be surrounded by at least one space</span>
+<span class="c1">#   - If '-&gt;' is provided, it must be surrounded by at least one space</span>
 <span class="c1">#     on either side.</span>
 <span class="c1">#</span>
 <span class="c1"># The behavior is the following:</span>
 <span class="c1">#</span>
-<span class="c1">#   - translate(&quot;old&quot;) == (&quot;old&quot;, None)</span>
-<span class="c1">#   - translate(&quot;old -&gt; new&quot;) == (&quot;old&quot;, &quot;new&quot;)</span>
-<span class="c1">#   - translate_all([&quot;old&quot;, &quot;old1 -&gt; new1&quot;]) == {&quot;old&quot;: &quot;old&quot;, &quot;old1&quot;: &quot;new1&quot;}</span>
+<span class="c1">#   - translate("old") == ("old", None)</span>
+<span class="c1">#   - translate("old -&gt; new") == ("old", "new")</span>
+<span class="c1">#   - translate_all(["old", "old1 -&gt; new1"]) == {"old": "old", "old1": "new1"}</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
@@ -111,15 +111,15 @@
 <div class="viewcode-block" id="translate">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.modules.html#decisionengine.framework.modules.translate_product_name.translate">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">translate</span><span class="p">(</span><span class="n">spec</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Break apart the string &#39;old -&gt; new&#39; into a tuple (&#39;old&#39;, &#39;new&#39;)&quot;&quot;&quot;</span>
-    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">R</span><span class="s2">&quot;(\w+)(\s+\-&gt;\s+(\w+))?&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Break apart the string 'old -&gt; new' into a tuple ('old', 'new')"""</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">fullmatch</span><span class="p">(</span><span class="sa">R</span><span class="s2">"(\w+)(\s+\-&gt;\s+(\w+))?"</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The specification &#39;</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2">&#39; does not match the supported pattern &quot;</span>
-            <span class="s1">&#39;&quot;old_name[ -&gt; new_name]&quot;,</span><span class="se">\n</span><span class="s1">&#39;</span>
-            <span class="s2">&quot;where the product names can consist of the characters a-z, a-Z, 0-9, &quot;</span>
-            <span class="s2">&quot;and an underscore &#39;_&#39;.</span><span class="se">\n</span><span class="s2">If an optional new name is specified, the &#39;-&gt;&#39; &quot;</span>
-            <span class="s2">&quot;token must be surrounded by at least</span><span class="se">\n</span><span class="s2">one space on either side.&quot;</span>
+            <span class="sa">f</span><span class="s2">"The specification '</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2">' does not match the supported pattern "</span>
+            <span class="s1">'"old_name[ -&gt; new_name]",</span><span class="se">\n</span><span class="s1">'</span>
+            <span class="s2">"where the product names can consist of the characters a-z, a-Z, 0-9, "</span>
+            <span class="s2">"and an underscore '_'.</span><span class="se">\n</span><span class="s2">If an optional new name is specified, the '-&gt;' "</span>
+            <span class="s2">"token must be surrounded by at least</span><span class="se">\n</span><span class="s2">one space on either side."</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span></div>
 

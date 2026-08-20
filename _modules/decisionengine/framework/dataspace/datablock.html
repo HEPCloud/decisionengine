@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.dataspace.datablock &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.dataspace.datablock &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -112,17 +112,17 @@
 <span class="c1"># 5) get() needs to error in case of expired data</span>
 <span class="c1">###############################################################################</span>
 
-<span class="n">_ENCODING</span> <span class="o">=</span> <span class="s2">&quot;latin1&quot;</span>
+<span class="n">_ENCODING</span> <span class="o">=</span> <span class="s2">"latin1"</span>
 
 
 <div class="viewcode-block" id="zdumps">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.zdumps">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">zdumps</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Pickle and compress</span>
 <span class="sd">    :param obj: a python object</span>
 <span class="sd">    :return: compressed string</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">),</span> <span class="mi">9</span><span class="p">)</span></div>
 
 
@@ -130,14 +130,14 @@
 <div class="viewcode-block" id="zloads">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.zloads">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">zloads</span><span class="p">(</span><span class="n">zbytes</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Decompress and unpickle</span>
 <span class="sd">    If input is not compressed</span>
 <span class="sd">    attempts to just unpickle it</span>
 
 <span class="sd">    :param zbytes: compressed bytes</span>
 <span class="sd">    :return: returns python object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">zbytes</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
@@ -151,11 +151,11 @@
 <div class="viewcode-block" id="compress">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.compress">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compress</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compress python object</span>
 <span class="sd">    :param obj: python object</span>
 <span class="sd">    :return: compressed object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">_ENCODING</span><span class="p">),</span> <span class="mi">9</span><span class="p">)</span></div>
 
 
@@ -163,11 +163,11 @@
 <div class="viewcode-block" id="decompress">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.decompress">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">decompress</span><span class="p">(</span><span class="n">zbytes</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Decompress zipped byte stream, convert to string.</span>
 <span class="sd">    :param zbytes: byte stream</span>
 <span class="sd">    :return: uncompressed string</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">zbytes</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">_ENCODING</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">zlib</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
@@ -178,9 +178,9 @@
 <div class="viewcode-block" id="InvalidMetadataError">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.InvalidMetadataError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">InvalidMetadataError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Errors due to invalid Metadata</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">pass</span></div>
 
@@ -191,13 +191,13 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Metadata</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
 
     <span class="c1"># Minimum information required for the Metadata dict to be valid</span>
-    <span class="n">required_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="s2">&quot;generation_id&quot;</span><span class="p">,</span> <span class="s2">&quot;generation_time&quot;</span><span class="p">,</span> <span class="s2">&quot;missed_update_count&quot;</span><span class="p">}</span>
+    <span class="n">required_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"taskmanager_id"</span><span class="p">,</span> <span class="s2">"state"</span><span class="p">,</span> <span class="s2">"generation_id"</span><span class="p">,</span> <span class="s2">"generation_time"</span><span class="p">,</span> <span class="s2">"missed_update_count"</span><span class="p">}</span>
 
     <span class="c1"># Valid states</span>
-    <span class="n">valid_states</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;NEW&quot;</span><span class="p">,</span> <span class="s2">&quot;START_BACKUP&quot;</span><span class="p">,</span> <span class="s2">&quot;METADATA_UPDATE&quot;</span><span class="p">,</span> <span class="s2">&quot;END_CYCLE&quot;</span><span class="p">}</span>
+    <span class="n">valid_states</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"NEW"</span><span class="p">,</span> <span class="s2">"START_BACKUP"</span><span class="p">,</span> <span class="s2">"METADATA_UPDATE"</span><span class="p">,</span> <span class="s2">"END_CYCLE"</span><span class="p">}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;NEW&quot;</span><span class="p">,</span> <span class="n">generation_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generation_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missed_update_count</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">"NEW"</span><span class="p">,</span> <span class="n">generation_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generation_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missed_update_count</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initialize Metadata object</span>
 
 <span class="sd">        :type taskmanager_id: :obj:`string`</span>
@@ -205,35 +205,35 @@
 <span class="sd">        :type generation_id: :obj:`int`</span>
 <span class="sd">        :type generation_time: :obj:`float`</span>
 <span class="sd">        :type missed_update_count: :obj:`int`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">UserDict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Metadata</span><span class="o">.</span><span class="n">valid_states</span><span class="p">:</span>
-            <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Metadata state: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid Metadata state: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">InvalidMetadataError</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">generation_time</span><span class="p">:</span>
             <span class="n">generation_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
-            <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span>
-            <span class="s2">&quot;generation_id&quot;</span><span class="p">:</span> <span class="n">generation_id</span><span class="p">,</span>
-            <span class="s2">&quot;generation_time&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">generation_time</span><span class="p">),</span>
-            <span class="s2">&quot;missed_update_count&quot;</span><span class="p">:</span> <span class="n">missed_update_count</span><span class="p">,</span>
+            <span class="s2">"taskmanager_id"</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
+            <span class="s2">"state"</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span>
+            <span class="s2">"generation_id"</span><span class="p">:</span> <span class="n">generation_id</span><span class="p">,</span>
+            <span class="s2">"generation_time"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">generation_time</span><span class="p">),</span>
+            <span class="s2">"missed_update_count"</span><span class="p">:</span> <span class="n">missed_update_count</span><span class="p">,</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="Metadata.set_state">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.Metadata.set_state">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Set the state for the Metadata</span>
 
 <span class="sd">        :type state: :obj:`string`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Metadata</span><span class="o">.</span><span class="n">valid_states</span><span class="p">:</span>
-            <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> is not a valid Metadata state&quot;</span><span class="p">)</span>
+            <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> is not a valid Metadata state"</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">InvalidMetadataError</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span></div>
 </div>
 
 
@@ -244,12 +244,12 @@
 
     <span class="c1"># Minimum information required for the Header dict to be valid</span>
     <span class="n">required_keys</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;create_time&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;expiration_time&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;scheduled_create_time&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;creator&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;schema_id&quot;</span><span class="p">,</span>
+        <span class="s2">"taskmanager_id"</span><span class="p">,</span>
+        <span class="s2">"create_time"</span><span class="p">,</span>
+        <span class="s2">"expiration_time"</span><span class="p">,</span>
+        <span class="s2">"scheduled_create_time"</span><span class="p">,</span>
+        <span class="s2">"creator"</span><span class="p">,</span>
+        <span class="s2">"schema_id"</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="c1"># Default lifetime of the data if the expiration time is not specified</span>
@@ -261,10 +261,10 @@
         <span class="n">create_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">expiration_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">scheduled_create_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">creator</span><span class="o">=</span><span class="s2">&quot;module&quot;</span><span class="p">,</span>
+        <span class="n">creator</span><span class="o">=</span><span class="s2">"module"</span><span class="p">,</span>
         <span class="n">schema_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initialize Header object</span>
 
 <span class="sd">        :type taskmanager_id: :obj:`string`</span>
@@ -273,7 +273,7 @@
 <span class="sd">        :type scheduled_create_time: :obj:`float`</span>
 <span class="sd">        :type creator: :obj:`string`</span>
 <span class="sd">        :type schema_id: :obj:`int`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">UserDict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">create_time</span><span class="p">:</span>
@@ -284,24 +284,24 @@
             <span class="n">scheduled_create_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
-            <span class="s2">&quot;create_time&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">create_time</span><span class="p">),</span>
-            <span class="s2">&quot;expiration_time&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">expiration_time</span><span class="p">),</span>
-            <span class="s2">&quot;scheduled_create_time&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">scheduled_create_time</span><span class="p">),</span>
-            <span class="s2">&quot;creator&quot;</span><span class="p">:</span> <span class="n">creator</span><span class="p">,</span>
-            <span class="s2">&quot;schema_id&quot;</span><span class="p">:</span> <span class="n">schema_id</span><span class="p">,</span>
+            <span class="s2">"taskmanager_id"</span><span class="p">:</span> <span class="n">taskmanager_id</span><span class="p">,</span>
+            <span class="s2">"create_time"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">create_time</span><span class="p">),</span>
+            <span class="s2">"expiration_time"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">expiration_time</span><span class="p">),</span>
+            <span class="s2">"scheduled_create_time"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">scheduled_create_time</span><span class="p">),</span>
+            <span class="s2">"creator"</span><span class="p">:</span> <span class="n">creator</span><span class="p">,</span>
+            <span class="s2">"schema_id"</span><span class="p">:</span> <span class="n">schema_id</span><span class="p">,</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="Header.is_valid">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.Header.is_valid">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Check if the Header has minimum required information</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">Header</span><span class="o">.</span><span class="n">required_keys</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error checking Header information&quot;</span><span class="p">)</span>
+            <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">"Unexpected error checking Header information"</span><span class="p">)</span>
             <span class="k">raise</span></div>
 </div>
 
@@ -319,7 +319,7 @@
         <span class="k">return</span> <span class="n">datablock</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Product retriever for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Product retriever for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="si">}</span><span class="s2">"</span></div>
 
 
 
@@ -327,27 +327,27 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataBlock</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataspace</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generation_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sequence_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initialize DataBlock object</span>
 
 <span class="sd">        :type dataspace: :obj:`DataSpace`</span>
 <span class="sd">        :type name: :obj:`string`</span>
 <span class="sd">        :type taskmanager_id: :obj:`string`</span>
 <span class="sd">        :type generation_id: :obj:`int`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__internal_data_write_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__internal_data_read_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">LOGGERNAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing a datablock for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">channel</span><span class="o">=</span><span class="n">DELOGGER_CHANNEL_NAME</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Initializing a datablock for </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span> <span class="o">=</span> <span class="n">dataspace</span>
 
         <span class="c1"># If taskmanager_id is None create new or</span>
         <span class="k">if</span> <span class="n">taskmanager_id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">=</span> <span class="n">taskmanager_id</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">taskmanager_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">sequence_id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span> <span class="o">=</span> <span class="n">sequence_id</span>
@@ -363,16 +363,16 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span>
-            <span class="s2">&quot;generation_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
-            <span class="s2">&quot;sequence_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
-            <span class="s2">&quot;keys&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+            <span class="s2">"taskmanager_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">taskmanager_id</span><span class="p">,</span>
+            <span class="s2">"generation_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
+            <span class="s2">"sequence_id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
+            <span class="s2">"keys"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
         <span class="p">}</span>
         <span class="n">dp</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">dp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">value</span><span class="p">[</span><span class="s2">&quot;dataproducts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dp</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">value</span><span class="p">[</span><span class="s2">"dataproducts"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dp</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>  <span class="c1"># noqa: SIM118</span>
@@ -380,7 +380,7 @@
 <div class="viewcode-block" id="DataBlock.keys">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;datablock waiting for internal read lock in &#39;keys&#39;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"datablock waiting for internal read lock in 'keys'"</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__internal_data_read_lock</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_datablock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
@@ -388,15 +388,15 @@
 <div class="viewcode-block" id="DataBlock.store_taskmanager">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.store_taskmanager">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">store_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Persist TaskManager, returns sequence number</span>
 <span class="sd">        :type taskmanager_name: :obj:`string`</span>
 <span class="sd">        :type taskmanager_id: :obj: `string`</span>
 <span class="sd">        :rtype: :obj:`int`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;datablock waiting for internal write lock in &#39;store_taskmanager&#39;&quot;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"datablock waiting for internal write lock in 'store_taskmanager'"</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__internal_data_write_lock</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;datablock waiting for internal read lock in &#39;store_taskmanager&#39;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"datablock waiting for internal read lock in 'store_taskmanager'"</span><span class="p">)</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__internal_data_read_lock</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">store_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">)</span></div>
 
@@ -404,7 +404,7 @@
 <div class="viewcode-block" id="DataBlock.get_taskmanager">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.get_taskmanager">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_taskmanager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieve TaskManager</span>
 
 <span class="sd">        Args:</span>
@@ -419,90 +419,90 @@
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">            {</span>
-<span class="sd">                &#39;datestamp&#39;: datetime.datetime(2017, 12, 20, 17, 37, 17, 503210,</span>
+<span class="sd">                'datestamp': datetime.datetime(2017, 12, 20, 17, 37, 17, 503210,</span>
 <span class="sd">                            tzinfo=psycopg2.tz.FixedOffsetTimezone(offset=-360, name=None)),</span>
-<span class="sd">                &#39;sequence_id&#39;: 135L,</span>
-<span class="sd">                &#39;name&#39;: &#39;AWS_Calculations&#39;,</span>
-<span class="sd">                &#39;taskmanager_id&#39;: &#39;77B16EB5-C79E-45B0-B1B1-37E846692E1D&#39;</span>
+<span class="sd">                'sequence_id': 135L,</span>
+<span class="sd">                'name': 'AWS_Calculations',</span>
+<span class="sd">                'taskmanager_id': '77B16EB5-C79E-45B0-B1B1-37E846692E1D'</span>
 <span class="sd">            }</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_taskmanager</span><span class="p">(</span><span class="n">taskmanager_name</span><span class="p">,</span> <span class="n">taskmanager_id</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataBlock.put">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.put">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Put data into the DataBlock</span>
 
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :type value: :obj:`dict`</span>
 <span class="sd">        :type header: :obj:`Header`</span>
 <span class="sd">        :type metadata: :obj:`Metadata`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setitem</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataBlock.get">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.get">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the value associated with the key in the database</span>
 
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :rtype: :obj:`dict`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Insert a new product into database with header and metadata</span>
 
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :type value: :obj:`dict`</span>
 <span class="sd">        :type header: :obj:`Header`</span>
 <span class="sd">        :type metadata: :obj:`Metadata`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Update an existing product in the database with header and metadata</span>
 
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :type value: :obj:`dict`</span>
 <span class="sd">        :type header: :obj:`Header`</span>
 <span class="sd">        :type metadata: :obj:`Metadata`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DataBlock._setitem">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock._setitem">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_setitem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        put a product in the database with header and metadata</span>
 
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :type value: :obj:`dict`</span>
 <span class="sd">        :type header: :obj:`Header`</span>
 <span class="sd">        :type metadata: :obj:`Metadata`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">metadata</span><span class="p">:</span>
             <span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span>
-                <span class="n">state</span><span class="o">=</span><span class="s2">&quot;NEW&quot;</span><span class="p">,</span>
+                <span class="n">state</span><span class="o">=</span><span class="s2">"NEW"</span><span class="p">,</span>
                 <span class="n">generation_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span>
                 <span class="n">generation_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
                 <span class="n">missed_update_count</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">store_value</span> <span class="o">=</span> <span class="n">compress</span><span class="p">({</span><span class="s2">&quot;pickled&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+            <span class="n">store_value</span> <span class="o">=</span> <span class="n">compress</span><span class="p">({</span><span class="s2">"pickled"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">store_value</span> <span class="o">=</span> <span class="n">compress</span><span class="p">({</span><span class="s2">&quot;pickled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;datablock waiting for internal write lock in &#39;_setitem&#39;&quot;</span><span class="p">)</span>
+            <span class="n">store_value</span> <span class="o">=</span> <span class="n">compress</span><span class="p">({</span><span class="s2">"pickled"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"datablock waiting for internal write lock in '_setitem'"</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__internal_data_write_lock</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="c1"># This has been already inserted, so you are working on a copy</span>
@@ -521,59 +521,59 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">decompress</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)))</span>
-                <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pickled&quot;</span><span class="p">):</span>
-                    <span class="n">v</span> <span class="o">=</span> <span class="n">zloads</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">))</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">decompress</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value"</span><span class="p">)))</span>
+                <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"pickled"</span><span class="p">):</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">zloads</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value"</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">v</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value"</span><span class="p">)</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">],</span>
-                        <span class="s2">&quot;generation_id&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;generation_id&quot;</span><span class="p">],</span>
-                        <span class="s2">&quot;taskmanager_id&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;taskmanager_id&quot;</span><span class="p">],</span>
-                        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span>
+                        <span class="s2">"key"</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">"key"</span><span class="p">],</span>
+                        <span class="s2">"generation_id"</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">"generation_id"</span><span class="p">],</span>
+                        <span class="s2">"taskmanager_id"</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">"taskmanager_id"</span><span class="p">],</span>
+                        <span class="s2">"value"</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span>
                     <span class="p">}</span>
                 <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unexpected error in get_dataproducts&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">"Unexpected error in get_dataproducts"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the value associated with the key in the database</span>
 
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :type default: :obj:`dict`</span>
 <span class="sd">        :rtype: :obj:`dict`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_dataproduct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">decompress</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Did not get key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; in datablock __getitem__&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Did not get key '</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">' in datablock __getitem__"</span><span class="p">)</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">default</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; in datablock __getitem__&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; in datablock __getitem__&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No key '</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">' in datablock __getitem__"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No key '</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">' in datablock __getitem__"</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pickled&quot;</span><span class="p">):</span>
-            <span class="n">return_value</span> <span class="o">=</span> <span class="n">zloads</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"pickled"</span><span class="p">):</span>
+            <span class="n">return_value</span> <span class="o">=</span> <span class="n">zloads</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value"</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">return_value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+            <span class="n">return_value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"value"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">return_value</span>
 
 <div class="viewcode-block" id="DataBlock.get_header">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.get_header">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the Header associated with the key in the database</span>
 
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :rtype: :obj:`Header`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">header_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_header</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Header</span><span class="p">(</span>
             <span class="n">header_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -588,12 +588,12 @@
 <div class="viewcode-block" id="DataBlock.get_metadata">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.get_metadata">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the metadata associated with the key in the database</span>
 
 <span class="sd">        :type key: :obj:`string`</span>
 <span class="sd">        :rtype: :obj:`Metadata`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">metadata_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataspace</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span>
             <span class="n">metadata_row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -607,7 +607,7 @@
 <div class="viewcode-block" id="DataBlock.duplicate">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.duplicate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Duplicate the datablock and return this new DataBlock. The intent is</span>
 <span class="sd">        that at the point the duplication occurs there is only information</span>
 <span class="sd">        from the sources in the DataBlock.</span>
@@ -617,9 +617,9 @@
 <span class="sd">        TODO: Make this threadsafe</span>
 
 <span class="sd">        :rtype: :obj:`DataBlock`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;datablock waiting for internal write lock in &#39;duplicate&#39;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"datablock waiting for internal write lock in 'duplicate'"</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__internal_data_write_lock</span><span class="p">:</span>
             <span class="n">dup_datablock</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">generation_id</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -630,20 +630,20 @@
 <div class="viewcode-block" id="DataBlock.is_expired">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.is_expired">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Check if the dataproduct for a given key or any key is expired</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datablock is checking for expired dataproducts&quot;</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datablock is checking for expired dataproducts"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataBlock.mark_expired">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.dataspace.html#decisionengine.framework.dataspace.datablock.DataBlock.mark_expired">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">mark_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expiration_time</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Set the expiration_time for the current generation of the dataproduct</span>
 <span class="sd">        and mark it as expired if expiration_time &lt;= current time</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;datablock is marking expired dataproducts&quot;</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"datablock is marking expired dataproducts"</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

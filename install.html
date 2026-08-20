@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -123,8 +123,8 @@ decisionengine will run as the decisionengine user.</p>
 <span class="n">GWMS_REPO</span><span class="o">=</span><span class="n">osg</span><span class="o">-</span><span class="n">development</span>
 <span class="n">dnf</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">epel</span><span class="o">-</span><span class="n">release</span> <span class="n">yum</span><span class="o">-</span><span class="n">utils</span> <span class="n">sed</span>
 <span class="n">dnf</span> <span class="n">config</span><span class="o">-</span><span class="n">manager</span> <span class="o">--</span><span class="nb">set</span><span class="o">-</span><span class="n">enabled</span> <span class="n">crb</span>
-<span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;/^enabled=1/a priority=99&#39;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">epel</span><span class="o">.</span><span class="n">repo</span>
-<span class="n">dnf</span> <span class="o">-</span><span class="n">y</span> <span class="n">install</span> <span class="s2">&quot;https://repo.osg-htc.org/osg/$OSG_VERSION-main/osg-$OSG_VERSION-main-el9-release-latest.rpm&quot;</span>
+<span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">'/^enabled=1/a priority=99'</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">epel</span><span class="o">.</span><span class="n">repo</span>
+<span class="n">dnf</span> <span class="o">-</span><span class="n">y</span> <span class="n">install</span> <span class="s2">"https://repo.osg-htc.org/osg/$OSG_VERSION-main/osg-$OSG_VERSION-main-el9-release-latest.rpm"</span>
 </pre></div>
 </div>
 </li>
@@ -137,7 +137,7 @@ decisionengine will run as the decisionengine user.</p>
 </li>
 <li><p>Install the decision engine (add <cite>–enablerepo=ssi-hepcloud-dev</cite> for the latest development version)</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DE_REPO</span><span class="o">=</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">-</span><span class="n">dev</span>
-<span class="n">dnf</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="o">--</span><span class="n">enablerepo</span><span class="o">=</span><span class="s2">&quot;$DE_REPO&quot;</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">onenode</span>
+<span class="n">dnf</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="o">--</span><span class="n">enablerepo</span><span class="o">=</span><span class="s2">"$DE_REPO"</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">onenode</span>
 <span class="c1"># Individual packages are: decisionengine-deps (framework req) decisionengine-modules-deps (modules req) decisionengine-standalone (2 deps+httpd)</span>
 </pre></div>
 </div>
@@ -258,7 +258,7 @@ dnf install iptables-nft</p>
 </li>
 <li><p>Run the Redis container</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">podman</span> <span class="n">run</span> <span class="o">--</span><span class="n">name</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">redis</span> <span class="o">-</span><span class="n">p</span> <span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="p">:</span><span class="mi">6379</span> <span class="o">-</span><span class="n">d</span> <span class="n">redis</span><span class="p">:</span><span class="mi">6</span> <span class="o">--</span><span class="n">loglevel</span> <span class="n">warning</span>
-<span class="c1"># When prompted to select an image, pick &quot;docker.io/library/redis:6&quot;.</span>
+<span class="c1"># When prompted to select an image, pick "docker.io/library/redis:6".</span>
 </pre></div>
 </div>
 </li>
@@ -269,7 +269,7 @@ dnf install iptables-nft</p>
 <p>Now you can type <code class="docutils literal notranslate"><span class="pre">decisionengine</span> <span class="pre">--help</span></code> while logged in as decisionengine to print the help message.
 To do more you need first to configure Decision Engine.</p>
 <p>Remember that all the times that you start a new shell as decisionengine you need to add the PIP binary directory to the PATH:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">&quot;~/.local/bin:$PATH&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">"~/.local/bin:$PATH"</span>
 </pre></div>
 </div>
 </section>
@@ -283,11 +283,11 @@ To do more you need first to configure Decision Engine.</p>
 Each datasource has its own unique schema and cannot be used with a different datasource.</p>
 <p><strong>The SQLAlchemy Data Source</strong></p>
 <p>SQLAlchemy is the default Data Source and is setup with a configuration like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;datasource&quot;</span><span class="p">:</span> <span class="p">{</span>
-  <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.dataspace.datasources.sqlalchemy_ds&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SQLAlchemyDS&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;postgresql://</span><span class="si">{db_user}</span><span class="s2">:</span><span class="si">{db_password}</span><span class="s2">@</span><span class="si">{db_host}</span><span class="s2">:</span><span class="si">{db_port}</span><span class="s2">/</span><span class="si">{db_dbname}</span><span class="s2">&quot;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">"datasource"</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">"module"</span><span class="p">:</span> <span class="s2">"decisionengine.framework.dataspace.datasources.sqlalchemy_ds"</span><span class="p">,</span>
+  <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"SQLAlchemyDS"</span><span class="p">,</span>
+  <span class="s2">"config"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"url"</span><span class="p">:</span> <span class="s2">"postgresql://</span><span class="si">{db_user}</span><span class="s2">:</span><span class="si">{db_password}</span><span class="s2">@</span><span class="si">{db_host}</span><span class="s2">:</span><span class="si">{db_port}</span><span class="s2">/</span><span class="si">{db_dbname}</span><span class="s2">"</span><span class="p">,</span>
     <span class="p">}</span>
   <span class="p">}</span>
 </pre></div>
@@ -303,7 +303,7 @@ Each datasource has its own unique schema and cannot be used with a different da
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># For the RPM install, as root:</span>
 <span class="n">systemctl</span> <span class="n">start</span> <span class="n">decisionengine</span>
 <span class="c1"># For the PIP install, as decisionengine user (Python packages are installed in ~decisionengine/.local/bin/):</span>
-<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">&quot;~/.local/bin:$PATH&quot;</span>
+<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">"~/.local/bin:$PATH"</span>
 <span class="n">decisionengine</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">webserver</span> <span class="o">&amp;</span>
 </pre></div>
 </div>
@@ -314,7 +314,7 @@ Each datasource has its own unique schema and cannot be used with a different da
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are in a RPM installation, as root:</span>
 <span class="n">systemctl</span> <span class="n">stop</span> <span class="n">decisionengine</span>
 <span class="c1"># If you installed via PIP, as decisionengine:</span>
-<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">&quot;~/.local/bin:$PATH&quot;</span>
+<span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">"~/.local/bin:$PATH"</span>
 <span class="n">de</span><span class="o">-</span><span class="n">client</span> <span class="o">--</span><span class="n">stop</span>
 <span class="c1"># Run the following as root (root started the container)</span>
 <span class="n">podman</span> <span class="n">stop</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">redis</span> <span class="o">|</span> <span class="n">xargs</span> <span class="n">podman</span> <span class="n">rm</span>
@@ -332,29 +332,29 @@ This test channel is using some NOP classes currently defined in the unit tests 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="n">sources</span><span class="p">:</span> <span class="p">{</span>
     <span class="n">source1</span><span class="p">:</span> <span class="p">{</span>
-      <span class="n">module</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.tests.SourceNOP&quot;</span><span class="p">,</span>
+      <span class="n">module</span><span class="p">:</span> <span class="s2">"decisionengine.framework.tests.SourceNOP"</span><span class="p">,</span>
       <span class="n">parameters</span><span class="p">:</span> <span class="p">{},</span>
       <span class="n">schedule</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="p">}</span>
   <span class="p">},</span>
   <span class="n">transforms</span><span class="p">:</span> <span class="p">{</span>
     <span class="n">transform1</span><span class="p">:</span> <span class="p">{</span>
-      <span class="n">module</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.tests.TransformNOP&quot;</span><span class="p">,</span>
+      <span class="n">module</span><span class="p">:</span> <span class="s2">"decisionengine.framework.tests.TransformNOP"</span><span class="p">,</span>
       <span class="n">parameters</span><span class="p">:</span> <span class="p">{},</span>
       <span class="n">schedule</span><span class="p">:</span> <span class="mi">1</span>
     <span class="p">}</span>
   <span class="p">},</span>
   <span class="n">logicengines</span><span class="p">:</span> <span class="p">{</span>
     <span class="n">le1</span><span class="p">:</span> <span class="p">{</span>
-      <span class="n">module</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.logicengine.LogicEngine&quot;</span><span class="p">,</span>
+      <span class="n">module</span><span class="p">:</span> <span class="s2">"decisionengine.framework.logicengine.LogicEngine"</span><span class="p">,</span>
       <span class="n">parameters</span><span class="p">:</span> <span class="p">{</span>
         <span class="n">facts</span><span class="p">:</span> <span class="p">{</span>
-          <span class="n">pass_all</span><span class="p">:</span> <span class="s2">&quot;True&quot;</span>
+          <span class="n">pass_all</span><span class="p">:</span> <span class="s2">"True"</span>
         <span class="p">},</span>
         <span class="n">rules</span><span class="p">:</span> <span class="p">{</span>
           <span class="n">r1</span><span class="p">:</span> <span class="p">{</span>
-            <span class="n">expression</span><span class="p">:</span> <span class="s1">&#39;pass_all&#39;</span><span class="p">,</span>
-            <span class="n">actions</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;publisher1&#39;</span><span class="p">]</span>
+            <span class="n">expression</span><span class="p">:</span> <span class="s1">'pass_all'</span><span class="p">,</span>
+            <span class="n">actions</span><span class="p">:</span> <span class="p">[</span><span class="s1">'publisher1'</span><span class="p">]</span>
           <span class="p">}</span>
         <span class="p">}</span>
       <span class="p">}</span>
@@ -362,7 +362,7 @@ This test channel is using some NOP classes currently defined in the unit tests 
   <span class="p">},</span>
   <span class="n">publishers</span><span class="p">:</span> <span class="p">{</span>
     <span class="n">publisher1</span><span class="p">:</span> <span class="p">{</span>
-      <span class="n">module</span><span class="p">:</span> <span class="s2">&quot;decisionengine.framework.tests.PublisherNOP&quot;</span><span class="p">,</span>
+      <span class="n">module</span><span class="p">:</span> <span class="s2">"decisionengine.framework.tests.PublisherNOP"</span><span class="p">,</span>
       <span class="n">parameters</span><span class="p">:</span> <span class="p">{}</span>
     <span class="p">}</span>
   <span class="p">}</span>
@@ -472,7 +472,7 @@ de-client –status</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#  A test Condor submission file - mytest.submit
 executable = /bin/hostname
 universe = vanilla
-+DESIRED_Sites = &quot;@CHANGEME@&quot;
++DESIRED_Sites = "@CHANGEME@"
 log = test.log
 output = test.out.$(Cluster).$(Process)
 error = test.err.$(Cluster).$(Process)

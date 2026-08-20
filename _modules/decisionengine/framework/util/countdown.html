@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.util.countdown &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.util.countdown &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -95,12 +95,12 @@
 <div class="viewcode-block" id="Countdown">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.countdown.Countdown">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Countdown</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Countdown is a context manager that keeps track of elapsed time.</span>
 
 <span class="sd">    It is designed to be used for cases where a sequence of operations</span>
 <span class="sd">    should not take longer than a specified period of time.  This is done</span>
-<span class="sd">    by occasionally querying the &#39;time_left&#39; attribute (e.g.):</span>
+<span class="sd">    by occasionally querying the 'time_left' attribute (e.g.):</span>
 
 <span class="sd">    .. code-block:: python</span>
 
@@ -115,20 +115,20 @@
 <span class="sd">    should not exceed 10 seconds.  Upon entering the countdown</span>
 <span class="sd">    context, a timer starts.  Once that context is exited, the timer</span>
 <span class="sd">    stops and the elapsed time is subtracted from the initial</span>
-<span class="sd">    &#39;wait_up_to&#39; value.  If it takes 10 seconds for the first process</span>
-<span class="sd">    to join, then the &#39;time_left&#39; value will be 0 when joining all</span>
+<span class="sd">    'wait_up_to' value.  If it takes 10 seconds for the first process</span>
+<span class="sd">    to join, then the 'time_left' value will be 0 when joining all</span>
 <span class="sd">    subsequent processes.  In this way, the entire sequence of</span>
 <span class="sd">    operations is constrained to occur in roughly 10 seconds.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait_up_to</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :type wait_up_to: float or None</span>
 <span class="sd">        :param wait_up_to: Countdown start time in seconds.  If None</span>
 <span class="sd">                           is specified, no countdown occurs and the ~time_left</span>
 <span class="sd">                           variable remains `None` (useful when needing to</span>
 <span class="sd">                           call a blocking join on a process/thread).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_left</span> <span class="o">=</span> <span class="n">wait_up_to</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_elapsed_time</span> <span class="o">=</span> <span class="kc">None</span>
 

@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.modules.tests.test_translate_product_name &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.modules.tests.test_translate_product_name &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
@@ -97,41 +97,41 @@
 <div class="viewcode-block" id="test_translate_none">
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_translate_product_name.test_translate_none">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_translate_none</span><span class="p">():</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;does not match the supported pattern&quot;</span><span class="p">):</span>
-        <span class="n">translate</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">translate</span><span class="p">(</span><span class="s2">&quot;old&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">"does not match the supported pattern"</span><span class="p">):</span>
+        <span class="n">translate</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">translate</span><span class="p">(</span><span class="s2">"old"</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="s2">"old"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="test_translate_simple">
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_translate_product_name.test_translate_simple">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_translate_simple</span><span class="p">():</span>
-    <span class="k">assert</span> <span class="n">translate</span><span class="p">(</span><span class="s2">&quot;old -&gt; new&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">)</span></div>
+    <span class="k">assert</span> <span class="n">translate</span><span class="p">(</span><span class="s2">"old -&gt; new"</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="s2">"old"</span><span class="p">,</span> <span class="s2">"new"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="test_translate_with_underscores">
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_translate_product_name.test_translate_with_underscores">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_translate_with_underscores</span><span class="p">():</span>
-    <span class="k">assert</span> <span class="n">translate</span><span class="p">(</span><span class="s2">&quot;old_v0 -&gt; new_v1&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;old_v0&quot;</span><span class="p">,</span> <span class="s2">&quot;new_v1&quot;</span><span class="p">)</span></div>
+    <span class="k">assert</span> <span class="n">translate</span><span class="p">(</span><span class="s2">"old_v0 -&gt; new_v1"</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="s2">"old_v0"</span><span class="p">,</span> <span class="s2">"new_v1"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="test_translate_illegal_characters">
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_translate_product_name.test_translate_illegal_characters">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_translate_illegal_characters</span><span class="p">():</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;does not match the supported pattern&quot;</span><span class="p">):</span>
-        <span class="n">translate</span><span class="p">(</span><span class="s2">&quot;old-v0 -&gt; new-v1&quot;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;does not match the supported pattern&quot;</span><span class="p">):</span>
-        <span class="n">translate</span><span class="p">(</span><span class="s2">&quot;old-&lt;3=-&gt;=new-&lt;3&quot;</span><span class="p">)</span></div>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">"does not match the supported pattern"</span><span class="p">):</span>
+        <span class="n">translate</span><span class="p">(</span><span class="s2">"old-v0 -&gt; new-v1"</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">"does not match the supported pattern"</span><span class="p">):</span>
+        <span class="n">translate</span><span class="p">(</span><span class="s2">"old-&lt;3=-&gt;=new-&lt;3"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="test_translate_all">
 <a class="viewcode-back" href="../../../../../code/decisionengine.framework.modules.tests.html#decisionengine.framework.modules.tests.test_translate_product_name.test_translate_all">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_translate_all</span><span class="p">():</span>
-    <span class="n">specs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="s2">&quot;old1 -&gt; new1&quot;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">translate_all</span><span class="p">(</span><span class="n">specs</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;old&quot;</span><span class="p">:</span> <span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="s2">&quot;old1&quot;</span><span class="p">:</span> <span class="s2">&quot;new1&quot;</span><span class="p">}</span></div>
+    <span class="n">specs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"old"</span><span class="p">,</span> <span class="s2">"old1 -&gt; new1"</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">translate_all</span><span class="p">(</span><span class="n">specs</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"old"</span><span class="p">:</span> <span class="s2">"old"</span><span class="p">,</span> <span class="s2">"old1"</span><span class="p">:</span> <span class="s2">"new1"</span><span class="p">}</span></div>
 
 </pre></div>
 

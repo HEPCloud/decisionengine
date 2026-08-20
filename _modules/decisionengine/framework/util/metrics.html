@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.util.metrics &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.util.metrics &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -93,16 +93,16 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">prometheus_client.multiprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiProcessCollector</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Gauge&quot;</span><span class="p">,</span> <span class="s2">&quot;Counter&quot;</span><span class="p">,</span> <span class="s2">&quot;Histogram&quot;</span><span class="p">,</span> <span class="s2">&quot;Summary&quot;</span><span class="p">,</span> <span class="s2">&quot;display_metrics&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Gauge"</span><span class="p">,</span> <span class="s2">"Counter"</span><span class="p">,</span> <span class="s2">"Histogram"</span><span class="p">,</span> <span class="s2">"Summary"</span><span class="p">,</span> <span class="s2">"display_metrics"</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="Gauge">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.metrics.Gauge">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Gauge</span><span class="p">(</span><span class="n">prometheus_client</span><span class="o">.</span><span class="n">Gauge</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Override prometheus client Gauge so that muliproccess_mode &#39;liveall&quot; is</span>
-<span class="sd">    the default as opposed to &#39;all&#39;&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Override prometheus client Gauge so that muliproccess_mode 'liveall" is</span>
+<span class="sd">    the default as opposed to 'all'"""</span>
 
-    <span class="n">_DEFAULT_MULTIPROC_MODE</span> <span class="o">=</span> <span class="s2">&quot;liveall&quot;</span>
+    <span class="n">_DEFAULT_MULTIPROC_MODE</span> <span class="o">=</span> <span class="s2">"liveall"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__determine_multiprocess_mode_existence</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -111,7 +111,7 @@
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">multiprocess_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_DEFAULT_MULTIPROC_MODE</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__determine_multiprocess_mode_existence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s2">&quot;multiprocess_mode&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"multiprocess_mode"</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MULTIPROC_MODES</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span></div>
 

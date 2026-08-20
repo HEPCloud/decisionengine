@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.util.reaper &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.util.reaper &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -91,21 +91,21 @@
 <span class="c1"># SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC</span>
 <span class="c1"># SPDX-License-Identifier: Apache-2.0</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">A stand-alone script purges data in database older than specified</span>
 <span class="sd">in configuration. Configuration file has to have this bit added:</span>
 
 <span class="sd">    .. code-block:: json</span>
 
 <span class="sd">        {</span>
-<span class="sd">            &quot;dataspace&quot; : {</span>
-<span class="sd">                &quot;retention_interval_in_days&quot; : 365,</span>
-<span class="sd">                &quot;datasource&quot; :  {}</span>
+<span class="sd">            "dataspace" : {</span>
+<span class="sd">                "retention_interval_in_days" : 365,</span>
+<span class="sd">                "datasource" :  {}</span>
 <span class="sd">            }</span>
 <span class="sd">        }</span>
 
 <span class="sd">Can be used in a cron job.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pwd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
@@ -120,8 +120,8 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.util.html#decisionengine.framework.util.reaper.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
     <span class="n">username</span> <span class="o">=</span> <span class="n">pwd</span><span class="o">.</span><span class="n">getpwuid</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">())</span><span class="o">.</span><span class="n">pw_name</span>
-    <span class="k">if</span> <span class="n">username</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="s2">&quot;decisionengine&quot;</span><span class="p">]:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;User &#39;</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">&#39; is not allowed to run this script.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">username</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"root"</span><span class="p">,</span> <span class="s2">"decisionengine"</span><span class="p">]:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="sa">f</span><span class="s2">"User '</span><span class="si">{</span><span class="n">username</span><span class="si">}</span><span class="s2">' is not allowed to run this script."</span><span class="p">)</span>
 
     <span class="n">config_file</span> <span class="o">=</span> <span class="n">policies</span><span class="o">.</span><span class="n">global_config_file</span><span class="p">()</span>
     <span class="n">global_config</span> <span class="o">=</span> <span class="n">ValidConfig</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
@@ -130,7 +130,7 @@
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 

@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>decisionengine.framework.tests.ModuleProgramOptions &mdash; decisionengine 2.0.6rc2.dev19+gb95e2636b documentation</title>
+  <title>decisionengine.framework.tests.ModuleProgramOptions &mdash; decisionengine 2.0.6rc2.dev20+g647aadde6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=13a4ca83"></script>
+      <script src="../../../../_static/documentation_options.js?v=2ba9d1cc"></script>
       <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -103,13 +103,13 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_run_as_main</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">program_options</span><span class="p">):</span>
     <span class="n">my_env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">de_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">decisionengine</span><span class="o">.</span><span class="vm">__file__</span><span class="p">))</span>
-    <span class="k">if</span> <span class="s2">&quot;PYTHONPATH&quot;</span> <span class="ow">in</span> <span class="n">my_env</span><span class="p">:</span>
-        <span class="n">my_env</span><span class="p">[</span><span class="s2">&quot;PYTHONPATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">my_env</span><span class="p">[</span><span class="s1">&#39;PYTHONPATH&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">de_path</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="s2">"PYTHONPATH"</span> <span class="ow">in</span> <span class="n">my_env</span><span class="p">:</span>
+        <span class="n">my_env</span><span class="p">[</span><span class="s2">"PYTHONPATH"</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">my_env</span><span class="p">[</span><span class="s1">'PYTHONPATH'</span><span class="p">]</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">de_path</span><span class="si">}</span><span class="s2">"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">my_env</span><span class="p">[</span><span class="s2">&quot;PYTHONPATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">de_path</span>
+        <span class="n">my_env</span><span class="p">[</span><span class="s2">"PYTHONPATH"</span><span class="p">]</span> <span class="o">=</span> <span class="n">de_path</span>
 
     <span class="n">rc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;decisionengine.framework.tests.&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">program_options</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s2">"-m"</span><span class="p">,</span> <span class="s2">"decisionengine.framework.tests."</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">program_options</span><span class="p">],</span>
         <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
         <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
         <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -123,7 +123,7 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._normalize">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">_normalize</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
     <span class="c1"># Replace multiple whitespaces with one whitespace</span>
-    <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">())</span></div>
+    <span class="k">return</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">())</span></div>
 
 
 
@@ -136,13 +136,13 @@
 <div class="viewcode-block" id="Help.test">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions.Help.test">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">has_sample_config</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;--help&quot;</span><span class="p">)</span>
+        <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"--help"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span>
 
-        <span class="n">simple_stdout</span> <span class="o">=</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;optional arguments:&quot;</span><span class="p">,</span> <span class="s2">&quot;options:&quot;</span><span class="p">)</span>
+        <span class="n">simple_stdout</span> <span class="o">=</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"optional arguments:"</span><span class="p">,</span> <span class="s2">"options:"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">simple_stdout</span>
 
-        <span class="k">if</span> <span class="s2">&quot;Source&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"Source"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
             <span class="n">check_text</span> <span class="o">=</span> <span class="n">_expected_source_help</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">has_sample_config</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">check_text</span> <span class="o">=</span> <span class="n">_expected_help</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -156,12 +156,12 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._expected_help">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">_expected_help</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="n">help_msg</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;usage: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.py [-h] [--describe] [--config-template] &quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;options:&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;  -h, --help         show this help message and exit&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;  --describe         print config. template along with produces and consumes&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;                     information&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;  --config-template  print the expected module configuration&quot;</span>
+        <span class="sa">f</span><span class="s2">"usage: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.py [-h] [--describe] [--config-template] "</span>
+        <span class="o">+</span> <span class="s2">"options:"</span>
+        <span class="o">+</span> <span class="s2">"  -h, --help         show this help message and exit"</span>
+        <span class="o">+</span> <span class="s2">"  --describe         print config. template along with produces and consumes"</span>
+        <span class="o">+</span> <span class="s2">"                     information"</span>
+        <span class="o">+</span> <span class="s2">"  --config-template  print the expected module configuration"</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">help_msg</span><span class="p">)</span></div>
 
@@ -170,22 +170,22 @@
 <div class="viewcode-block" id="_expected_source_help">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._expected_source_help">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">_expected_source_help</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">has_sample_config</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">help_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;usage: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.py [-h] [--describe] [--config-template] [-c &lt;channel config. file&gt;] &quot;</span>
+    <span class="n">help_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"usage: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.py [-h] [--describe] [--config-template] [-c &lt;channel config. file&gt;] "</span>
     <span class="k">if</span> <span class="n">has_sample_config</span><span class="p">:</span>
-        <span class="n">help_msg</span> <span class="o">+=</span> <span class="s2">&quot;[-s] &quot;</span>
-    <span class="n">help_msg</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;options:</span>
+        <span class="n">help_msg</span> <span class="o">+=</span> <span class="s2">"[-s] "</span>
+    <span class="n">help_msg</span> <span class="o">+=</span> <span class="s2">"""options:</span>
 <span class="s2">  -h, --help            show this help message and exit</span>
 <span class="s2">  --describe            print config. template along with produces and</span>
 <span class="s2">                        consumes information</span>
 <span class="s2">  --config-template  print the expected module configuration</span>
 <span class="s2">  -c &lt;channel config. file&gt;, --acquire-with-config &lt;channel config. file&gt;</span>
-<span class="s2">                        run the &#39;acquire&#39; method of the source as configured</span>
-<span class="s2">                        in the &#39;sources&#39; block of the full channel</span>
-<span class="s2">                        configuration &quot;&quot;&quot;</span>
+<span class="s2">                        run the 'acquire' method of the source as configured</span>
+<span class="s2">                        in the 'sources' block of the full channel</span>
+<span class="s2">                        configuration """</span>
     <span class="k">if</span> <span class="n">has_sample_config</span><span class="p">:</span>
-        <span class="n">help_msg</span> <span class="o">+=</span> <span class="s2">&quot;&quot;&quot;-s, --acquire-with-sample-config</span>
-<span class="s2">                        run the &#39;acquire&#39; method using the default</span>
-<span class="s2">                        configuration provided by the module&quot;&quot;&quot;</span>
+        <span class="n">help_msg</span> <span class="o">+=</span> <span class="s2">"""-s, --acquire-with-sample-config</span>
+<span class="s2">                        run the 'acquire' method using the default</span>
+<span class="s2">                        configuration provided by the module"""</span>
 
     <span class="k">return</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">help_msg</span><span class="p">)</span></div>
 
@@ -200,7 +200,7 @@
 <div class="viewcode-block" id="ConfigTemplate.test">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions.ConfigTemplate.test">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">has_comments</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;--config-template&quot;</span><span class="p">)</span>
+        <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"--config-template"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">has_comments</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span> <span class="o">==</span> <span class="n">_expected_config_template_with_comments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -214,13 +214,13 @@
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._expected_config_template">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">_expected_config_template</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span>
-        <span class="s2">&quot;Supported channel configuration:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;  &lt;module name&gt;: {</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;    module: &#39;decisionengine.framework.tests.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;,</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;    name: &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;,  # optional - can be inferred by framework</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;    parameters: {</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;    }</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;  }&quot;</span>
+        <span class="s2">"Supported channel configuration:</span><span class="se">\n\n</span><span class="s2">"</span>
+        <span class="o">+</span> <span class="s2">"  &lt;module name&gt;: {</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">"    module: 'decisionengine.framework.tests.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">',</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">"    name: '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">',  # optional - can be inferred by framework</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="o">+</span> <span class="s2">"    parameters: {</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="o">+</span> <span class="s2">"    }</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="o">+</span> <span class="s2">"  }"</span>
     <span class="p">)</span></div>
 
 
@@ -228,29 +228,29 @@
 <div class="viewcode-block" id="_expected_config_template_with_comments">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._expected_config_template_with_comments">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">_expected_config_template_with_comments</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="n">printout</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Supported channel configuration:</span>
+    <span class="n">printout</span> <span class="o">=</span> <span class="s2">"""Supported channel configuration:</span>
 
 <span class="s2">  &lt;module name&gt;: {</span>
-<span class="s2">    module: &#39;decisionengine.framework.tests.SupportsConfigPublisher&#39;,</span>
-<span class="s2">    name: &#39;SupportsConfig&#39;,  # optional - can be inferred by framework</span>
+<span class="s2">    module: 'decisionengine.framework.tests.SupportsConfigPublisher',</span>
+<span class="s2">    name: 'SupportsConfig',  # optional - can be inferred by framework</span>
 <span class="s2">    parameters: {</span>
-<span class="s2">      no_type: &lt;type &#39;unknown&#39;&gt;,</span>
-<span class="s2">      only_type: &lt;type &#39;int&#39;&gt;,</span>
+<span class="s2">      no_type: &lt;type 'unknown'&gt;,</span>
+<span class="s2">      only_type: &lt;type 'int'&gt;,</span>
 <span class="s2">      default_only: 2.5,  # default value</span>
 <span class="s2">      convert_to: 3,  # default value</span>
-<span class="s2">      comment: &lt;type &#39;str&#39;&gt;,</span>
-<span class="s2">      comment_with_nl: &lt;type &#39;str&#39;&gt;,</span>
+<span class="s2">      comment: &lt;type 'str'&gt;,</span>
+<span class="s2">      comment_with_nl: &lt;type 'str'&gt;,</span>
 <span class="s2">    }</span>
 <span class="s2">  }</span>
 
 <span class="s2">where</span>
 
-<span class="s2">  default_only (type &#39;float&#39;)</span>
-<span class="s2">  convert_to (type &#39;int&#39;)</span>
-<span class="s2">  comment (type &#39;str&#39;) - Single-line comment</span>
-<span class="s2">  comment_with_nl (type &#39;str&#39;)</span>
+<span class="s2">  default_only (type 'float')</span>
+<span class="s2">  convert_to (type 'int')</span>
+<span class="s2">  comment (type 'str') - Single-line comment</span>
+<span class="s2">  comment_with_nl (type 'str')</span>
 
-<span class="s2">    Comment with newline&quot;&quot;&quot;</span>
+<span class="s2">    Comment with newline"""</span>
     <span class="k">return</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">printout</span><span class="p">)</span></div>
 
 
@@ -264,13 +264,13 @@
 <div class="viewcode-block" id="Describe.test">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions.Describe.test">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">consumes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">produces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;--describe&quot;</span><span class="p">)</span>
+        <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"--describe"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span>
-        <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="k">if</span> <span class="n">consumes</span><span class="p">:</span>
-            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;The following products are consumed:</span><span class="se">\n\n</span><span class="s2"> - </span><span class="si">{</span><span class="n">consumes</span><span class="si">}</span><span class="s2"> (type &#39;DataFrame&#39;)</span><span class="se">\n\n\n</span><span class="s2">&quot;</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"The following products are consumed:</span><span class="se">\n\n</span><span class="s2"> - </span><span class="si">{</span><span class="n">consumes</span><span class="si">}</span><span class="s2"> (type 'DataFrame')</span><span class="se">\n\n\n</span><span class="s2">"</span>
         <span class="k">if</span> <span class="n">produces</span><span class="p">:</span>
-            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;The following products are produced:</span><span class="se">\n\n</span><span class="s2"> - </span><span class="si">{</span><span class="n">produces</span><span class="si">}</span><span class="s2"> (type &#39;DataFrame&#39;)</span><span class="se">\n\n\n</span><span class="s2">&quot;</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"The following products are produced:</span><span class="se">\n\n</span><span class="s2"> - </span><span class="si">{</span><span class="n">produces</span><span class="si">}</span><span class="s2"> (type 'DataFrame')</span><span class="se">\n\n\n</span><span class="s2">"</span>
         <span class="n">description</span> <span class="o">+=</span> <span class="n">_expected_config_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">stdout</span> <span class="o">==</span> <span class="n">description</span></div>
 </div>
@@ -287,8 +287,8 @@
 <div class="viewcode-block" id="DescribeAlias.test">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions.DescribeAlias.test">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">alias_rc</span><span class="p">,</span> <span class="n">alias_stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias</span><span class="p">,</span> <span class="s2">&quot;--describe&quot;</span><span class="p">)</span>
-        <span class="n">orig_rc</span><span class="p">,</span> <span class="n">orig_stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original</span><span class="p">,</span> <span class="s2">&quot;--describe&quot;</span><span class="p">)</span>
+        <span class="n">alias_rc</span><span class="p">,</span> <span class="n">alias_stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alias</span><span class="p">,</span> <span class="s2">"--describe"</span><span class="p">)</span>
+        <span class="n">orig_rc</span><span class="p">,</span> <span class="n">orig_stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original</span><span class="p">,</span> <span class="s2">"--describe"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">alias_rc</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="k">assert</span> <span class="n">orig_rc</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="k">assert</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">alias_stdout</span><span class="p">)</span> <span class="o">==</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">orig_stdout</span><span class="p">)</span></div>
@@ -304,39 +304,39 @@
 
 <div class="viewcode-block" id="AcquireWithConfig.test">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions.AcquireWithConfig.test">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">byte_str</span><span class="p">,</span> <span class="n">expected_stderr</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.jsonnet&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">byte_str</span><span class="p">,</span> <span class="n">expected_stderr</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">".jsonnet"</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file</span><span class="p">:</span>
             <span class="n">config_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">byte_str</span><span class="p">)</span>
             <span class="n">config_file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="n">config_file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;--acquire-with-config&quot;</span><span class="p">,</span> <span class="n">config_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"--acquire-with-config"</span><span class="p">,</span> <span class="n">config_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">expected_stderr</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">1</span>
                 <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">expected_stderr</span><span class="p">,</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stderr</span><span class="p">),</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span>
-                <span class="k">assert</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span> <span class="o">==</span> <span class="n">_expected_acquire_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">config_file</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">)</span></div>
+                <span class="k">assert</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span> <span class="o">==</span> <span class="n">_expected_acquire_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">config_file</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"test"</span><span class="p">)</span></div>
 </div>
 
 
 
 <div class="viewcode-block" id="_expected_acquire_result">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions._expected_acquire_result">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">_expected_acquire_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">channel_name</span><span class="o">=</span><span class="s2">&quot;test1&quot;</span><span class="p">):</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_expected_acquire_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">channel_name</span><span class="o">=</span><span class="s2">"test1"</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="k">if</span> <span class="n">config_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Running acquire for source </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> using default configuration:&quot;</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"Running acquire for source </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> using default configuration:"</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Running acquire for source </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> using configuration from </span><span class="si">{</span><span class="n">config_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:&quot;</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"Running acquire for source </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> using configuration from </span><span class="si">{</span><span class="n">config_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:"</span>
     <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span>
-        <span class="s2">&quot; {&#39;channel_name&#39;: &quot;</span>
-        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;, &#39;multiplier&#39;:  &quot;</span>
-        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">multiplier</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;} Produced products: {&#39;foo&#39;:      col1  col2 &quot;</span>
-        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;0  value1   </span><span class="si">{</span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">multiplier</span><span class="si">}</span><span class="s2"> &quot;</span>
-        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;1  value2   </span><span class="si">{</span><span class="mf">2.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">multiplier</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+        <span class="s2">" {'channel_name': "</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">channel_name</span><span class="si">}</span><span class="s2">'"</span>
+        <span class="o">+</span> <span class="s2">", 'multiplier':  "</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">multiplier</span><span class="si">}</span><span class="s2">"</span>
+        <span class="o">+</span> <span class="s2">"} Produced products: {'foo':      col1  col2 "</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">"0  value1   </span><span class="si">{</span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">multiplier</span><span class="si">}</span><span class="s2"> "</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">"1  value2   </span><span class="si">{</span><span class="mf">2.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">multiplier</span><span class="si">}</span><span class="s2">"</span>
+        <span class="o">+</span> <span class="s2">"}"</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
@@ -351,7 +351,7 @@
 <div class="viewcode-block" id="AcquireWithSampleConfig.test">
 <a class="viewcode-back" href="../../../../code/decisionengine.framework.tests.html#decisionengine.framework.tests.ModuleProgramOptions.AcquireWithSampleConfig.test">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;--acquire-with-sample-config&quot;</span><span class="p">)</span>
+        <span class="n">rc</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_run_as_main</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"--acquire-with-sample-config"</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">rc</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="k">assert</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span> <span class="o">==</span> <span class="n">_expected_acquire_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 </div>
