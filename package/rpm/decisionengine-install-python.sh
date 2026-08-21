@@ -164,6 +164,18 @@ get_version() {
 do_install_pre() {
     # Update pip
     pip install --upgrade pip
+    # Python libraries and binaries will be installed by pip under $HOME/.local/ (bin, lib, ...)
+    python_root=$(pip show pip | grep "^Location" | cut -d ' ' -f 2)
+    python_root=${python_root%/lib/python*}
+    export PATH="$python_root/bin:$PATH"
+    # Adding the path to the user bashrc
+    rc_file="$(getent passwd "$DE_USER" | cut -d: -f6 )/.bashrc"
+    if ! grep DE_LOCAL_PATH "$rc_file" &> /dev/null; then
+      cat << EOF > "$rc_file"
+# Adding DE_LOCAL_PATH to the $DE_USER path
+export PATH="$python_root/bin:\$PATH"
+EOF
+    fi
     # setuptools>71 incompatible w/ packaging <22, https://github.com/pypa/setuptools/issues/4483
     pip install --upgrade setuptools wheel setuptools-scm[toml] packaging
 }
@@ -172,12 +184,12 @@ do_install() {
     retv=0
     if [[ "$INSTALL_TYPE" = "pypi" ]]; then
         local pip_de_ref pip_dem_ref
-	[[ -z "$DE_GIT_REF" ]] || pip_de_ref="==${DE_GIT_REF#@}"
-	[[ -z "$DEM_GIT_REF" ]] || pip_dem_ref="==${DEM_GIT_REF#@}"
+        [[ -z "$DE_GIT_REF" ]] || pip_de_ref="==${DE_GIT_REF#@}"
+        [[ -z "$DEM_GIT_REF" ]] || pip_dem_ref="==${DEM_GIT_REF#@}"
         $VERBOSE && echo "Installing via pip hepcloud-de ${DE_GIT_REF#@}" || true
         pip install hepcloud-de${pip_de_ref} || retv=1
         $VERBOSE && echo "Installing via pip hepcloud-de-modules ${DEM_GIT_REF#@}" || true
-	pip install hepcloud-de-modules${pip_dem_ref} || retv=1
+        pip install hepcloud-de-modules${pip_dem_ref} || retv=1
         return $retv
     fi
     # Install the Python modules via pip
@@ -185,7 +197,7 @@ do_install() {
     pip install "git+$DE_FROM$DE_GIT_REF" || retv=1
     $VERBOSE && echo "Installing via pip git+$DEM_FROM$DEM_GIT_REF" || true
     pip install "git+$DEM_FROM$DEM_GIT_REF" || retv=1
-    # Double check that pip added $HOME/.local/bin to the PATH of user decisionengine
+    # $HOME/.local/bin added above to the PATH of user decisionengine
     return $retv
 }
 
@@ -249,7 +261,7 @@ _main() {
             [[ -n "$DEM_DIR" ]] || DEM_DIR="$src_tmpdir"/decisionengine_modules
         fi
         clone_repo "$DE_DIR" "$DE_GIT" "$DE_GIT_REF"
-	clone_repo "$DEM_DIR" "$DEM_GIT" "$DEM_GIT_REF"
+        clone_repo "$DEM_DIR" "$DEM_GIT" "$DEM_GIT_REF"
     fi
 
     # Robust absolute path
@@ -272,7 +284,7 @@ _main() {
         $VERBOSE && echo "Preparing for remote install from PyPI" || true
     else
         echo "Error: $INSTALL_TYPE not supported. Aborting"
-	help_msg
+        help_msg
         exit 1
     fi
 
