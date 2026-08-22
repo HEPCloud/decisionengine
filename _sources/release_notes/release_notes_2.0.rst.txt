@@ -4,23 +4,78 @@
 Release 2.0.6
 -------------
 
-This improves separation and compatibility with the GlideinWMS Frontend package.
+This release improves separation and compatibility with the GlideinWMS Frontend package.
+It also simplifies and streamlines the installation, setup and control process.
 
 Issues fixed in this release
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Enhancements:
 
+- `DE 731 <https://github.com/HEPCloud/decisionengine/pull/731>`_: Actions update and new init script (@mambelli)
+- `DE 730 <https://github.com/HEPCloud/decisionengine/pull/730>`_: Install postgresql from Alma9 repos (@vitodb)
+- `DE 729 <https://github.com/HEPCloud/decisionengine/pull/729>`_: Updated versions of used GH actions (@mambelli)
+- `DE 728 <https://github.com/HEPCloud/decisionengine/pull/728>`_: Added label to CREATE_CHANNEL_HISTOGRAM and PRINT_PRODUCT_HISTOGRAM (@shreyb)
+- `DE 727 <https://github.com/HEPCloud/decisionengine/pull/727>`_: Move metrics measurements in DecisionEngine class (@shreyb)
+- `DE 726 <https://github.com/HEPCloud/decisionengine/pull/726>`_: Added DE and DEM init/setup scripts (@mambelli)
+- `DE 725 <https://github.com/HEPCloud/decisionengine/pull/725>`_: Update install instructions (@vitodb)
+- `DE 724 <https://github.com/HEPCloud/decisionengine/pull/724>`_: Update file name pattern to archive hepcloud_de whl artifacts (@vitodb)
+- `DE 723 <https://github.com/HEPCloud/decisionengine/pull/723>`_: Improved documentation and added PyPI release (build/install) support 2.0.6 RC1 (@mambelli)
 - `DE 721 <https://github.com/HEPCloud/decisionengine/pull/721>`_: Update Dockerfile and entrypoint to be able to build RPMs and wheels on Jenkins (@vitodb)
 - `DE 720 <https://github.com/HEPCloud/decisionengine/pull/720>`_: Added option to prepare for OSG release to make_release (@mambelli)
 - `DE 719 <https://github.com/HEPCloud/decisionengine/pull/719>`_: Update CI related Dockerfile and Jenkins pipeline (@vitodb)
 - `DE 718 <https://github.com/HEPCloud/decisionengine/pull/718>`_: Release 2.0.4  (@mambelli)
 
-
-
 Full list of commits since version 2.0.4
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+`c587f065c <https://github.com/HEPCloud/decisionengine/commit/c587f065c4e82e424ad348bac63934f69c0ecf05>`_:   Updated uv.lock with test install via `uv sync` on Alma9 build host
+
+`0120c9dc1 <https://github.com/HEPCloud/decisionengine/commit/0120c9dc18b2a683b705d72997b61fbb07c32e1e>`_:   Adding ~decisionengine/.local/bin to the PATH
+
+`647aadde6 <https://github.com/HEPCloud/decisionengine/commit/647aadde6773a7ba9dfd9d8707a36cc689b482e4>`_:   Added service requirements for httpd, postgresql and condor
+
+`b95e2636b <https://github.com/HEPCloud/decisionengine/commit/b95e2636baf6ff89fe40cb6b74ce4ac1e1f9a813>`_:   Updated OSG release to new host and directory
+
+`5c7d67193 <https://github.com/HEPCloud/decisionengine/commit/5c7d6719315daf5803c288eaaa4d12d445d0a980>`_:   Added sysconfig variables to preserve
+
+`c9949bb68 <https://github.com/HEPCloud/decisionengine/commit/c9949bb68ca4b3e95864156fe383af9145747564>`_:   [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+`8d1db4131 <https://github.com/HEPCloud/decisionengine/commit/8d1db4131be0a78f3be329b68cb403e85eb300f5>`_:   Updated actions versions
+
+`40273e7d4 <https://github.com/HEPCloud/decisionengine/commit/40273e7d4ff51615bc48f5235be263634773d861>`_:   updated systemclt service with pre-service script
+
+`ccc7f81c3 <https://github.com/HEPCloud/decisionengine/commit/ccc7f81c30a9f81339e9e3790468dee9e7fe3d6d>`_:   Drop postgresql version requirement, we are good with the default version
+
+`858dadc5f <https://github.com/HEPCloud/decisionengine/commit/858dadc5f94540067a8e96f0d194de53da697ed6>`_:   Install postgresql from Alma9 repos
+
+`7545efb50 <https://github.com/HEPCloud/decisionengine/commit/7545efb50a95d66db4f2a1664ae405b6f45c5862>`_:   Updated versions of used GH actions
+
+`6acf200e1 <https://github.com/HEPCloud/decisionengine/commit/6acf200e1ed80ed8df28bd32f72be5fae03eea6c>`_:   Fixed wrong parameter parsing in grep in the wrapper script
+
+`72f852c25 <https://github.com/HEPCloud/decisionengine/commit/72f852c25e6b309d50d52bd4ec5f97e6bdc01e20>`_:   Added missing file to DE RPM file list
+
+`5138bef79 <https://github.com/HEPCloud/decisionengine/commit/5138bef79cf00a44a1a0423cff0268822dc97a67>`_:   Added label to CREATE_CHANNEL_HISTOGRAM and PRINT_PRODUCT_HISTOGRAM
+
+`c1fabaf10 <https://github.com/HEPCloud/decisionengine/commit/c1fabaf10e9003910503b894545143bbaff82ea9>`_:   Fix wrong install dir for init script
+
+`9b63a911b <https://github.com/HEPCloud/decisionengine/commit/9b63a911b1e08f932caa74a170205e2bf89e169d>`_:   Added DE and DEM init/setup scripts
+
+`266169a7b <https://github.com/HEPCloud/decisionengine/commit/266169a7b80efff0c39e33c5e50622e8ac8b01eb>`_:   Moved metrics measurements to non-rpc calls where appropriate so that we're measuring the operation whether or not it's initiated through an RPC call
+
+`be4e807b0 <https://github.com/HEPCloud/decisionengine/commit/be4e807b050c07384e88c4fb57ef95fb425f08ec>`_:   Update install instructions
+
+`674506eb3 <https://github.com/HEPCloud/decisionengine/commit/674506eb30a6aa128ff2681089c74095c4e6f980>`_:   Fixed the script wrapper to correctly find the decisionengine home directory and installed scripts
+
+`7655b198b <https://github.com/HEPCloud/decisionengine/commit/7655b198bed5c2ab57ed9a59ab4f2a00d1832cbc>`_:   Update file name pattern to archive hepcloud whl artifacts
+
+`495b96389 <https://github.com/HEPCloud/decisionengine/commit/495b9638958a0448bee4d5aac4f5d5e6dbe15b89>`_:   Project renamed hepcloud-de-modules
+
+`774f2254a <https://github.com/HEPCloud/decisionengine/commit/774f2254af3a5aa8f45f4d9d4efe8fa7b26c48e2>`_:   Merge pull request #723 from mambelli/master
+
+`92c2f3564 <https://github.com/HEPCloud/decisionengine/commit/92c2f3564976aa5510cb8acf96f37d71f04762f4>`_:   Improved documentation and added PyPI release (build/install) support
+
+`89997475a <https://github.com/HEPCloud/decisionengine/commit/89997475aecb3b693f060ad3340fe41049c904d8>`_:   Doc updates for 2.0.6
 
 `3b183afb2 <https://github.com/HEPCloud/decisionengine/commit/3b183afb2e2c7e14ffd7992c4deb95413bcf94f8>`_:   Added glidein group to coordinate with GWMS Frontend installation
 
@@ -41,6 +96,10 @@ Full list of commits since version 2.0.4
 `4add02381 <https://github.com/HEPCloud/decisionengine/commit/4add023813b6a1d354a55bfc24450be5a7097a6f>`_:   Remove use of build, not installed
 
 `f48a31839 <https://github.com/HEPCloud/decisionengine/commit/f48a31839d1388dfe5cf742d9572971578c77aa2>`_:   Install sphinx as user, not as root
+
+`ce1f28584 <https://github.com/HEPCloud/decisionengine/commit/ce1f28584320bd10c6d264703885bfbec6f921c2>`_:   Updated actions in gh-pages workflow
+
+`dfd988f3d <https://github.com/HEPCloud/decisionengine/commit/dfd988f3d969e6f60c9c33290f47e03958787004>`_:   Merge pull request #718 from mambelli/release_2_0_4
 
 `ce1f28584 <https://github.com/HEPCloud/decisionengine/commit/ce1f28584320bd10c6d264703885bfbec6f921c2>`_:   Updated actions in gh-pages workflow
 

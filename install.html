@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.6rc2.dev22+gc587f065c documentation</title>
+  <title>Installing and running HEPCloud’s Decision Engine on EL9 &mdash; decisionengine 2.0.7.dev1+g329ee802a documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=accda6f4"></script>
+      <script src="_static/documentation_options.js?v=4c904a7d"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -65,7 +65,14 @@
 <li class="toctree-l2"><a class="reference internal" href="#start-decision-engine">Start decision engine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#stop-decision-engine">Stop decision engine</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#add-channels-to-decision-engine">Add channels to decision engine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#setup-pressure-based-pilot-submission">Setup pressure-based pilot submission</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setup-pressure-based-pilot-submission">Setup pressure-based pilot submission</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setup-redis">Setup Redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-gwms-frontend-configuration">Create GWMS frontend configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stop-reset-and-restart-everything">Stop, reset, and restart everything</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submit-a-test-job">Submit a test job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stop-decision-engine-service">Stop Decision Engine service</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
@@ -128,15 +135,8 @@ decisionengine will run as the decisionengine user.</p>
 </pre></div>
 </div>
 </li>
-<li><p>Setup the decision engine yum repositories</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="o">-</span><span class="n">O</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">.</span><span class="n">repo</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">ssi</span><span class="o">-</span><span class="n">rpm</span><span class="o">.</span><span class="n">fnal</span><span class="o">.</span><span class="n">gov</span><span class="o">/</span><span class="n">hep</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">.</span><span class="n">repo</span>
-<span class="n">wget</span> <span class="o">-</span><span class="n">O</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">yum</span><span class="o">.</span><span class="n">repos</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">-</span><span class="n">dev</span><span class="o">.</span><span class="n">repo</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">ssi</span><span class="o">-</span><span class="n">rpm</span><span class="o">.</span><span class="n">fnal</span><span class="o">.</span><span class="n">gov</span><span class="o">/</span><span class="n">hep</span><span class="o">/</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">-</span><span class="n">dev</span><span class="o">.</span><span class="n">repo</span>
-<span class="c1"># Note the above repos are only accessible within Fermilab.  There is an alternative place on github to get the RPMs if you are off-site.</span>
-</pre></div>
-</div>
-</li>
-<li><p>Install the decision engine (add <cite>–enablerepo=ssi-hepcloud-dev</cite> for the latest development version)</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DE_REPO</span><span class="o">=</span><span class="n">ssi</span><span class="o">-</span><span class="n">hepcloud</span><span class="o">-</span><span class="n">dev</span>
+<li><p>Install the decision engine (add <cite>–enablerepo=osg-development</cite> for the latest development version)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DE_REPO</span><span class="o">=</span><span class="n">osg</span>
 <span class="n">dnf</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="o">--</span><span class="n">enablerepo</span><span class="o">=</span><span class="s2">"$DE_REPO"</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">onenode</span>
 <span class="c1"># Individual packages are: decisionengine-deps (framework req) decisionengine-modules-deps (modules req) decisionengine-standalone (2 deps+httpd)</span>
 </pre></div>
@@ -175,17 +175,8 @@ decisionengine will run as the decisionengine user.</p>
 <h2>Fix the GlideinWMS Frontend installation<a class="headerlink" href="#fix-the-glideinwms-frontend-installation" title="Link to this heading"></a></h2>
 <p>We will make HEPCloud’s Decision Engine using some GlideinWMS libraries but independent from the Frontend.
 The codebases, though, are still intertwined, so there are some adjustments needed to the GlideinWMS installation.</p>
-<p>Create the condor password and change to decisionengine the ownership of the frontend directories:</p>
+<p>Change to decisionengine the ownership of the frontend directories:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chown</span> <span class="o">-</span><span class="n">R</span> <span class="n">decisionengine</span><span class="p">:</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">gwms</span><span class="o">-</span><span class="n">frontend</span>
-
-<span class="c1"># Create or copy the FRONTEND condor password file</span>
-<span class="c1"># If POOL is not there, do start condor (systemctl start condor)</span>
-<span class="n">pushd</span>  <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">condor</span><span class="o">/</span><span class="n">passwords</span><span class="o">.</span><span class="n">d</span><span class="o">/</span>
-<span class="n">cp</span> <span class="n">POOL</span> <span class="n">FRONTEND</span>
-<span class="n">cp</span> <span class="n">FRONTEND</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">gwms</span><span class="o">-</span><span class="n">frontend</span><span class="o">/</span><span class="n">passwords</span><span class="o">.</span><span class="n">d</span><span class="o">/</span>
-<span class="n">popd</span>
-<span class="n">chown</span> <span class="o">-</span><span class="n">R</span> <span class="n">decisionengine</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">gwms</span><span class="o">-</span><span class="n">frontend</span>
-<span class="c1"># The permission of /var/lib/gwms-frontend/passwords.d/FRONTEND should be 0600</span>
 </pre></div>
 </div>
 </section>
@@ -203,8 +194,11 @@ The codebases, though, are still intertwined, so there are some adjustments need
 </pre></div>
 </div>
 </li>
-<li><p>edit <code class="docutils literal notranslate"><span class="pre">/var/lib/pgsql/data/pg_hba.conf</span></code> like the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">root</span><span class="nd">@fermicloud371</span> <span class="o">~</span><span class="p">]</span><span class="c1"># diff  /var/lib/pgsql/data/pg_hba.conf~ /var/lib/pgsql/data/pg_hba.conf</span>
+<li><p>Use the sed command or manually edit <code class="docutils literal notranslate"><span class="pre">/var/lib/pgsql/data/pg_hba.conf</span></code> like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Option1 - sed:</span>
+<span class="n">sed</span> <span class="o">-</span><span class="n">e</span> <span class="s1">'/^local   all             all/s/peer/trust/'</span> <span class="o">-</span><span class="n">e</span> <span class="s1">'/^host    all             all/s/ident/trust/'</span> <span class="o">-</span><span class="n">i</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">pgsql</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">pg_hba</span><span class="o">.</span><span class="n">conf</span>
+<span class="c1"># Option2 - manual edit:</span>
+<span class="p">[</span><span class="n">root</span><span class="nd">@fermicloud371</span> <span class="o">~</span><span class="p">]</span><span class="c1"># diff  /var/lib/pgsql/data/pg_hba.conf~ /var/lib/pgsql/data/pg_hba.conf</span>
 <span class="mi">80</span><span class="n">c80</span>
 <span class="o">&lt;</span> <span class="n">local</span>   <span class="nb">all</span>             <span class="nb">all</span>                                     <span class="n">peer</span>
 <span class="o">---</span>
@@ -229,12 +223,12 @@ This is setting the authentication method to <cite>trust</cite></p>
 <p>mkdir -p /var/run/postgresql
 chown postgres: /var/run/postgresql</p>
 </li>
-<li><p>start the database</p>
+<li><p>Start the database server</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">start</span> <span class="n">postgresql</span>
 </pre></div>
 </div>
 </li>
-<li><p>create decisionengine</p>
+<li><p>Create the decisionengine database</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">createdb</span> <span class="o">-</span><span class="n">U</span> <span class="n">postgres</span> <span class="n">decisionengine</span>
 </pre></div>
 </div>
@@ -247,7 +241,7 @@ chown postgres: /var/run/postgresql</p>
 <h2>Install Redis<a class="headerlink" href="#install-redis" title="Link to this heading"></a></h2>
 <p>Install and start the message broker (Redis) container on your system. You can find more details on the <a class="reference internal" href="redis.html"><span class="doc">redis document</span></a></p>
 <ol class="arabic">
-<li><p>You may need to fix the firewall used</p>
+<li><p>You may need to fix the firewall used removing the one incompatible with Podman</p>
 <p>dnf rm iptables-legacy
 dnf install iptables-nft</p>
 </li>
@@ -266,9 +260,9 @@ dnf install iptables-nft</p>
 </section>
 <section id="test">
 <h2>Test<a class="headerlink" href="#test" title="Link to this heading"></a></h2>
-<p>Now you can type <code class="docutils literal notranslate"><span class="pre">decisionengine</span> <span class="pre">--help</span></code> while logged in as decisionengine to print the help message.
+<p>Now you can type <code class="docutils literal notranslate"><span class="pre">decisionengine</span> <span class="pre">--help</span></code> as root or while logged in as decisionengine to print the help message.
 To do more you need first to configure Decision Engine.</p>
-<p>Remember that all the times that you start a new shell as decisionengine you need to add the PIP binary directory to the PATH:</p>
+<p>Remember that all the times that you start a new shell as decisionengine you may need to add the PIP binary directory to the PATH</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">"~/.local/bin:$PATH"</span>
 </pre></div>
 </div>
@@ -380,27 +374,29 @@ This test channel is using some NOP classes currently defined in the unit tests 
 </section>
 <section id="setup-pressure-based-pilot-submission">
 <h2>Setup pressure-based pilot submission<a class="headerlink" href="#setup-pressure-based-pilot-submission" title="Link to this heading"></a></h2>
-<div class="line-block">
-<div class="line">At this point Decision Engine, GlideinWMS and HTCondor are supposed to be installed and able to run.</div>
-<div class="line">We assume that the Frontend proxy and the VO proxy are already available.</div>
-<div class="line"><br /></div>
-</div>
-<p><strong>- Configure the pressure-based submission</strong>
-| Write the configuration for the Decision Engine glideinwms module
-| To ease the process you can use the templates available in the <a class="reference external" href="https://github.com/HEPCloud/contrib/tree/master/config_template">config_template contrib repo</a>.
-| Copy the files from the <code class="docutils literal notranslate"><span class="pre">EL9</span></code> folder into <code class="docutils literal notranslate"><span class="pre">/etc/decisionengine</span></code>, and the files in <code class="docutils literal notranslate"><span class="pre">EL9/config.d/</span></code> into <code class="docutils literal notranslate"><span class="pre">/etc/decisionengine/config.d</span></code>.
-| If you made changes to <code class="docutils literal notranslate"><span class="pre">decision_engine.jsonnet</span></code> please merge it with the version form the repository.
-| The important part  from the is the glideinwms import <code class="docutils literal notranslate"><span class="pre">decision_engine.jsonnet</span></code> template is the line: <code class="docutils literal notranslate"><span class="pre">glideinwms:</span> <span class="pre">import</span> <span class="pre">'glideinwms.libsonnet',</span></code>.
-| Those configuration files have a placeholder field <code class="docutils literal notranslate"><span class="pre">&#64;TEMPLATE...&#64;</span></code>
-| that needs to be replaced with the proper parameters according to your specific system setup. The README file has some suggestions.</p>
+<p>After the previous steps, Decision Engine, the GlideinWMS libraries and HTCondor are supposed to be installed and able to run.
+We assume that the IDTOKEN to talk to the Factory and the VO credentials to submit to the computing resources (e.g. SciToken) are already available.</p>
+<p><em>Configure the pressure-based submission</em></p>
+<p>Write the configuration for the Decision Engine glideinwms module.</p>
+<p>To ease the process you can use the templates available in the <a class="reference external" href="https://github.com/HEPCloud/contrib/tree/master/config_template">config_template contrib repo</a>.</p>
+<ul class="simple">
+<li><p>Copy the files from the <code class="docutils literal notranslate"><span class="pre">EL9</span></code> folder into <code class="docutils literal notranslate"><span class="pre">/etc/decisionengine</span></code>, and the files in <code class="docutils literal notranslate"><span class="pre">EL9/config.d/</span></code> into <code class="docutils literal notranslate"><span class="pre">/etc/decisionengine/config.d</span></code>.</p></li>
+<li><p>If you made changes to <code class="docutils literal notranslate"><span class="pre">decision_engine.jsonnet</span></code> please merge it with the version form the repository.</p></li>
+<li><p>The important part  from the is the glideinwms import <code class="docutils literal notranslate"><span class="pre">decision_engine.jsonnet</span></code> template is the line: <code class="docutils literal notranslate"><span class="pre">glideinwms:</span> <span class="pre">import</span> <span class="pre">'glideinwms.libsonnet',</span></code>.</p></li>
+<li><p>Those configuration files have placeholder fields <code class="docutils literal notranslate"><span class="pre">&#64;TEMPLATE...&#64;</span></code>
+that needs to be replaced with the proper parameters according to your specific system setup. The README file has some suggestions.</p></li>
+</ul>
 <p>Once those configuration files have been updated, we are ready to finalize the Decision Engine configuration.</p>
-<p><strong>- Setup Redis</strong></p>
+<section id="setup-redis">
+<h3>Setup Redis<a class="headerlink" href="#setup-redis" title="Link to this heading"></a></h3>
 <p>Start the message broker (Redis) as pod container:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">podman</span> <span class="n">run</span> <span class="o">--</span><span class="n">name</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">redis</span> <span class="o">-</span><span class="n">p</span> <span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="p">:</span><span class="mi">6379</span> <span class="o">-</span><span class="n">d</span> <span class="n">redis</span><span class="p">:</span><span class="mi">6</span> <span class="o">--</span><span class="n">loglevel</span> <span class="n">warning</span>
 </pre></div>
 </div>
-<p><strong>- Create GWMS frontend configuration</strong>
-For this step you need first to restart the Decision Engine and then to run a configuration script. To do so, run:</p>
+</section>
+<section id="create-gwms-frontend-configuration">
+<h3>Create GWMS frontend configuration<a class="headerlink" href="#create-gwms-frontend-configuration" title="Link to this heading"></a></h3>
+<p>For this step you need first to restart the Decision Engine and then to run a configuration script. To do so, run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># as root (fix the ownership of the frontend library files)</span>
 <span class="n">chown</span> <span class="o">-</span><span class="n">R</span> <span class="n">decisionengine</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">gwms</span><span class="o">-</span><span class="n">frontend</span>
 <span class="c1"># for RPM installation as root</span>
@@ -414,42 +410,27 @@ For this step you need first to restart the Decision Engine and then to run a co
 </pre></div>
 </div>
 <p>This command will create the file <code class="docutils literal notranslate"><span class="pre">/var/lib/gwms-frontend/vofrontend/de_frontend_config</span></code></p>
+</section>
+<section id="stop-reset-and-restart-everything">
+<h3>Stop, reset, and restart everything<a class="headerlink" href="#stop-reset-and-restart-everything" title="Link to this heading"></a></h3>
 <p>To allow a fresh start stop and reset everything:</p>
-<ol class="arabic simple">
-<li><p>stop the decisionengine (service):</p></li>
-</ol>
-<blockquote>
-<div><p># If you are in a RPM installation, as root:
-systemctl stop decisionengine
-# If you installed via PIP, as decisionengine:
-de-client –stop</p>
-</div></blockquote>
-<ol class="arabic simple" start="2">
-<li><p>remove the Redis container:</p></li>
-</ol>
-<blockquote>
-<div><p># Run the following as root (root started the container)
-podman stop decisionengine-redis | xargs podman rm</p>
-</div></blockquote>
-<ol class="arabic" start="3">
-<li><p>and reset the decisionengine DB in PostgreSQL:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dropdb</span> <span class="o">-</span><span class="n">U</span> <span class="n">postgres</span> <span class="n">decisionengine</span>
+<ol class="arabic">
+<li><p>Stop the decisionengine (service), redis, drop and recreate the database</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you are in a RPM installation, as root:</span>
+<span class="n">systemctl</span> <span class="n">stop</span> <span class="n">decisionengine</span>
+<span class="c1"># If you installed via PIP, as decisionengine:</span>
+<span class="n">de</span><span class="o">-</span><span class="n">client</span> <span class="o">--</span><span class="n">stop</span>
+<span class="c1"># Run the following as root (root started the container)</span>
+<span class="n">podman</span> <span class="n">stop</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">redis</span> <span class="o">|</span> <span class="n">xargs</span> <span class="n">podman</span> <span class="n">rm</span>
+<span class="c1"># Drop and recreate the DB</span>
+<span class="n">dropdb</span> <span class="o">-</span><span class="n">U</span> <span class="n">postgres</span> <span class="n">decisionengine</span>
 <span class="n">createdb</span> <span class="o">-</span><span class="n">U</span> <span class="n">postgres</span> <span class="n">decisionengine</span>
 </pre></div>
 </div>
 </li>
-</ol>
-<p><strong>- Run Decision Engine</strong>
-Now all should be ready to run Decision Engine with a fresh start.
-Start the Redis container and the decisionengine service.</p>
-<ul>
-<li><p>Run Redis container:</p>
+<li><p>Restart redis and the decisionengine</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">podman</span> <span class="n">run</span> <span class="o">--</span><span class="n">name</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">redis</span> <span class="o">-</span><span class="n">p</span> <span class="mf">127.0.0.1</span><span class="p">:</span><span class="mi">6379</span><span class="p">:</span><span class="mi">6379</span> <span class="o">-</span><span class="n">d</span> <span class="n">redis</span><span class="p">:</span><span class="mi">6</span> <span class="o">--</span><span class="n">loglevel</span> <span class="n">warning</span>
-</pre></div>
-</div>
-</li>
-<li><p>Start decisionengine service and check its status:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># For RPM installations as root:</span>
+<span class="c1"># For RPM installations as root:</span>
 <span class="n">systemctl</span> <span class="n">start</span> <span class="n">decisionengine</span>
 <span class="n">sleep</span> <span class="mi">5</span>
 <span class="n">systemctl</span> <span class="n">status</span> <span class="n">decisionengine</span>
@@ -460,16 +441,20 @@ Start the Redis container and the decisionengine service.</p>
 </pre></div>
 </div>
 </li>
-</ul>
-<p><strong>- Submit a test job</strong>
-Finally you can submit a test job to trigger Glidein requests and test the system.</p>
-<ul>
-<li><p>Switch to <code class="docutils literal notranslate"><span class="pre">decisionengine</span></code> user and make sure channel and sources are <code class="docutils literal notranslate"><span class="pre">STEADY</span></code>:</p>
-<p>ksu decisionengine -e /bin/bash
-de-client –status</p>
+</ol>
+</section>
+<section id="submit-a-test-job">
+<h3>Submit a test job<a class="headerlink" href="#submit-a-test-job" title="Link to this heading"></a></h3>
+<p>Finally you can submit a test job to trigger Glidein requests and test the system.
+All Decision Engine commands can be run as root or the decisionengine user.</p>
+<ol class="arabic">
+<li><p>Make sure channel and sources are <code class="docutils literal notranslate"><span class="pre">STEADY</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">de</span><span class="o">-</span><span class="n">client</span> <span class="o">--</span><span class="n">status</span>
+</pre></div>
+</div>
 </li>
-<li><p>prepare a Condor submission file <code class="docutils literal notranslate"><span class="pre">mytest.submit</span></code> with the following content:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#  A test Condor submission file - mytest.submit
+<li><p>Prepare a HTCondor submission file <code class="docutils literal notranslate"><span class="pre">mytest.submit</span></code> with the following content</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#  Content of the test HTCondor submission file - mytest.submit
 executable = /bin/hostname
 universe = vanilla
 +DESIRED_Sites = "@CHANGEME@"
@@ -480,32 +465,35 @@ queue 1
 </pre></div>
 </div>
 </li>
-<li><p>submit the test job:</p>
+<li><p>Submit the test job</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">condor_submit</span> <span class="n">mytest</span><span class="o">.</span><span class="n">submit</span>
 </pre></div>
 </div>
 </li>
-<li><p>check jobs in the queue:</p>
+<li><p>Check jobs in the queue</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">condor_q</span>
 </pre></div>
 </div>
 </li>
-<li><p>check for available glideins:</p>
+<li><p>Check for available glideins</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">condor_status</span>
 </pre></div>
 </div>
 </li>
-</ul>
-<p>after test jobs are submitted it will take few minutes (usually no more than 10 minutes) to get some glideins and then get the job running.</p>
-<p>Now the <code class="docutils literal notranslate"><span class="pre">decisionengine</span></code> user session can be closed to get back to the <code class="docutils literal notranslate"><span class="pre">root</span></code> session.</p>
-<p><strong>- Stop Decision Engine service</strong></p>
-<p>Finally stop Decision Engine service and remove the Redis container:</p>
+</ol>
+<p>After the test jobs are submitted, DE and the Factory will take a few minutes (usually no more than 10 minutes) to get some Glideins and then get the job running.
+You can use also <code class="docutils literal notranslate"><span class="pre">condor_status</span> <span class="pre">-any</span></code> and <code class="docutils literal notranslate"><span class="pre">condor_q</span></code> on the Factory to monitor the DE requests and the Glidein submitted to the resources.</p>
+</section>
+<section id="stop-decision-engine-service">
+<h3>Stop Decision Engine service<a class="headerlink" href="#stop-decision-engine-service" title="Link to this heading"></a></h3>
+<p>Finally you can stop Decision Engine service and remove the Redis container (same commands as above):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you installed via RPMs run</span>
 <span class="n">systemctl</span> <span class="n">stop</span> <span class="n">decisionengine</span><span class="o">.</span><span class="n">service</span>
 <span class="c1"># Run de-client --stop as decisionengine if you installed w/ PIP</span>
 <span class="n">podman</span> <span class="n">stop</span> <span class="n">decisionengine</span><span class="o">-</span><span class="n">redis</span> <span class="o">|</span> <span class="n">xargs</span> <span class="n">podman</span> <span class="n">rm</span>
 </pre></div>
 </div>
+</section>
 </section>
 <section id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
