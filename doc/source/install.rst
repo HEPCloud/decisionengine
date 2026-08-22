@@ -32,19 +32,13 @@ RPM installation
     /bin/sed -i '/^enabled=1/a priority=99' /etc/yum.repos.d/epel.repo
     dnf -y install "https://repo.osg-htc.org/osg/$OSG_VERSION-main/osg-$OSG_VERSION-main-el9-release-latest.rpm"
 
-2. Setup the decision engine yum repositories ::
+2. Install the decision engine (add `--enablerepo=osg-development` for the latest development version) ::
 
-    wget -O /etc/yum.repos.d/ssi-hepcloud.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud.repo
-    wget -O /etc/yum.repos.d/ssi-hepcloud-dev.repo http://ssi-rpm.fnal.gov/hep/ssi-hepcloud-dev.repo
-    # Note the above repos are only accessible within Fermilab.  There is an alternative place on github to get the RPMs if you are off-site.
-
-3. Install the decision engine (add `--enablerepo=ssi-hepcloud-dev` for the latest development version) ::
-
-    DE_REPO=ssi-hepcloud-dev
+    DE_REPO=osg
     dnf install -y --enablerepo="$DE_REPO" decisionengine-onenode
     # Individual packages are: decisionengine-deps (framework req) decisionengine-modules-deps (modules req) decisionengine-standalone (2 deps+httpd)
 
-4. Install the required Python packages ::
+3. Install the required Python packages ::
 
     decisionengine-install-python
     # This will install the latest version in PyPI (hepcloud-de, hepcloud-de-modules, and all requirements)
@@ -55,7 +49,7 @@ RPM installation
     # To see all the options:  decisionengine-install-python --help
     # Double check that pip added $HOME/.local/bin to the PATH of user decisionengine
 
-5. Start and enable HTCondor and httpd::
+4. Start and enable HTCondor and httpd::
 
     systemctl start condor
     systemctl enable condor
@@ -63,7 +57,7 @@ RPM installation
     systemctl start httpd
     systemctl enable httpd
 
-6. Optionally install these extra packages ::
+5. Optionally install these extra packages ::
 
     # htgettoken - if you need it to generate SciTokens
     dnf -y install htgettoken
@@ -75,19 +69,9 @@ Fix the GlideinWMS Frontend installation
 We will make HEPCloud's Decision Engine using some GlideinWMS libraries but independent from the Frontend.
 The codebases, though, are still intertwined, so there are some adjustments needed to the GlideinWMS installation.
 
-Create the condor password and change to decisionengine the ownership of the frontend directories: ::
+Change to decisionengine the ownership of the frontend directories: ::
 
     chown -R decisionengine: /etc/gwms-frontend
-
-    # Create or copy the FRONTEND condor password file
-    # If POOL is not there, do start condor (systemctl start condor)
-    pushd  /etc/condor/passwords.d/
-    cp POOL FRONTEND
-    cp FRONTEND /var/lib/gwms-frontend/passwords.d/
-    popd
-    chown -R decisionengine: /var/lib/gwms-frontend
-    # The permission of /var/lib/gwms-frontend/passwords.d/FRONTEND should be 0600
-
 
 Set up PostgreSQL
 -----------------
@@ -102,8 +86,11 @@ PostgreSQL is installed by the requirements RPM, Postgresql 13:
 
     postgresql-setup --initdb
 
-3. edit ``/var/lib/pgsql/data/pg_hba.conf`` like the following::
+3. Use the sed command or manually edit ``/var/lib/pgsql/data/pg_hba.conf`` like the following::
 
+    # Option1 - sed:
+    sed -e '/^local   all             all/s/peer/trust/' -e '/^host    all             all/s/ident/trust/' -i /var/lib/pgsql/data/pg_hba.conf
+    # Option2 - manual edit:
     [root@fermicloud371 ~]# diff  /var/lib/pgsql/data/pg_hba.conf~ /var/lib/pgsql/data/pg_hba.conf
     80c80
     < local   all             all                                     peer
@@ -128,11 +115,11 @@ PostgreSQL is installed by the requirements RPM, Postgresql 13:
    mkdir -p /var/run/postgresql
    chown postgres: /var/run/postgresql
 
-5. start the database ::
+5. Start the database server ::
 
     systemctl start postgresql
 
-6. create decisionengine ::
+6. Create the decisionengine database ::
 
     createdb -U postgres decisionengine
 
@@ -146,7 +133,7 @@ Install Redis
 
 Install and start the message broker (Redis) container on your system. You can find more details on the :doc:`redis document <redis>`
 
-1. You may need to fix the firewall used ::
+1. You may need to fix the firewall used removing the one incompatible with Podman ::
 
    dnf rm iptables-legacy
    dnf install iptables-nft
@@ -164,10 +151,10 @@ Install and start the message broker (Redis) container on your system. You can f
 Test
 ----
 
-Now you can type ``decisionengine --help`` while logged in as decisionengine to print the help message.
+Now you can type ``decisionengine --help`` as root or while logged in as decisionengine to print the help message.
 To do more you need first to configure Decision Engine.
 
-Remember that all the times that you start a new shell as decisionengine you need to add the PIP binary directory to the PATH::
+Remember that all the times that you start a new shell as decisionengine you may need to add the PIP binary directory to the PATH ::
 
     export PATH="~/.local/bin:$PATH"
 
@@ -297,28 +284,33 @@ Once the decisionengine is running, ``de-client --status`` should show the activ
 Setup pressure-based pilot submission
 -------------------------------------
 
-| At this point Decision Engine, GlideinWMS and HTCondor are supposed to be installed and able to run.
-| We assume that the Frontend proxy and the VO proxy are already available.
-|
+After the previous steps, Decision Engine, the GlideinWMS libraries and HTCondor are supposed to be installed and able to run.
+We assume that the IDTOKEN to talk to the Factory and the VO credentials to submit to the computing resources (e.g. SciToken) are already available.
 
-**- Configure the pressure-based submission**
-| Write the configuration for the Decision Engine glideinwms module
-| To ease the process you can use the templates available in the `config_template contrib repo <https://github.com/HEPCloud/contrib/tree/master/config_template>`_.
-| Copy the files from the ``EL9`` folder into ``/etc/decisionengine``, and the files in ``EL9/config.d/`` into ``/etc/decisionengine/config.d``.
-| If you made changes to ``decision_engine.jsonnet`` please merge it with the version form the repository.
-| The important part  from the is the glideinwms import ``decision_engine.jsonnet`` template is the line: ``glideinwms: import 'glideinwms.libsonnet',``.
-| Those configuration files have a placeholder field ``@TEMPLATE...@``
-| that needs to be replaced with the proper parameters according to your specific system setup. The README file has some suggestions.
+*Configure the pressure-based submission*
+
+Write the configuration for the Decision Engine glideinwms module.
+
+To ease the process you can use the templates available in the `config_template contrib repo <https://github.com/HEPCloud/contrib/tree/master/config_template>`_.
+
+- Copy the files from the ``EL9`` folder into ``/etc/decisionengine``, and the files in ``EL9/config.d/`` into ``/etc/decisionengine/config.d``.
+- If you made changes to ``decision_engine.jsonnet`` please merge it with the version form the repository.
+- The important part  from the is the glideinwms import ``decision_engine.jsonnet`` template is the line: ``glideinwms: import 'glideinwms.libsonnet',``.
+- Those configuration files have placeholder fields ``@TEMPLATE...@``
+  that needs to be replaced with the proper parameters according to your specific system setup. The README file has some suggestions.
 
 Once those configuration files have been updated, we are ready to finalize the Decision Engine configuration.
 
-**- Setup Redis**
+Setup Redis
+~~~~~~~~~~~
 
 Start the message broker (Redis) as pod container::
 
   podman run --name decisionengine-redis -p 127.0.0.1:6379:6379 -d redis:6 --loglevel warning
 
-**- Create GWMS frontend configuration**
+Create GWMS frontend configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 For this step you need first to restart the Decision Engine and then to run a configuration script. To do so, run::
 
   # as root (fix the ownership of the frontend library files)
@@ -334,36 +326,26 @@ For this step you need first to restart the Decision Engine and then to run a co
 
 This command will create the file ``/var/lib/gwms-frontend/vofrontend/de_frontend_config``
 
+Stop, reset, and restart everything
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 To allow a fresh start stop and reset everything:
 
-1. stop the decisionengine (service)::
+1. Stop the decisionengine (service), redis, drop and recreate the database ::
 
-  # If you are in a RPM installation, as root:
-  systemctl stop decisionengine
-  # If you installed via PIP, as decisionengine:
-  de-client --stop
-
-2. remove the Redis container::
-
-  # Run the following as root (root started the container)
-  podman stop decisionengine-redis | xargs podman rm
-
-3. and reset the decisionengine DB in PostgreSQL::
-
+    # If you are in a RPM installation, as root:
+    systemctl stop decisionengine
+    # If you installed via PIP, as decisionengine:
+    de-client --stop
+    # Run the following as root (root started the container)
+    podman stop decisionengine-redis | xargs podman rm
+    # Drop and recreate the DB
     dropdb -U postgres decisionengine
     createdb -U postgres decisionengine
 
-
-**- Run Decision Engine**
-Now all should be ready to run Decision Engine with a fresh start.
-Start the Redis container and the decisionengine service.
-
-* Run Redis container::
+2. Restart redis and the decisionengine ::
 
     podman run --name decisionengine-redis -p 127.0.0.1:6379:6379 -d redis:6 --loglevel warning
-
-* Start decisionengine service and check its status::
-
     # For RPM installations as root:
     systemctl start decisionengine
     sleep 5
@@ -374,18 +356,19 @@ Start the Redis container and the decisionengine service.
     de-client --status
 
 
-**- Submit a test job**
+Submit a test job
+~~~~~~~~~~~~~~~~~
+
 Finally you can submit a test job to trigger Glidein requests and test the system.
+All Decision Engine commands can be run as root or the decisionengine user.
 
-* Switch to ``decisionengine`` user and make sure channel and sources are ``STEADY``::
+1. Make sure channel and sources are ``STEADY``::
 
-  ksu decisionengine -e /bin/bash
-  de-client --status
+    de-client --status
 
+2. Prepare a HTCondor submission file ``mytest.submit`` with the following content ::
 
-* prepare a Condor submission file ``mytest.submit`` with the following content::
-
-    #  A test Condor submission file - mytest.submit
+    #  Content of the test HTCondor submission file - mytest.submit
     executable = /bin/hostname
     universe = vanilla
     +DESIRED_Sites = "@CHANGEME@"
@@ -394,25 +377,26 @@ Finally you can submit a test job to trigger Glidein requests and test the syste
     error = test.err.$(Cluster).$(Process)
     queue 1
 
-* submit the test job::
+3. Submit the test job ::
 
     condor_submit mytest.submit
 
-* check jobs in the queue::
+4. Check jobs in the queue ::
 
     condor_q
 
-* check for available glideins::
+5. Check for available glideins ::
 
     condor_status
 
-after test jobs are submitted it will take few minutes (usually no more than 10 minutes) to get some glideins and then get the job running.
+After the test jobs are submitted, DE and the Factory will take a few minutes (usually no more than 10 minutes) to get some Glideins and then get the job running.
+You can use also ``condor_status -any`` and ``condor_q`` on the Factory to monitor the DE requests and the Glidein submitted to the resources.
 
-Now the ``decisionengine`` user session can be closed to get back to the ``root`` session.
 
-**- Stop Decision Engine service**
+Stop Decision Engine service
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Finally stop Decision Engine service and remove the Redis container::
+Finally you can stop Decision Engine service and remove the Redis container (same commands as above)::
 
   # If you installed via RPMs run
   systemctl stop decisionengine.service

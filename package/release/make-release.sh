@@ -229,6 +229,7 @@ release_osg() {
     echo "Tarball checksummed for $de_tag (sha1sum, file): $(sha1sum "$dst_dir"/hepcloud.tar.gz)"
     echo "Use the following to update the upstream file:"
     echo "echo 'decisionengine/$de_tag/hepcloud.tar.gz sha1sum=$(sha1sum "$dst_dir"/hepcloud.tar.gz | cut -f 1 -d ' ')' > upstream/developer.tarball.source"
+    printf '\a'  # echo -e '\a'
     # Upload the tarball
     # if ssh "$osg_user@$OSG_BUILDMACHINE" "kinit $osg_krb_user; aklog; mkdir -p $versioned_uploaddir"; then
     if ssh "$osg_user@$OSG_BUILDMACHINE" "mkdir -p $versioned_uploaddir"; then

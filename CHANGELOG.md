@@ -3,15 +3,16 @@ SPDX-FileCopyrightText: 2017 Fermi Research Alliance, LLC
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# Decision Engine v2.0.6 \[2025-05-07\]
+# Decision Engine v2.0.6 \[2026-08-21\]
 
-Improved compatibility and separation with GlideinWMS Frontend
+Improved compatibility and separation with GlideinWMS Frontend. Improved install, setup, and control processes.
 
 ## Changes Since Last Release
 
 ### New features / functionalities
 
 - Improved compatibility and separation with GlideinWMS Frontend
+- Updated and improved Jenkins testing
 
 ### Changed defaults / behaviours
 
